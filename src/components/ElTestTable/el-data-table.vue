@@ -10,10 +10,11 @@
       <!-- 阻止表单提交的默认行为 -->
       <!-- https://www.w3.org/MarkUp/html-spec/html-spec_8.html#SEC8.2 -->
       <el-form-renderer
-        v-if="hasSearch"
+        v-if="hasSearchForm"
         ref="searchForm"
         :content="_searchForm"
         inline
+        class="search-form-container"
         @submit.native.prevent
       >
         <slot
@@ -25,22 +26,26 @@
         <slot name="search"></slot>
         <el-form-item>
           <!--https://github.com/ElemeFE/element/pull/5920-->
-          <el-button native-type="submit" type="primary" :size="buttonSize" @click="search">查询</el-button>
+          <el-button
+            native-type="submit"
+            type="primary"
+            :size="buttonSize"
+            @click="search"
+            >查询</el-button
+          >
           <el-button :size="buttonSize" @click="resetSearch">重置</el-button>
-          <slot name="extraBtn"></slot>
         </el-form-item>
-        
-
       </el-form-renderer>
 
       <el-form v-if="hasHeader">
-        <el-form-item>
+        <el-form-item class="header-button-container">
           <el-button
             v-if="hasNew"
             type="primary"
             :size="buttonSize"
             @click="onDefaultNew"
-          >{{ newText }}</el-button>
+            >{{ newText }}</el-button
+          >
           <template v-for="(btn, i) in headerButtons">
             <self-loading-button
               v-if="'show' in btn ? btn.show(selected) : true"
@@ -53,7 +58,7 @@
               v-bind="btn"
             >
               {{
-              typeof btn.text === 'function' ? btn.text(selected) : btn.text
+                typeof btn.text === 'function' ? btn.text(selected) : btn.text
               }}
             </self-loading-button>
           </template>
@@ -63,7 +68,8 @@
             :size="buttonSize"
             :disabled="selected.length === 0 || (single && selected.length > 1)"
             @click="onDefaultDelete(single ? selected[0] : selected)"
-          >{{ deleteText }}</el-button>
+            >{{ deleteText }}</el-button
+          >
 
           <!--@slot 额外的header内容, 当headerButtons不满足需求时可以使用，作用域传入selected -->
           <slot name="header" :selected="selected" />
@@ -76,16 +82,19 @@
               :size="buttonSize"
               :icon="`el-icon-arrow-${isSearchCollapse ? 'down' : 'up'}`"
               @click="isSearchCollapse = !isSearchCollapse"
-            >{{ isSearchCollapse ? '展开' : '折叠' }}搜索</el-button>
+              >{{ isSearchCollapse ? '展开' : '折叠' }}搜索</el-button
+            >
           </slot>
         </el-form-item>
       </el-form>
 
       <el-table
         ref="table"
+        v-loading="loading"
         v-bind="tableAttrs"
         :data="data"
-        :row-class-name="showRow"
+        :row-class-name="rowClassName"
+        v-on="tableEventHandlersInner"
         @selection-change="selectStrategy.onSelectionChange"
         @select="selectStrategy.onSelect"
         @select-all="selectStrategy.onSelectAll($event, selectable)"
@@ -99,15 +108,24 @@
               v-bind="{align: columnsAlign, ...columns[0]}"
             />
 
-            <el-data-table-column key="tree-ctrl" v-bind="{align: columnsAlign, ...columns[1]}">
+            <el-data-table-column
+              key="tree-ctrl"
+              v-bind="{align: columnsAlign, ...columns[1]}"
+            >
               <template slot-scope="scope">
-                <span v-for="space in scope.row._level" :key="space" class="ms-tree-space" />
+                <span
+                  v-for="space in scope.row._level"
+                  :key="space"
+                  class="ms-tree-space"
+                />
                 <span
                   v-if="iconShow(scope.$index, scope.row)"
                   class="tree-ctrl"
                   @click="toggleExpanded(scope.$index)"
                 >
-                  <i :class="`el-icon-${scope.row._expanded ? 'minus' : 'plus'}`" />
+                  <i
+                    :class="`el-icon-${scope.row._expanded ? 'minus' : 'plus'}`"
+                  />
                 </span>
                 {{ scope.row[columns[1].prop] }}
               </template>
@@ -123,16 +141,25 @@
           <!--无选择-->
           <template v-else>
             <!--展开这列, 丢失 el-data-table-column属性-->
-            <el-data-table-column key="tree-ctrl" v-bind="{align: columnsAlign, ...columns[0]}">
+            <el-data-table-column
+              key="tree-ctrl"
+              v-bind="{align: columnsAlign, ...columns[0]}"
+            >
               <template slot-scope="scope">
-                <span v-for="space in scope.row._level" :key="space" class="ms-tree-space" />
+                <span
+                  v-for="space in scope.row._level"
+                  :key="space"
+                  class="ms-tree-space"
+                />
 
                 <span
                   v-if="iconShow(scope.$index, scope.row)"
                   class="tree-ctrl"
                   @click="toggleExpanded(scope.$index)"
                 >
-                  <i :class="`el-icon-${scope.row._expanded ? 'minus' : 'plus'}`" />
+                  <i
+                    :class="`el-icon-${scope.row._expanded ? 'minus' : 'plus'}`"
+                  />
                 </span>
                 {{ scope.row[columns[0].prop] }}
               </template>
@@ -163,26 +190,32 @@
         >
           <template slot-scope="scope">
             <self-loading-button
-              v-if="isTree && hasNew && scope.row.children"
+              v-if="isTree && hasNew"
               type="primary"
               :size="operationButtonType === 'text' ? '' : buttonSize"
               :is-text="operationButtonType === 'text'"
               @click="onDefaultNew(scope.row)"
-            >{{ newText }}</self-loading-button>
+            >
+              {{ newText }}
+            </self-loading-button>
             <self-loading-button
               v-if="hasEdit"
               type="primary"
               :size="operationButtonType === 'text' ? '' : buttonSize"
               :is-text="operationButtonType === 'text'"
               @click="onDefaultEdit(scope.row)"
-            >{{ editText }}</self-loading-button>
+            >
+              {{ editText }}
+            </self-loading-button>
             <self-loading-button
               v-if="hasView"
               type="primary"
               :size="operationButtonType === 'text' ? '' : buttonSize"
               :is-text="operationButtonType === 'text'"
               @click="onDefaultView(scope.row)"
-            >{{ viewText }}</self-loading-button>
+            >
+              {{ viewText }}
+            </self-loading-button>
             <template v-for="(btn, i) in extraButtons">
               <self-loading-button
                 v-if="'show' in btn ? btn.show(scope.row) : true"
@@ -195,9 +228,9 @@
                 :disabled="'disabled' in btn ? btn.disabled(scope.row) : false"
               >
                 {{
-                typeof btn.text === 'function'
-                ? btn.text(scope.row)
-                : btn.text
+                  typeof btn.text === 'function'
+                    ? btn.text(scope.row)
+                    : btn.text
                 }}
               </self-loading-button>
             </template>
@@ -207,7 +240,9 @@
               :size="operationButtonType === 'text' ? '' : buttonSize"
               :is-text="operationButtonType === 'text'"
               @click="onDefaultDelete(scope.row)"
-            >{{ deleteText }}</self-loading-button>
+            >
+              {{ deleteText }}
+            </self-loading-button>
           </template>
         </el-data-table-column>
 
@@ -237,7 +272,6 @@
         :dialog-attrs="dialogAttrs"
         :button-size="buttonSize"
         @confirm="onConfirm"
-        
       >
         <template v-slot="scope">
           <!-- @slot 表单作用域插槽。当编辑、查看时传入row；新增时row=null -->
@@ -249,23 +283,25 @@
 </template>
 
 <script>
-import _get from "lodash.get";
-import _values from "lodash.values";
-import _isEmpty from "lodash.isempty";
-import SelfLoadingButton from "./components/self-loading-button.vue";
-import TheDialog, { dialogModes } from "./components/the-dialog.vue";
-import ElDataTableColumn from "./components/el-data-table-column";
-import * as queryUtil from "./utils/query";
-import getSelectStrategy from "./utils/select-strategy";
-import getLocatedSlotKeys from "./utils/extract-keys";
-import transformSearchImmediatelyItem from "./utils/search-immediately-item";
-import isFalsey from "./utils/is-falsey";
+import _get from 'lodash.get'
+import _values from 'lodash.values'
+import _kebabcase from 'lodash.kebabcase'
+import _isEmpty from 'lodash.isempty'
+import SelfLoadingButton from './components/self-loading-button.vue'
+import TheDialog, {dialogModes} from './components/the-dialog.vue'
+import ElDataTableColumn from './components/el-data-table-column'
+import * as queryUtil from './utils/query'
+import getSelectStrategy from './utils/select-strategy'
+import getLocatedSlotKeys from './utils/extract-keys'
+import transformSearchImmediatelyItem from './utils/search-immediately-item'
+import {isFalsey, removeEmptyKeys} from './utils/utils'
 
-const defaultFirstPage = 1;
-const noPaginationDataPath = "payload";
+const defaultFirstPage = 1
+const noPaginationDataPath = 'payload'
+import axios from 'axios'
 
 export default {
-  name: "ElDataTable",
+  name: 'ElDataTable',
   components: {
     SelfLoadingButton,
     TheDialog,
@@ -273,20 +309,6 @@ export default {
   },
 
   props: {
-    /**
-     * id的key 用于编辑和删除
-     */
-    idkey: {
-      type: String,
-      default: "id"
-    },
-    /**
-     * id的name 用于编辑和删除
-     */
-    idName: {
-      type: String,
-      default: "id"
-    },
     /**
      * 请求url, 如果为空, 则不会发送请求; 改变url, 则table会重新发送请求
      */
@@ -300,7 +322,7 @@ export default {
      */
     id: {
       type: String,
-      default: "id"
+      default: 'id'
     },
     /**
      * 分页请求的第一页的值(有的接口0是第一页)
@@ -314,28 +336,28 @@ export default {
      */
     dataPath: {
       type: String,
-      default: "payload.content"
+      default: 'payload.content'
     },
     /**
      * 分页数据的总数在接口返回的数据中的路径, 嵌套对象使用.表示即可
      */
     totalPath: {
       type: String,
-      default: "payload.totalElements"
+      default: 'payload.totalElements'
     },
     /**
      * 请求的时候如果接口需要的页码的查询 key 不同的时候可以指定
      */
     pageKey: {
       type: String,
-      default: "page"
+      default: 'page'
     },
     /**
      * 请求的时候如果接口需要的分页数量的查询 key 不同的时候可以指定
      */
     pageSizeKey: {
       type: String,
-      default: "size"
+      default: 'size'
     },
     /**
      * 列属性设置, 详情见element-ui官网
@@ -344,7 +366,7 @@ export default {
     columns: {
       type: Array,
       default() {
-        return [];
+        return []
       }
     },
     /**
@@ -354,7 +376,7 @@ export default {
     searchForm: {
       type: Array,
       default() {
-        return [];
+        return []
       }
     },
     /**
@@ -365,7 +387,7 @@ export default {
       default: false
     },
     /**
-     * 点击查询按钮, 查询前执行的函数, 需要返回Promise
+     * 点击查询按钮, 查询前执行的函数，参数form表单数据，需要返回Promise
      */
     beforeSearch: {
       type: Function,
@@ -400,7 +422,7 @@ export default {
     extraButtons: {
       type: Array,
       default() {
-        return [];
+        return []
       }
     },
     /**
@@ -411,7 +433,7 @@ export default {
     headerButtons: {
       type: Array,
       default() {
-        return [];
+        return []
       }
     },
     /**
@@ -447,28 +469,28 @@ export default {
      */
     newText: {
       type: String,
-      default: "新增"
+      default: '新增'
     },
     /**
      * 修改按钮文案
      */
     editText: {
       type: String,
-      default: "修改"
+      default: '修改'
     },
     /**
      * 查看按钮文案
      */
     viewText: {
       type: String,
-      default: "查看"
+      default: '查看'
     },
     /**
      * 删除按钮文案
      */
     deleteText: {
       type: String,
-      default: "删除"
+      default: '删除'
     },
     /**
      * 删除提示语。接受要删除的数据（单个对象或数组）；返回字符串
@@ -478,7 +500,7 @@ export default {
     deleteMessage: {
       type: Function,
       default() {
-        return `确认${this.deleteText}吗?`;
+        return `确认${this.deleteText}吗?`
       }
     },
     /**
@@ -487,7 +509,7 @@ export default {
     canDelete: {
       type: Function,
       default() {
-        return true;
+        return true
       }
     },
     /**
@@ -497,13 +519,7 @@ export default {
     onNew: {
       type: Function,
       default(data) {
-        if (this.isTree) {
-          data[this.treeParentKey] = this.row[this.treeParentValue] || "";
-          data[this.treeLevelKey] = this.row[this.treeLevelKey]
-            ? this.row[this.treeLevelKey] + 1
-            : 1;
-        }
-        return this.$store.dispatch(this.url.add, data);
+        return axios.post(this.url.add, data, this.axiosConfig)
       }
     },
     /**
@@ -513,12 +529,11 @@ export default {
     onEdit: {
       type: Function,
       default(data) {
-        data[this.idName] = this.row[this.idkey];
-        if (this.isTree) {
-          data[this.treeParentKey] = this.row[this.treeParentKey] || "";
-          data[this.treeLevelKey] = this.row[this.treeLevelKey];
-        }
-        return this.$store.dispatch(this.url.set, data);
+        return axios.put(
+          `${this.url.set}/${this.row[this.id]}`,
+          data,
+          this.axiosConfig
+        )
       }
     },
     /**
@@ -529,9 +544,9 @@ export default {
       type: Function,
       default(data) {
         const ids = Array.isArray(data)
-          ? data.map(v => v[this.id]).join(",")
-          : data[this.id];
-        return this.$axios.delete(this.url + "/" + ids, this.axiosConfig);
+          ? data.map(v => v[this.id]).join(',')
+          : data[this.id]
+        return axios.delete(this.url.delete + '/' + ids, this.axiosConfig)
       }
     },
     /**
@@ -543,7 +558,7 @@ export default {
     onSuccess: {
       type: Function,
       default() {
-        return this.$message.success("操作成功");
+        return this.$message.success('操作成功')
       }
     },
     /**
@@ -559,7 +574,7 @@ export default {
      */
     paginationLayout: {
       type: String,
-      default: "total, sizes, prev, pager, next, jumper"
+      default: 'total, sizes, prev, pager, next, jumper'
     },
     /**
      * 分页组件的每页显示个数选择器的选项设置，对应element-ui pagination的page-sizes属性
@@ -597,14 +612,14 @@ export default {
      */
     treeChildKey: {
       type: String,
-      default: "children"
+      default: 'children'
     },
     /**
      * 树形结构相关: 父节点的字段名
      */
     treeParentKey: {
       type: String,
-      default: "parentId"
+      default: 'parentId'
     },
     /**
      * 树形结构相关: 父节点字段值的来源字段。
@@ -612,11 +627,7 @@ export default {
      */
     treeParentValue: {
       type: String,
-      default: "id"
-    },
-    treeLevelKey: {
-      type: String,
-      default: "parentId"
+      default: 'id'
     },
     /**
      * 树形结构相关: 是否展开所有节点
@@ -626,13 +637,23 @@ export default {
       default: false
     },
     /**
-     * element table 属性设置, 详情配置参考element-ui官网
+     * el-table 的 prop 配置，详情配置参考element-ui官网
      * @link https://element.eleme.cn/2.4/#/zh-CN/component/table#table-attributes
      */
     tableAttrs: {
       type: Object,
       default() {
-        return {};
+        return {}
+      }
+    },
+    /**
+     * el-table 的 eventHandler 配置，详情配置参考element-ui官网
+     * @link https://element.eleme.cn/2.4/#/zh-CN/component/table#table-attributes
+     */
+    tableEventHandlers: {
+      type: Object,
+      default() {
+        return {}
       }
     },
     /**
@@ -642,12 +663,8 @@ export default {
     operationAttrs: {
       type: Object,
       default() {
-        return { width: "", fixed: "right" };
+        return {width: '', fixed: 'right'}
       }
-    },
-    hasSearch: {
-      type: Boolean,
-      default: false
     },
     /**
      * 新增弹窗的标题，默认为newText的值
@@ -655,7 +672,7 @@ export default {
     dialogNewTitle: {
       type: String,
       default() {
-        return this.newText;
+        return this.newText
       }
     },
     /**
@@ -664,7 +681,7 @@ export default {
     dialogEditTitle: {
       type: String,
       default() {
-        return this.editText;
+        return this.editText
       }
     },
     /**
@@ -673,7 +690,7 @@ export default {
     dialogViewTitle: {
       type: String,
       default() {
-        return this.viewText;
+        return this.viewText
       }
     },
     /**
@@ -683,7 +700,7 @@ export default {
     form: {
       type: Array,
       default() {
-        return [];
+        return []
       }
     },
     /**
@@ -693,7 +710,7 @@ export default {
     formAttrs: {
       type: Object,
       default() {
-        return {};
+        return {}
       }
     },
     /**
@@ -703,7 +720,7 @@ export default {
     dialogAttrs: {
       type: Object,
       default() {
-        return {};
+        return {}
       }
     },
     /**
@@ -713,7 +730,7 @@ export default {
     extraParams: {
       type: Object,
       default() {
-        return undefined;
+        return undefined
       }
     },
     /**
@@ -722,7 +739,7 @@ export default {
     extraBody: {
       type: Object,
       default() {
-        return undefined;
+        return undefined
       }
     },
     /**
@@ -732,7 +749,7 @@ export default {
     beforeConfirm: {
       type: Function,
       default() {
-        return Promise.resolve();
+        return Promise.resolve()
       }
     },
     /**
@@ -742,7 +759,7 @@ export default {
     customQuery: {
       type: Object,
       default() {
-        return undefined;
+        return undefined
       }
     },
     /**
@@ -752,7 +769,7 @@ export default {
     extraQuery: {
       type: Object,
       default() {
-        return undefined;
+        return undefined
       }
     },
     /**
@@ -768,7 +785,7 @@ export default {
      */
     operationButtonType: {
       type: String,
-      default: "text"
+      default: 'text'
     },
     /**
      * 设置 `按钮` 大小
@@ -776,7 +793,7 @@ export default {
      */
     buttonSize: {
       type: String,
-      default: "small"
+      default: 'small'
     },
     /**
      * 设置axios的config参数
@@ -784,7 +801,7 @@ export default {
     axiosConfig: {
       type: Object,
       default() {
-        return {};
+        return {}
       }
     }
   },
@@ -807,33 +824,41 @@ export default {
       initExtraQuery: JSON.stringify(this.extraQuery || this.customQuery || {}),
       isSearchCollapse: false,
       showNoData: false
-    };
+    }
   },
   computed: {
+    tableEventHandlersInner() {
+      const handlers = {}
+      for (const key in this.tableEventHandlers) {
+        const kebab = _kebabcase(key)
+        handlers[kebab] = this.tableEventHandlers[key]
+      }
+      return handlers
+    },
     hasSelect() {
-      return this.columns.length && this.columns[0].type == "selection";
+      return this.columns.length && this.columns[0].type == 'selection'
     },
 
     selectable() {
       if (this.hasSelect && this.columns[0].selectable) {
-        return this.columns[0].selectable;
+        return this.columns[0].selectable
       }
-      return () => true;
+      return () => true
     },
 
     columnsAlign() {
       if (this.columns.some(col => col.columns && col.columns.length)) {
         // 多级表头默认居中
-        return "center";
+        return 'center'
       } else {
-        return "";
+        return ''
       }
     },
     routerMode() {
-      return this.$router ? this.$router.mode : "hash";
+      return this.$router ? this.$router.mode : 'hash'
     },
     hasSearchForm() {
-      return this.searchForm.length || this.$slots.search;
+      return this.searchForm.length || this.$slots.search
     },
     hasHeader() {
       return (
@@ -842,46 +867,46 @@ export default {
         this.headerButtons.length ||
         this.canSearchCollapse ||
         this.$scopedSlots.header
-      );
+      )
     },
     _extraBody() {
-      return this.extraBody || this.extraParams || {};
+      return this.extraBody || this.extraParams || {}
     },
     _extraQuery() {
-      return this.extraQuery || this.customQuery || {};
+      return this.extraQuery || this.customQuery || {}
     },
     selectStrategy() {
-      return getSelectStrategy(this);
+      return getSelectStrategy(this)
     },
     searchLocatedSlotKeys() {
-      return getLocatedSlotKeys(this.$slots, "search:");
+      return getLocatedSlotKeys(this.$slots, 'search:')
     },
     collapseForm() {
       return this.searchForm.map(item => {
-        if ("collapsible" in item && !item.collapsible) {
-          return item;
+        if ('collapsible' in item && !item.collapsible) {
+          return item
         }
 
-        const itemHidden = item.hidden || (() => false);
+        const itemHidden = item.hidden || (() => false)
         return {
           ...item,
           hidden: data => {
-            return this.isSearchCollapse || itemHidden(data);
+            return this.isSearchCollapse || itemHidden(data)
           }
-        };
-      });
+        }
+      })
     },
     _searchForm() {
-      return transformSearchImmediatelyItem(this.collapseForm, this);
+      return transformSearchImmediatelyItem(this.collapseForm, this)
     }
   },
   watch: {
     url: {
       handler(val) {
-        if (!val) return;
-        this.page = defaultFirstPage;
+        if (!val) return
+        this.page = defaultFirstPage
         // mounted处有updateForm的行为，所以至少在初始执行时要等到nextTick
-        this.$nextTick(this.getList);
+        this.$nextTick(this.getList)
       },
       immediate: true
     },
@@ -890,20 +915,20 @@ export default {
        * 多选项发生变化
        * @property {array} rows - 已选中的行数据的数组
        */
-      this.$emit("selection-change", val);
+      this.$emit('selection-change', val)
     }
   },
   mounted() {
     if (this.saveQuery) {
-      const query = queryUtil.get(location.href);
+      const query = queryUtil.get(location.href)
       if (query) {
-        this.page = parseInt(query[this.pageKey]);
-        this.size = parseInt(query[this.pageSizeKey]);
+        this.page = parseInt(query[this.pageKey])
+        this.size = parseInt(query[this.pageSizeKey])
         // 恢复查询条件，但对slot=search无效
         if (this.$refs.searchForm) {
-          delete query[this.pageKey];
-          delete query[this.pageSizeKey];
-          this.$refs.searchForm.updateForm(query);
+          delete query[this.pageKey]
+          delete query[this.pageSizeKey]
+          this.$refs.searchForm.updateForm(query)
         }
       }
     }
@@ -914,119 +939,143 @@ export default {
      * @public
      * @param {object} options 方法选项
      */
-    getList({ loading = true } = {}) {
-      const { url } = this;
+    getList({loading = true} = {}) {
+      const {url} = this
 
       if (!url) {
-        console.warn("DataTable: url 为空, 不发送请求");
-        return;
+        console.warn('DataTable: url 为空, 不发送请求')
+        return
       }
 
       // 构造query对象
-      let query = {};
-      let formValue = {};
+      let query = {}
+      let formValue = {}
       if (this.$refs.searchForm) {
-        formValue = this.$refs.searchForm.getFormValue();
-        Object.assign(query, formValue);
+        formValue = this.$refs.searchForm.getFormValue()
+        Object.assign(query, formValue)
       }
-      Object.assign(query, this._extraQuery);
+      Object.assign(query, this._extraQuery)
 
       query[this.pageSizeKey] = this.hasPagination
         ? this.size
-        : this.noPaginationSize;
+        : this.noPaginationSize
 
       // 根据偏移值计算接口正确的页数
-      console.log(this.firstPage ,'------------' , defaultFirstPage )
-      const pageOffset = this.firstPage - defaultFirstPage;
-
+      const pageOffset = this.firstPage - defaultFirstPage
+      // query[this.pageKey] = this.hasPagination ? this.page + pageOffset : -1
       query.currentPage = this.hasPagination ? this.page + pageOffset : -1;
       query.showCount = this.hasPagination ? this.size : this.noPaginationSize;
-      console.log(this.page ,'-----2-------'  )
+       console.log(query ,'-----2-------'  )
       // 无效值过滤，注意0是有效值
       query = Object.keys(query)
-        .filter(k => !isFalsey(query[k]))
-        .reduce((obj, k) => {
-          obj[k] = query[k].toString().trim();
-          return obj;
-        }, {});
-
-      // const queryStr =
-      //   (url.indexOf("?") > -1 ? "&" : "?") +
-      //   queryUtil.stringify(query, "=", "&");
+        .filter(k => ![undefined, null].includes(query[k]))
+        .reduce((obj, k) => ((obj[k] = query[k]), obj), {})
 
       // 请求开始
-      this.loading = loading;
-
+      this.loading = loading
       // 存储query记录, 便于后面恢复
       if (this.saveQuery) {
         // 存储的page是table的页码，无需偏移
-        query[this.pageKey] = this.page;
-        const newUrl = queryUtil.set(location.href, query, this.routerMode);
-        history.replaceState(history.state, "el-data-table search", newUrl);
+        query[this.pageKey] = this.page
+        const newUrl = queryUtil.set(location.href, query, this.routerMode)
+        history.replaceState(history.state, 'el-data-table search', newUrl)
       }
 
-      this.$store
-        .dispatch(url.get, query)
-        .then(({ data: resp }) => {
-          let data = [];
+      // 当查询参数为数组时，需要将参数转化为字符串才发送请求
+      query = Object.keys(query).reduce(
+        (obj, k) => (
+          (obj[k] = Array.isArray(query[k])
+            ? query[k].toString().trim()
+            : query[k]),
+          obj
+        ),
+        {}
+      )
+
+      const params = {
+        ...removeEmptyKeys(query),
+        ..._get(this.axiosConfig, 'params', {}),
+        timestamp:parseInt(new Date().getTime() / 1000),
+        // token: 'QB9TKtfZCqq8SOJd4gE4ZMnBmBxZVRVw',
+        token: '416oYQUaIs3sazVtH4WkRluGd57V03qm'
+      }
+
+      axios({
+        method: 'post',
+        url: url.get,
+        params,
+        ...this.axiosConfig
+      })
+        .then(({data: resp}) => {
+          let data = []
+
           // 不分页
           if (!this.hasPagination) {
             data =
               _get(resp, this.dataPath) ||
               _get(resp, noPaginationDataPath) ||
-              [];
+              []
+            this.total = data.length
           } else {
-            data = _get(resp, this.dataPath) || [];
-            this.total = _get(resp, this.totalPath);
+            console.log(resp,'resp-----')
+            data = _get(resp.data, this.dataPath) || []
+            console.log(data,'data------')
+            // 获取不到值得时候返回 undefined, el-pagination 接收一个 null 或者 undefined 会导致没数据但是下一页可点击
+            this.total = _get(resp.data, this.totalPath) || 0
+            const lastPage = Math.ceil(this.total / this.size)
+            if (0 < lastPage && lastPage < this.page) {
+              this.page = lastPage
+              this.getList(...arguments)
+              return
+            }
           }
+
+          this.data = data
+
           // 树形结构逻辑
           if (this.isTree) {
-            data = this.tree2Array(data, this.expandAll);
-            let _expandRecord = [];
-            this.data.forEach(item => {
-              _expandRecord[item.id] = item._expanded || false;
-            });
-            if (_expandRecord.length > 0)
-              data = data.map(item => {
-                item._expanded = _expandRecord[item.id] || false;
-                return item;
-              });
+            this.data = this.tree2Array(data, this.expandAll)
           }
-          this.data = data;
 
-          this.loading = false;
+          this.showNoData =
+            this.$slots['no-data'] &&
+            this.total === 0 &&
+            (_isEmpty(formValue) || _values(formValue).every(isFalsey))
+
+          this.loading = false
           /**
            * 请求返回, 数据更新后触发
            * @property {object} data - table的数据
            * @property {object} resp - 请求返回的完整response
            */
-          this.$emit("update", data, resp);
+          this.$emit('update', data, resp)
 
           // 开启persistSelection时，需要同步selected状态到el-table中
           this.$nextTick(() => {
-            this.selectStrategy.updateElTableSelection();
-          });
+            this.selectStrategy.updateElTableSelection()
+          })
         })
         .catch(err => {
           /**
            * 请求数据失败，返回err对象
            * @event error
            */
-          this.$emit("error", err);
-          this.total = 0;
-          this.loading = false;
-        });
+          this.$emit('error', err)
+          this.total = 0
+          this.loading = false
+        })
     },
     async search() {
-      const valid = await new Promise(r => this.$refs.searchForm.validate(r));
-      if (!valid) return;
+      const form = this.$refs.searchForm
+      const valid = await new Promise(r => form.validate(r))
+      if (!valid) return
 
       try {
-        await this.beforeSearch();
-        this.page = defaultFirstPage;
-        this.getList();
+        await this.beforeSearch(form.getFormValue())
+        this.page = defaultFirstPage
+        this.getList()
       } catch (err) {
-        this.$emit("error", err);
+        this.$emit('error', err)
       }
     },
     /**
@@ -1036,39 +1085,39 @@ export default {
      */
     resetSearch() {
       // reset后, form里的值会变成 undefined, 在下一次查询会赋值给query
-      this.$refs.searchForm.resetFields();
-      this.page = defaultFirstPage;
+      this.$refs.searchForm.resetFields()
+      this.page = defaultFirstPage
 
       // 重置
       if (this.saveQuery) {
-        const newUrl = queryUtil.clear(location.href);
-        history.replaceState(history.state, "", newUrl);
+        const newUrl = queryUtil.clear(location.href)
+        history.replaceState(history.state, '', newUrl)
       }
 
       /**
        * 按下重置按钮后触发
        */
-      this.$emit("reset");
+      this.$emit('reset')
 
-      this.$emit("update:customQuery", JSON.parse(this.initExtraQuery));
-      this.$emit("update:extraQuery", JSON.parse(this.initExtraQuery));
+      this.$emit('update:customQuery', JSON.parse(this.initExtraQuery))
+      this.$emit('update:extraQuery', JSON.parse(this.initExtraQuery))
 
       this.$nextTick(() => {
-        this.getList();
-      });
+        this.getList()
+      })
     },
     handleSizeChange(val) {
-      if (this.size === val) return;
+      if (this.size === val) return
 
-      this.page = defaultFirstPage;
-      this.size = val;
-      this.getList();
+      this.page = defaultFirstPage
+      this.size = val
+      this.getList()
     },
     handleCurrentChange(val) {
-      if (this.page === val) return;
+      if (this.page === val) return
 
-      this.page = val;
-      this.getList();
+      this.page = val
+      this.getList()
     },
     /**
      * 切换某一行的选中状态，如果使用了第二个参数，则是设置这一行选中与否
@@ -1078,7 +1127,7 @@ export default {
      * @param {boolean} isSelected - 是否被勾选
      */
     toggleRowSelection(row, isSelected) {
-      return this.selectStrategy.toggleRowSelection(row, isSelected);
+      return this.selectStrategy.toggleRowSelection(row, isSelected)
     },
     /**
      * 清空多选项
@@ -1086,48 +1135,47 @@ export default {
      * @public
      */
     clearSelection() {
-      return this.selectStrategy.clearSelection();
+      return this.selectStrategy.clearSelection()
     },
     // 弹窗相关
     // 除非树形结构在操作列点击新增, 否则 row 是 MouseEvent
     onDefaultNew(row) {
-      this.row = row;
-      this.$refs.dialog.show(dialogModes.new);
+      this.row = row
+      this.$refs.dialog.show(dialogModes.new)
     },
     onDefaultView(row) {
-      this.row = row;
-      this.$refs.dialog.show(dialogModes.view, row);
+      this.row = row
+      this.$refs.dialog.show(dialogModes.view, row)
     },
     onDefaultEdit(row) {
-      this.row = row;
-      this.$refs.dialog.show(dialogModes.edit, row);
+      this.row = row
+      this.$refs.dialog.show(dialogModes.edit, row)
     },
     async onConfirm(isNew, formValue, done) {
       const data = {
         ...formValue,
         ...this._extraBody
-      };
-      this.form.map(item => {
-        data[item.id] = data[item.id] || "";
-      });
+      }
+
       if (this.isTree) {
         data[this.treeParentKey] = isNew
           ? this.row[this.treeParentValue]
-          : this.row[this.treeParentKey];
+          : this.row[this.treeParentKey]
       }
+
       try {
-        await this.beforeConfirm(data, isNew);
+        await this.beforeConfirm(data, isNew)
         if (isNew) {
-          await this.onNew(data, this.row);
+          await this.onNew(data, this.row)
         } else {
-          await this.onEdit(data, this.row);
+          await this.onEdit(data, this.row)
         }
-        this.getList();
-        this.onSuccess(isNew ? "new" : "edit", data);
-        done();
+        this.getList()
+        this.onSuccess(isNew ? 'new' : 'edit', data)
+        done()
       } catch (e) {
         // 出错则不关闭dialog
-        done(false);
+        done(false)
       }
     },
     /**
@@ -1140,31 +1188,31 @@ export default {
      * @param {object|object[]} - 要删除的数据对象或数组
      */
     onDefaultDelete(data) {
-      this.$confirm(this.deleteMessage(data), "提示", {
-        type: "warning",
-        confirmButtonClass: "el-button--danger",
+      return this.$confirm(this.deleteMessage(data), '提示', {
+        type: 'warning',
+        confirmButtonClass: 'el-button--danger',
         beforeClose: async (action, instance, done) => {
-          if (action !== "confirm") return done();
+          if (action !== 'confirm') return done()
 
-          instance.confirmButtonLoading = true;
+          instance.confirmButtonLoading = true
 
           try {
-            await this.onDelete(data);
-            done();
-            this.onSuccess("delete", data);
+            await this.onDelete(data)
+            done()
+            this.onSuccess('delete', data)
 
-            this.correctPage();
-            this.getList();
+            this.correctPage()
+            this.getList()
           } catch (error) {
-            console.warn(error.message);
-            throw error;
+            console.warn(error.message)
+            throw error
           } finally {
-            instance.confirmButtonLoading = false;
+            instance.confirmButtonLoading = false
           }
         }
       }).catch(() => {
         /*取消*/
-      });
+      })
     },
 
     /**
@@ -1172,42 +1220,42 @@ export default {
      * @public
      */
     correctPage() {
-      let deleteCount = 1;
+      let deleteCount = 1
       if (this.hasSelect) {
-        deleteCount = this.selected.length;
-        this.clearSelection();
+        deleteCount = this.selected.length
+        this.clearSelection()
       }
-      const remain = this.data.length - deleteCount;
-      const lastPage = Math.ceil(this.total / this.size);
+      const remain = this.data.length - deleteCount
+      const lastPage = Math.ceil(this.total / this.size)
       if (
         remain === 0 &&
         this.page === lastPage &&
         this.page > defaultFirstPage
       )
-        this.page--;
+        this.page--
     },
 
     // 树形table相关
     // https://github.com/PanJiaChen/vue-element-admin/tree/master/src/components/TreeTable
     tree2Array(data, expandAll, parent = null, level = null) {
-      let tmp = [];
+      let tmp = []
       data.forEach(record => {
         if (record._expanded === undefined) {
-          this.$set(record, "_expanded", expandAll);
+          this.$set(record, '_expanded', expandAll)
         }
-        let _level = 0;
+        let _level = 0
         if (level !== undefined && level !== null) {
-          _level = level + 1;
+          _level = level + 1
         }
-        this.$set(record, "_level", _level);
+        this.$set(record, '_level', _level)
         // 如果有父元素
         if (parent) {
-          Object.defineProperty(record, "parent", {
+          Object.defineProperty(record, 'parent', {
             value: parent,
             enumerable: false
-          });
+          })
         }
-        tmp.push(record);
+        tmp.push(record)
 
         if (record[this.treeChildKey] && record[this.treeChildKey].length > 0) {
           const children = this.tree2Array(
@@ -1215,29 +1263,36 @@ export default {
             expandAll,
             record,
             _level
-          );
-          tmp = tmp.concat(children);
+          )
+          tmp = tmp.concat(children)
         }
-      });
-      return tmp;
+      })
+      return tmp
     },
-    showRow({ row }) {
-      const show = !row.parent || (row.parent._expanded && row.parent._show);
-      row._show = show;
-      return show ? "row-show" : "row-hide";
+    rowClassName(...args) {
+      let rcn =
+        this.tableAttrs.rowClassName || this.tableAttrs['row-class-name'] || ''
+      if (typeof rcn === 'function') rcn = rcn(...args)
+      if (this.isTree) rcn += ' ' + this.showRow(...args)
+      return rcn
+    },
+    showRow({row}) {
+      const show = !row.parent || (row.parent._expanded && row.parent._show)
+      row._show = show
+      return show ? 'row-show' : 'row-hide'
     },
     // 切换下级是否展开
     toggleExpanded(trIndex) {
-      const record = this.data[trIndex];
-      record._expanded = !record._expanded;
+      const record = this.data[trIndex]
+      record._expanded = !record._expanded
     },
     // 图标显示
     iconShow(index, record) {
       //      return index ===0 && record.children && record.children.length > 0;
-      return record[this.treeChildKey] && record[this.treeChildKey].length > 0;
+      return record[this.treeChildKey] && record[this.treeChildKey].length > 0
     }
   }
-};
+}
 </script>
 <style lang="less">
 .el-data-table {
@@ -1255,7 +1310,7 @@ export default {
     height: 14px;
 
     &::before {
-      content: "";
+      content: '';
     }
   }
 

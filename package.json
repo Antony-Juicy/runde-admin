@@ -25,6 +25,7 @@
     "lodash": "^4.17.15",
     "lodash.isempty": "^4.4.0",
     "lodash.values": "^4.3.0",
+    "md5": "^2.3.0",
     "md5-js": "^0.0.3",
     "normalize.css": "7.0.0",
     "nprogress": "0.2.0",

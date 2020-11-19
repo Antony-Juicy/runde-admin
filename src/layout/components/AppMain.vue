@@ -37,7 +37,7 @@ export default {
   box-sizing: border-box;
 }
 .fixed-header + .app-main {
-  padding-top: 50px;
+  padding-top: 90px;
 }
 .app-title {
   padding: 20px 0;

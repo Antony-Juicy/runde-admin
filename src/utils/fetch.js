@@ -3,10 +3,14 @@ import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 import { showLoading, hideLoading } from './loading'
+import apiConfig from "@/fetch/api.js"
 import qs from 'qs'
 import md5 from 'md5';
 // create an axios instance
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;';
+const appId = 'cc83f3dd7c45afce86f802903ad715b8';
+const appKey = '328adda459d6d4d4bf9a94eae2ebf307';
+
 
 // axios.defaults.withCredentials = true
 const service = axios.create({
@@ -25,12 +29,15 @@ const getParam = () => {
 // request interceptor
 service.interceptors.request.use(
   config => {
-    showLoading()
     // 请求头携带token
     // if (store.getters.token) {
     //   config.headers['rundejy_token'] = getToken() // 让每个请求携带token--['X-Token']为自定义key 请根据实际情况自行修改
     // }
     if (config.data && config.data.append) {
+      // const timestamp = Date.now();
+      // const sign = md5(`appId=${appId}&appKey=${appKey}&timestamp=${params.timestamp}`).toString().toLocaleUpperCase();
+      // config.data.append('timestamp', timestamp)
+      // config.data.append('sign', sign)
       config.data.append('token', getToken())
       let _param = getParam()
       for (const i in _param) {
@@ -42,11 +49,6 @@ service.interceptors.request.use(
         token: getToken(),
         ...getParam()
       })
-      // config.data = {
-      //   ...config.data,
-      //   token: getToken(),
-      //   ...getParam()
-      // };
     }
 
     // config.cookies = {
@@ -74,7 +76,6 @@ service.interceptors.request.use(
 // response interceptor
 service.interceptors.response.use(
   response => {
-    hideLoading()
     const res = response.data
     // if the custom code is not 1, it is judged as an error.
     if (res.code !== 1) {
@@ -152,23 +153,40 @@ const $fetch = async (apiName, params, config) => {
     });
   }
 
-  if (!params) {
-    params = {};
-  }
-  for (let key in params) {
-    params[key] = encodeURIComponent(params[key])
-  }
-  params.timestamp = Date.now();
-  params.sign = md5(`appId=${CONFIG.appId}&appKey=${CONFIG.appKey}&timestamp=${params.timestamp}`).toString().toLocaleUpperCase();
-  // post请求 往url追加参数
-  if (!bodyParams && method == 'post') {
-    if (params) {
-      newConfig.url = appendUrlParams(newConfig.url, params)
-
+  if (params) {
+    newConfig.url = newConfig.url.replace(/\{([\d\w_]+)\}/g, (word, $1) => {
+      let res = params[$1] || "";
+      delete params[$1]; // 将param在url中的参数删除，剩余的放进request body
+      return res;
+    });
+    if (
+      ["get", "delete", undefined].indexOf(apiConfig[apiName].method) > -1 ||
+      apiConfig[apiName].formData
+    ) {
+      newConfig.params = params;
+    } else {
+      newConfig.data = params;
+    }
+  } else if (config && Object.keys(config).length > 0) {
+    for (let [key] of Object.entries(config)) {
+      newConfig[key] = Object.assign(config[key], newConfig[key]);
     }
   }
+
+  // 往post请求的url上追加参数
+  if (newConfig.queryKeys) {
+    const urlParams = {};
+    newConfig.queryKeys.forEach(i => {
+      if (newConfig.data[i]) {
+        urlParams[i] = newConfig.data[i];
+        delete newConfig.data[i];
+      }
+    });
+    newConfig.url = appendUrlParams(newConfig.url, urlParams);
+  }
+
   
   return service(newConfig);
 }
 
-export default service
+export default $fetch

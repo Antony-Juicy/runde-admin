@@ -16,11 +16,11 @@
             <el-radio v-model="row.hided" label="YES">是</el-radio>
             <el-radio v-model="row.hided" label="NO">否</el-radio>
           </el-form-item>
-          <el-form-item :label="_config.version === 'yizhiquan' ? '是否重点推荐' : '是否顶部推荐'">
+          <el-form-item :label="'是否重点推荐'">
             <el-radio v-model="row.headRecommend" label="YES">是</el-radio>
             <el-radio v-model="row.headRecommend" label="NO">否</el-radio>
           </el-form-item>
-          <el-form-item :label="_config.version === 'yizhiquan' ? '是否热门推荐': '是否资讯推荐'">
+          <el-form-item :label="'是否重点推荐'">
             <el-radio v-model="row.recommend" label="YES">是</el-radio>
             <el-radio v-model="row.recommend" label="NO">否</el-radio>
           </el-form-item>

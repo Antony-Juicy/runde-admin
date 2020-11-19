@@ -2,7 +2,12 @@
   <div class="navbar">
     <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
-    <breadcrumb class="breadcrumb-container" />
+    <el-tabs v-model="activeName" @tab-click="handleClick">
+      <el-tab-pane label="用户管理" name="first">用户管理</el-tab-pane>
+      <el-tab-pane label="配置管理" name="second">配置管理</el-tab-pane>
+      <el-tab-pane label="角色管理" name="third">角色管理</el-tab-pane>
+      <el-tab-pane label="定时任务补偿" name="fourth">定时任务补偿</el-tab-pane>
+    </el-tabs>
 
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
@@ -43,6 +48,14 @@ export default {
       'name'
     ])
   },
+  data(){
+    return {
+      navList: [
+        
+      ],
+      activeName: 'second'
+    }
+  },
   methods: {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
@@ -54,7 +67,10 @@ export default {
         type: "success"
       });
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
-    }
+    },
+    handleClick(tab, event) {
+        console.log(tab, event);
+      }
   }
 }
 </script>
@@ -74,7 +90,8 @@ export default {
     cursor: pointer;
     transition: background .3s;
     -webkit-tap-highlight-color:transparent;
-
+        position: relative;
+    z-index: 999;
     &:hover {
       background: rgba(0, 0, 0, .025)
     }
@@ -133,6 +150,25 @@ export default {
           font-size: 12px;
         }
       }
+    }
+  }
+
+  /deep/ {
+    .el-tabs__item {
+      height: 50px;
+      line-height: 50px;
+    }
+
+    .el-tabs__nav-wrap::after {
+      display: none;
+    }
+
+    .el-tabs__nav-wrap  {
+      margin-left: 30px;
+    }
+
+    .el-tabs--top {
+      float: left;
     }
   }
 }

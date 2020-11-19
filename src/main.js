@@ -6,6 +6,9 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 
 import ElDataTable from '@/components/ElDataTable' // ElDataTable
+import ElTestTable from '@/components/ElTestTable' // ElDataTable
+import RdTable from '@/components/RdTable' // ElDataTable
+import RdDialog from '@/components/RdDialog' // ElDataTable
 import ElFormRenderer from '@femessage/el-form-renderer' // render El Form
 import Album from '@/components/Album/index.vue'
 import VCharts from 'v-charts'
@@ -16,9 +19,11 @@ import App from './App'
 import store from './store'
 import router from './router'
 
+import Fetch from '@/utils/fetch'
+import '@/utils/preventReClick'
+
 import '@/icons' // icon
 import '@/permission' // 路由守卫
-const iceConfig = require('./config/config.js')
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
@@ -39,19 +44,14 @@ Vue.use(VCharts)
 // use ElDataTable
 Vue.component('el-form-renderer', ElFormRenderer)
 Vue.component('el-data-table', ElDataTable)
+Vue.component('rd-table', RdTable)
+Vue.component('rd-dialog', RdDialog)
 Vue.component('el-album', Album)
+Vue.component('el-test-table',ElTestTable)
 
 Vue.config.productionTip = false
 
-Vue.mixin({
-	computed: {
-		_config() {
-			return iceConfig;
-		}
-	}
-});
-
-
+Vue.prototype.$fetch = Fetch
 new Vue({
   el: '#app',
   router,
