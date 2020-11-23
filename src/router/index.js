@@ -34,19 +34,6 @@ export const constantRoutes = [
       component: () => import('@/views/dashboard/index'),
       meta: { title: '欢迎页', icon: 'dashboard' }
     }]
-  },
-  {
-    path: '/it',
-    component: Layout,
-    redirect: '/it',
-    
-    children: [{
-      path: '/it',
-      name: '/it',
-      component: () => import('@/views/it/index'),
-      meta: { title: 'it中心', icon: 'dashboard' }
-    }],
-    hidden: true
   }
 ]
 
@@ -94,9 +81,33 @@ export let asyncRoutes1 = [
         {
           path: 'banner-management',
           name: 'banner-management',
-          component: () => import('@/views/website-config/classify-management'),
+          component: () => import('@/views/website-config/banner-management'),
           meta: { title: '分类管理', subtitle: '', icon: 'example' }
         },
+      ]
+    },
+    { path: '*', redirect: '/404', hidden: true }
+  ];
+
+  export let asyncRoutes2 = [
+    {
+      path: '/bussines-config',
+      component: Layout,
+      redirect: '/bussines-config/activity-management',
+      meta: { title: '网站配置', icon: 'example' },
+      children: [
+        {
+          path: 'activity-management',
+          name: 'activity-management',
+          component: () => import('@/views/bussines-config/activity-management'),
+          meta: { title: '页面管理', subtitle: '', icon: 'example' }
+        },
+        {
+          path: 'banner-management',
+          name: 'banner-management',
+          component: () => import('@/views/bussines-config/banner-management'),
+          meta: { title: '海报管理', subtitle: '', icon: 'example' }
+        }
       ]
     },
     { path: '*', redirect: '/404', hidden: true }

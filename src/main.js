@@ -5,8 +5,6 @@ import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 
-import ElDataTable from '@/components/ElDataTable' // ElDataTable
-import ElTestTable from '@/components/ElTestTable' // ElDataTable
 import RdTable from '@/components/RdTable' // ElDataTable
 import RdDialog from '@/components/RdDialog' // ElDataTable
 import ElFormRenderer from '@femessage/el-form-renderer' // render El Form
@@ -43,11 +41,9 @@ Vue.use(VCharts)
 
 // use ElDataTable
 Vue.component('el-form-renderer', ElFormRenderer)
-Vue.component('el-data-table', ElDataTable)
 Vue.component('rd-table', RdTable)
 Vue.component('rd-dialog', RdDialog)
 Vue.component('el-album', Album)
-Vue.component('el-test-table',ElTestTable)
 
 Vue.config.productionTip = false
 

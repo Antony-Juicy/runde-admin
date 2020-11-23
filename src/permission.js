@@ -37,16 +37,18 @@ router.beforeEach(async(to, from, next) => {
           // get user info
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
           let { routes } = await store.dispatch('user/getInfo')
-          let type = localStorage.getItem(hasToken) || 0;
-          // generate accessible routes map based on roles
-          const accessRoutes = await store.dispatch('permission/generateRoutes',{type})
-          
-          // dynamically add accessible routes
-          router.addRoutes(accessRoutes)
-          // addRoutesData = accessRoutes
-          // hack method to ensure that addRoutes is complete
-          // set the replace: true, so the navigation will not leave a history record
-          next({ ...to, replace: true })
+
+          if(localStorage.getItem('clickMenu')) {
+            let type = localStorage.getItem(hasToken) || 0;
+            const accessRoutes = await store.dispatch('permission/generateRoutes',{type})
+            router.addRoutes(accessRoutes)
+            next({ ...to, replace: true })
+          }else {
+            const accessRoutes = await store.dispatch('permission/generateRoutes',{type : 0})
+            router.addRoutes(accessRoutes)
+            next({ path: '/' })
+          }
+          // next({ ...to, replace: true })
           NProgress.done()
         } catch (error) {
           // remove token and go to login page to re-login

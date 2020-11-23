@@ -60,7 +60,10 @@ export default {
   mounted(){
     // console.log(this.$store.state.permission,'state--')
     // this.navList = this.$store.state.permission.moduleRoutes;
-    this.activeName = localStorage.getItem(getToken()) || 0;
+    if(localStorage.getItem('clickMenu')){
+      this.activeName = localStorage.getItem(getToken()) || 0;
+    }
+    
   },
   methods: {
     toggleSideBar() {
@@ -81,7 +84,7 @@ export default {
           // dynamically add accessible routes
         router.addRoutes(accessRoutes)
         localStorage.setItem(getToken(),tab.index)
-        
+        localStorage.removeItem('clickMenu')
     }
   }
 }
