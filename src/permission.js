@@ -5,7 +5,7 @@ import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
-
+import axios from 'axios'
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 const whiteList = ['/login'] // no redirect whitelist
@@ -36,12 +36,11 @@ router.beforeEach(async(to, from, next) => {
         try {
           // get user info
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
-          const { roles, routes } = await store.dispatch('user/getInfo')
+          let { routes } = await store.dispatch('user/getInfo')
+          let type = localStorage.getItem(hasToken) || 0;
           // generate accessible routes map based on roles
-          const accessRoutes = await store.dispatch('permission/generateRoutes', {
-            roles,
-            routes
-          })
+          const accessRoutes = await store.dispatch('permission/generateRoutes',{type})
+          
           // dynamically add accessible routes
           router.addRoutes(accessRoutes)
           // addRoutesData = accessRoutes

@@ -3,10 +3,10 @@
     <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
     <el-tabs v-model="activeName" @tab-click="handleClick">
-      <el-tab-pane label="用户管理" name="first">用户管理</el-tab-pane>
-      <el-tab-pane label="配置管理" name="second">配置管理</el-tab-pane>
+      <el-tab-pane :label="item.title" :name="item.index" v-for="(item,index) in navList" :key="index">{{item.fullPath}}</el-tab-pane>
+      <!-- <el-tab-pane label="配置管理" name="second">配置管理</el-tab-pane>
       <el-tab-pane label="角色管理" name="third">角色管理</el-tab-pane>
-      <el-tab-pane label="定时任务补偿" name="fourth">定时任务补偿</el-tab-pane>
+      <el-tab-pane label="定时任务补偿" name="fourth">定时任务补偿</el-tab-pane> -->
     </el-tabs>
 
     <div class="right-menu">
@@ -32,10 +32,11 @@
 </template>
 
 <script>
+import router from '@/router'
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
-
+import { getToken } from '@/utils/auth'
 export default {
   components: {
     Breadcrumb,
@@ -46,15 +47,20 @@ export default {
       'sidebar',
       'avatar',
       'name'
-    ])
+    ]),
+    navList(){
+      return this.$store.state.permission.moduleRoutes
+    }
   },
   data(){
     return {
-      navList: [
-        
-      ],
-      activeName: 'second'
+      activeName: 0
     }
+  },
+  mounted(){
+    // console.log(this.$store.state.permission,'state--')
+    // this.navList = this.$store.state.permission.moduleRoutes;
+    this.activeName = localStorage.getItem(getToken()) || 0;
   },
   methods: {
     toggleSideBar() {
@@ -68,9 +74,15 @@ export default {
       });
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     },
-    handleClick(tab, event) {
-        console.log(tab, event);
-      }
+    async handleClick(tab, event) {
+        console.log(tab,getToken());
+        const accessRoutes = await this.$store.dispatch('permission/generateRoutes',{type: tab.index})
+          
+          // dynamically add accessible routes
+        router.addRoutes(accessRoutes)
+        localStorage.setItem(getToken(),tab.index)
+        
+    }
   }
 }
 </script>

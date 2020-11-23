@@ -1,5 +1,6 @@
-import { asyncRoutes, constantRoutes } from '@/router'
-
+import { asyncRoutes0, asyncRoutes1, constantRoutes } from '@/router'
+import Fetch from '@/utils/fetch'
+import axios from 'axios'
 /**
  * Use meta.role to determine if the current user has permission
  * @param roles
@@ -43,21 +44,60 @@ export function filterAsyncRoutes(routes, checkRoutes) {
 
 const state = {
   routes: [],
-  addRoutes: []
+  addRoutes: [],
+  moduleRoutes:[]
 }
 
 const mutations = {
   SET_ROUTES: (state, routes) => {
     state.addRoutes = routes      //动态的路由
     state.routes = constantRoutes.concat(routes)   //所有的路由
+  },
+  SET_MODULES: (state, routes) => {
+    state.moduleRoutes = routes;
+  }
+}
+
+function transRouter(type){
+  switch(type){
+    case 0:
+      return asyncRoutes0;
+    case 1:
+      return asyncRoutes1;
+    default:
+      return asyncRoutes0;
   }
 }
 
 const actions = {
-  async generateRoutes({ commit }, { routes }) {
-    return new Promise(resolve => {
+  async generateRoutes({ commit },{type}) {
+    return new Promise(async (resolve) => {
+      const {data} = await axios.get('/json/menu.json')
+      let menuList = data.data.menuList;
+      let routes = JSON.stringify(menuList.map(item => item.path))
+      let menuRouters = [] 
+      /*先取出模块，没有父id的就是模块菜单*/
+      menuList.forEach((m,i)=>{
+        //console.log(i)
+        if(m.parent_id=="0"){
+          m.fullPath = '/'+m.path
+          let module = {
+            path: '/' + m.path,
+            id:m.id, title:m.title, fullPath:'/'+m.path
+          }
+          menuRouters.push(module)
+        }
+      })
+      menuRouters.unshift({
+        path:'/dashboard',
+        title:'首页', 
+        fullPath:'/dashboard'
+      })
+      console.log(menuRouters,'menuRouters---')
+      commit('SET_MODULES',menuRouters)
       // 定义的路由信息： asyncRoutes    后台返回的路由信息：routes
-      const accessedRoutes = filterAsyncRoutes(asyncRoutes, routes)
+      const accessedRoutes = filterAsyncRoutes(transRouter(Number(type)), routes)
+      console.log(routes,'routes---')
       commit('SET_ROUTES', accessedRoutes)
       resolve(accessedRoutes)
     })
