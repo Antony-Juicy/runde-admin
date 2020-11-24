@@ -1,5 +1,5 @@
 <template>
-  <div>图书电商管理111</div>
+  <div>店铺管理页面</div>
 </template>
 
 <script>

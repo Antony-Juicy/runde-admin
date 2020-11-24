@@ -60,21 +60,39 @@
           },
         {
           "id": "156",
-          "title": "电商",
+          "title": "电商管理",
           "path": "/ecommerce-config",
           "parent_id": "41"
         },
         {
           "id": "157",
-          "title": "电商管理",
-          "path": "ecommerce-management",
-          "parent_id": "156"
+          "title": "图书电商管理",
+          "path": "/booksEcommerce-config",
+          "parent_id": "41"
         },
         {
           "id": "158",
-          "title": "图书馆电商管理",
-          "path": "libraryecommerce-management",
+          "title": "合作方管理",
+          "path": "partner-management",
           "parent_id": "156"
+        },
+        {
+          "id": "159",
+          "title": "店铺管理",
+          "path": "shop-management",
+          "parent_id": "156"
+        },
+        {
+          "id": "160",
+          "title": "图书合作方管理",
+          "path": "bookspartner-management",
+          "parent_id": "157"
+        },
+        {
+          "id": "161",
+          "title": "图书店铺管理",
+          "path": "booksshop-management",
+          "parent_id": "157"
         }
       ]
     },

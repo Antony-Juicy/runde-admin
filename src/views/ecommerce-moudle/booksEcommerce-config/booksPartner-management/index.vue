@@ -1,10 +1,9 @@
 <template>
-  <div>电商管理111</div>
+  <div>图书合作方页面</div>
 </template>
 
 <script>
 export default {
-  inject: ['reload'],
   data () {
     return {
       

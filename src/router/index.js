@@ -116,19 +116,39 @@ export let asyncRoutes1 = [
       path: '/ecommerce-config',
       component: Layout,
       redirect: '/ecommerce-config/ecommerce-management',
-      meta: { title: '网站配置', icon: 'example' },
+      meta: { title: '电商管理', icon: 'example' },
       children: [
         {
-          path: 'ecommerce-management',
-          name: 'ecommerce-management',
-          component: () => import('@/views/ecommerce-config/ecommerce-management'),
-          meta: { title: '电商管理', subtitle: '', icon: 'example' }
+          path: 'partner-management',
+          name: 'partner-management',
+          component: () => import('@/views/ecommerce-moudle/ecommerce-config/partner-management'),
+          meta: { title: '合作方管理', subtitle: '', icon: 'example' }
         },
         {
-          path: 'libraryecommerce-management',
-          name: 'libraryecommerce-management',
-          component: () => import('@/views/ecommerce-config/libraryecommerce-management'),
-          meta: { title: '图书电商管理', subtitle: '', icon: 'example' }
+          path: 'shop-management',
+          name: 'shop-management',
+          component: () => import('@/views/ecommerce-moudle/ecommerce-config/shop-management'),
+          meta: { title: '店铺管理', subtitle: '', icon: 'example' }
+        }
+      ]
+    },
+    {
+      path: '/booksEcommerce-config',
+      component: Layout,
+      redirect: '/ecommerce-moudle/bookecommerce-config/booksPartner-management',
+      meta: { title: '图书电商管理', icon: 'example' },
+      children: [
+        {
+          path: 'bookspartner-management',
+          name: 'bookspartner-management',
+          component: () => import('@/views/ecommerce-moudle/booksEcommerce-config/booksPartner-management'),
+          meta: { title: '图书合作方管理', subtitle: '', icon: 'example' }
+        },
+        {
+          path: 'booksshop-management',
+          name: 'booksshop-management',
+          component: () => import('@/views/ecommerce-moudle/booksEcommerce-config/booksShop-management'),
+          meta: { title: '图书店铺管理', subtitle: '', icon: 'example' }
         }
       ]
     },
