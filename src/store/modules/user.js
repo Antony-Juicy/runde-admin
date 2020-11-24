@@ -63,27 +63,32 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      Fetch('user_getInfo',{
-        // token: getToken(),
-        token: 'rd_superadmin',
-        id: state.userId,
-        loginUserId: state.userId
-      }).then(response => {
-        console.log(response,'response')
-        const { data } = response
+      // Fetch('user_getInfo',{
+      //   // token: getToken(),
+      //   token: 'rd_superadmin',
+      //   id: state.userId,
+      //   loginUserId: state.userId
+      // }).then(response => {
+      //   console.log(response,'response')
+      //   const { data } = response
         
-        if (!data) {
-          reject('验证失败,请重新登录')
-        }
+      //   if (!data) {
+      //     reject('验证失败,请重新登录')
+      //   }
 
-        commit('SET_ROLES', ['admin'])
-        resolve({
-          roles: ['admin'],
-          routes: ''
-        })
-      }).catch(error => {
-        reject(error)
-      })
+      //   commit('SET_ROLES', ['admin'])
+      //   resolve({
+      //     roles: ['admin'],
+      //     routes: ''
+      //   })
+      // }).catch(error => {
+      //   reject(error)
+      // })
+      const data = {
+        roles: ['admin']
+      }
+      commit('SET_ROLES', data.roles)
+      resolve(data)
     })
   },
 
