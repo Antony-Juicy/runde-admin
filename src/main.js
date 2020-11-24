@@ -18,7 +18,8 @@ import store from './store'
 import router from './router'
 
 import Fetch from '@/utils/fetch'
-import '@/utils/preventReClick'
+import '@/utils/directives/preventReClick'
+import '@/utils/directives/btnPermission'
 
 import '@/icons' // icon
 import '@/permission' // 路由守卫

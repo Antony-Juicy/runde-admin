@@ -5,7 +5,7 @@ import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
-import axios from 'axios'
+
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 const whiteList = ['/login'] // no redirect whitelist
@@ -36,19 +36,22 @@ router.beforeEach(async(to, from, next) => {
         try {
           // get user info
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
-          let { routes } = await store.dispatch('user/getInfo')
-
+          // 获取用户信息 设置用户权限
+          await store.dispatch('user/getInfo')
+          // 获取路由信息
+          await store.dispatch('permission/getRoutesInfo')
+          let type, pathObj;
           if(localStorage.getItem('clickMenu')) {
-            let type = localStorage.getItem(hasToken) || 0;
-            const accessRoutes = await store.dispatch('permission/generateRoutes',{type})
-            router.addRoutes(accessRoutes)
-            next({ ...to, replace: true })
+            type = localStorage.getItem(hasToken) || 0;
+            pathObj = { ...to, replace: true }
           }else {
-            const accessRoutes = await store.dispatch('permission/generateRoutes',{type : 0})
-            router.addRoutes(accessRoutes)
-            next({ path: '/' })
+            type = 0;
+            pathObj = { path: '/' }
           }
-          // next({ ...to, replace: true })
+          const accessRoutes = await store.dispatch('permission/generateRoutes',{type})
+          router.addRoutes(accessRoutes)
+          next(pathObj)
+
           NProgress.done()
         } catch (error) {
           // remove token and go to login page to re-login

@@ -9,7 +9,9 @@ import axios from 'axios'
 function hasPermission(checkRoutes, route) {
   // return true;
   if (route.meta && route.path) {
-    return checkRoutes.includes(route.path)
+    console.log(checkRoutes.find(item => item.path == route.path),'checkRoutes--')
+    // return checkRoutes.includes(route.path)
+    return checkRoutes.find(item => item.path == route.path)
   } else {
     return true
   }
@@ -23,10 +25,14 @@ function hasPermission(checkRoutes, route) {
 export function filterAsyncRoutes(routes, checkRoutes) {
   const res = []
   routes.forEach(route => {
-    const tmp = { ...route }
-    if (hasPermission(checkRoutes, tmp)) {
+    const tmp = { ...route }  //前端配置的路由
+    const per = hasPermission(checkRoutes, tmp) //后台匹配到的路由
+    if (per) {
       if (tmp.children) {
         tmp.children = filterAsyncRoutes(tmp.children, checkRoutes)
+      }
+      if(tmp.meta) {
+        tmp.meta.title = per.title;
       }
       res.push(tmp)
     } else {
@@ -35,6 +41,7 @@ export function filterAsyncRoutes(routes, checkRoutes) {
       if (tmp.children) {
         tmp.children = filterAsyncRoutes(tmp.children, checkRoutes)
       }
+      console.log(tmp,444)
       res.push(tmp)
     }
   })
@@ -45,7 +52,9 @@ export function filterAsyncRoutes(routes, checkRoutes) {
 const state = {
   routes: [],
   addRoutes: [],
-  moduleRoutes:[]
+  moduleRoutes:[],  //顶级模块导航
+  btnRoutes:[],  // 按钮
+  processedRoutes:[] //拿去过滤匹配的路由
 }
 
 const mutations = {
@@ -55,6 +64,12 @@ const mutations = {
   },
   SET_MODULES: (state, routes) => {
     state.moduleRoutes = routes;
+  },
+  SET_BTNROUTES: (state, routes) => {
+    state.btnRoutes = routes;
+  },
+  SET_PROCESSEDROUTES: (state, routes) => {
+    state.processedRoutes = routes;
   }
 }
 
@@ -74,9 +89,32 @@ function transRouter(type){
 const actions = {
   async generateRoutes({ commit },{type}) {
     return new Promise(async (resolve) => {
+      // 定义的路由信息： asyncRoutes    后台返回的路由信息：routes
+      const accessedRoutes = filterAsyncRoutes(transRouter(Number(type)), state.processedRoutes)
+      commit('SET_ROUTES', accessedRoutes)
+      resolve(accessedRoutes)
+    })
+  },
+  async getRoutesInfo({ commit }) {
+    return new Promise(async (resolve) => {
       const {data} = await axios.get('/json/menu.json')
       let menuList = data.data.records;
-      let routes = JSON.stringify(menuList.map(item => item.frontUrl))
+      let processedRoutes = []
+      let btnRoutes = []
+      menuList.forEach(item => {
+        // 是菜单 并且不是顶级导航栏
+        if(item.type == "0" && item.parentId != "0"){
+          processedRoutes.push({
+            path: item.frontUrl,
+            title: item.name
+          })
+        }else if(item.type == "1"){
+          // 按钮
+          btnRoutes.push(item.backUrl)
+        }
+      })
+      commit('SET_PROCESSEDROUTES',processedRoutes)
+      commit('SET_BTNROUTES',btnRoutes)
       let menuRouters = [] 
       /*先取出模块，没有父id的就是模块菜单*/
       menuList.forEach((m,i)=>{
@@ -100,9 +138,9 @@ const actions = {
       console.log(menuRouters,'menuRouters---')
       commit('SET_MODULES',menuRouters)
       // 定义的路由信息： asyncRoutes    后台返回的路由信息：routes
-      const accessedRoutes = filterAsyncRoutes(transRouter(Number(type)), routes)
-      commit('SET_ROUTES', accessedRoutes)
-      resolve(accessedRoutes)
+      // const accessedRoutes = filterAsyncRoutes(transRouter(Number(type)), routes)
+      // commit('SET_ROUTES', accessedRoutes)
+      resolve()
     })
   }
 }
