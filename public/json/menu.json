@@ -17,6 +17,12 @@
             "parent_id": "0"
           },
         {
+          "id": "41",
+          "title": "电商",
+          "path": "ecommerce",
+          "parent_id": "0"
+        },
+        {
           "id": "150",
           "title": "IT资产",
           "path": "/website-config",
@@ -51,7 +57,25 @@
             "title": "海报管理",
             "path": "banner-management",
             "parent_id": "153"
-          }
+          },
+        {
+          "id": "156",
+          "title": "电商",
+          "path": "/ecommerce-config",
+          "parent_id": "41"
+        },
+        {
+          "id": "157",
+          "title": "电商管理",
+          "path": "ecommerce-management",
+          "parent_id": "156"
+        },
+        {
+          "id": "158",
+          "title": "图书馆电商管理",
+          "path": "libraryecommerce-management",
+          "parent_id": "156"
+        }
       ]
     },
     "total": null,

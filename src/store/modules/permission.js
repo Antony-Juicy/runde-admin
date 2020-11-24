@@ -1,4 +1,4 @@
-import { asyncRoutes0, asyncRoutes1, asyncRoutes2,constantRoutes } from '@/router'
+import { asyncRoutes0, asyncRoutes1, asyncRoutes2,asyncRoutes3,constantRoutes } from '@/router'
 import Fetch from '@/utils/fetch'
 import axios from 'axios'
 /**
@@ -66,6 +66,8 @@ function transRouter(type){
       return asyncRoutes1;
     case 2:
         return asyncRoutes2;
+    case 3:
+      return asyncRoutes3;
     default:
       return asyncRoutes0;
   }

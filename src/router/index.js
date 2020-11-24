@@ -112,5 +112,28 @@ export let asyncRoutes1 = [
     },
     { path: '*', redirect: '/404', hidden: true }
   ];
+  export let asyncRoutes3 = [
+    {
+      path: '/ecommerce-config',
+      component: Layout,
+      redirect: '/ecommerce-config/ecommerce-management',
+      meta: { title: '网站配置', icon: 'example' },
+      children: [
+        {
+          path: 'ecommerce-management',
+          name: 'ecommerce-management',
+          component: () => import('@/views/ecommerce-config/ecommerce-management'),
+          meta: { title: '电商管理', subtitle: '', icon: 'example' }
+        },
+        {
+          path: 'libraryecommerce-management',
+          name: 'libraryecommerce-management',
+          component: () => import('@/views/ecommerce-config/libraryecommerce-management'),
+          meta: { title: '图书电商管理', subtitle: '', icon: 'example' }
+        }
+      ]
+    },
+    { path: '*', redirect: '/404', hidden: true }
+  ];
 
 export default router;
