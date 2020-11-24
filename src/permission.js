@@ -39,7 +39,7 @@ router.beforeEach(async(to, from, next) => {
           let { routes } = await store.dispatch('user/getInfo')
 
           if(localStorage.getItem('clickMenu')) {
-            let type = localStorage.getItem(hasToken) || 0;
+            let type = localStorage.getItem('tabIndex') || 0;
             const accessRoutes = await store.dispatch('permission/generateRoutes',{type})
             router.addRoutes(accessRoutes)
             next({ ...to, replace: true })

@@ -52,7 +52,7 @@ const actions = {
         setToken(data.token)   //把token存储在本地cookie之中
         commit('SET_NAME', data.username)  //用户名
         commit('SET_USERID', data.userId)  //密码
-
+        localStorage.setItem('userInfo',JSON.stringify(data));
         resolve()
       }).catch(error => {
         reject(error)

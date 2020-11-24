@@ -45,8 +45,7 @@ export default {
   computed: {
     ...mapGetters([
       'sidebar',
-      'avatar',
-      'name'
+      'avatar'
     ]),
     navList(){
       return this.$store.state.permission.moduleRoutes
@@ -54,7 +53,8 @@ export default {
   },
   data(){
     return {
-      activeName: 0
+      activeName: 0,
+      name: ''
     }
   },
   mounted(){
@@ -63,7 +63,9 @@ export default {
     if(localStorage.getItem('clickMenu')){
       this.activeName = localStorage.getItem(getToken()) || 0;
     }
-    
+    if(localStorage.getItem('userInfo')) {
+      this.name = JSON.parse(localStorage.getItem('userInfo')).username;
+    }
   },
   methods: {
     toggleSideBar() {
@@ -83,7 +85,7 @@ export default {
           
           // dynamically add accessible routes
         router.addRoutes(accessRoutes)
-        localStorage.setItem(getToken(),tab.index)
+        localStorage.setItem('tabIndex',tab.index)
         localStorage.removeItem('clickMenu')
     }
   }

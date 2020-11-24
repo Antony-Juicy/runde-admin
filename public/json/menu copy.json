@@ -1,0 +1,62 @@
+{
+    "success": true,
+    "data": {
+      "userid": "-1",
+      "username": "超级用户",
+      "menuList": [
+        {
+          "id": "39",
+          "title": "IT中心",
+          "path": "it",
+          "parent_id": "0"
+        },
+        {
+            "id": "40",
+            "title": "CMS",
+            "path": "cms",
+            "parent_id": "0"
+          },
+        {
+          "id": "150",
+          "title": "IT资产",
+          "path": "/website-config",
+          "parent_id": "39"
+        },
+        {
+          "id": "151",
+          "title": "资产管理",
+          "path": "page-management",
+          "parent_id": "150"
+        },
+        {
+            "id": "152",
+            "title": "部门管理",
+            "path": "banner-management",
+            "parent_id": "150"
+          },
+          {
+            "id": "153",
+            "title": "营销管理",
+            "path": "/bussines-config",
+            "parent_id": "40"
+          },
+          {
+            "id": "154",
+            "title": "活动管理",
+            "path": "activity-management",
+            "parent_id": "153"
+          },
+          {
+            "id": "155",
+            "title": "海报管理",
+            "path": "banner-management",
+            "parent_id": "153"
+          }
+      ]
+    },
+    "total": null,
+    "message": "",
+    "msg": null,
+    "custom": null,
+    "code": 0
+  }

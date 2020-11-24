@@ -74,17 +74,19 @@ const actions = {
   async generateRoutes({ commit },{type}) {
     return new Promise(async (resolve) => {
       const {data} = await axios.get('/json/menu.json')
-      let menuList = data.data.menuList;
-      let routes = JSON.stringify(menuList.map(item => item.path))
+      let menuList = data.data.records;
+      let routes = JSON.stringify(menuList.map(item => item.frontUrl))
       let menuRouters = [] 
       /*先取出模块，没有父id的就是模块菜单*/
       menuList.forEach((m,i)=>{
         //console.log(i)
-        if(m.parent_id=="0"){
-          m.fullPath = '/'+m.path
+        if(m.parentId=="0"){
+          m.fullPath = '/'+m.frontUrl
           let module = {
-            path: '/' + m.path,
-            id:m.id, title:m.title, fullPath:'/'+m.path
+            path: '/' + m.frontUrl,
+            id:m.id, 
+            title:m.name, 
+            fullPath:'/'+m.frontUrl
           }
           menuRouters.push(module)
         }
@@ -98,7 +100,6 @@ const actions = {
       commit('SET_MODULES',menuRouters)
       // 定义的路由信息： asyncRoutes    后台返回的路由信息：routes
       const accessedRoutes = filterAsyncRoutes(transRouter(Number(type)), routes)
-      console.log(routes,'routes---')
       commit('SET_ROUTES', accessedRoutes)
       resolve(accessedRoutes)
     })
