@@ -67,22 +67,22 @@ export let asyncRoutes0 = [
 
 export let asyncRoutes1 = [
     {
-      path: '/website-config',
+      path: '/system-config',
       component: Layout,
-      redirect: '/website-config/page-management',
-      meta: { title: '网站配置', icon: 'example' },
+      redirect: '/system-config/menu-management',
+      meta: { title: '系统管理', icon: 'example' },
       children: [
         {
-          path: 'page-management',
-          name: 'page-management',
+          path: 'menu-management',
+          name: 'menu-management',
           component: () => import('@/views/website-config/page-management'),
-          meta: { title: '页面管理', subtitle: '', icon: 'example' }
+          meta: { title: '菜单管理', subtitle: '', icon: 'example' }
         },
         {
-          path: 'banner-management',
-          name: 'banner-management',
+          path: 'authority-management',
+          name: 'authority-management',
           component: () => import('@/views/website-config/banner-management'),
-          meta: { title: '分类管理', subtitle: '', icon: 'example' }
+          meta: { title: '权限管理', subtitle: '', icon: 'example' }
         },
       ]
     },
