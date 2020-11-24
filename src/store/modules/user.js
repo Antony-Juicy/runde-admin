@@ -2,7 +2,7 @@ import api from '@/api'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 import md5 from 'md5-js';
-
+import Fetch from '@/utils/fetch'
 const { login, logout, getInfo, getUserInfo, setUserInfo, delUserInfo, explodeUserInfo } = api['user']
 
 const state = {
@@ -11,7 +11,8 @@ const state = {
   avatar: '',
   introduction: '',
   roles: [],
-  osscdn: ''
+  osscdn: '',
+  userId:''
 }
 
 const mutations = {
@@ -32,6 +33,9 @@ const mutations = {
   },
   SET_OSSCDN: (state, osscdn) => {
     state.osscdn = osscdn
+  },
+  SET_USERID: (state, userId) => {
+    state.userId = userId
   }
 }
 
@@ -40,18 +44,15 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      const appId = 'cc83f3dd7c45afce86f802903ad715b8';
-      const appKey = '328adda459d6d4d4bf9a94eae2ebf307';
-      const timestamp = parseInt(new Date().getTime() / 1000);
-      let sign = `userAccount=${username.trim()}password=${md5(password)}timestamp=${timestamp}appId=${appId}appKey=${appKey}`
-      sign = sign.toUpperCase()
-      // sign = md5(sign);
 
-      login({ userAccount: username.trim(), password: md5(password) }).then(response => {
+      Fetch('user_login',{ username: username.trim(), password: md5(password) }).then(response => {
         const { data } = response
         console.log(data)
         commit('SET_TOKEN', data.token) //在全局vuex中存入state
         setToken(data.token)   //把token存储在本地cookie之中
+        commit('SET_NAME', data.username)  //用户名
+        commit('SET_USERID', data.userId)  //密码
+
         resolve()
       }).catch(error => {
         reject(error)
@@ -62,25 +63,32 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfo(getToken()).then(response => {
-        commit('SET_OSSCDN', response.osscdn)
-        const { data } = response
+      // Fetch('user_getInfo',{
+      //   // token: getToken(),
+      //   token: 'rd_superadmin',
+      //   id: state.userId,
+      //   loginUserId: state.userId
+      // }).then(response => {
+      //   console.log(response,'response')
+      //   const { data } = response
+        
+      //   if (!data) {
+      //     reject('验证失败,请重新登录')
+      //   }
 
-        if (!data) {
-          reject('验证失败,请重新登录')
-        }
-
-        const { userName, avatar, vueRouter } = data
-        commit('SET_NAME', userName)
-        commit('SET_ROLES', ['admin'])
-        commit('SET_AVATAR', state.osscdn + avatar)
-        resolve({
-          roles: ['admin'],
-          routes: vueRouter
-        })
-      }).catch(error => {
-        reject(error)
-      })
+      //   commit('SET_ROLES', ['admin'])
+      //   resolve({
+      //     roles: ['admin'],
+      //     routes: ''
+      //   })
+      // }).catch(error => {
+      //   reject(error)
+      // })
+      const data = {
+        roles: ['admin']
+      }
+      commit('SET_ROLES', data.roles)
+      resolve(data)
     })
   },
 

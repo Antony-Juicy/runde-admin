@@ -1,11 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-const iceConfig = require('@/config/config.js')
 Vue.use(Router)
 
 import Layout from '@/layout'
-import { log } from 'handlebars';
 
 export const constantRoutes = [
   {
@@ -84,6 +82,7 @@ export let asyncRoutes1 = [
           component: () => import('@/views/website-config/banner-management'),
           meta: { title: '分类管理', subtitle: '', icon: 'example' }
         },
+        
       ]
     },
     { path: '*', redirect: '/404', hidden: true }
@@ -94,13 +93,13 @@ export let asyncRoutes1 = [
       path: '/bussines-config',
       component: Layout,
       redirect: '/bussines-config/activity-management',
-      meta: { title: '网站配置', icon: 'example' },
+      meta: { title: '营销管理', icon: 'example' },
       children: [
         {
           path: 'activity-management',
           name: 'activity-management',
           component: () => import('@/views/bussines-config/activity-management'),
-          meta: { title: '页面管理', subtitle: '', icon: 'example' }
+          meta: { title: '活动管理', subtitle: '', icon: 'example' }
         },
         {
           path: 'banner-management',

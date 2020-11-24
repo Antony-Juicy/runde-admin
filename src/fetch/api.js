@@ -1,3 +1,7 @@
+import information from './information';
+import user from './user';
+
 export default {
-    getInformationPage: {url: '/information/getInformationPage', method: 'post'}
+    ...information,
+    ...user
 }

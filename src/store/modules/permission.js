@@ -1,5 +1,4 @@
 import { asyncRoutes0, asyncRoutes1, asyncRoutes2,asyncRoutes3,constantRoutes } from '@/router'
-import Fetch from '@/utils/fetch'
 import axios from 'axios'
 /**
  * Use meta.role to determine if the current user has permission

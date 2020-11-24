@@ -7,7 +7,7 @@ import apiConfig from "@/fetch/api.js"
 import qs from 'qs'
 import md5 from 'md5';
 // create an axios instance
-// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;';
+// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
 const appId = 'cc83f3dd7c45afce86f802903ad715b8';
 const appKey = '328adda459d6d4d4bf9a94eae2ebf307';
 
@@ -29,41 +29,22 @@ const getParam = () => {
 // request interceptor
 service.interceptors.request.use(
   config => {
-    // 请求头携带token
-    // if (store.getters.token) {
-    //   config.headers['rundejy_token'] = getToken() // 让每个请求携带token--['X-Token']为自定义key 请根据实际情况自行修改
-    // }
     if (config.data && config.data.append) {
-      // const timestamp = Date.now();
-      // const sign = md5(`appId=${appId}&appKey=${appKey}&timestamp=${params.timestamp}`).toString().toLocaleUpperCase();
-      // config.data.append('timestamp', timestamp)
-      // config.data.append('sign', sign)
+      console.log(111111)
       config.data.append('token', getToken())
       let _param = getParam()
       for (const i in _param) {
         config.data.append(i, _param[i])
       }
     } else {
+      console.log(22222)
       config.data = qs.stringify({
         ...config.data,
-        token: getToken(),
+        // token: getToken(),
         ...getParam()
       })
     }
 
-    // config.cookies = {
-    //   token: getToken()
-    // }
-    // config.headers['x-auth-token'] = getToken()
-    // do something before request is sent
-    // if (store.getters.token) {
-    // let each request carry token
-    // ['X-Token'] is a custom headers key
-    // please modify it according to the actual situation
-    // config.headers['x-requested-with'] = getToken()
-    // config.headers.authorization = getToken()
-    // }
-    // config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
     return config
   },
   error => {
@@ -78,7 +59,7 @@ service.interceptors.response.use(
   response => {
     const res = response.data
     // if the custom code is not 1, it is judged as an error.
-    if (res.code !== 1) {
+    if (res.code !== 200) {
       Message({
         message: res.msg || 'Error',
         type: 'error',
@@ -86,7 +67,7 @@ service.interceptors.response.use(
       })
 
       // 4: Illegal token;
-      if (res.code === 4 || res.code === -37) {
+      if (res.code === 401 || res.code === 403) {
         let msg = '您已注销，可以取消以留在此页，或重新登录。'
         if (res.code === -37 && msg) {
           msg = res.msg
@@ -151,6 +132,11 @@ const $fetch = async (apiName, params, config) => {
     headers.forEach(({ key, value }) => {
       newConfig.headers[key] = value;
     });
+  }
+
+  if(getToken()){
+    // newConfig.headers["Authorization"] = getToken();
+    newConfig.headers["Authorization"] = 'rd_superadmin';
   }
 
   if (params) {

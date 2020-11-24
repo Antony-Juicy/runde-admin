@@ -57,26 +57,7 @@ router.beforeEach(async(to, from, next) => {
           next(`/login?redirect=${to.path}`)
           NProgress.done()
         }
-      // const hasGetUserInfo = store.getters.name
-      // const hasGetUserRole = store.getters.role
-      // if (hasGetUserInfo) {
-      //   if (to.meta.role && !to.meta.role.includes('admin')) {
-      //     next('/401')
-      //   }
-      //   // next({ ...to, replace: true })
-      //   next()
-      // } else {
-      //   try {
-      //     // get user info
-      //     await store.dispatch('user/getInfo')
-      //     next()
-      //   } catch (error) {
-      //     // remove token and go to login page to re-login
-      //     await store.dispatch('user/resetToken')
-      //     Message.error(error || 'Has Error')
-      //     next(`/login?redirect=${to.path}`)
-      //     NProgress.done()
-      //   }
+        
       }
     }
   } else {
@@ -86,6 +67,7 @@ router.beforeEach(async(to, from, next) => {
       // in the free login whitelist, go directly
       next()
     } else {
+      console.log(99999)
       // other pages that do not have permission to access are redirected to the login page.
       next(`/login?redirect=${to.path}`)
       NProgress.done()
