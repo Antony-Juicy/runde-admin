@@ -55,10 +55,10 @@ export default {
     }
   },
   mounted(){
-    // console.log(this.$store.state.permission,'state--')
-    // this.navList = this.$store.state.permission.moduleRoutes;
     if(localStorage.getItem('clickMenu')){
-      this.activeName = localStorage.getItem(getToken()) || 0;
+      let currentId = localStorage.getItem('tabIndex');
+      let currentIndex = this.navList&&this.navList.findIndex(item => item.id == currentId);
+      this.activeName = String(currentIndex) || 0;
     }
     if(localStorage.getItem('userInfo')) {
       this.name = JSON.parse(localStorage.getItem('userInfo')).username;

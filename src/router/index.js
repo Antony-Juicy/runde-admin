@@ -63,53 +63,5 @@ export let asyncRoutes0 = [
   }
 ];
 
-export let asyncRoutes1 = [
-    {
-      path: '/system-config',
-      component: Layout,
-      // redirect: '/system-config/menu-management',
-      meta: { title: '系统管理', icon: 'example' },
-      children: [
-        {
-          path: 'menu-management',
-          name: 'menu-management',
-          component: () => import('@/views/website-config/page-management'),
-          meta: { title: '菜单管理', subtitle: '', icon: 'example' }
-        },
-        {
-          path: 'authority-management',
-          name: 'authority-management',
-          component: () => import('@/views/website-config/banner-management'),
-          meta: { title: '权限管理11', subtitle: '', icon: 'example' }
-        },
-        
-      ]
-    },
-    { path: '*', redirect: '/404', hidden: true }
-  ];
-
-  export let asyncRoutes2 = [
-    {
-      path: '/bussines-config',
-      component: Layout,
-      redirect: '/bussines-config/activity-management',
-      meta: { title: '营销管理', icon: 'example' },
-      children: [
-        {
-          path: 'activity-management',
-          name: 'activity-management',
-          component: () => import('@/views/bussines-config/activity-management'),
-          meta: { title: '活动管理', subtitle: '', icon: 'example' }
-        },
-        {
-          path: 'banner-management',
-          name: 'banner-management',
-          component: () => import('@/views/bussines-config/banner-management'),
-          meta: { title: '海报管理', subtitle: '', icon: 'example' }
-        }
-      ]
-    },
-    { path: '*', redirect: '/404', hidden: true }
-  ];
 
 export default router;
