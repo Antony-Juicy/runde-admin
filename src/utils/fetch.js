@@ -30,17 +30,15 @@ const getParam = () => {
 service.interceptors.request.use(
   config => {
     if (config.data && config.data.append) {
-      console.log(111111)
       config.data.append('token', getToken())
       let _param = getParam()
       for (const i in _param) {
         config.data.append(i, _param[i])
       }
     } else {
-      console.log(22222)
       config.data = qs.stringify({
         ...config.data,
-        // token: getToken(),
+        token: getToken(),
         ...getParam()
       })
     }

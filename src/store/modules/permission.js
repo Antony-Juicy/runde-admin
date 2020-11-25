@@ -1,6 +1,7 @@
 import { asyncRoutes0,constantRoutes  } from '@/router'
-import axios from 'axios'
+import Fetch from '@/utils/fetch'
 import Layout from '@/layout'
+
 /**
  * Use meta.role to determine if the current user has permission
  * @param roles
@@ -140,8 +141,13 @@ const actions = {
   },
   async getRoutesInfo({ commit }) {
     return new Promise(async (resolve) => {
-      const {data} = await axios.get('/json/menu.json')
-      let menuList = data.data.records;
+      // const {data} = await axios.get('/json/menu.json')
+      const {data} = await Fetch('user_getMenuList',{
+        currentPage: 1,
+        pageSize: 999999,
+        loginUserId: JSON.parse(localStorage.getItem('userInfo')).userId
+      })
+      let menuList = data.records;
       let processedRoutes = []
       let btnRoutes = []
       menuList.forEach(item => {
