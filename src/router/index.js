@@ -69,7 +69,7 @@ export let asyncRoutes1 = [
     {
       path: '/system-config',
       component: Layout,
-      redirect: '/system-config/menu-management',
+      // redirect: '/system-config/menu-management',
       meta: { title: '系统管理', icon: 'example' },
       children: [
         {

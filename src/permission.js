@@ -1,4 +1,4 @@
-import router from './router'
+import router, { resetRouter } from '@/router'
 import store from './store'
 import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar
@@ -49,6 +49,7 @@ router.beforeEach(async(to, from, next) => {
             pathObj = { path: '/' }
           }
           const accessRoutes = await store.dispatch('permission/generateRoutes',{type})
+          resetRouter()
           router.addRoutes(accessRoutes)
           next(pathObj)
 
