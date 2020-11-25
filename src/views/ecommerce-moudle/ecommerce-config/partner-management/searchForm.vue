@@ -1,0 +1,219 @@
+/**
+ * 搜索栏公共组件
+ */
+<template>
+  <div class="search-form-box">
+    <div>
+      <el-form id="searchBox" :model="formData" ref="formRef" :inline="true">
+        <el-form-item
+          v-for="(item, index) in formOptions"
+          :key="newKeys[index]"
+          :prop="item.prop"
+          :label="item.label ? item.label + '：' : ''"
+          :rules="item.rules">
+          <formItem v-model="formData[item.prop]" :itemOptions="item" />
+        </el-form-item>
+      </el-form>
+
+      <!-- 提交按钮 -->
+      <div class="btn-box">
+        <el-button v-if="btnItems.includes('search')" size="mini" type="primary" class="btn-search" @click="onSearch">搜索</el-button>
+        <el-button v-if="btnItems.includes('export')" size="mini" type="primary" class="btn-export" @click="onExport">导出</el-button>
+        <el-button v-if="btnItems.includes('reset')" size="mini" type="default" class="btn-reset" @click="onReset">重置</el-button>
+      </div>
+    </div>
+
+    <el-button v-if="formOptions.length > 5" type="text" style="margin-left:10px;height:40px;" id="closeSearchBtn" @click="closeSearch">
+      {{word}}
+      <i :class="showAll ? 'el-icon-arrow-up ': 'el-icon-arrow-down'"></i>
+    </el-button>
+  </div>
+</template>
+
+<script>
+import formItem from "./formItem";
+// import tools from '@/utils/tools'
+import {createUniqueString} from "./tools";
+
+export default {
+  components: { formItem },
+  props: {
+    /**
+     * 表单配置
+     * 示例：
+     * [{
+     *   label: '用户名', // label文字
+     *   prop: 'username', // 字段名
+     *   element: 'el-input', // 指定elementui组件
+     *   initValue: '阿黄', // 字段初始值
+     *   placeholder: '请输入用户名', // elementui组件属性
+     *   rules: [{ required: true, message: '必填项', trigger: 'blur' }], // elementui组件属性
+     *   events: { // elementui组件方法
+     *     input (val) {
+     *       console.log(val)
+     *     },
+     *     ...... // 可添加任意elementui组件支持的方法
+     *   }
+     *   ...... // 可添加任意elementui组件支持的属性
+     * }]
+     */
+    formOptions: {
+      type: Array,
+      required: true,
+      default() {
+        return [];
+      },
+    },
+    // 接受考可提交按钮选项，多个用逗号分隔（search, export, reset）
+    btnItems: {
+      type: String,
+      default() {
+        return "search";
+      },
+    },
+  },
+
+  data() {
+    return {
+      showAll: true,//是否展开全部
+      formData: {},
+    };
+  },
+
+  created() {
+    this.addInitValue();
+  },
+
+  mounted() {
+    // 展开收起搜索
+    this.$nextTick(function() {
+      this.closeSearch();
+    });
+  },
+
+  methods: {
+    // 校验
+    onValidate(callback) {
+      this.$refs.formRef.validate((valid) => {
+        if (valid) {
+          console.log("提交成功");
+          console.log(this.formData);
+          callback();
+        }
+      });
+    },
+    // 搜索
+    onSearch() {
+      this.onValidate(() => {
+        this.$emit("onSearch", this.formData);
+      });
+    },
+    // 导出
+    onExport() {
+      this.onValidate(() => {
+        this.$emit("onExport", this.formData);
+      });
+    },
+    onReset() {
+      this.$refs.formRef.resetFields();
+    },
+    // 添加初始值
+    addInitValue() {
+      const obj = {};
+      this.formOptions.forEach((v) => {
+        if (v.initValue !== undefined) {
+          obj[v.prop] = v.initValue;
+        }
+      });
+      this.formData = obj;
+    },
+    // 收起搜索事件
+    closeSearch() {
+      this.showAll = !this.showAll;
+      var searchBoxHeght = document.getElementById("searchBox");
+      if (this.showAll == false) {
+        searchBoxHeght.style.height = 40 + "px";
+      } else {
+        searchBoxHeght.style.height = "auto";
+      }
+    }
+  },
+
+  computed: {
+    newKeys() {
+      return this.formOptions.map((v) => {
+        console.log( createUniqueString(), 666 )
+        // 暂时禁掉 2020/11/25
+        return createUniqueString()
+      });
+    },
+    word: function() {
+      if (this.showAll == false) {
+        //对文字进行处理
+        return "展开搜索";
+      } else {
+        return "收起搜索";
+      }
+    }
+  }
+
+};
+</script>
+
+<style lang='less' scoped>
+#searchBox {
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.search-form-box {
+  display: flex;
+  margin-bottom: 15px;
+
+  .btn-box {
+    display: flex;
+    justify-content: flex-start;
+    padding-top: 5px;
+
+    button {
+      height: 28px;
+    }
+  }
+  .el-form {
+    /deep/ .el-form-item__label {
+      width: 120px;
+      padding-right: 0;
+    }
+    .el-form-item {
+      margin-right: 20px;
+      margin-bottom: 0;
+
+      &.is-error {
+        margin-bottom: 22px;
+      }
+    }
+    // el-input宽度
+    /deep/ .form-item {
+      > .el-input:not(.el-date-editor) {
+        width: 330px;
+      }
+    }
+    /deep/ .el-input-number {
+      width: 330px;
+    }
+    /deep/ .el-select {
+      width: 330px;
+    }
+    /deep/ .el-date-picker {
+      width: 240px;
+    }
+    /deep/ .el-range-separator {
+      padding: 0;
+    }
+    /deep/ .el-cascader {
+      width: 240px;
+    }
+  }
+}
+
+
+</style>

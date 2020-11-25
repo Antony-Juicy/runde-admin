@@ -122,6 +122,7 @@ export let asyncRoutes1 = [
           path: 'partner-management',
           name: 'partner-management',
           component: () => import('@/views/ecommerce-moudle/ecommerce-config/partner-management'),
+          // component: () => import('@/views/ecommerce-moudle/ecommerce-config/partner-management/test'),
           meta: { title: '合作方管理', subtitle: '', icon: 'example' }
         },
         {
