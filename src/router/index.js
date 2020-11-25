@@ -25,7 +25,7 @@ export const constantRoutes = [
     path: '/',
     component: Layout,
     redirect: '/dashboard',
-    
+    hidden: true,
     children: [{
       path: '/dashboard',
       name: '/dashboard',
@@ -54,6 +54,10 @@ export let asyncRoutes0 = [
     path: '/',
     component: Layout,
     redirect: '/dashboard',
+    meta: {
+      icon:'',
+      title:'首页'
+    },
     children: [{
       path: '/dashboard',
       name: '/dashboard',

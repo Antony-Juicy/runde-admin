@@ -1,5 +1,5 @@
 <template>
-  <div>分类管理1111</div>
+  <div>菜单管理</div>
 </template>
 
 <script>

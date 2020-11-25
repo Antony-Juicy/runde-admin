@@ -91,7 +91,6 @@ export default {
       return path.resolve(this.basePath, routePath)
     },
     handleClickMenu(){
-      console.log(888)
       localStorage.setItem('clickMenu',true)
     }
   }

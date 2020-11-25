@@ -10,7 +10,6 @@ import Layout from '@/layout'
 function hasPermission(checkRoutes, route) {
   // return true;
   if (route.meta && route.path) {
-    // return checkRoutes.includes(route.path)
     return checkRoutes.find(item => item.path == route.path)
   } else {
     return true
@@ -36,12 +35,11 @@ export function filterAsyncRoutes(routes, checkRoutes) {
       }
       res.push(tmp)
     } else {
-      tmp.hidden = true
+      tmp.hidden = false
       tmp.meta.noroles = true
       if (tmp.children) {
         tmp.children = filterAsyncRoutes(tmp.children, checkRoutes)
       }
-      console.log(tmp,444)
       res.push(tmp)
     }
   })
@@ -94,7 +92,8 @@ const actions = {
                   meta:{ 
                     id:m.id, 
                     title:m.name, 
-                    fullPath: m.frontUrl
+                    fullPath: m.frontUrl,
+                    icon: m.icon
                  }
                 }
                 if(!r.children.find(ele => ele.path == menu.path)){
@@ -134,14 +133,14 @@ const actions = {
 
       // 定义的路由信息： asyncRoutes    后台返回的路由信息：routes
       const accessedRoutes = filterAsyncRoutes(currentRoutes, state.processedRoutes)
-      console.log(accessedRoutes,'accessedRoutes---')
+      console.log( state.processedRoutes,' state.processedRoutes--')
+      console.log(accessedRoutes,' accessedRoutes--')
       commit('SET_ROUTES', accessedRoutes)
       resolve(accessedRoutes)
     })
   },
   async getRoutesInfo({ commit }) {
     return new Promise(async (resolve) => {
-      // const {data} = await axios.get('/json/menu.json')
       const {data} = await Fetch('user_getMenuList',{
         currentPage: 1,
         pageSize: 999999,
