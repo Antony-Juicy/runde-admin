@@ -1,7 +1,7 @@
 import { asyncRoutes0,constantRoutes  } from '@/router'
 import Fetch from '@/utils/fetch'
 import Layout from '@/layout'
-
+import axios from 'axios'
 /**
  * Use meta.role to determine if the current user has permission
  * @param roles
@@ -133,7 +133,6 @@ const actions = {
 
       // 定义的路由信息： asyncRoutes    后台返回的路由信息：routes
       const accessedRoutes = filterAsyncRoutes(currentRoutes, state.processedRoutes)
-      console.log( state.processedRoutes,' state.processedRoutes--')
       console.log(accessedRoutes,' accessedRoutes--')
       commit('SET_ROUTES', accessedRoutes)
       resolve(accessedRoutes)
@@ -146,14 +145,15 @@ const actions = {
         pageSize: 999999,
         loginUserId: JSON.parse(localStorage.getItem('userInfo')).userId
       })
+      // const { data } = await axios.get('/json/menu.json')
       let menuList = data.records;
       let processedRoutes = []
       let btnRoutes = []
       menuList.forEach(item => {
         // 是菜单 并且不是顶级导航栏
-        if(item.type == "0" && item.parentId != "0"){
+        if(item.type == "0" && item.parentId != "22"){
           processedRoutes.push({
-            path: item.frontUrl.indexOf('-config') >0? '/'+ item.frontUrl : item.frontUrl,
+            path: item.frontUrl.indexOf('-config') >0 && item.frontUrl.indexOf('/') !=0? '/'+ item.frontUrl : item.frontUrl,
             title: item.name
           })
         }else if(item.type == "1"){
@@ -167,8 +167,7 @@ const actions = {
       let menuRouters = [] 
       /*先取出模块，没有父id的就是模块菜单*/
       menuList.forEach((m,i)=>{
-        //console.log(i)
-        if(m.parentId=="0"){
+        if(m.parentId=="22"){
           m.fullPath = '/'+m.frontUrl
           let module = {
             path: '/' + m.frontUrl,

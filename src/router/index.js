@@ -28,7 +28,7 @@ export const constantRoutes = [
     hidden: true,
     children: [{
       path: '/dashboard',
-      name: '/dashboard',
+      name: 'home',
       component: () => import('@/views/dashboard/index'),
       meta: { title: '欢迎页', icon: 'dashboard' }
     }]
@@ -60,7 +60,7 @@ export let asyncRoutes0 = [
     },
     children: [{
       path: '/dashboard',
-      name: '/dashboard',
+      name: 'dashboard',
       component: () => import('@/views/dashboard/index'),
       meta: { title: '欢迎页', icon: 'dashboard' }
     }]
