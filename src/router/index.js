@@ -67,7 +67,7 @@ export let asyncRoutes1 = [
     {
       path: '/system-config',
       component: Layout,
-      redirect: '/system-config/menu-management',
+      // redirect: '/system-config/menu-management',
       meta: { title: '系统管理', icon: 'example' },
       children: [
         {
@@ -80,7 +80,7 @@ export let asyncRoutes1 = [
           path: 'authority-management',
           name: 'authority-management',
           component: () => import('@/views/website-config/banner-management'),
-          meta: { title: '权限管理', subtitle: '', icon: 'example' }
+          meta: { title: '权限管理11', subtitle: '', icon: 'example' }
         },
         
       ]

@@ -11,6 +11,7 @@ const getters = {
   roles: state => state.user.roles, // 用户组 这个项目没用上
   permission_routes: state => state.permission.routes, // 默认路由
   permission_addRoutes: state => state.permission.addRoutes, // 新增的用户的路由
+  permission_btn: state => state.permission.btnRoutes,
   errorLogs: state => state.errorLog.logs, // 错误日志
   osscdn: state => '/', // 图片服务器地址
 }

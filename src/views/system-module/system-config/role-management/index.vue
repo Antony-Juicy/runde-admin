@@ -112,7 +112,7 @@ export default {
     };
   },
   mounted() {
-    this.getTableData();
+    // this.getTableData();
   },
   methods: {
     handleSelect(rows) {

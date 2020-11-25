@@ -4,9 +4,6 @@
 
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane :label="item.title" :name="item.index" v-for="(item,index) in navList" :key="index">{{item.fullPath}}</el-tab-pane>
-      <!-- <el-tab-pane label="配置管理" name="second">配置管理</el-tab-pane>
-      <el-tab-pane label="角色管理" name="third">角色管理</el-tab-pane>
-      <el-tab-pane label="定时任务补偿" name="fourth">定时任务补偿</el-tab-pane> -->
     </el-tabs>
 
     <div class="right-menu">
@@ -32,7 +29,7 @@
 </template>
 
 <script>
-import router from '@/router'
+import router,{resetRouter} from '@/router'
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
@@ -80,12 +77,11 @@ export default {
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     },
     async handleClick(tab, event) {
-        console.log(tab,getToken());
-        const accessRoutes = await this.$store.dispatch('permission/generateRoutes',{type: tab.index})
-          
+        console.log(this.navList[Number(tab.index)]);
+        const accessRoutes = await this.$store.dispatch('permission/generateRoutes',{type: this.navList[Number(tab.index)].id})
           // dynamically add accessible routes
         router.addRoutes(accessRoutes)
-        localStorage.setItem('tabIndex',tab.index)
+        localStorage.setItem('tabIndex',this.navList[Number(tab.index)].id)
         localStorage.removeItem('clickMenu')
     }
   }
