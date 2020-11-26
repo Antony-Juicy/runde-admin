@@ -1,9 +1,7 @@
-import api from '@/api'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 import md5 from 'md5-js';
 import Fetch from '@/utils/fetch'
-const { login, logout, getInfo, getUserInfo, setUserInfo, delUserInfo, explodeUserInfo } = api['user']
 
 const state = {
   token: getToken(),
@@ -52,7 +50,7 @@ const actions = {
         setToken(data.token)   //把token存储在本地cookie之中
         commit('SET_NAME', data.username)  //用户名
         commit('SET_USERID', data.userId)  //密码
-
+        localStorage.setItem('userInfo',JSON.stringify(data));
         resolve()
       }).catch(error => {
         reject(error)
@@ -63,27 +61,6 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      // Fetch('user_getInfo',{
-      //   // token: getToken(),
-      //   token: 'rd_superadmin',
-      //   id: state.userId,
-      //   loginUserId: state.userId
-      // }).then(response => {
-      //   console.log(response,'response')
-      //   const { data } = response
-        
-      //   if (!data) {
-      //     reject('验证失败,请重新登录')
-      //   }
-
-      //   commit('SET_ROLES', ['admin'])
-      //   resolve({
-      //     roles: ['admin'],
-      //     routes: ''
-      //   })
-      // }).catch(error => {
-      //   reject(error)
-      // })
       const data = {
         roles: ['admin']
       }
@@ -95,19 +72,10 @@ const actions = {
   // user logout
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
-      // const a = ''
-      // if (a) {
-      //   logout()
-      //   getInfo()
-      // }
-      commit('SET_TOKEN', '')
-      commit('SET_ROLES', '')
-      removeToken()
-      resetRouter()
-      resolve()
-
-      return;
-      logout().then((res) => {
+      Fetch('user_logout',{
+        loginUserId: JSON.parse(localStorage.getItem('userInfo')).userId
+      }).then((res) => {
+        localStorage.removeItem('userInfo')
         commit('SET_TOKEN', '')
         removeToken()
         resetRouter()
@@ -157,48 +125,37 @@ const actions = {
     commit
   }, data) {
     return new Promise((resolve, reject) => {
-      getUserInfo(data).then(response => {
-        resolve(response)
-      }).catch(error => {
-        reject(error)
-      })
+      // getUserInfo(data).then(response => {
+      //   resolve(response)
+      // }).catch(error => {
+      //   reject(error)
+      // })
     })
   },
   setUserInfo({
     commit
   }, data) {
     return new Promise((resolve, reject) => {
-      setUserInfo(data).then(response => {
-        const { msg } = response
-        resolve(msg)
-      }).catch(error => {
-        reject(error)
-      })
+      // setUserInfo(data).then(response => {
+      //   const { msg } = response
+      //   resolve(msg)
+      // }).catch(error => {
+      //   reject(error)
+      // })
     })
   },
   delUserInfo({
     commit
   }, data) {
     return new Promise((resolve, reject) => {
-      delUserInfo(data).then(response => {
-        const { msg } = response
-        resolve(msg)
-      }).catch(error => {
-        reject(error)
-      })
+      // delUserInfo(data).then(response => {
+      //   const { msg } = response
+      //   resolve(msg)
+      // }).catch(error => {
+      //   reject(error)
+      // })
     })
-  },
-  explodeUserInfo({
-    commit
-  }, data) {
-    return new Promise((resolve, reject) => {
-      explodeUserInfo(data).then(response => {
-        resolve(response)
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
+  }
 }
 
 export default {

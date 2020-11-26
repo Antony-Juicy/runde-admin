@@ -4,9 +4,6 @@
 
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane :label="item.title" :name="item.index" v-for="(item,index) in navList" :key="index">{{item.fullPath}}</el-tab-pane>
-      <!-- <el-tab-pane label="配置管理" name="second">配置管理</el-tab-pane>
-      <el-tab-pane label="角色管理" name="third">角色管理</el-tab-pane>
-      <el-tab-pane label="定时任务补偿" name="fourth">定时任务补偿</el-tab-pane> -->
     </el-tabs>
 
     <div class="right-menu">
@@ -32,7 +29,7 @@
 </template>
 
 <script>
-import router from '@/router'
+import router,{resetRouter} from '@/router'
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
@@ -45,8 +42,7 @@ export default {
   computed: {
     ...mapGetters([
       'sidebar',
-      'avatar',
-      'name'
+      'avatar'
     ]),
     navList(){
       return this.$store.state.permission.moduleRoutes
@@ -54,16 +50,19 @@ export default {
   },
   data(){
     return {
-      activeName: 0
+      activeName: 0,
+      name: ''
     }
   },
   mounted(){
-    // console.log(this.$store.state.permission,'state--')
-    // this.navList = this.$store.state.permission.moduleRoutes;
     if(localStorage.getItem('clickMenu')){
-      this.activeName = localStorage.getItem(getToken()) || 0;
+      let currentId = localStorage.getItem('tabIndex');
+      let currentIndex = this.navList&&this.navList.findIndex(item => item.id == currentId);
+      this.activeName = String(currentIndex) || 0;
     }
-    
+    if(localStorage.getItem('userInfo')) {
+      this.name = JSON.parse(localStorage.getItem('userInfo')).username;
+    }
   },
   methods: {
     toggleSideBar() {
@@ -78,13 +77,15 @@ export default {
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     },
     async handleClick(tab, event) {
-        console.log(tab,getToken());
-        const accessRoutes = await this.$store.dispatch('permission/generateRoutes',{type: tab.index})
-          
+        console.log(this.navList[Number(tab.index)]);
+        
+        const accessRoutes = await this.$store.dispatch('permission/generateRoutes',{type: this.navList[Number(tab.index)].id})
           // dynamically add accessible routes
+        console.log(accessRoutes,'accessRoutes222')
         router.addRoutes(accessRoutes)
-        localStorage.setItem(getToken(),tab.index)
+        localStorage.setItem('tabIndex',this.navList[Number(tab.index)].id)
         localStorage.removeItem('clickMenu')
+        console.log(999)
     }
   }
 }

@@ -25,10 +25,10 @@ export const constantRoutes = [
     path: '/',
     component: Layout,
     redirect: '/dashboard',
-    
+    hidden: true,
     children: [{
       path: '/dashboard',
-      name: '/dashboard',
+      name: 'home',
       component: () => import('@/views/dashboard/index'),
       meta: { title: '欢迎页', icon: 'dashboard' }
     }]
@@ -54,106 +54,22 @@ export let asyncRoutes0 = [
     path: '/',
     component: Layout,
     redirect: '/dashboard',
+    meta: {
+      icon:'',
+      title:'首页'
+    },
     children: [{
       path: '/dashboard',
-      name: '/dashboard',
+      name: 'dashboard',
       component: () => import('@/views/dashboard/index'),
       meta: { title: '欢迎页', icon: 'dashboard' }
     }]
   }
 ];
 
-export let asyncRoutes1 = [
-    {
-      path: '/website-config',
-      component: Layout,
-      redirect: '/website-config/page-management',
-      meta: { title: '网站配置', icon: 'example' },
-      children: [
-        {
-          path: 'page-management',
-          name: 'page-management',
-          component: () => import('@/views/website-config/page-management'),
-          meta: { title: '页面管理', subtitle: '', icon: 'example' }
-        },
-        {
-          path: 'banner-management',
-          name: 'banner-management',
-          component: () => import('@/views/website-config/banner-management'),
-          meta: { title: '分类管理', subtitle: '', icon: 'example' }
-        },
-        
-      ]
-    },
-    { path: '*', redirect: '/404', hidden: true }
-  ];
-
-  export let asyncRoutes2 = [
-    {
-      path: '/bussines-config',
-      component: Layout,
-      redirect: '/bussines-config/activity-management',
-      meta: { title: '营销管理', icon: 'example' },
-      children: [
-        {
-          path: 'activity-management',
-          name: 'activity-management',
-          component: () => import('@/views/bussines-config/activity-management'),
-          meta: { title: '活动管理', subtitle: '', icon: 'example' }
-        },
-        {
-          path: 'banner-management',
-          name: 'banner-management',
-          component: () => import('@/views/bussines-config/banner-management'),
-          meta: { title: '海报管理', subtitle: '', icon: 'example' }
-        }
-      ]
-    },
-    { path: '*', redirect: '/404', hidden: true }
-  ];
-  export let asyncRoutes3 = [
-    {
-      path: '/ecommerce-config',
-      component: Layout,
-      redirect: '/ecommerce-config/ecommerce-management',
-      meta: { title: '电商管理', icon: 'example' },
-      children: [
-        {
-          path: 'partner-management',
-          name: 'partner-management',
-          component: () => import('@/views/ecommerce-moudle/ecommerce-config/partner-management'),
-          // component: () => import('@/views/ecommerce-moudle/ecommerce-config/partner-management/test'),
-          meta: { title: '合作方管理', subtitle: '', icon: 'example' }
-        },
-        {
-          path: 'shop-management',
-          name: 'shop-management',
-          component: () => import('@/views/ecommerce-moudle/ecommerce-config/shop-management'),
-          meta: { title: '店铺管理', subtitle: '', icon: 'example' }
-        }
-      ]
-    },
-    {
-      path: '/booksEcommerce-config',
-      component: Layout,
-      redirect: '/ecommerce-moudle/bookecommerce-config/booksPartner-management',
-      meta: { title: '图书电商管理', icon: 'example' },
-      children: [
-        {
-          path: 'bookspartner-management',
-          name: 'bookspartner-management',
-          component: () => import('@/views/ecommerce-moudle/booksEcommerce-config/booksPartner-management'),
-          meta: { title: '图书合作方管理', subtitle: '', icon: 'example' }
-        },
-        {
-          path: 'booksshop-management',
-          name: 'booksshop-management',
-          component: () => import('@/views/ecommerce-moudle/booksEcommerce-config/booksShop-management'),
-          meta: { title: '图书店铺管理', subtitle: '', icon: 'example' }
-        }
-      ]
-    },
-    { path: '*', redirect: '/404', hidden: true }
-  ];
+router.$addRoutes = (params) => {
+  router.matcher = new Router().matcher
+  router.addRoutes(params)
+}
 
 export default router;

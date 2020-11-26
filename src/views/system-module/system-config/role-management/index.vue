@@ -2,7 +2,7 @@
   <div>
     <!-- 搜索栏 -->
     <!-- 操作栏 -->
-    <el-button type="primary" @click="add">新增</el-button>
+    <el-button type="primary" @click="add" v-btn-permission="'/admin/menu/save'">新增</el-button>
     <!-- 表格 -->
     <rd-table
       :tableData="tableData"
@@ -17,13 +17,14 @@
         <el-tag size="medium">{{ scope.row.name }}</el-tag>
       </template>
       <template slot="edit" slot-scope="scope">
-        <el-button size="mini" @click="handleEdit(scope.$index, scope.row)"
+        <el-button size="mini" @click="handleEdit(scope.$index, scope.row)" v-btn-permission="'/admin/menu/edit'"
           >编辑</el-button
         >
         <el-button
           size="mini"
           type="danger"
           @click="handleDelete(scope.$index, scope.row)"
+          v-btn-permission="'/admin/menu/del'"
           >删除</el-button
         >
       </template>
@@ -111,7 +112,7 @@ export default {
     };
   },
   mounted() {
-    this.getTableData();
+    // this.getTableData();
   },
   methods: {
     handleSelect(rows) {
