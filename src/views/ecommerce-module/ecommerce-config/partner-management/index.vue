@@ -1,71 +1,7 @@
 <template>
   <div>
     <div style="padding-bottom: 0px;">
-      <!-- <el-form id="searchBox" ref="form" :model="form" style="padding-bottom: 20px;" label-width="20px">
-        <el-row>
-          <el-col :span="6">
-            <el-form-item>
-              <el-input placeholder="请输入合作方名称"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item>
-              <el-input placeholder="请输入负责人姓名"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item>
-              <el-input placeholder="请输入联系电话"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item>
-              <el-input placeholder="请输入邮箱"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item>
-              <el-input placeholder="请输入地址"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item>
-              <el-input placeholder="请输入开户银行"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item>
-              <el-input placeholder="请输入具体支行"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item>
-              <el-input placeholder="请输入银行账号"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item>
-              <el-input placeholder="请输入户名"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item>
-              <el-input placeholder="请输入状态"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item>
-              <el-input placeholder="请输入签约开始日期"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item>
-              <el-input placeholder="请输入签约结束日期"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form> -->
-      <search-form :formOptions = "formOptions" :btnItems = "btnItems"></search-form>
+      <search-form :formOptions = "formOptions" @onSearch = onSearch></search-form>
       <!-- <el-row style="width:50%;padding:10px 0">
         <el-button icon="el-icon-search" type="primary" round >查询</el-button>
         <el-button icon="el-icon-refresh-left" type="warning" round plain>重置</el-button>
@@ -100,14 +36,12 @@
 </template>
 
 <script>
-import searchForm from './searchForm';
+import searchForm from '@/components/Searchform';
 export default {
   inject: ['reload'],
   components: { searchForm },
   data () {
     return {
-      // showAll: true,//是否展开全部
-      form: {},
       formOptions : [
         {
           // label: '合作方名称',
@@ -115,81 +49,44 @@ export default {
           element: 'el-input',
           initValue: '',
           placeholder: '合作方名称',
-          // rules: [{ required: true, message: '必填项', trigger: 'blur' }],
-          events: {
-            input (val) {
-              console.log(val)
-            },
-          }
         },
         {
-          label: '负责人姓名',
+          // label: '负责人姓名',
           prop: 'password',
           element: 'el-input',
           initValue: '',
           placeholder: '负责人姓名',
-          // rules: [{ required: true, message: '必填项', trigger: 'blur' }],
-          events: {
-            input (val) {
-              console.log(val)
-            },
-          }
         },
         {
-          label: '人数',
+          // label: '人数',
           prop: 'people',
           element: 'el-input-number',
           initValue: '',
           placeholder: '',
-          min: 0,
-          // rules: [{ required: true, message: '必填项', trigger: 'blur' }],
-          events: {
-            input (val) {
-              console.log(val)
-            },
-          }
         },
         {
-          label: '分类',
+          // label: '分类',
           prop: 'classNames',
           element: 'el-select',
           initValue: '',
           placeholder: '请选择分类',
-          // rules: [{ required: true, message: '必填项', trigger: 'blur' }],
-          events: {
-            input (val) {
-              console.log(val)
-            },
-          }
         },
         {
-          label: '日期',
+          // label: '日期',
           prop: 'date',
           element: 'el-date-picker',
           initValue: '',
           placeholder: '请选择日期',
-          // rules: [{ required: true, message: '必填项', trigger: 'blur' }],
-          events: {
-            input (val) {
-              console.log(val)
-            },
-          }
         },
         {
-          label: '日期',
-          prop: 'date',
+          // label: '日期',
+          prop: 'dateNew',
           element: 'el-date-picker',
           initValue: '',
           placeholder: '请选择日期',
-          // rules: [{ required: true, message: '必填项', trigger: 'blur' }],
-          events: {
-            input (val) {
-              console.log(val)
-            },
-          }
         }
       ],
-      btnItems: "search, export, reset", // 配置可操作按钮显示,如：search=搜索,export=导出,reset=重置
+      // btnItems: "search, reset", // 配置可操作按钮显示,如：search=搜索,export=导出,reset=重置
       tableData: [],
       tableKey: [
         {
@@ -267,6 +164,9 @@ export default {
     add() {
       console.log(666)
     },
+    onSearch(val) {
+      console.log(val, 999)
+    }
   },
   computed: {
     
