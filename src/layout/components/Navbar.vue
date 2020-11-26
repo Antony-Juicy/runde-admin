@@ -74,7 +74,7 @@ export default {
         message: '注销成功',
         type: "success"
       });
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      this.$router.push(`/login`)
     },
     async handleClick(tab, event) {
         console.log(this.navList[Number(tab.index)]);

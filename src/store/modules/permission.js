@@ -131,6 +131,8 @@ const actions = {
           currentRoutes = asyncRoutes0
         }
 
+        currentRoutes.push({ path: '*', redirect: '/404', hidden: true,children: [] })
+
       // 定义的路由信息： asyncRoutes    后台返回的路由信息：routes
       const accessedRoutes = filterAsyncRoutes(currentRoutes, state.processedRoutes)
       console.log(accessedRoutes,' accessedRoutes--')

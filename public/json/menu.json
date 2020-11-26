@@ -5,9 +5,9 @@
     "records": [
       {
         "id": "19",
-        "parentId": "0",
+        "parentId": "22",
         "parentCode": "rd_djwzt",
-        "frontUrl": "system-module",
+        "frontUrl": "abc-module",
         "backUrl": "",
         "name": "系统",
         "code": "rd_xt",
