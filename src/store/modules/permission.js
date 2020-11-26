@@ -88,7 +88,7 @@ const actions = {
                 m.fullPath = m.frontUrl
                 let menu = {
                   path: m.frontUrl,
-                  name: m.frontUrl,
+                  name: m.frontUrl + '?' +new Date().getTime(),
                   meta:{ 
                     id:m.id, 
                     title:m.name, 
@@ -142,13 +142,13 @@ const actions = {
   },
   async getRoutesInfo({ commit }) {
     return new Promise(async (resolve) => {
-      const {data} = await Fetch('user_getMenuList',{
-        currentPage: 1,
-        pageSize: 999999,
-        loginUserId: JSON.parse(localStorage.getItem('userInfo')).userId
-      })
-      // const { data } = await axios.get('/json/menu.json')
-      let menuList = data.records;
+      // const {data} = await Fetch('user_getMenuList',{
+      //   currentPage: 1,
+      //   pageSize: 999999,
+      //   loginUserId: JSON.parse(localStorage.getItem('userInfo')).userId
+      // })
+      const { data } = await axios.get('/json/menu.json')
+      let menuList = data.data.records;
       let processedRoutes = []
       let btnRoutes = []
       menuList.forEach(item => {

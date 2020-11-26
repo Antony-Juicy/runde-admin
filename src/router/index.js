@@ -74,9 +74,5 @@ export let asyncRoutes0 = [
   }
 ];
 
-router.$addRoutes = (params) => {
-  router.matcher = new Router().matcher
-  router.addRoutes(params)
-}
 
 export default router;
