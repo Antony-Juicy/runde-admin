@@ -75,11 +75,11 @@ const actions = {
       Fetch('user_logout',{
         loginUserId: JSON.parse(localStorage.getItem('userInfo')).userId
       }).then((res) => {
-        localStorage.removeItem('userInfo')
         commit('SET_TOKEN', '')
         removeToken()
         resetRouter()
         commit('SET_ROLES', '')
+        localStorage.clear();
         const { msg } = res
         resolve(msg)
       }).catch(error => {

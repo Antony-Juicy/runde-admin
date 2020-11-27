@@ -74,18 +74,16 @@ export default {
         message: '注销成功',
         type: "success"
       });
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      this.$router.push(`/login`)
     },
     async handleClick(tab, event) {
         console.log(this.navList[Number(tab.index)]);
         
         const accessRoutes = await this.$store.dispatch('permission/generateRoutes',{type: this.navList[Number(tab.index)].id})
           // dynamically add accessible routes
-        console.log(accessRoutes,'accessRoutes222')
         router.addRoutes(accessRoutes)
         localStorage.setItem('tabIndex',this.navList[Number(tab.index)].id)
         localStorage.removeItem('clickMenu')
-        console.log(999)
     }
   }
 }

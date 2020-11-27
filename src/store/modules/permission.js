@@ -88,7 +88,7 @@ const actions = {
                 m.fullPath = m.frontUrl
                 let menu = {
                   path: m.frontUrl,
-                  name: m.frontUrl,
+                  name: m.frontUrl + '?' +new Date().getTime(),
                   meta:{ 
                     id:m.id, 
                     title:m.name, 
@@ -109,11 +109,17 @@ const actions = {
         convertTree(moduleRoutes)
 
         let currentRoutes = moduleRoutes.find(item => item.id == type)&&moduleRoutes.find(item => item.id == type).children;
-        function trans(currentRoutes){
+        let index = 0;
+        function trans(currentRoutes,index){
+          index  = index + 1;
           currentRoutes.forEach(item => {
             if(item.children&&item.children.length){
-              item.component = Layout;
-              trans(item.children)
+              if(index == 1) {
+                item.component = Layout;
+              }else {
+                item.component = (resolve) => require([`@/views/${item.meta.fullPath}`],resolve)
+              }
+              trans(item.children,index)
             }else {
               item.component = (resolve) => require([`@/views/${item.meta.fullPath}`],resolve)
             }
@@ -123,7 +129,7 @@ const actions = {
           })
         }
         if(currentRoutes){
-          trans(currentRoutes)
+          trans(currentRoutes,index)
         }
         
 
@@ -131,9 +137,11 @@ const actions = {
           currentRoutes = asyncRoutes0
         }
 
+        currentRoutes.push({ path: '*', redirect: '/404', hidden: true,children: [] })
+        console.log(currentRoutes,'currentRoutes----')
       // 定义的路由信息： asyncRoutes    后台返回的路由信息：routes
-      const accessedRoutes = filterAsyncRoutes(currentRoutes, state.processedRoutes)
-      console.log(accessedRoutes,' accessedRoutes--')
+      // const accessedRoutes = filterAsyncRoutes(currentRoutes, state.processedRoutes)
+      const accessedRoutes = currentRoutes
       commit('SET_ROUTES', accessedRoutes)
       resolve(accessedRoutes)
     })

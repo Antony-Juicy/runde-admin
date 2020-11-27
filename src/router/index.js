@@ -1,6 +1,13 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
+//将路由重定向时的这个错误通过catch给捕获到
+const originalPush = Router.prototype.push
+Router.prototype.push = function push(location, onResolve, onReject) {
+	if (onResolve || onReject) return originalPush.call(this, location, onResolve, onReject)
+	return originalPush.call(this, location) && originalPush.call(this, location).catch(err => err)
+}
+
 Vue.use(Router)
 
 import Layout from '@/layout'
@@ -67,9 +74,5 @@ export let asyncRoutes0 = [
   }
 ];
 
-router.$addRoutes = (params) => {
-  router.matcher = new Router().matcher
-  router.addRoutes(params)
-}
 
 export default router;
