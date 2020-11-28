@@ -2,7 +2,7 @@
   <div class="navbar">
     <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
-    <el-tabs v-model="activeName" @tab-click="handleClick">
+    <el-tabs v-model="activeName" @tab-click="handleClick" type="card">
       <el-tab-pane :label="item.title" :name="item.index" v-for="(item,index) in navList" :key="index">{{item.fullPath}}</el-tab-pane>
     </el-tabs>
 
@@ -93,11 +93,11 @@ export default {
   height: 50px;
   overflow: hidden;
   position: relative;
-  background: #fff;
+  background: #041527;
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
 
   .hamburger-container {
-    line-height: 46px;
+    line-height: 54px;
     height: 100%;
     float: left;
     cursor: pointer;
@@ -147,7 +147,8 @@ export default {
       .avatar-wrapper {
         margin-top: 5px;
         position: relative;
-
+            color: #A7ADB4;
+            cursor: pointer;
         .user-avatar {
           cursor: pointer;
           width: 40px;
@@ -170,6 +171,14 @@ export default {
     .el-tabs__item {
       height: 50px;
       line-height: 50px;
+      border: none;
+      color: #A7ADB4;
+      font-weight: bold;
+      &.is-active {
+        color: #333333;
+        background-color: #F3F3F3;
+        box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.08);
+      }
     }
 
     .el-tabs__nav-wrap::after {
@@ -183,6 +192,20 @@ export default {
     .el-tabs--top {
       float: left;
     }
+
+    .el-tabs__nav-wrap {
+      margin-left: 0;
+    }
+
+    .el-tabs--card>.el-tabs__header .el-tabs__nav {
+      border: none;
+    }
+
+    .el-tabs__nav {
+      padding-top: 1px;
+      
+    }
+
   }
 }
 </style>

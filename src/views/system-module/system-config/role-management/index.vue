@@ -1,8 +1,5 @@
 <template>
-  <div>
-    <!-- 搜索栏 -->
-    <!-- 操作栏 -->
-    <el-button type="primary" @click="add" v-btn-permission="'/admin/menu/save'">新增</el-button>
+  <div class="role-wrapper">
     <!-- 表格 -->
     <rd-table
       :tableData="tableData"
@@ -63,6 +60,7 @@ export default {
   inject: ["reload"],
   data() {
     return {
+      tabPosition: 'left',
       text: "",
       tableData: [],
       tableKey: [
@@ -180,3 +178,9 @@ export default {
 };
 </script>
 
+<style lang="scss" scoped>
+.role-wrapper {
+  background-color: #fff;
+  padding: 20px;
+}
+</style>

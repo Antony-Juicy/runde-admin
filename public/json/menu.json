@@ -3,7 +3,7 @@
   "msg": "操作成功",
   "data": {
     "total": 1,
-        "records": [
+    "records": [
       {
         "id": 22,
         "name": "润德教育中台",
@@ -13,188 +13,43 @@
         "orderNum": 1,
         "children": [
           {
-            "id": 19,
-            "name": "系统",
+            "id": 23,
+            "name": "OA",
             "backUrl": "",
-            "frontUrl": "system-module",
+            "frontUrl": "oa-module",
             "type": "0",
             "orderNum": 0,
             "children": [
               {
-                "id": 18,
-                "name": "系统管理",
+                "id": 24,
+                "name": "组织管理",
                 "backUrl": "",
-                "frontUrl": "system-config",
+                "frontUrl": "organization-config",
                 "type": "0",
                 "orderNum": 0,
                 "children": [
                   {
-                    "id": 1,
-                    "name": "菜单管理",
+                    "id": 25,
+                    "name": "组织架构v1",
                     "backUrl": "",
-                    "frontUrl": "system-module/system-config/menu-management",
+                    "frontUrl": "oa-module/organization-config/organization-management",
                     "type": "0",
                     "orderNum": 0,
                     "children": [
                       {
-                        "id": 38,
-                        "name": "",
-                        "backUrl": "",
-                        "frontUrl": "",
-                        "type": "2",
-                        "orderNum": 1,
-                        "children": []
-                      },
-                      {
-                        "id": 2,
-                        "name": "菜单管理列表",
-                        "backUrl": "/admin/menu/list",
-                        "frontUrl": "menu-management",
-                        "type": "1",
-                        "orderNum": 2,
-                        "children": []
-                      },
-                      {
-                        "id": 3,
-                        "name": "菜单管理树",
-                        "backUrl": "/admin/menu/getallmenutree",
-                        "frontUrl": "menu-management",
-                        "type": "1",
-                        "orderNum": 3,
-                        "children": []
-                      },
-                      {
-                        "id": 4,
-                        "name": "菜单管理新增",
-                        "backUrl": "/admin/menu/save",
-                        "frontUrl": "menu-management",
-                        "type": "1",
-                        "orderNum": 4,
-                        "children": []
-                      },
-                      {
-                        "id": 5,
-                        "name": "菜单管理权限授权列表",
-                        "backUrl": "/admin/menu/userandrole/list",
-                        "frontUrl": "menu-management",
-                        "type": "1",
-                        "orderNum": 5,
-                        "children": []
-                      },
-                      {
-                        "id": 6,
-                        "name": "菜单管理授权",
-                        "backUrl": "/admin/menu/impower/menus",
-                        "frontUrl": "menu-management",
-                        "type": "1",
-                        "orderNum": 6,
-                        "children": []
-                      },
-                      {
-                        "id": 7,
-                        "name": "菜单管理根据用户id查询帐号对应的权限",
-                        "backUrl": "/admin/menu/getmenubyuserid",
-                        "frontUrl": "menu-management",
-                        "type": "1",
-                        "orderNum": 7,
-                        "children": []
-                      },
-                      {
-                        "id": 8,
-                        "name": "菜单管理权限编辑",
-                        "backUrl": "/admin/menu/edit",
-                        "frontUrl": "menu-management",
-                        "type": "1",
-                        "orderNum": 8,
-                        "children": []
-                      },
-                      {
-                        "id": 9,
-                        "name": "菜单管理查看权限详情",
-                        "backUrl": "/admin/menu/detail",
-                        "frontUrl": "menu-management",
-                        "type": "1",
-                        "orderNum": 9,
-                        "children": []
-                      },
-                      {
-                        "id": 10,
-                        "name": "菜单管理权限删除",
-                        "backUrl": "/admin/menu/del",
-                        "frontUrl": "menu-management",
-                        "type": "1",
-                        "orderNum": 10,
-                        "children": []
-                      },
-                      {
-                        "id": 11,
-                        "name": "菜单管理绑定后台权限",
-                        "backUrl": "/admin/menu/bindrole",
-                        "frontUrl": "menu-management",
-                        "type": "1",
-                        "orderNum": 11,
-                        "children": []
-                      },
-                      {
-                        "id": 12,
-                        "name": "菜单管理个人账号授权",
-                        "backUrl": "/admin/menu/bindmenuuser",
-                        "frontUrl": "menu-management",
-                        "type": "1",
-                        "orderNum": 12,
-                        "children": []
-                      },
-                      {
-                        "id": 13,
-                        "name": "菜单管理授权角色",
-                        "backUrl": "/admin/menu/bindmenurole",
-                        "frontUrl": "menu-management",
-                        "type": "1",
-                        "orderNum": 13,
-                        "children": []
-                      },
-                      {
-                        "id": 14,
-                        "name": "菜单管理归属部门",
-                        "backUrl": "/admin/menu/binddept",
-                        "frontUrl": "menu-management",
-                        "type": "1",
-                        "orderNum": 14,
-                        "children": []
-                      },
-                      {
-                        "id": 15,
-                        "name": "菜单管理删除绑定部门",
-                        "backUrl": "/admin/menu/binddelete",
-                        "frontUrl": "menu-management",
-                        "type": "1",
-                        "orderNum": 15,
-                        "children": []
-                      }
-                    ]
-                  },
-                  {
-                    "id": 37,
-                    "name": "职能管理",
-                    "backUrl": "",
-                    "frontUrl": "system-module/system-config/function-management",
-                    "type": "0",
-                    "orderNum": 0,
-                    "children": []
-                  },
-                  {
-                    "id": 21,
-                    "name": "角色管理",
-                    "backUrl": "",
-                    "frontUrl": "system-module/system-config/role-management",
-                    "type": "0",
-                    "orderNum": 0,
-                    "children": [
-                      {
-                        "id": 34,
+                        "id": 35,
                         "name": "test",
                         "backUrl": "",
                         "frontUrl": "abc",
+                        "type": "0",
+                        "orderNum": 0,
+                        "children": []
+                      },
+                      {
+                        "id": 36,
+                        "name": "test2",
+                        "backUrl": "",
+                        "frontUrl": "abcd",
                         "type": "0",
                         "orderNum": 0,
                         "children": []
@@ -202,32 +57,13 @@
                     ]
                   },
                   {
-                    "id": 20,
-                    "name": "权限管理",
+                    "id": 26,
+                    "name": "组织架构v2",
                     "backUrl": "",
-                    "frontUrl": "system-module/system-config/authority-management",
+                    "frontUrl": "oa-module/organization-config/organization-management2",
                     "type": "0",
                     "orderNum": 0,
                     "children": []
-                  },
-                  {
-                    "id": 16,
-                    "name": "账号管理",
-                    "backUrl": "",
-                    "frontUrl": "system-module/system-config/user-management",
-                    "type": "0",
-                    "orderNum": 0,
-                    "children": [
-                      {
-                        "id": 17,
-                        "name": "账号管理账号列表",
-                        "backUrl": "/admin/user/list",
-                        "frontUrl": "user-management",
-                        "type": "1",
-                        "orderNum": 2,
-                        "children": []
-                      }
-                    ]
                   }
                 ]
               }
@@ -300,57 +136,76 @@
             ]
           },
           {
-            "id": 23,
-            "name": "OA",
+            "id": 19,
+            "name": "系统",
             "backUrl": "",
-            "frontUrl": "oa-module",
+            "frontUrl": "system-module",
             "type": "0",
             "orderNum": 0,
             "children": [
               {
-                "id": 24,
-                "name": "组织管理",
+                "id": 18,
+                "name": "系统管理",
                 "backUrl": "",
-                "frontUrl": "organization-config",
+                "frontUrl": "system-config",
                 "type": "0",
                 "orderNum": 0,
+                "icon": "example",
                 "children": [
                   {
-                    "id": 26,
-                    "name": "组织架构v2",
+                    "id": 16,
+                    "name": "账号管理",
                     "backUrl": "",
-                    "frontUrl": "oa-module/organization-config/organization-management2",
+                    "frontUrl": "system-module/system-config/user-management",
                     "type": "0",
                     "orderNum": 0,
                     "children": []
                   },
                   {
-                    "id": 25,
-                    "name": "组织架构v1",
+                    "id": 37,
+                    "name": "职能管理",
                     "backUrl": "",
-                    "frontUrl": "oa-module/organization-config/organization-management",
+                    "frontUrl": "system-module/system-config/function-management",
+                    "type": "0",
+                    "orderNum": 0,
+                    "children": []
+                  },
+                  {
+                    "id": 21,
+                    "name": "角色管理",
+                    "backUrl": "",
+                    "frontUrl": "system-module/system-config/role-management",
                     "type": "0",
                     "orderNum": 0,
                     "children": [
                       {
-                        "id": 35,
-                        "name": "test",
+                        "id": 34,
+                        "name": "搜索列表",
                         "backUrl": "",
                         "frontUrl": "abc",
                         "type": "0",
                         "orderNum": 0,
                         "children": []
-                      },
-                      {
-                        "id": 36,
-                        "name": "test2",
-                        "backUrl": "",
-                        "frontUrl": "abcd",
-                        "type": "0",
-                        "orderNum": 0,
-                        "children": []
                       }
                     ]
+                  },
+                  {
+                    "id": 20,
+                    "name": "权限管理",
+                    "backUrl": "",
+                    "frontUrl": "system-module/system-config/authority-management",
+                    "type": "0",
+                    "orderNum": 0,
+                    "children": []
+                  },
+                  {
+                    "id": 1,
+                    "name": "菜单管理",
+                    "backUrl": "",
+                    "frontUrl": "system-module/system-config/menu-management",
+                    "type": "0",
+                    "orderNum": 0,
+                    "children": []
                   }
                 ]
               }

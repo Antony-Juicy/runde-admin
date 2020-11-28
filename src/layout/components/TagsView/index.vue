@@ -193,7 +193,8 @@ export default {
 
 <style lang="scss" scoped>
 .tags-view-container {
-  height: 34px;
+  height: 55px;
+  line-height: 55px;
   width: 100%;
   background: #fff;
   border-bottom: 1px solid #d8dce5;
@@ -203,8 +204,8 @@ export default {
       display: inline-block;
       position: relative;
       cursor: pointer;
-      height: 26px;
-      line-height: 26px;
+      height: 40px;
+      line-height: 40px;
       border: 1px solid #d8dce5;
       color: #495060;
       background: #fff;
@@ -212,6 +213,9 @@ export default {
       font-size: 12px;
       margin-left: 5px;
       margin-top: 4px;
+      
+      border-radius: 5px;
+
       &:first-of-type {
         margin-left: 15px;
       }
@@ -219,9 +223,11 @@ export default {
         margin-right: 15px;
       }
       &.active {
-        background-color: #42b983;
-        color: #fff;
-        border-color: #42b983;
+        // background-color: #42b983;
+        // color: #fff;
+        // border-color: #42b983;
+        color: #448EF7;
+        border-color: #448EF7;
         &::before {
           content: '';
           background: #fff;
@@ -231,6 +237,7 @@ export default {
           border-radius: 50%;
           position: relative;
           margin-right: 2px;
+          background-color: #448EF7;
         }
       }
     }
@@ -263,6 +270,7 @@ export default {
 //reset element css of el-icon-close
 .tags-view-wrapper {
   .tags-view-item {
+
     .el-icon-close {
       width: 16px;
       height: 16px;
