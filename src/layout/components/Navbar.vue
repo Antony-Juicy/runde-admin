@@ -172,6 +172,7 @@ export default {
       line-height: 50px;
       border: none;
       color: #A7ADB4;
+      font-weight: bold;
       &.is-active {
         color: #333333;
         background-color: #F3F3F3;
