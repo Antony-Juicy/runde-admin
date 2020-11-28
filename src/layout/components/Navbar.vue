@@ -147,7 +147,8 @@ export default {
       .avatar-wrapper {
         margin-top: 5px;
         position: relative;
-
+            color: #A7ADB4;
+            cursor: pointer;
         .user-avatar {
           cursor: pointer;
           width: 40px;

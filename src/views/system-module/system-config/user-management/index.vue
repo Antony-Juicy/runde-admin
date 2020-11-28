@@ -121,6 +121,174 @@ export default {
           value: "edit",
           operate: true,
         },
+        {
+          id:1,
+          title: 111,
+          pageName: 'yuu',
+          classifyName:'微软'
+
+        },
+        {
+          id:2,
+          title: 111,
+          pageName: 'yuu',
+          classifyName:'微软'
+
+        },
+        {
+          id:3,
+          title: 111,
+          pageName: 'yuu',
+          classifyName:'微软'
+
+        },
+        {
+          id:4,
+          title: 111,
+          pageName: 'yuu',
+          classifyName:'微软'
+
+        }
+      ],
+      tableKey: [
+        {
+          name: "id",
+          value: "id",
+          width: 80,
+        },
+        {
+          name: "标题",
+          value: "title",
+        },
+        {
+          name: "归属页面",
+          value: "pageName",
+        },
+        {
+          name: "分类名称",
+          value: "classifyName",
+        },
+        {
+          name: "备注",
+          value: "remark",
+        },
+        {
+          name: "操作",
+          value: "edit",
+          operate: true,
+        },
+        {
+          id:1,
+          title: 111,
+          pageName: 'yuu',
+          classifyName:'微软'
+
+        },
+        {
+          id:2,
+          title: 111,
+          pageName: 'yuu',
+          classifyName:'微软'
+
+        },
+        {
+          id:3,
+          title: 111,
+          pageName: 'yuu',
+          classifyName:'微软'
+
+        },
+        {
+          id:4,
+          title: 111,
+          pageName: 'yuu',
+          classifyName:'微软'
+
+        }
+      ],
+      tableKey: [
+        {
+          name: "id",
+          value: "id",
+          width: 80,
+        },
+        {
+          name: "标题",
+          value: "title",
+        },
+        {
+          name: "归属页面",
+          value: "pageName",
+        },
+        {
+          name: "分类名称",
+          value: "classifyName",
+        },
+        {
+          name: "备注",
+          value: "remark",
+        },
+        {
+          name: "操作",
+          value: "edit",
+          operate: true,
+        },
+        {
+          id:1,
+          title: 111,
+          pageName: 'yuu',
+          classifyName:'微软'
+
+        },
+        {
+          id:2,
+          title: 111,
+          pageName: 'yuu',
+          classifyName:'微软'
+
+        },
+        {
+          id:3,
+          title: 111,
+          pageName: 'yuu',
+          classifyName:'微软'
+
+        },
+        {
+          id:4,
+          title: 111,
+          pageName: 'yuu',
+          classifyName:'微软'
+
+        }
+      ],
+      tableKey: [
+        {
+          name: "id",
+          value: "id",
+          width: 80,
+        },
+        {
+          name: "标题",
+          value: "title",
+        },
+        {
+          name: "归属页面",
+          value: "pageName",
+        },
+        {
+          name: "分类名称",
+          value: "classifyName",
+        },
+        {
+          name: "备注",
+          value: "remark",
+        },
+        {
+          name: "操作",
+          value: "edit",
+          operate: true,
+        },
       ],
       multiple: true,
       pageConfig: {

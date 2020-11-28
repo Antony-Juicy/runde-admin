@@ -128,48 +128,19 @@ const actions = {
   },
   async getRoutesInfo({ commit }) {
     return new Promise(async (resolve) => {
-      // const {data} = await Fetch('user_getMenuList',{
-      //   loginUserId: JSON.parse(localStorage.getItem('userInfo')).userId,
-      //   type:0
-      // })
-      const { data } = await axios.get('/json/menu.json')
-      let menuList = data.data.records;
+      const {data} = await Fetch('user_getMenuList',{
+        loginUserId: JSON.parse(localStorage.getItem('userInfo')).userId,
+        type:0
+      })
+      // const { data } = await axios.get('/json/menu.json')
+      let menuList = data.records;
       let processedRoutes = []
       let btnRoutes = []
-      // menuList.forEach(item => {
-      //   // 是菜单 并且不是顶级导航栏
-      //   if(item.type == "0" && item.parentId != "22"){
-      //     processedRoutes.push({
-      //       path: item.frontUrl.indexOf('-config') >0 && item.frontUrl.indexOf('/') !=0? '/'+ item.frontUrl : item.frontUrl,
-      //       title: item.name
-      //     })
-      //   }else if(item.type == "1"){
-      //     // 按钮
-      //     btnRoutes.push(item.backUrl)
-      //   }
-      // })
       commit('SET_MENULIST',menuList)
       commit('SET_PROCESSEDROUTES',processedRoutes)
       commit('SET_BTNROUTES',btnRoutes)
       let menuRouters = [] 
       /*先取出模块，没有父id的就是模块菜单*/
-      // menuList.forEach((m,i)=>{
-      //   if(m.parentId=="22"){
-      //     m.fullPath = '/'+m.frontUrl
-      //     let module = {
-      //       path: '/' + m.frontUrl,
-      //       id:m.id, 
-      //       title:m.name, 
-      //       fullPath:'/'+m.frontUrl,
-      //       meta: {
-      //         id:m.id, 
-      //         title:m.name,
-      //         fullPath:'/'+m.frontUrl
-      //       }
-      //     }
-      //     menuRouters.push(module)
-      //   }
-      // })
       menuRouters = menuList[0].children.map(m => {
         return {
                 path: '/' + m.frontUrl,
