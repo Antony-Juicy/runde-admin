@@ -80,62 +80,42 @@ const actions = {
     return new Promise(async (resolve) => {
       
          //定义子的路由
-         function convertTree(routers){
-          routers.forEach(r=>{
-            state.menuList.forEach((m,i)=>{
-              if(m.parentId && m.type == "0" && m.parentId == r.meta.id){
-                if(!r.children) r.children = []
-                m.fullPath = m.frontUrl
-                let menu = {
-                  path: m.frontUrl,
-                  name: m.frontUrl + '?' +new Date().getTime(),
-                  meta:{ 
-                    id:m.id, 
-                    title:m.name, 
-                    fullPath: m.frontUrl,
-                    icon: m.icon
-                 }
-                }
-                if(!r.children.find(ele => ele.path == menu.path)){
-                  r.children.push(menu)
-                }
-                
-              }
-            })
-            if(r.children) convertTree(r.children)
-          })
-        }
         let moduleRoutes = JSON.parse(JSON.stringify(state.moduleRoutes))
-        convertTree(moduleRoutes)
-
         let currentRoutes = moduleRoutes.find(item => item.id == type)&&moduleRoutes.find(item => item.id == type).children;
+        
         let index = 0;
         function trans(currentRoutes,index){
           index  = index + 1;
           currentRoutes.forEach(item => {
-            if(item.children&&item.children.length){
-              if(index == 1) {
-                item.component = Layout;
+              item.path = item.frontUrl;
+              item.meta= { 
+                id:item.id, 
+                title:item.name, 
+                fullPath: item.frontUrl,
+                icon: item.icon
+              }
+              item.name= item.frontUrl + '?' +new Date().getTime()
+              if(item.children&&item.children.length){
+                if(index == 1) {
+                  item.component = Layout;
+                }else {
+                  item.component = (resolve) => require([`@/views/${item.meta.fullPath}`],resolve)
+                }
+                trans(item.children,index)
               }else {
                 item.component = (resolve) => require([`@/views/${item.meta.fullPath}`],resolve)
               }
-              trans(item.children,index)
-            }else {
-              item.component = (resolve) => require([`@/views/${item.meta.fullPath}`],resolve)
-            }
-            if(item.path.indexOf('-config') > 0 && item.path.indexOf('/') !=0 ) {
-              item.path = '/' +item.path;
-            }
+              if( item.path && item.path.indexOf('/') !=0 ) {
+                item.path = '/' +item.path;
+              }
           })
         }
         if(currentRoutes){
           trans(currentRoutes,index)
-        }
-        
-
-        if(!currentRoutes){
+        }else {
           currentRoutes = asyncRoutes0
         }
+        
 
         currentRoutes.push({ path: '*', redirect: '/404', hidden: true,children: [] })
         console.log(currentRoutes,'currentRoutes----')
@@ -149,47 +129,60 @@ const actions = {
   async getRoutesInfo({ commit }) {
     return new Promise(async (resolve) => {
       const {data} = await Fetch('user_getMenuList',{
-        currentPage: 1,
-        pageSize: 999999,
-        loginUserId: JSON.parse(localStorage.getItem('userInfo')).userId
+        loginUserId: JSON.parse(localStorage.getItem('userInfo')).userId,
+        type:0
       })
       // const { data } = await axios.get('/json/menu.json')
       let menuList = data.records;
       let processedRoutes = []
       let btnRoutes = []
-      menuList.forEach(item => {
-        // 是菜单 并且不是顶级导航栏
-        if(item.type == "0" && item.parentId != "22"){
-          processedRoutes.push({
-            path: item.frontUrl.indexOf('-config') >0 && item.frontUrl.indexOf('/') !=0? '/'+ item.frontUrl : item.frontUrl,
-            title: item.name
-          })
-        }else if(item.type == "1"){
-          // 按钮
-          btnRoutes.push(item.backUrl)
-        }
-      })
+      // menuList.forEach(item => {
+      //   // 是菜单 并且不是顶级导航栏
+      //   if(item.type == "0" && item.parentId != "22"){
+      //     processedRoutes.push({
+      //       path: item.frontUrl.indexOf('-config') >0 && item.frontUrl.indexOf('/') !=0? '/'+ item.frontUrl : item.frontUrl,
+      //       title: item.name
+      //     })
+      //   }else if(item.type == "1"){
+      //     // 按钮
+      //     btnRoutes.push(item.backUrl)
+      //   }
+      // })
       commit('SET_MENULIST',menuList)
       commit('SET_PROCESSEDROUTES',processedRoutes)
       commit('SET_BTNROUTES',btnRoutes)
       let menuRouters = [] 
       /*先取出模块，没有父id的就是模块菜单*/
-      menuList.forEach((m,i)=>{
-        if(m.parentId=="22"){
-          m.fullPath = '/'+m.frontUrl
-          let module = {
-            path: '/' + m.frontUrl,
-            id:m.id, 
-            title:m.name, 
-            fullPath:'/'+m.frontUrl,
-            meta: {
-              id:m.id, 
-              title:m.name,
-              fullPath:'/'+m.frontUrl
-            }
-          }
-          menuRouters.push(module)
-        }
+      // menuList.forEach((m,i)=>{
+      //   if(m.parentId=="22"){
+      //     m.fullPath = '/'+m.frontUrl
+      //     let module = {
+      //       path: '/' + m.frontUrl,
+      //       id:m.id, 
+      //       title:m.name, 
+      //       fullPath:'/'+m.frontUrl,
+      //       meta: {
+      //         id:m.id, 
+      //         title:m.name,
+      //         fullPath:'/'+m.frontUrl
+      //       }
+      //     }
+      //     menuRouters.push(module)
+      //   }
+      // })
+      menuRouters = menuList[0].children.map(m => {
+        return {
+                path: '/' + m.frontUrl,
+                id:m.id, 
+                title:m.name, 
+                fullPath:'/'+m.frontUrl,
+                children: m.children,
+                meta: {
+                  id:m.id, 
+                  title:m.name,
+                  fullPath:'/'+m.frontUrl
+                }
+              }
       })
       menuRouters.unshift({
         path:'/dashboard',
