@@ -39,6 +39,7 @@
 
     &.has-logo {
       .el-scrollbar {
+        background-color: $menuBg;
         height: calc(100% - 50px);
       }
     }
@@ -66,6 +67,8 @@
     // menu hover
     .submenu-title-noDropdown,
     .el-submenu__title {
+      height: 40px;
+      line-height: 40px;
       &:hover {
         background-color: $menuHover !important;
       }
@@ -75,15 +78,30 @@
       color: $subMenuActiveText !important;
     }
 
+
     & .nest-menu .el-submenu>.el-submenu__title,
     & .el-submenu .el-menu-item {
       min-width: $sideBarWidth !important;
-      background-color: $subMenuBg !important;
-
+      background-color: $subMenuBg!important ;
+      height: 40px;
+      line-height: 40px;
       &:hover {
         background-color: $subMenuHover !important;
       }
     }
+
+    & .el-submenu .is-active {
+      background-color: $subMenuActiveBg !important;
+    }
+
+    .el-submenu.is-opened {
+      &>.el-submenu__title {
+        color: #fff!important;
+      }
+    }
+
+
+
   }
 
   .hideSidebar {
