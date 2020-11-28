@@ -1,35 +1,21 @@
 <template>
-  <div class="tree-container">
-    <el-tree
-      :indent="0"
+  <div class="authority-wrapper">
+    <rd-tree
       :data="data"
-      :props="defaultProps"
+      :defaultProps="defaultProps"
       @node-click="handleNodeClick"
     >
-       <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span>{{ node.label }}</span>
-        <span>
-          <el-button
-            type="text"
-            size="mini"
-            @click="() => append(data)">
-            Append
-          </el-button>
-          <el-button
-            type="text"
-            size="mini"
-            @click="() => remove(node, data)">
-            Delete
-          </el-button>
-        </span>
-      </span>
-    </el-tree>
+    </rd-tree>
   </div>
 </template>
 
 <script>
+import RdTree from '@/components/RdTree'
 export default {
   inject: ["reload"],
+  components: {
+    RdTree
+  },
   data() {
     return {
       data: [
@@ -105,28 +91,16 @@ export default {
       defaultProps: {
         children: "children",
         label: "label",
-      },
+      }
     };
   },
   methods: {
     handleNodeClick(data) {
       console.log(data);
-    },
-    append(data) {
-        const newChild = { id: id++, label: 'testtest', children: [] };
-        if (!data.children) {
-          this.$set(data, 'children', []);
-        }
-        data.children.push(newChild);
-      },
-
-      remove(node, data) {
-        const parent = node.parent;
-        const children = parent.data.children || parent.data;
-        const index = children.findIndex(d => d.id === data.id);
-        children.splice(index, 1);
-      }
+    }
   },
+  mounted(){
+  }
 };
 </script>
 
