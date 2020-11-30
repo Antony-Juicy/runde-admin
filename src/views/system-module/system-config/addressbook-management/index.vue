@@ -28,13 +28,15 @@
         <p style="margin: 0;">医学1战队</p>
         <el-table
           :data="tableData"
-          style="width: 100%">
+          border
+          height="500"
+          style="width: 100%;margin-top:10px;">
           <el-table-column
             prop=""
             label="头像"
-            width="100">
+            width="80">
             <template slot-scope="scope">
-              <img :src="scope.row.src" style="width:60px;height:60px;" alt="">
+              <img :src="scope.row.src" style="width:50px;height:50px;" alt="">
             </template>
           </el-table-column>
           <el-table-column
@@ -80,13 +82,79 @@
             </template>
           </el-table-column>
         </el-table>
+        <pagination
+          :total="pageConfig.totalCount"
+          :page.sync="pageConfig.pageNum"
+          :limit.sync="pageConfig.pageSize"
+          @pagination="pageChange"
+        />
       </div>
       <el-drawer
-        title="我是标题"
-        :visible.sync="drawer"
-        :direction="direction"
-        :before-close="handleClose">
-        <span>我来啦!</span>
+        title=""
+        :before-close="handleClose"
+        :visible.sync="dialog"
+        direction="rtl"
+        custom-class="demo-drawer"
+        class="demo-drawer"
+        :wrapperClosable="false"
+        :with-header="false"
+        size="60%"
+        ref="drawer">
+        <div class="demo-drawer__content">
+          <el-form :model="formDrawer">
+            <DescriptionList
+              title="基本信息"
+              :gutter="20"
+              :col="8"
+              :dataUser="dataUser"
+              :content="dataUser">
+            </DescriptionList>
+            <el-divider></el-divider>
+            <div class="title_drawer">外呼管理</div>
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item label="七陌坐席:" :label-width="formLabelWidth">
+                  <el-input v-model="formDrawer.name" autocomplete="off"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="七陌密码:" :label-width="formLabelWidth">
+                  <el-input v-model="formDrawer.name" autocomplete="off"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="智博坐席:" :label-width="formLabelWidth">
+                  <el-input v-model="formDrawer.name" autocomplete="off"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="智博密码:" :label-width="formLabelWidth">
+                  <el-input v-model="formDrawer.name" autocomplete="off"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-divider></el-divider>
+            <div class="title_drawer">多角色管理</div>
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item label="角色:" :label-width="formLabelWidth">
+                  <!-- <el-input v-model="formDrawer.name" autocomplete="off"></el-input> -->
+                  <el-select v-model="formDrawer.name" placeholder="请选择角色">
+                    <el-option label="省校长" value="sheng"></el-option>
+                    <el-option label="分校长" value="fen"></el-option>
+                    <el-option label="战队长" value="zhan"></el-option>
+                    <el-option label="营销专员" value="ying"></el-option>
+                    <el-option label="电销专员" value="dian"></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form>
+          <div class="demo-drawer__footer">
+            <el-button @click="cancelForm">取 消</el-button>
+            <el-button type="primary" @click="$refs.drawer.closeDrawer()" :loading="loading">{{ loading ? '提交中 ...' : '确 定' }}</el-button>
+          </div>
+        </div>
       </el-drawer>
     </div>
   </div>
@@ -95,11 +163,15 @@
 <script>
 import RdTree from '@/components/RdTree';
 import searchForm from '@/components/Searchform';
+import Pagination from "@/components/Pagination";
+import DescriptionList from "./descriptionList"; 
 export default {
   inject: ["reload"],
   components: {
     RdTree,
-    searchForm
+    searchForm,
+    Pagination,
+    DescriptionList
   },
   data () {
     return {
@@ -140,7 +212,87 @@ export default {
           city: '战队长',
           address: '省校长、分校长...',
           zip: '在职'
-        }, {
+        },
+        {
+          id: 1,
+          src: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg',
+          date: '13800138000',
+          name: '飞翔的荷兰人',
+          province: '医学4战队',
+          city: '营销专员',
+          address: '省校长、分校长',
+          zip: '在职'
+        },
+        {
+          id: 1,
+          src: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg',
+          date: '13800138000',
+          name: '飞翔的荷兰人',
+          province: '医学4战队',
+          city: '营销专员',
+          address: '省校长、分校长',
+          zip: '在职'
+        },
+        {
+          id: 1,
+          src: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg',
+          date: '13800138000',
+          name: '飞翔的荷兰人',
+          province: '医学4战队',
+          city: '营销专员',
+          address: '省校长、分校长',
+          zip: '在职'
+        },
+        {
+          id: 1,
+          src: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg',
+          date: '13800138000',
+          name: '飞翔的荷兰人',
+          province: '医学4战队',
+          city: '营销专员',
+          address: '省校长、分校长',
+          zip: '在职'
+        },
+        {
+          id: 1,
+          src: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg',
+          date: '13800138000',
+          name: '飞翔的荷兰人',
+          province: '医学4战队',
+          city: '营销专员',
+          address: '省校长、分校长',
+          zip: '在职'
+        },{
+          id: 1,
+          src: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg',
+          date: '13800138000',
+          name: '飞翔的荷兰人',
+          province: '医学4战队',
+          city: '营销专员',
+          address: '省校长、分校长',
+          zip: '在职'
+        },
+        {
+          id: 1,
+          src: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg',
+          date: '13800138000',
+          name: '飞翔的荷兰人',
+          province: '医学4战队',
+          city: '营销专员',
+          address: '省校长、分校长',
+          zip: '在职'
+        },
+        {
+          id: 1,
+          src: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg',
+          date: '13800138000',
+          name: '飞翔的荷兰人',
+          province: '医学4战队',
+          city: '营销专员',
+          address: '省校长、分校长',
+          zip: '在职'
+        },
+        {
           id: 1,
           src: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg',
           date: '13800138000',
@@ -303,8 +455,59 @@ export default {
         children: "children",
         label: "label",
       },
-      drawer: false,
-      direction: 'rtl',
+      dataUser: [
+        {
+          term: "员工姓名",
+          detail: "飞翔的荷兰人"
+        },
+        {
+          term: "所属部门",
+          detail: "系统研发部"
+        },
+        {
+          term: "员工类型",
+          detail: "在职"
+        },
+        {
+          term: "入职时间",
+          detail: "2020-12-01"
+        },
+        {
+          term: "手机号码",
+          detail: "13800138000"
+        },
+        {
+          term: "钉钉ID",
+          detail: "12345678910"
+        },
+        {
+          term: "员工职位",
+          detail: "产品经理"
+        },
+        {
+          term: "部门内级别",
+          detail: "5"
+        }
+      ],
+      pageConfig: {
+        totalCount: 100,
+        pageNum: 1,
+        pageSize: 10,
+      },
+      dialog: false,
+      loading: false,
+      formDrawer: {
+        name: '',
+        region: '',
+        date1: '',
+        date2: '',
+        delivery: false,
+        type: [],
+        resource: '',
+        desc: ''
+      },
+      formLabelWidth: '80px',
+      timer: null,
     }
   },
   methods: {
@@ -314,29 +517,51 @@ export default {
     editRow(index,id, rows) {
       // rows.splice(index, 1);
       console.log(index,id, 666)
-      this.drawer = true
+      // this.drawer = true
+      this.dialog = true
     },
-    handleClose(done) {
-      this.$confirm('确认关闭？')
-        .then(_ => {
-          done();
-        })
-        .catch(_ => {});
+    pageChange(val) {
+      this.getTableData({
+        currentPage: val.page,
+        showCount: val.limit,
+      });
     },
     handleNodeClick(data) {
       console.log(data, 9999);
+    },
+    handleClose(done) {
+      if (this.loading) {
+        return;
+      }
+      this.$confirm('确定要提交表单吗？')
+        .then(_ => {
+          this.loading = true;
+          this.timer = setTimeout(() => {
+            done();
+            // 动画关闭需要一定的时间
+            setTimeout(() => {
+              this.loading = false;
+            }, 400);
+          }, 2000);
+        })
+        .catch(_ => {});
+    },
+    cancelForm() {
+      this.loading = false;
+      this.dialog = false;
+      clearTimeout(this.timer);
     }
   }
 }
 </script>
 
-<style lang='less' scoped>
+<style lang='scss' scoped>
 .container {
   display: flex;
   .center_l {
     width: 20%;
     // height: 300px;
-    // background-color: pink;
+    background-color: #fff;
     border: 1px solid #ccc;
     .tree-container /deep/ {
       .el-tree {
@@ -411,17 +636,36 @@ export default {
       }
     }
   }
-  .center_r_top {
-    margin-bottom: 20px;
-  }
   .center_r {
     width: 80%;
+    padding: 20px;
     margin-left: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    .center_r_top {
+      // margin-bottom: 20px;
+    }
     .center_r_bottom {
       height: 600px;
-      padding: 20px;
-      // background-color: pink;
-      border: 1px solid #ccc;
+      padding: 20px 20px 20px 0;
+      .pagination-container {
+        padding: 20px 16px;
+      }
+    }
+    .demo-drawer__content {
+      padding: 40px 60px 0 30px;
+      .title_drawer {
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 1.5;
+        margin-bottom: 20px;
+        color: rgba(0, 0, 0, 0.85);
+      }
+      .demo-drawer__footer {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+      }
     }
   }
 }
