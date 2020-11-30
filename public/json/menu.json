@@ -5,390 +5,196 @@
     "total": 1,
     "records": [
       {
-        "id": "22",
-        "parentId": "0",
+        "id": 22,
         "name": "润德教育中台",
-        "url": "",
+        "backUrl": "",
+        "frontUrl": "",
         "type": "0",
-        "icon": "",
         "orderNum": 1,
-        "status": "1",
         "children": [
           {
-            "id": "19",
-            "parentId": "22",
+            "id": 19,
             "name": "系统",
-            "url": "",
+            "backUrl": "",
+            "frontUrl": "system-module",
             "type": "0",
-            "icon": "",
             "orderNum": 0,
-            "status": "1",
             "children": [
               {
-                "id": "18",
-                "parentId": "19",
+                "id": 18,
                 "name": "系统管理",
-                "url": "",
+                "backUrl": "",
+                "frontUrl": "system-config",
                 "type": "0",
-                "icon": "example",
                 "orderNum": 0,
-                "status": "1",
                 "children": [
                   {
-                    "id": "37",
-                    "parentId": "18",
-                    "name": "通讯录管理",
-                    "url": "",
-                    "type": "0",
-                    "icon": "",
-                    "orderNum": 0,
-                    "status": "1"
-                  },
-                  {
-                    "id": "1",
-                    "parentId": "18",
-                    "name": "菜单管理",
-                    "url": "",
-                    "type": "0",
-                    "icon": "",
-                    "orderNum": 0,
-                    "status": "1",
-                    "children": [
-                      {
-                        "id": "38",
-                        "parentId": "1",
-                        "name": "新增按钮令牌",
-                        "url": "",
-                        "type": "2",
-                        "icon": "",
-                        "orderNum": 1,
-                        "status": "1"
-                      },
-                      {
-                        "id": "2",
-                        "parentId": "1",
-                        "name": "菜单管理列表",
-                        "url": "",
-                        "type": "1",
-                        "icon": "",
-                        "orderNum": 2,
-                        "status": "1"
-                      },
-                      {
-                        "id": "3",
-                        "parentId": "1",
-                        "name": "菜单管理树",
-                        "url": "",
-                        "type": "1",
-                        "icon": "",
-                        "orderNum": 3,
-                        "status": "1"
-                      },
-                      {
-                        "id": "4",
-                        "parentId": "1",
-                        "name": "菜单管理新增",
-                        "url": "",
-                        "type": "1",
-                        "icon": "",
-                        "orderNum": 4,
-                        "status": "1"
-                      },
-                      {
-                        "id": "5",
-                        "parentId": "1",
-                        "name": "菜单管理权限授权列表",
-                        "url": "",
-                        "type": "1",
-                        "icon": "",
-                        "orderNum": 5,
-                        "status": "1"
-                      },
-                      {
-                        "id": "6",
-                        "parentId": "1",
-                        "name": "菜单管理授权",
-                        "url": "",
-                        "type": "1",
-                        "icon": "",
-                        "orderNum": 6,
-                        "status": "1"
-                      },
-                      {
-                        "id": "7",
-                        "parentId": "1",
-                        "name": "菜单管理根据用户id查询帐号对应的权限",
-                        "url": "",
-                        "type": "1",
-                        "icon": "",
-                        "orderNum": 7,
-                        "status": "1"
-                      },
-                      {
-                        "id": "8",
-                        "parentId": "1",
-                        "name": "菜单管理权限编辑",
-                        "url": "",
-                        "type": "1",
-                        "icon": "",
-                        "orderNum": 8,
-                        "status": "1"
-                      },
-                      {
-                        "id": "9",
-                        "parentId": "1",
-                        "name": "菜单管理查看权限详情",
-                        "url": "",
-                        "type": "1",
-                        "icon": "",
-                        "orderNum": 9,
-                        "status": "1"
-                      },
-                      {
-                        "id": "10",
-                        "parentId": "1",
-                        "name": "菜单管理权限删除",
-                        "url": "",
-                        "type": "1",
-                        "icon": "",
-                        "orderNum": 10,
-                        "status": "1"
-                      },
-                      {
-                        "id": "11",
-                        "parentId": "1",
-                        "name": "菜单管理绑定后台权限",
-                        "url": "",
-                        "type": "1",
-                        "icon": "",
-                        "orderNum": 11,
-                        "status": "1"
-                      },
-                      {
-                        "id": "12",
-                        "parentId": "1",
-                        "name": "菜单管理个人账号授权",
-                        "url": "",
-                        "type": "1",
-                        "icon": "",
-                        "orderNum": 12,
-                        "status": "1"
-                      },
-                      {
-                        "id": "13",
-                        "parentId": "1",
-                        "name": "菜单管理授权角色",
-                        "url": "",
-                        "type": "1",
-                        "icon": "",
-                        "orderNum": 13,
-                        "status": "1"
-                      },
-                      {
-                        "id": "14",
-                        "parentId": "1",
-                        "name": "菜单管理归属部门",
-                        "url": "",
-                        "type": "1",
-                        "icon": "",
-                        "orderNum": 14,
-                        "status": "1"
-                      },
-                      {
-                        "id": "15",
-                        "parentId": "1",
-                        "name": "菜单管理删除绑定部门",
-                        "url": "",
-                        "type": "1",
-                        "icon": "",
-                        "orderNum": 15,
-                        "status": "1"
-                      }
-                    ]
-                  },
-                  {
-                    "id": "21",
-                    "parentId": "18",
-                    "name": "职能管理",
-                    "url": "",
-                    "type": "0",
-                    "icon": "",
-                    "orderNum": 0,
-                    "status": "1"
-                  },
-                  {
-                    "id": "20",
-                    "parentId": "18",
-                    "name": "权限管理",
-                    "url": "",
-                    "type": "0",
-                    "icon": "",
-                    "orderNum": 0,
-                    "status": "1"
-                  },
-                  {
-                    "id": "16",
-                    "parentId": "18",
+                    "id": 16,
                     "name": "账号管理",
-                    "url": "",
+                    "backUrl": "",
+                    "frontUrl": "system-module/system-config/user-management",
                     "type": "0",
-                    "icon": "",
                     "orderNum": 0,
-                    "status": "1",
-                    "children": [
-                      {
-                        "id": "17",
-                        "parentId": "16",
-                        "name": "账号管理账号列表",
-                        "url": "",
-                        "type": "1",
-                        "icon": "",
-                        "orderNum": 2,
-                        "status": "1"
-                      }
-                    ]
+                    "children": []
+                  },
+                  {
+                    "id": 37,
+                    "name": "通讯录管理",
+                    "backUrl": "",
+                    "frontUrl": "system-module/system-config/addressbook-management",
+                    "type": "0",
+                    "orderNum": 0,
+                    "children": []
+                  },
+                  {
+                    "id": 21,
+                    "name": "职能管理",
+                    "backUrl": "",
+                    "frontUrl": "system-module/system-config/role-management",
+                    "type": "0",
+                    "orderNum": 0,
+                    "children": []
+                  },
+                  {
+                    "id": 20,
+                    "name": "权限管理",
+                    "backUrl": "",
+                    "frontUrl": "system-module/system-config/authority-management",
+                    "type": "0",
+                    "orderNum": 0,
+                    "children": []
+                  },
+                  {
+                    "id": 1,
+                    "name": "菜单管理",
+                    "backUrl": "",
+                    "frontUrl": "system-module/system-config/menu-management",
+                    "type": "0",
+                    "orderNum": 0,
+                    "children": []
                   }
                 ]
               }
             ]
           },
           {
-            "id": "27",
-            "parentId": "22",
-            "name": "电商",
-            "url": "",
+            "id": 23,
+            "name": "OA",
+            "backUrl": "",
+            "frontUrl": "oa-module",
             "type": "0",
-            "icon": "",
             "orderNum": 0,
-            "status": "1",
             "children": [
               {
-                "id": "28",
-                "parentId": "27",
-                "name": "电商管理",
-                "url": "",
+                "id": 24,
+                "name": "组织管理",
+                "backUrl": "",
+                "frontUrl": "organization-config",
                 "type": "0",
-                "icon": "",
                 "orderNum": 0,
-                "status": "1",
                 "children": [
                   {
-                    "id": "29",
-                    "parentId": "28",
-                    "name": "合作方管理",
-                    "url": "",
+                    "id": 25,
+                    "name": "组织架构v1",
+                    "backUrl": "",
+                    "frontUrl": "oa-module/organization-config/organization-management",
                     "type": "0",
-                    "icon": "",
                     "orderNum": 0,
-                    "status": "1"
+                    "children": [
+                      {
+                        "id": 35,
+                        "name": "test",
+                        "backUrl": "",
+                        "frontUrl": "abc",
+                        "type": "0",
+                        "orderNum": 0,
+                        "children": []
+                      },
+                      {
+                        "id": 36,
+                        "name": "test2",
+                        "backUrl": "",
+                        "frontUrl": "abcd",
+                        "type": "0",
+                        "orderNum": 0,
+                        "children": []
+                      }
+                    ]
                   },
                   {
-                    "id": "30",
-                    "parentId": "28",
-                    "name": "店铺管理",
-                    "url": "",
+                    "id": 26,
+                    "name": "组织架构v2",
+                    "backUrl": "",
+                    "frontUrl": "oa-module/organization-config/organization-management2",
                     "type": "0",
-                    "icon": "",
                     "orderNum": 0,
-                    "status": "1"
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": 27,
+            "name": "电商",
+            "backUrl": "",
+            "frontUrl": "ecommerce-module",
+            "type": "0",
+            "orderNum": 0,
+            "children": [
+              {
+                "id": 28,
+                "name": "电商管理",
+                "backUrl": "",
+                "frontUrl": "ecommerce-config",
+                "type": "0",
+                "orderNum": 0,
+                "children": [
+                  {
+                    "id": 29,
+                    "name": "合作方管理",
+                    "backUrl": "",
+                    "frontUrl": "ecommerce-module/ecommerce-config/partner-management",
+                    "type": "0",
+                    "orderNum": 0,
+                    "children": []
+                  },
+                  {
+                    "id": 30,
+                    "name": "店铺管理",
+                    "backUrl": "",
+                    "frontUrl": "ecommerce-module/ecommerce-config/shop-management",
+                    "type": "0",
+                    "orderNum": 0,
+                    "children": []
                   }
                 ]
               },
               {
-                "id": "31",
-                "parentId": "27",
+                "id": 31,
                 "name": "图书电商管理",
-                "url": "",
+                "backUrl": "",
+                "frontUrl": "booksEcommerce-config",
                 "type": "0",
-                "icon": "",
                 "orderNum": 0,
-                "status": "1",
                 "children": [
                   {
-                    "id": "32",
-                    "parentId": "31",
+                    "id": 32,
                     "name": "图书合作方管理",
-                    "url": "",
+                    "backUrl": "",
+                    "frontUrl": "ecommerce-module/booksEcommerce-config/booksPartner-management",
                     "type": "0",
-                    "icon": "",
                     "orderNum": 0,
-                    "status": "1"
+                    "children": []
                   },
                   {
-                    "id": "33",
-                    "parentId": "31",
+                    "id": 33,
                     "name": "图书店铺管理",
-                    "url": "",
+                    "backUrl": "",
+                    "frontUrl": "ecommerce-module/booksEcommerce-config/booksShop-management",
                     "type": "0",
-                    "icon": "",
                     "orderNum": 0,
-                    "status": "1"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "id": "23",
-            "parentId": "22",
-            "name": "OA",
-            "url": "",
-            "type": "0",
-            "icon": "",
-            "orderNum": 0,
-            "status": "1",
-            "children": [
-              {
-                "id": "24",
-                "parentId": "23",
-                "name": "组织管理",
-                "url": "",
-                "type": "0",
-                "icon": "",
-                "orderNum": 0,
-                "status": "1",
-                "children": [
-                  {
-                    "id": "26",
-                    "parentId": "24",
-                    "name": "组织架构v2",
-                    "url": "",
-                    "type": "0",
-                    "icon": "",
-                    "orderNum": 0,
-                    "status": "1"
-                  },
-                  {
-                    "id": "25",
-                    "parentId": "24",
-                    "name": "组织架构v1",
-                    "url": "",
-                    "type": "0",
-                    "icon": "",
-                    "orderNum": 0,
-                    "status": "1",
-                    "children": [
-                      {
-                        "id": "35",
-                        "parentId": "25",
-                        "name": "test",
-                        "url": "",
-                        "type": "0",
-                        "icon": "",
-                        "orderNum": 0,
-                        "status": "1"
-                      },
-                      {
-                        "id": "36",
-                        "parentId": "25",
-                        "name": "test2",
-                        "url": "",
-                        "type": "0",
-                        "icon": "",
-                        "orderNum": 0,
-                        "status": "1"
-                      }
-                    ]
+                    "children": []
                   }
                 ]
               }
