@@ -6,6 +6,9 @@
       :props="defaultProps"
       @node-click="handleNodeClick"
     >
+      <span class="custom-tree-node" slot-scope="{ node, data }">
+        <span :class="{'greenNode': data.type == 1 ,'redNode': data.type == 2 }">{{ node.label }}</span>
+      </span>
     </el-tree>
   </div>
 </template>
@@ -33,8 +36,7 @@ export default {
   },
   methods: {
     handleNodeClick(data) {
-    //   console.log(data);
-    this.$emit('nodeClick',data)
+      this.$emit('nodeClick',data)
     }
   }
 };
@@ -42,6 +44,15 @@ export default {
 
 
 <style lang="scss" scoped>
+.custom-tree-node {
+  font-size: 14px;
+}
+.greenNode {
+  color: #67C23A;
+}
+.redNode {
+  color: #EC5B56;
+}
 .tree-container /deep/ {
   .el-tree {
     .el-tree-node__expand-icon.el-icon-caret-right {

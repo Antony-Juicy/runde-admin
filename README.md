@@ -1,5 +1,12 @@
 ## Build Setup
 
+
+```
+# 全局指令
+防重复提交  v-prevent-re-click="duration"
+
+```
+
 ```bash
 # 克隆项目
 git clone https://github.com/PanJiaChen/vue-admin-template.git

@@ -13,6 +13,71 @@
         "orderNum": 1,
         "children": [
           {
+            "id": 19,
+            "name": "系统",
+            "backUrl": "",
+            "frontUrl": "system-module",
+            "type": "0",
+            "orderNum": 0,
+            "children": [
+              {
+                "id": 18,
+                "name": "系统管理",
+                "backUrl": "",
+                "frontUrl": "system-config",
+                "type": "0",
+                "orderNum": 0,
+                "children": [
+                  {
+                    "id": 16,
+                    "name": "账号管理",
+                    "backUrl": "",
+                    "frontUrl": "system-module/system-config/user-management",
+                    "type": "0",
+                    "orderNum": 0,
+                    "children": []
+                  },
+                  {
+                    "id": 37,
+                    "name": "通讯录管理",
+                    "backUrl": "",
+                    "frontUrl": "system-module/system-config/addressbook-management",
+                    "type": "0",
+                    "orderNum": 0,
+                    "children": []
+                  },
+                  {
+                    "id": 21,
+                    "name": "职能管理",
+                    "backUrl": "",
+                    "frontUrl": "system-module/system-config/role-management",
+                    "type": "0",
+                    "orderNum": 0,
+                    "children": []
+                  },
+                  {
+                    "id": 20,
+                    "name": "权限管理",
+                    "backUrl": "",
+                    "frontUrl": "system-module/system-config/authority-management",
+                    "type": "0",
+                    "orderNum": 0,
+                    "children": []
+                  },
+                  {
+                    "id": 1,
+                    "name": "菜单管理",
+                    "backUrl": "",
+                    "frontUrl": "system-module/system-config/menu-management",
+                    "type": "0",
+                    "orderNum": 0,
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
             "id": 23,
             "name": "OA",
             "backUrl": "",
@@ -127,82 +192,6 @@
                     "name": "图书店铺管理",
                     "backUrl": "",
                     "frontUrl": "ecommerce-module/booksEcommerce-config/booksShop-management",
-                    "type": "0",
-                    "orderNum": 0,
-                    "children": []
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "id": 19,
-            "name": "系统",
-            "backUrl": "",
-            "frontUrl": "system-module",
-            "type": "0",
-            "orderNum": 0,
-            "children": [
-              {
-                "id": 18,
-                "name": "系统管理",
-                "backUrl": "",
-                "frontUrl": "system-config",
-                "type": "0",
-                "orderNum": 0,
-                "icon": "example",
-                "children": [
-                  {
-                    "id": 16,
-                    "name": "账号管理",
-                    "backUrl": "",
-                    "frontUrl": "system-module/system-config/user-management",
-                    "type": "0",
-                    "orderNum": 0,
-                    "children": []
-                  },
-                  {
-                    "id": 37,
-                    "name": "职能管理",
-                    "backUrl": "",
-                    "frontUrl": "system-module/system-config/function-management",
-                    "type": "0",
-                    "orderNum": 0,
-                    "children": []
-                  },
-                  {
-                    "id": 21,
-                    "name": "角色管理",
-                    "backUrl": "",
-                    "frontUrl": "system-module/system-config/role-management",
-                    "type": "0",
-                    "orderNum": 0,
-                    "children": [
-                      {
-                        "id": 34,
-                        "name": "搜索列表",
-                        "backUrl": "",
-                        "frontUrl": "abc",
-                        "type": "0",
-                        "orderNum": 0,
-                        "children": []
-                      }
-                    ]
-                  },
-                  {
-                    "id": 20,
-                    "name": "权限管理",
-                    "backUrl": "",
-                    "frontUrl": "system-module/system-config/authority-management",
-                    "type": "0",
-                    "orderNum": 0,
-                    "children": []
-                  },
-                  {
-                    "id": 1,
-                    "name": "菜单管理",
-                    "backUrl": "",
-                    "frontUrl": "system-module/system-config/menu-management",
                     "type": "0",
                     "orderNum": 0,
                     "children": []
