@@ -16,12 +16,15 @@
             <formItem v-model="formData[item.prop]" :itemOptions="item" />
           </el-form-item>
         </el-form> -->
-        <el-input placeholder="请输入姓名" v-model="input" clearable style="width: 20%"></el-input>
-        <el-input placeholder="请输入手机号" v-model="input" clearable style="width: 20%"></el-input>
-        <el-input placeholder="请输入职位" v-model="input" clearable style="width: 20%"></el-input>
-        <el-input placeholder="请输入ID" v-model="input" clearable style="width: 20%"></el-input>
+        <!-- <el-form id="searchBox" :model="formData" ref="formRef" :inline="true"> -->
+
+          <el-input placeholder="请输入姓名" v-model="formData.name" clearable style="width: 20%"></el-input>
+          <el-input placeholder="请输入手机号" v-model="formData.phone" clearable style="width: 20%"></el-input>
+          <el-input placeholder="请输入职位" v-model="formData.zhiwei" clearable style="width: 20%"></el-input>
+          <el-input placeholder="请输入ID" v-model="formData.idcar" clearable style="width: 20%"></el-input>
+        <!-- </el-form> -->
         <el-button type="primary">搜索</el-button>
-        <el-button type="default">重置</el-button>
+        <el-button type="default" @click="onReset">重置</el-button>
         <!-- <search-form :formOptions = "formOptions" @onSearch = onSearch></search-form> -->
       </div>
       <div class="center_r_bottom">
@@ -135,20 +138,24 @@
             </el-row>
             <el-divider></el-divider>
             <div class="title_drawer">多角色管理</div>
-            <el-row :gutter="24">
-              <el-col :span="12">
-                <el-form-item label="角色:" :label-width="formLabelWidth">
-                  <!-- <el-input v-model="formDrawer.name" autocomplete="off"></el-input> -->
-                  <el-select v-model="formDrawer.name" placeholder="请选择角色">
-                    <el-option label="省校长" value="sheng"></el-option>
-                    <el-option label="分校长" value="fen"></el-option>
-                    <el-option label="战队长" value="zhan"></el-option>
-                    <el-option label="营销专员" value="ying"></el-option>
-                    <el-option label="电销专员" value="dian"></el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-            </el-row>
+              <el-form-item
+                v-for="(domain, index) in formDrawer.domains"
+                :key="domain.key"
+                :prop="'domains.' + index + '.value'"
+                label="角色:"
+                :label-width="formLabelWidth">
+                <el-select v-model="domain.value" clearable placeholder="请选择">
+                  <el-option label="省校长" value="sheng"></el-option>
+                  <el-option label="分校长" value="fen"></el-option>
+                  <el-option label="战队长" value="zhan"></el-option>
+                  <el-option label="营销专员" value="ying"></el-option>
+                  <el-option label="电销专员" value="dian"></el-option>
+                </el-select>
+                <i class="el-icon-remove" style="margin-left:10px;color:red;" @click.prevent="removeDomain(domain)"></i>
+              </el-form-item>
+              <el-form-item>
+                <div class="demo-drawer__content_btn" @click="addDomain"> + 添加</div>
+              </el-form-item>
           </el-form>
           <div class="demo-drawer__footer">
             <el-button @click="cancelForm">取 消</el-button>
@@ -202,6 +209,12 @@ export default {
       //     placeholder: '请输入ID',
       //   },
       // ],
+      formData: {
+        name: '',
+        phone: '',
+        zhiwei: '',
+        idcar: ''
+      },
       tableData: [
         {
           id: 2,
@@ -504,7 +517,10 @@ export default {
         delivery: false,
         type: [],
         resource: '',
-        desc: ''
+        desc: '',
+        domains: [{
+          value: ''
+        }],
       },
       formLabelWidth: '80px',
       timer: null,
@@ -513,6 +529,10 @@ export default {
   methods: {
     onSearch(val) {
       console.log(val, 999)
+    },
+    onReset() {
+      console.log(9999)
+      this.$refs.formRef.resetFields();
     },
     editRow(index,id, rows) {
       // rows.splice(index, 1);
@@ -545,6 +565,20 @@ export default {
           }, 2000);
         })
         .catch(_ => {});
+    },
+    // 删除多角色
+    removeDomain(item) {
+      var index = this.formDrawer.domains.indexOf(item)
+      if (index !== -1) {
+        this.formDrawer.domains.splice(index, 1)
+      }
+    },
+    // 新增多角色
+    addDomain() {
+      this.formDrawer.domains.push({
+        value: '',
+        key: Date.now()
+      });
     },
     cancelForm() {
       this.loading = false;
@@ -654,6 +688,16 @@ export default {
     }
     .demo-drawer__content {
       padding: 40px 60px 0 30px;
+      .el-select {
+        width: 44.5%;
+      }
+      .demo-drawer__content_btn {
+        width: 100%;
+        text-align: center;
+        color: skyblue;
+        border-radius: 10px;
+        border: 1px dashed #ccc;
+      }
       .title_drawer {
         font-weight: 700;
         font-size: 16px;
