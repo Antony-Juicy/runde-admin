@@ -1,10 +1,12 @@
 <template>
   <div class="role-wrapper">
+    <div class="btn-wrapper">
+      <el-button type="primary" icon="el-icon-plus" size="small">添加</el-button>
+    </div>
     <!-- 表格 -->
     <rd-table
       :tableData="tableData"
       :tableKey="tableKey"
-      :multiple="multiple"
       :loading="loading"
       :pageConfig="pageConfig"
       @select="handleSelect"
@@ -62,23 +64,80 @@ export default {
     return {
       tabPosition: 'left',
       text: "",
-      tableData: [],
+      tableData: [
+        {
+          id:1,
+          title: 111,
+          pageName: 'yuu',
+          classifyName:'微软',
+          remark: '看全国分校审批查看全国分校审批查看全国分,校审批查看全国分校审批,查看全国分校审批查,看全国分校审批查看全国分校审批查看全国分校审批查看全国分校审批查'
+        },
+        {
+          id:2,
+          title: 111,
+          pageName: 'yuu',
+          classifyName:'微软',
+          remark: 'abh瑟夫'
+        },
+        {
+          id:3,
+          title: 111,
+          pageName: 'yuu',
+          classifyName:'微软',
+          remark: 'abh'
+        },
+        {
+          id:4,
+          title: 111,
+          pageName: 'yuu',
+          classifyName:'微软',
+          remark: '看全国分校审批查看全国分校审批查看全国分,校审批查看全国分校审批,查看全国分校审批查,看全国分校审批查看全国分校审批查看全国分校审批查看全国分校审批查'
+        },
+         {
+          id:4,
+          title: 111,
+          pageName: 'yuu',
+          classifyName:'微软',
+          remark: '看全国分校审批查看全国分校审批查看全国分,校审批查看全国分校审批,查看全国分校审批查,看全国分校审批查看全国分校审批查看全国分校审批查看全国分校审批查'
+        },
+        {
+          id:5,
+          title: 111,
+          pageName: 'yuu',
+          classifyName:'微软',
+          remark: 'abh瑟夫'
+        },
+        {
+          id:6,
+          title: 111,
+          pageName: 'yuu',
+          classifyName:'微软',
+          remark: 'abh'
+        },
+        {
+          id:7,
+          title: 111,
+          pageName: 'yuu',
+          classifyName:'微软',
+          remark: '看全国分校审批查看全国分校审批查看全国分,校审批查看全国分校审批,查看全国分校审批查,看全国分校审批查看全国分校审批查看全国分校审批查看全国分校审批查'
+        }
+      ],
       tableKey: [
         {
-          name: "id",
+          name: "ID",
           value: "id",
           width: 80,
         },
         {
-          name: "标题",
+          name: "名称",
           value: "title",
         },
         {
-          name: "归属页面",
+          name: "状态",
           value: "pageName",
         },
         {
-          name: "分类名称",
+          name: "创建时间",
           value: "classifyName",
         },
         {
@@ -91,7 +150,6 @@ export default {
           operate: true,
         },
       ],
-      multiple: true,
       pageConfig: {
         totalCount: 100,
         pageNum: 1,
@@ -110,6 +168,7 @@ export default {
     };
   },
   mounted() {
+    console.log(666)
     // this.getTableData();
   },
   methods: {
@@ -182,5 +241,20 @@ export default {
 .role-wrapper {
   background-color: #fff;
   padding: 20px;
+  .btn-wrapper {
+    margin-bottom: 16px;
+  }
+  /deep/ {
+    .el-table_1_column_5 .cell{
+       text-overflow: -o-ellipsis-lastline;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    height: 40px;
+    }
+  }
 }
 </style>

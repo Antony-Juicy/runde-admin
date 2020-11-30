@@ -96,4 +96,19 @@ export default {
 </script>
 
 <style scoped lang="scss">
+/deep/ .el-table {
+    .el-table__header {
+      th {
+        background-color: #FAFAFA;
+        color: #333333;
+        font-weight: 600;
+      }
+    }
+    .el-table__body {
+      td {
+        color: #333333;
+        font-weight: 400;
+      }
+    }
+  }
 </style>
