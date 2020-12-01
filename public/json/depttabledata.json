@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "src": "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg",
+    "phone": 13800138001,
+    "name": "北京人",
+    "dept": "医学1战队",
+    "position": "战队长",
+    "roles": "省校长",
+    "status": "在职"
+  },
+  {
+    "id": 2,
+    "src": "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg",
+    "phone": 13800138002,
+    "name": "上海人",
+    "dept": "医学2战队",
+    "position": "战队长",
+    "roles": "省校长",
+    "status": "在职"
+  },
+  {
+    "id": 3,
+    "src": "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg",
+    "phone": 13800138003,
+    "name": "广州人",
+    "dept": "医学3战队",
+    "position": "战队长",
+    "roles": "省校长",
+    "status": "在职"
+  },
+  {
+    "id": 4,
+    "src": "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg",
+    "phone": 13800138004,
+    "name": "深圳人",
+    "dept": "医学4战队",
+    "position": "战队长",
+    "roles": "省校长、分校长",
+    "status": "在职"
+  },
+  {
+    "id": 5,
+    "src": "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg",
+    "phone": 13800138005,
+    "name": "天津人",
+    "dept": "医学5战队",
+    "position": "战队长",
+    "roles": "分校长",
+    "status": "在职"
+  },
+  {
+    "id": 6,
+    "src": "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg",
+    "phone": 13800138006,
+    "name": "湖南人",
+    "dept": "医学6战队",
+    "position": "战队长",
+    "roles": "分校长",
+    "status": "在职"
+  },
+  {
+    "id": 7,
+    "src": "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg",
+    "phone": 13800138007,
+    "name": "福建人",
+    "dept": "医学7战队",
+    "position": "战队长",
+    "roles": "分校长",
+    "status": "在职"
+  },
+  {
+    "id": 8,
+    "src": "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg",
+    "phone": 13800138008,
+    "name": "天津人",
+    "dept": "医学8战队",
+    "position": "战队长",
+    "roles": "分校长",
+    "status": "在职"
+  }
+]
