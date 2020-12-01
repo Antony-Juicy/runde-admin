@@ -1,7 +1,7 @@
 <template>
   <section class="section_box">
       {{row.imagePath}}
-    <Upload-oss :src.sync="row.imagePath" @srcChangeFun="(data)=>{ row.imagePath = data}"/>
+    <Upload-oss v-if="uploadOssElem" :src.sync="row.imagePath" @srcChangeFun="(data)=>{ row.imagePath = data; reloadElem('uploadOssElem')}"/>
   </section>
 </template>
 
@@ -19,7 +19,8 @@ export default {
     return {
         row: {
             imagePath:''
-        }
+        },
+        uploadOssElem: true
     }
   },
   watch: {
@@ -43,11 +44,11 @@ export default {
       this.allImages = this.allImages.concat(arr);
       this.reloadElem();
     },
-    reloadElem() {
-      this.uploadOssElem = false;
-      this.$nextTick(() => {
-        this.uploadOssElem = true;
-      });
+    reloadElem(dataElem) { // 重新加载组件
+       this[dataElem] = false
+       this.$nextTick(()=> {
+         this[dataElem] = true;
+       })
     },
     handleChange(data) {
       (this.pic.project = data[1]), (this.pic.dir = data[0]);
