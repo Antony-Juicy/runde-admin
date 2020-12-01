@@ -5,19 +5,19 @@
   <div class='form-item'>
     <el-input
       v-if="isInput"
-      v-model="currentVal"
+      v-model.trim="currentVal"
       v-bind="bindProps"
       v-on="bindEvents"
-      size="mini">
+      size="small">
     </el-input>
 
     <el-input-number
       v-if="isInputNumber"
-      v-model="currentVal"
+      v-model.trim="currentVal"
       v-bind="bindProps"
       v-on="bindEvents"
       :controls-position="itemOptions['controls-position'] || 'right'"
-      size="mini">
+      size="small">
     </el-input-number>
 
     <el-select
@@ -25,7 +25,7 @@
       v-model="currentVal"
       v-bind="bindProps"
       v-on="bindEvents"
-      size="mini"
+      size="small"
       clearable>
       <el-option
         v-for="item in itemOptions.options"
@@ -42,7 +42,7 @@
       v-bind="bindProps"
       v-on="bindEvents"
       :type="itemOptions.type || 'datetimerange'"
-      size="mini"
+      size="small"
       clearable
       :picker-options="pickerOptionsRange"
       start-placeholder="开始日期"
@@ -59,7 +59,7 @@
       v-bind="bindProps"
       v-on="bindEvents"
       type="monthrange"
-      size="mini"
+      size="small"
       clearable
       :picker-options="pickerOptionsRangeMonth"
       start-placeholder="开始日期"
@@ -75,7 +75,7 @@
       v-bind="bindProps"
       v-on="bindEvents"
       :type="itemOptions.type"
-      size="mini"
+      size="small"
       clearable
       placeholder="请选择日期">
     </el-date-picker>
@@ -85,7 +85,7 @@
       v-model="currentVal"
       v-bind="bindProps"
       v-on="bindEvents"
-      size="mini"
+      size="small"
       clearable>
     </el-cascader>
   </div>

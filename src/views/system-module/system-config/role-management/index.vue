@@ -28,7 +28,7 @@
         >
         <el-divider direction="vertical"></el-divider>
         <el-button
-          @click="handleAuthority"
+          @click="handleAuthority(scope.row)"
           type="text"
           size="small"
           style="color: #ec5b56"
@@ -49,11 +49,11 @@
         :rules="rules"
         :label-width="formLabelWidth"
       >
-        <el-form-item label="编码" prop="code" :label-width="formLabelWidth">
+        <el-form-item label="编码" prop="roleCode" :label-width="formLabelWidth" v-if="dialogStatus">
           <el-row>
             <el-col :span="16">
               <el-input
-                v-model="basicInfo.code"
+                v-model="basicInfo.roleCode"
                 autocomplete="off"
                 placeholder="请点击获取编码"
                 disabled
@@ -88,6 +88,20 @@
             </el-option>
           </el-select>
         </el-form-item>
+        <el-form-item
+          label="修改事由"
+          prop="updateReason"
+          :label-width="formLabelWidth"
+          v-if="!dialogStatus"
+        >
+          <el-input
+            v-model="basicInfo.updateReason"
+            autocomplete="off"
+            placeholder="请输入修改事由"
+            type="textarea"
+            :rows="1"
+          />
+        </el-form-item>
         <el-form-item label="备注" prop="remark" :label-width="formLabelWidth">
           <el-input
             v-model="basicInfo.remark"
@@ -109,6 +123,8 @@
       <el-tree
         :data="treeData"
         :props="defaultProps"
+        node-key="id"
+        ref="tree"
         show-checkbox
         @node-click="handleNodeClick"
         class="authority-tree"
@@ -119,6 +135,7 @@
 </template>
 
 <script>
+let loginUserId = JSON.parse(localStorage.getItem("userInfo")).userId;
 export default {
   inject: ["reload"],
   data() {
@@ -152,13 +169,17 @@ export default {
           name: "名称",
           value: "roleName",
         },
+         {
+          name: "归属部门",
+          value: "deptName",
+        },
         {
           name: "状态",
           value: "status",
         },
         {
           name: "创建时间",
-          value: "classifyName",
+          value: "createTime",
         },
         {
           name: "备注",
@@ -183,93 +204,74 @@ export default {
       dialogStatus: true, //弹窗状态： true 新增 false 编辑
       formLabelWidth: "100px",
       basicInfo: {
-        code: "",
+        roleCode: "",
         roleName: "",
         status: "",
         remark: "",
+        updateReason:""
       },
       rules: {
-        code: [{ required: true, message: "请获取编码", trigger: "blur" }],
+        roleCode: [{ required: true, message: "请获取编码", trigger: "blur" }],
+        updateReason: [{ required: true, message: "请输入修改事由", trigger: "blur" }],
         roleName: [{ required: true, message: "请输入名称", trigger: "blur" }],
         status: [{ required: true, message: "请选择状态", trigger: "blur" }],
       },
       options: [
         {
           label: "正常",
-          value: 1,
+          value: "1",
         },
         {
           label: "暂停",
-          value: 0,
+          value: "0",
         },
       ],
       // 配置权限
       authorityVisible: false,
-      treeData: [
-        {
-          label: "一级 1",
-          children: [
-            {
-              label: "二级 1-1",
-              children: [
-                {
-                  label: "三级 1-1-1",
-                },
-              ],
-            },
-          ],
-        },
-        {
-          label: "一级 2",
-          children: [
-            {
-              label: "二级 2-1",
-              children: [
-                {
-                  label: "三级 2-1-1",
-                },
-              ],
-            },
-            {
-              label: "二级 2-2",
-              children: [
-                {
-                  label: "三级 2-2-1",
-                },
-              ],
-            },
-          ],
-        },
-        {
-          label: "一级 3",
-          children: [
-            {
-              label: "二级 3-1",
-              children: [
-                {
-                  label: "三级 3-1-1",
-                },
-              ],
-            },
-            {
-              label: "二级 3-2",
-              children: [
-                {
-                  label: "三级 3-2-1",
-                },
-              ],
-            },
-          ],
-        },
-      ],
+      treeData:[{
+          id: 1,
+          label: '一级 1',
+          children: [{
+            id: 4,
+            label: '二级 1-1',
+            children: [{
+              id: 9,
+              label: '三级 1-1-1'
+            }, {
+              id: 10,
+              label: '三级 1-1-2'
+            }]
+          }]
+        }, {
+          id: 2,
+          label: '一级 2',
+          children: [{
+            id: 5,
+            label: '二级 2-1'
+          }, {
+            id: 6,
+            label: '二级 2-2'
+          }]
+        }, {
+          id: 3,
+          label: '一级 3',
+          children: [{
+            id: 7,
+            label: '二级 3-1'
+          }, {
+            id: 8,
+            label: '二级 3-2'
+          }]
+        }],
       defaultProps: {
         children: "children",
         label: "label",
       },
+      currentPageInfo:null,
+      selectedRoleId:''
     };
   },
   mounted() {
-    console.log(666);
     // this.getTableData();
   },
   methods: {
@@ -277,9 +279,11 @@ export default {
       console.log(rows, "rows---");
     },
     pageChange(val) {
+      this.currentPageInfo = val;
       this.getTableData({
-        currentPage: val.page,
-        showCount: val.limit,
+        currentPage: val.page || 1,
+        pageSize: val.limit || 10,
+        loginUserId
       });
     },
     getTableData(params) {
@@ -288,14 +292,15 @@ export default {
         target: ".el-table",
       });
       this.$fetch(
-        "getInformationPage",
+        "role_list",
         params || {
           currentPage: 1,
-          showCount: 10,
+          pageSize: 10,
+          loginUserId
         }
       ).then((res) => {
-        this.tableData = res.data.list;
-        this.pageConfig.totalCount = res.data.count;
+        this.tableData = res.data.records;
+        this.pageConfig.totalCount = res.data.total;
         setTimeout(() => {
           loading.close();
         }, 200);
@@ -327,24 +332,70 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log(this.basicInfo, "提交");
-
-          this.$message({
-            message: "提交成功",
-            type: "success",
-          });
-          // this.getTableData();
+          if(this.dialogStatus) {
+            // 新增
+            this.$fetch('role_save',{
+              ...this.basicInfo,
+              loginUserId
+            }).then(res => {
+              this.$message({
+                message: "提交成功",
+                type: "success",
+              });
+              this.handleClose('dataForm');
+              this.pageChange(this.currentPageInfo);
+            })
+          }else {
+            // 编辑
+            this.$fetch("role_edit",{
+              ...this.basicInfo,
+              loginUserId,
+            }).then(res => {
+              this.$message({
+                message: "编辑成功",
+                type: "success",
+              });
+              this.handleClose('dataForm');
+             this.pageChange(this.currentPageInfo);
+            })
+          }
         }
       });
     },
     // -----配置权限弹窗的处理--------
-    handleAuthority() {
+    handleAuthority(data) {
+      this.selectedRoleId = data.id;
       this.authorityVisible = true;
     },
     handleCloseAuthority(formName) {
       this.authorityVisible = false;
-      this.$refs[formName].resetFields();
     },
-    submitFormAuthority() {},
+    submitFormAuthority() {
+      console.log(this.$refs.tree.getCheckedKeys(),'key');
+      let selectedIdArr = this.$refs.tree.getCheckedKeys();
+      if(!selectedIdArr.length) {
+        this.$message({
+          message: '请选择权限',
+          type: 'warning'
+        })
+        return;
+      }
+      console.log({
+        menuIds: selectedIdArr.join(','),
+        roleIds: this.selectedRoleId
+      },'888')
+      this.$fetch('menu_impower',{
+        menuIds: selectedIdArr.join(','),
+        roleIds: this.selectedRoleId
+      }).then(res => {
+        this.$message({
+          message: "保存成功",
+          type: "success",
+        });
+        this.handleCloseAuthority();
+      })
+
+    },
     handleNodeClick() {},
 
     // 获取编码
@@ -352,7 +403,7 @@ export default {
       this.$fetch('system_getCode',{
         flagType: 2
       }).then(res => {
-        this.basicInfo.code = res.data;
+        this.basicInfo.roleCode = res.data;
       })
     }
   },

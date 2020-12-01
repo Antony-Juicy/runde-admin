@@ -3,30 +3,33 @@
  */
 <template>
   <div class="search-form-box">
-    <div>
+    <div :class="{'search-box-wrapper': !showAll, 'search-box-wrapper2': true}">
       <el-form id="searchBox" :model="formData" ref="formRef" :inline="true">
-        <el-form-item
-          v-for="(item, index) in formOptions"
-          :key="newKeys[index]"
-          :prop="item.prop"
-          :label="item.label ? item.label + '：' : ''"
-          :rules="item.rules">
-          <formItem v-model="formData[item.prop]" :itemOptions="item" />
-        </el-form-item>
+        <template v-for="(item, index) in formOptions">
+          <template v-if="index < showItem">
+            <el-form-item
+              :key="newKeys[index]"
+              :prop="item.prop"
+              :label="item.label ? item.label + '：' : ''"
+              :rules="item.rules">
+              <formItem v-model="formData[item.prop]" :itemOptions="item" />
+            </el-form-item>
+          </template>
+        </template>
       </el-form>
 
       <!-- 提交按钮 -->
       <div class="btn-box">
         <el-button v-if="btnItems.includes('search')" size="mini" type="primary" class="btn-search" @click="onSearch">搜索</el-button>
-        <el-button v-if="btnItems.includes('export')" size="mini" type="primary" class="btn-export" @click="onExport">导出</el-button>
         <el-button v-if="btnItems.includes('reset')" size="mini" type="default" class="btn-reset" @click="onReset">重置</el-button>
+        <el-button v-if="formOptions.length > 3 " type="text" style="margin-left:10px;height:40px;" id="closeSearchBtn" @click="closeSearch">
+          {{word}}
+          <i :class="showAll ? 'el-icon-arrow-up ': 'el-icon-arrow-down'"></i>
+        </el-button>
       </div>
     </div>
 
-    <el-button v-if="formOptions.length > 4" type="text" style="margin-left:10px;height:40px;" id="closeSearchBtn" @click="closeSearch">
-      {{word}}
-      <i :class="showAll ? 'el-icon-arrow-up ': 'el-icon-arrow-down'"></i>
-    </el-button>
+    
   </div>
 </template>
 
@@ -71,17 +74,25 @@ export default {
         return "search, reset";
       },
     },
+    showNum: {
+      type: Number,
+      default(){
+        return 3; //默认展示搜索
+      }
+    }
   },
 
   data() {
     return {
       showAll: true,//是否展开全部
       formData: {},
+      showItem: 3
     };
   },
 
   created() {
     this.addInitValue();
+    this.showItem = this.showNum;
   },
 
   mounted() {
@@ -96,8 +107,6 @@ export default {
     onValidate(callback) {
       this.$refs.formRef.validate((valid) => {
         if (valid) {
-          console.log("提交成功");
-          console.log(this.formData);
           callback();
         }
       });
@@ -130,11 +139,11 @@ export default {
     // 收起搜索事件
     closeSearch() {
       this.showAll = !this.showAll;
-      var searchBoxHeght = document.getElementById("searchBox");
-      if (this.showAll == false) {
-        searchBoxHeght.style.height = 40 + "px";
-      } else {
-        searchBoxHeght.style.height = "auto";
+      if(this.showAll) {
+        // 展开
+        this.showItem = this.formOptions.length;
+      }else {
+        this.showItem = this.showNum;
       }
     }
   },
@@ -148,9 +157,9 @@ export default {
     word: function() {
       if (this.showAll == false) {
         //对文字进行处理
-        return "展开搜索";
+        return "展开";
       } else {
-        return "收起搜索";
+        return "收起";
       }
     }
   }
@@ -160,18 +169,29 @@ export default {
 
 <style lang='less' scoped>
 #searchBox {
-  margin-bottom: 10px;
+  // margin-bottom: 10px;
   overflow: hidden;
 }
 .search-form-box {
   display: flex;
   margin-bottom: 15px;
-
+  .search-box-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    // justify-content: space-between;
+  }
+  .search-box-wrapper2 {
+    background-color: #fff;
+    padding: 24px 0 24px 24px;
+  }
   .btn-box {
     display: flex;
     justify-content: flex-start;
-    padding-top: 5px;
-
+    // padding-top: 5px;
+    float: right;
+    align-items: center;
+    margin-right: 20px;
     button {
       height: 28px;
     }

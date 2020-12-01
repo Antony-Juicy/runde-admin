@@ -43,7 +43,7 @@ export default {
   background-color: #F0F2F5;
 }
 .fixed-header + .app-main {
-  padding-top: 113px;
+  padding-top: 105px;
 }
 .app-title {
   padding: 20px 0;
