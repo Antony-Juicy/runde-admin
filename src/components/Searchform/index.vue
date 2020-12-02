@@ -20,7 +20,7 @@
 
       <!-- 提交按钮 -->
       <div class="btn-box">
-        <el-button v-if="btnItems.includes('search')" size="mini" type="primary" class="btn-search" @click="onSearch">搜索</el-button>
+        <el-button v-if="btnItems.includes('search')" size="mini" type="primary" class="btn-search" @click="onSearch" v-prevent-re-click="1000">搜索</el-button>
         <el-button v-if="btnItems.includes('reset')" size="mini" type="default" class="btn-reset" @click="onReset">重置</el-button>
         <el-button v-if="formOptions.length > 3 " type="text" style="margin-left:10px;height:40px;" id="closeSearchBtn" @click="closeSearch">
           {{word}}

@@ -40,6 +40,14 @@
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
             >编辑</el-button
           >
+          <el-divider direction="vertical"></el-divider>
+          <el-button
+            @click="handleDelete(scope.row)"
+            type="text"
+            size="small"
+            style="color: #ec5b56"
+            >删除</el-button
+          >
         </template>
       </rd-table>
       <!-- 新增/编辑 弹窗 -->
@@ -83,6 +91,7 @@
                   size="small"
                   style="margin-left: 5px"
                   @click="getCode"
+                  v-prevent-re-click="2000"
                   >获取编码</el-button
                 ></el-col
               >
@@ -157,7 +166,12 @@
               placeholder="请输入后端url"
             />
           </el-form-item>
-          <el-form-item label="图标" prop="icon" :label-width="formLabelWidth" class="icon-wrapper">
+          <el-form-item
+            label="图标"
+            prop="icon"
+            :label-width="formLabelWidth"
+            class="icon-wrapper"
+          >
             {{ basicInfo.icon }}
             <Upload-oss
               v-if="uploadOssElem"
@@ -192,7 +206,7 @@
               autocomplete="off"
               placeholder="请输入备注"
               type="textarea"
-              :rows="1"
+              :rows="2"
             />
           </el-form-item>
         </el-form>
@@ -223,6 +237,7 @@ export default {
           name: 111,
           status: 1,
           classifyName: "微软",
+          icon: "https://rdimg.rundejy.com/web/runde_admin/icon_hs.png",
           remark:
             "看全国分校审批查看全国分校审批查看全国分,校审批查看全国分校审批,查看全国分校审批查,看全国分校审批查看全国分校审批查看全国分校审批查看全国分校审批查",
         },
@@ -270,7 +285,7 @@ export default {
           name: "操作",
           value: "edit",
           operate: true,
-          width: 100,
+          width: 120,
         },
       ],
       fixedTwoRow: true,
@@ -293,7 +308,7 @@ export default {
         backUrl: "",
         orderNum: "",
         updateReason: "",
-        icon: ""
+        icon: "",
       },
       rules: {
         updateReason: [
@@ -372,8 +387,8 @@ export default {
     };
   },
   mounted() {
-    this.getTableData();
-    this.getTreeData();
+    // this.getTableData();
+    // this.getTreeData();
   },
   methods: {
     handleSelect(rows) {
@@ -462,7 +477,7 @@ export default {
             });
             return;
           }
-          if (isNaN(this.basicInfo.orderNum)) {
+          if (this.basicInfo.orderNum && isNaN(this.basicInfo.orderNum)) {
             this.$message({
               message: "请输入正确的排序编号",
               type: "warning",
@@ -501,6 +516,28 @@ export default {
           }
         }
       });
+    },
+    // 删除权限
+    handleDelete(data) {
+      let info = "权限";
+      this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(async () => {
+          const res = await this.$fetch("menu_delete", { id: data.row.id });
+          if (res) {
+            this.$message({
+              type: "success",
+              message: "删除成功!",
+            });
+            setTimeout(() => {
+              this.pageChange(this.currentPageInfo);
+            }, 50);
+          }
+        })
+        .catch(() => {});
     },
 
     // 操作菜单树
@@ -569,7 +606,7 @@ export default {
     .btn-wrapper {
       margin-bottom: 16px;
     }
-    
+
     /deep/ {
       .img180 {
         width: 70px;
