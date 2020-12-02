@@ -72,6 +72,26 @@ export default {
     }
     .el-dialog__body {
       min-height: 180px;
+      max-height: calc(81vh - 71px - 63px);
+      overflow: auto;
+      box-sizing: border-box;
+      &::-webkit-scrollbar {
+        /*滚动条整体样式*/
+        width : 10px;  /*高宽分别对应横竖滚动条的尺寸*/
+        height: 1px;
+        }
+        &::-webkit-scrollbar-thumb {
+        /*滚动条里面小方块*/
+        border-radius: 10px;
+        box-shadow   : inset 0 0 5px #d0d1d3;
+        background   : #d0d1d3;
+        }
+        // &::-webkit-scrollbar-track {
+        // /*滚动条里面轨道*/
+        // box-shadow   : inset 0 0 5px rgba(0, 0, 0, 0.2);
+        // border-radius: 10px;
+        // background   : #ededed;
+        // }
     }
     .el-dialog__footer {
       border-top: 1px solid #F0F0F0;

@@ -1,7 +1,6 @@
 <template>
   <div>
     <img ref="uploaderInput"  v-if="!src" class="img180" src="https://rdimg.rundejy.com/cmsuserInfo/20200624163441upload_oss.png" alt="">
-     <img ref="uploaderInput"  v-else-if='src.indexOf("https://") === -1' class="img180" :src="iceConfig.baseUrl +'/'+ src" />
      <img ref="uploaderInput"  v-else class="img180" :src="src" />
   </div>  
 </template>
@@ -53,5 +52,6 @@ export default {
 .img180 {
     width: 120px;
     height: 120px;
+    cursor: pointer;
 }
 </style>

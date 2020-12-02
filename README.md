@@ -7,6 +7,23 @@
 
 ```
 
+```
+# 全局公共组件
+表格  RdTable
+弹窗  RdDialog
+```
+
+```
+# 全局工具类
+/utils/fetch 请求 (用法：this.$fetch)
+/utils/common 方法 （用法：this.$common）
+```
+
+```
+# 全局过滤器
+/utils/filters
+```
+
 ```bash
 # 克隆项目
 git clone https://github.com/PanJiaChen/vue-admin-template.git
