@@ -1,166 +1,189 @@
 <template>
   <div class="menu-wrapper">
+    <search-form :formOptions="formOptions" :showNum="showNum" @onSearch="onSearch"></search-form>
     <div class="menu-wrapper-left">
-       <rd-tree
-          :data="treeData"
-          :defaultProps="defaultProps"
-          @nodeClick="handleNodeClick"
-        >
-        </rd-tree>
+      <rd-tree
+        :data="treeData"
+        :defaultProps="defaultProps"
+        @nodeClick="handleNodeClick"
+      >
+      </rd-tree>
     </div>
     <div class="menu-wrapper-right w-container">
       <div class="btn-wrapper">
-      <el-button
-        type="primary"
-        icon="el-icon-plus"
-        size="small"
-        @click="handleAdd"
-        >添加</el-button
+        <el-button
+          type="primary"
+          icon="el-icon-plus"
+          size="small"
+          @click="handleAdd"
+          >添加</el-button
+        >
+      </div>
+      <!-- 表格 -->
+      <rd-table
+        :tableData="tableData"
+        :tableKey="tableKey"
+        :loading="loading"
+        :fixedTwoRow="fixedTwoRow"
+        :pageConfig="pageConfig"
+        @select="handleSelect"
+        @pageChange="pageChange"
       >
-    </div>
-    <!-- 表格 -->
-    <rd-table
-      :tableData="tableData"
-      :tableKey="tableKey"
-      :loading="loading"
-      :fixedTwoRow="fixedTwoRow"
-      :pageConfig="pageConfig"
-      @select="handleSelect"
-      @pageChange="pageChange"
-    >
-      <template slot="name" slot-scope="scope">
-        <el-tag size="medium">{{ scope.row.name }}</el-tag>
-      </template>
-      <template slot="edit" slot-scope="scope">
-        <el-button @click="handleEdit(scope.row)" type="text" size="small"
-          >编辑</el-button
-        >
-      </template>
-    </rd-table>
-    <!-- 新增/编辑 弹窗 -->
-    <rd-dialog
-      :title="dialogStatus ? '新增菜单' : '编辑菜单'"
-      :dialogVisible="dialogVisible"
-      @handleClose="handleClose('dataForm')"
-      @submitForm="submitForm('dataForm')"
-    >
-      <el-form
-        ref="dataForm"
-        :model="basicInfo"
-        :rules="rules"
-        :label-width="formLabelWidth"
+        <template slot="name" slot-scope="scope">
+          <el-tag size="medium">{{ scope.row.name }}</el-tag>
+        </template>
+        <template slot="edit" slot-scope="scope">
+          <el-button @click="handleEdit(scope.row)" type="text" size="small"
+            >编辑</el-button
+          >
+        </template>
+      </rd-table>
+      <!-- 新增/编辑 弹窗 -->
+      <rd-dialog
+        :title="dialogStatus ? '新增菜单' : '编辑菜单'"
+        :dialogVisible="dialogVisible"
+        @handleClose="handleClose('dataForm')"
+        @submitForm="submitForm('dataForm')"
       >
-        <el-form-item label="编码" prop="code" :label-width="formLabelWidth">
-          <el-row>
-            <el-col :span="16">
-              <el-input
-                v-model="basicInfo.code"
-                autocomplete="off"
-                placeholder="请点击获取编码"
-                disabled
-            /></el-col>
-            <el-col :span="8"
-              ><el-button type="primary" size="small" style="margin-left: 5px"
-                @click="getCode"
-                >获取编码</el-button
-              ></el-col
-            >
-          </el-row>
-        </el-form-item>
-        <el-form-item
-          label="名称"
-          prop="name"
+        <el-form
+          ref="dataForm"
+          :model="basicInfo"
+          :rules="rules"
           :label-width="formLabelWidth"
         >
-          <el-input
-            v-model="basicInfo.name"
-            autocomplete="off"
-            placeholder="请输入角色名称"
-          />
-        </el-form-item>
-        <el-form-item label="状态" prop="status" :label-width="formLabelWidth">
-          <el-select v-model="basicInfo.status" placeholder="请选择状态">
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="类型" prop="type" :label-width="formLabelWidth">
-          <el-select v-model="basicInfo.type" placeholder="请选择类型">
-            <el-option
-              v-for="item in typeOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          label="前端url"
-          prop="frontUrl"
-          :label-width="formLabelWidth"
-        >
-          <el-input
-            v-model="basicInfo.frontUrl"
-            autocomplete="off"
-            placeholder="请输入前端url"
-          />
-        </el-form-item>
-        <el-form-item
-          label="后端url"
-          prop="backUrl"
-          :label-width="formLabelWidth"
-        >
-          <el-input
-            v-model="basicInfo.backUrl"
-            autocomplete="off"
-            placeholder="请输入后端url"
-          />
-        </el-form-item>
+          <el-form-item label="父级菜单" prop="parentId" :label-width="formLabelWidth" v-if="dialogStatus">
+            {{selectedTree.name}}（id:{{selectedTree.id}}）
+          </el-form-item>
+          <el-form-item label="编码" prop="code" :label-width="formLabelWidth" v-if="dialogStatus">
+            <el-row>
+              <el-col :span="16">
+                <el-input
+                  v-model="basicInfo.code"
+                  autocomplete="off"
+                  placeholder="请点击获取编码"
+                  disabled
+              /></el-col>
+              <el-col :span="8"
+                ><el-button
+                  type="primary"
+                  size="small"
+                  style="margin-left: 5px"
+                  @click="getCode"
+                  >获取编码</el-button
+                ></el-col
+              >
+            </el-row>
+          </el-form-item>
+          <el-form-item label="名称" prop="name" :label-width="formLabelWidth">
+            <el-input
+              v-model="basicInfo.name"
+              autocomplete="off"
+              placeholder="请输入名称"
+            />
+          </el-form-item>
           <el-form-item
-          label="图标"
-          prop="icon"
-          :label-width="formLabelWidth"
-        >
-          111
-        </el-form-item>
+            label="状态"
+            prop="status"
+            :label-width="formLabelWidth"
+          >
+            <el-select v-model="basicInfo.status" placeholder="请选择状态">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="类型" prop="type" :label-width="formLabelWidth">
+            <el-select v-model="basicInfo.type" placeholder="请选择类型">
+              <el-option
+                v-for="item in typeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
           <el-form-item
-          label="排序编号"
-          prop="orderNum"
-          :label-width="formLabelWidth"
-        >
-          <el-input
-            v-model="basicInfo.orderNum"
-            autocomplete="off"
-            placeholder="请输入排序编号"
-          />
-        </el-form-item>
-        <el-form-item label="备注" prop="remark" :label-width="formLabelWidth">
-          <el-input
-            v-model="basicInfo.remark"
-            autocomplete="off"
-            placeholder="请输入备注"
-            type="textarea"
-            :rows="3"
-          />
-        </el-form-item>
-      </el-form>
-    </rd-dialog>
+            label="更新理由"
+            prop="updateReason"
+            :label-width="formLabelWidth"
+            v-if="!dialogStatus"
+          >
+            <el-input
+              v-model="basicInfo.updateReason"
+              autocomplete="off"
+              placeholder="请输入更新理由"
+              type="textarea"
+              :rows="1"
+            />
+          </el-form-item>
+          <el-form-item
+            label="前端url"
+            prop="frontUrl"
+            :label-width="formLabelWidth"
+          >
+            <el-input
+              v-model="basicInfo.frontUrl"
+              autocomplete="off"
+              placeholder="请输入前端url"
+            />
+          </el-form-item>
+          <el-form-item
+            label="后端url"
+            prop="backUrl"
+            :label-width="formLabelWidth"
+          >
+            <el-input
+              v-model="basicInfo.backUrl"
+              autocomplete="off"
+              placeholder="请输入后端url"
+            />
+          </el-form-item>
+          <el-form-item label="图标" prop="icon" :label-width="formLabelWidth">
+          </el-form-item>
+          <el-form-item
+            label="排序编号"
+            prop="orderNum"
+            :label-width="formLabelWidth"
+          >
+            <el-input
+              v-model="basicInfo.orderNum"
+              autocomplete="off"
+              placeholder="请输入排序编号"
+            />
+          </el-form-item>
+          <el-form-item
+            label="备注"
+            prop="remark"
+            :label-width="formLabelWidth"
+          >
+            <el-input
+              v-model="basicInfo.remark"
+              autocomplete="off"
+              placeholder="请输入备注"
+              type="textarea"
+              :rows="1"
+            />
+          </el-form-item>
+        </el-form>
+      </rd-dialog>
     </div>
   </div>
 </template>
 
 <script>
-import RdTree from '@/components/RdTree';
+import RdTree from "@/components/RdTree";
+import searchForm from "@/components/Searchform";
+let loginUserId = JSON.parse(localStorage.getItem("userInfo")).userId;
 export default {
   inject: ["reload"],
   components: {
-    RdTree
+    RdTree,
+    searchForm,
   },
   data() {
     return {
@@ -181,7 +204,7 @@ export default {
           status: 1,
           classifyName: "微软",
           remark: "abh瑟夫",
-        }
+        },
       ],
       tableKey: [
         {
@@ -198,13 +221,13 @@ export default {
           value: "orderNum",
         },
         {
-          name: "所属层级",
-          value: "",
+          name: "类型",
+          value: "type",
         },
         {
           name: "路径",
           value: "frontUrl",
-          showTooltip: false
+          showTooltip: false,
         },
         {
           name: "图标",
@@ -233,16 +256,18 @@ export default {
       dialogStatus: true, //弹窗状态： true 新增 false 编辑
       formLabelWidth: "100px",
       basicInfo: {
-        code:"",
+        code: "11",
         name: "",
         status: "",
-        type:"",
+        type: "",
         remark: "",
-        frontUrl:"",
-        backUrl:"",
-        orderNum:""
+        frontUrl: "",
+        backUrl: "",
+        orderNum: "",
+        updateReason:""
       },
       rules: {
+        updateReason: [{ required: true, message: "请输入更新理由", trigger: "blur" }],
         code: [{ required: true, message: "请获取编码", trigger: "blur" }],
         name: [{ required: true, message: "请输入名称", trigger: "blur" }],
         status: [{ required: true, message: "请选择状态", trigger: "blur" }],
@@ -251,102 +276,67 @@ export default {
       options: [
         {
           label: "正常",
-          value: 1,
+          value: "1",
         },
         {
           label: "暂停",
-          value: 0,
+          value: "0",
         },
       ],
       typeOptions: [
         {
           label: "目录",
-          value: 0,
+          value: "0",
         },
         {
           label: "菜单",
-          value: 1,
+          value: "1",
         },
         {
           label: "令牌",
-          value: 2,
-        }
+          value: "2",
+        },
       ],
       // 树状
-       treeData: [
-        {
-          label: "一级 1",
-          children: [
-            {
-              label: "二级 1-1",
-              children: [
-                {
-                  label: "三级 1-1-1",
-                  children: [
-                    {
-                      label: "四级级 1-1-1",
-                      children: [
-                        {
-                          label: "五级级 1-1-1",
-                        },
-                      ],
-                    },
-                  ],
-                },
-                {
-                  label: "三级 1-1-12",
-                },
-              ],
-            },
-          ],
-        },
-        {
-          label: "一级 2",
-          children: [
-            {
-              label: "二级 2-1",
-              children: [
-                {
-                  label: "三级 2-1-1",
-                },
-              ],
-            },
-            {
-              label: "二级 2-2",
-              children: [
-                {
-                  label: "三级 2-2-1",
-                },
-              ],
-            },
-          ],
-        },
-        {
-          label: "一级 3",
-          children: [
-            {
-              label: "二级 3-1",
-              children: [
-                {
-                  label: "三级 3-1-1",
-                },
-              ],
-            },
-            {
-              label: "二级 3-2",
-              children: [
-                {
-                  label: "三级 3-2-1",
-                },
-              ],
-            },
-          ],
-        },
-      ],
+      treeData: [],
       defaultProps: {
         children: "children",
         label: "name",
-      }
+      },
+      selectedTree: '',
+
+      // 搜索栏
+      formOptions: [
+        {
+          prop: "name",
+          element: "el-input",
+          initValue: "",
+          placeholder: "请输入名称",
+        },
+        {
+          prop: "type",
+          element: "el-select",
+          initValue: "",
+          placeholder: "请选择类型",
+          options: [
+            {
+              label: "目录",
+              value: 0,
+            },
+            {
+              label: "菜单",
+              value: 1,
+            },
+            {
+              label: "令牌",
+              value: 2,
+            },
+          ],
+        },
+      ],
+      showNum: 4,
+      searchForm: {},
+      currentPageInfo:null
     };
   },
   mounted() {
@@ -358,10 +348,12 @@ export default {
       console.log(rows, "rows---");
     },
     pageChange(val) {
+      this.currentPageInfo = val;
       this.getTableData({
-        currentPage: val.page,
-        pageSize: val.limit,
-        loginUserId: JSON.parse(localStorage.getItem('userInfo')).userId
+        currentPage: val.page || 1,
+        pageSize: val.limit || 10,
+        loginUserId,
+        ...this.searchForm
       });
     },
     getTableData(params) {
@@ -374,8 +366,7 @@ export default {
         params || {
           currentPage: 1,
           pageSize: 10,
-          loginUserId: JSON.parse(localStorage.getItem('userInfo')).userId,
-          type: "0"
+          loginUserId
         }
       ).then((res) => {
         this.tableData = res.data.records;
@@ -387,6 +378,20 @@ export default {
     },
     // 打开新增弹窗
     handleAdd() {
+      // 如果没有先选父级结果 弹出提示
+      if(!this.selectedTree) {
+        this.$message({
+          message: '请先选择父级菜单',
+          type: 'warning'
+        })
+        return;
+      }else if(this.selectedTree.type != "0") {
+        this.$message({
+          message: '请选择正确的菜单',
+          type: 'warning'
+        })
+        return;
+      }
       for (const key in this.basicInfo) {
         this.basicInfo[key] = "";
       }
@@ -403,7 +408,7 @@ export default {
     },
     // 关闭
     handleClose(formName) {
-       this.dialogVisible = false;
+      this.dialogVisible = false;
       this.$refs[formName].resetFields();
     },
     // 提交
@@ -411,34 +416,92 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log(this.basicInfo, "提交");
+          if (this.basicInfo.type == "0" && !this.basicInfo.frontUrl) {
+            this.$message({
+              message: "请输入前端url",
+              type: "warning",
+            });
+            return;
+          }
+          if (this.basicInfo.type == "1" && !this.basicInfo.backUrl) {
+            this.$message({
+              message: "请输入后端url",
+              type: "warning",
+            });
+            return;
+          }
+          if (isNaN(this.basicInfo.orderNum)) {
+            this.$message({
+              message: "请输入正确的排序编号",
+              type: "warning",
+            });
+            return;
+          }
+
+          if(this.dialogStatus) {
+            // 新增
+            this.$fetch('menu_save',{
+              ...this.basicInfo,
+              isOneLevel: 0,
+              loginUserId,
+              parentId: this.selectedTree.id
+            }).then(res => {
+              this.$message({
+                message: "提交成功",
+                type: "success",
+              });
+              this.handleClose('dataForm');
+              this.pageChange(this.currentPageInfo);
+            })
+          }else {
+            // 编辑
+            this.$fetch("menu_edit",{
+              ...this.basicInfo,
+              loginUserId,
+            }).then(res => {
+              this.$message({
+                message: "编辑成功",
+                type: "success",
+              });
+              this.handleClose('dataForm');
+             this.pageChange(this.currentPageInfo);
+            })
+          }
           
-          this.$message({
-            message: "提交成功",
-            type: "success",
-          });
-          // this.getTableData();
         }
       });
     },
 
     // 操作菜单树
-    handleNodeClick(data){
-      console.log(data,'---')
+    handleNodeClick(data) {
+      console.log(data, "---");
+      this.selectedTree = data;
     },
-    getTreeData(){
-      this.$fetch('getMenuTreeList').then(res => {
-        console.log(res.data.records,'tree')
+    getTreeData() {
+      this.$fetch("getMenuTreeList").then((res) => {
+        console.log(res.data.records, "tree");
         this.treeData = res.data.records;
-      })
+      });
     },
 
     // 获取编码
-    // 获取编码
-    getCode(){
-      this.$fetch('system_getCode',{
-        flagType: 5
-      }).then(res => {
+    getCode() {
+      this.$fetch("system_getCode", {
+        flagType: 5,
+      }).then((res) => {
         this.basicInfo.code = res.data;
+      });
+    },
+
+    // 搜索
+    onSearch(data){
+      console.log(data,'data--')
+      this.searchForm = {...data};
+      this.getTableData({
+        currentPage: 1,
+          pageSize: 10,
+          loginUserId,
+          ...this.searchForm
       })
     }
   },
@@ -448,17 +511,17 @@ export default {
 <style lang="scss" scoped>
 .menu-wrapper {
   .menu-wrapper-left {
-     float: left;
+    float: left;
     width: 340px;
     margin-right: 24px;
     overflow: auto;
     .tree-container {
-        /deep/ .el-tree {
-          padding-top: 24px;
-           height: calc(100vh - 190px);
-           overflow: auto;
-           padding-bottom: 24px;
-        }
+      /deep/ .el-tree {
+        padding-top: 24px;
+        height: calc(100vh - 260px);
+        overflow: auto;
+        padding-bottom: 24px;
+      }
     }
   }
   .menu-wrapper-right {
@@ -467,7 +530,7 @@ export default {
       margin-bottom: 16px;
     }
   }
-  
+
   .authority-tree {
     padding-left: 20px;
   }

@@ -1,15 +1,13 @@
 <template>
   <div class="addressbook_container">
+    <search-form :formOptions = "formOptions" :showNum="showNum" @onSearch = onSearch></search-form>
     <div class="center_l">
       <rd-tree :data="treeData" :defaultProps="defaultProps" @nodeClick="handleNodeClick">
     </rd-tree>
     </div>
     <div class="center_r">
-      <div class="center_r_top">
-        <search-form :formOptions = "formOptions" @onSearch = onSearch></search-form>
-      </div>
       <div class="center_r_bottom">
-        <p style="font-weight: 700;margin-bottom: 20px;">医学1战队</p>
+        <p style="font-weight: 700;margin-bottom: 20px;">{{deptlabel}}</p>
         <rd-table
           :tableData="tableData"
           :tableKey="tableKey"
@@ -40,13 +38,41 @@
         ref="drawer">
         <div class="demo-drawer__content">
           <el-form :model="formDrawer">
-            <DescriptionList
-              title="基本信息"
-              :gutter="20"
-              :col="8"
-              :dataUser="dataUser"
-              :content="dataUser">
-            </DescriptionList>
+            <div class="title_drawer">基本信息</div>
+            <el-row :gutter="24">
+              <el-col :span="8">
+                <div class="term">员工姓名：</div>
+                <div class="detail">{{dataUser.name}}</div>
+              </el-col>
+              <el-col :span="8">
+                <div class="term">所属部门：</div>
+                <div class="detail">{{dataUser.dept}}</div>
+              </el-col>
+              <el-col :span="8">
+                <div class="term">员工类型：</div>
+                <div class="detail">{{dataUser.status}}</div>
+              </el-col>
+              <el-col :span="8">
+                <div class="term">入职时间：</div>
+                <div class="detail">2020-12-01</div>
+              </el-col>
+              <el-col :span="8">
+                <div class="term">手机号码：</div>
+                <div class="detail">{{dataUser.phone}}</div>
+              </el-col>
+              <el-col :span="8">
+                <div class="term">钉钉ID：</div>
+                <div class="detail">12345678910</div>
+              </el-col>
+              <el-col :span="8">
+                <div class="term">员工职位：</div>
+                <div class="detail">{{dataUser.position}}</div>
+              </el-col>
+              <el-col :span="8">
+                <div class="term">部门内级别：</div>
+                <div class="detail">1</div>
+              </el-col>
+            </el-row>
             <el-divider></el-divider>
             <div class="title_drawer">外呼管理</div>
             <el-row :gutter="24">
@@ -73,24 +99,24 @@
             </el-row>
             <el-divider></el-divider>
             <div class="title_drawer">多角色管理</div>
-              <el-form-item
-                v-for="(domain, index) in formDrawer.domains"
-                :key="domain.key"
-                :prop="'domains.' + index + '.value'"
-                label="角色:"
-                :label-width="formLabelWidth">
-                <el-select v-model="domain.value" clearable placeholder="请选择">
-                  <el-option label="省校长" value="sheng"></el-option>
-                  <el-option label="分校长" value="fen"></el-option>
-                  <el-option label="战队长" value="zhan"></el-option>
-                  <el-option label="营销专员" value="ying"></el-option>
-                  <el-option label="电销专员" value="dian"></el-option>
-                </el-select>
-                <i class="el-icon-remove" style="margin-left:10px;color:red;" @click.prevent="removeDomain(domain)"></i>
-              </el-form-item>
-              <el-form-item>
-                <div class="demo-drawer__content_btn" @click="addDomain"> + 添加</div>
-              </el-form-item>
+            <el-form-item
+              v-for="(domain, index) in formDrawer.domains"
+              :key="domain.key"
+              :prop="'domains.' + index + '.value'"
+              label="角色:"
+              :label-width="formLabelWidth">
+              <el-select v-model="domain.value" clearable placeholder="请选择">
+                <el-option label="省校长" value="sheng"></el-option>
+                <el-option label="分校长" value="fen"></el-option>
+                <el-option label="战队长" value="zhan"></el-option>
+                <el-option label="营销专员" value="ying"></el-option>
+                <el-option label="电销专员" value="dian"></el-option>
+              </el-select>
+              <i class="el-icon-remove" style="margin-left:10px;color:red;" @click.prevent="removeDomain(domain)"></i>
+            </el-form-item>
+            <el-form-item>
+              <div class="demo-drawer__content_btn" @click="addDomain"> + 添加</div>
+            </el-form-item>
           </el-form>
           <div class="demo-drawer__footer">
             <el-button @click="cancelForm">取 消</el-button>
@@ -105,20 +131,19 @@
 <script>
 import RdTree from '@/components/RdTree';
 import searchForm from '@/components/Searchform';
-import Pagination from "@/components/Pagination";
-import DescriptionList from "./descriptionList"; 
- import axios from 'axios';
+import axios from 'axios';
+let loginUserId = JSON.parse(localStorage.getItem("userInfo")).userId;
 export default {
   inject: ["reload"],
   components: {
     RdTree,
-    searchForm,
-    Pagination,
-    DescriptionList
+    searchForm
   },
   data () {
     return {
-      input: '',
+      deptlabel: '',
+      showNum: 4,
+      searchForm: {},
       formOptions: [
         {
           prop: 'username',
@@ -145,12 +170,6 @@ export default {
           placeholder: '请输入ID',
         },
       ],
-      formData: {
-        name: '',
-        phone: '',
-        zhiwei: '',
-        idcar: ''
-      },
       tableData: [],
       tableKey: [
         { name: '头像',value: 'src',operate: true,width: 80 },
@@ -168,40 +187,7 @@ export default {
         children: "children",
         label: "label",
       },
-      dataUser: [
-        {
-          term: "员工姓名",
-          detail: "飞翔的荷兰人"
-        },
-        {
-          term: "所属部门",
-          detail: "系统研发部"
-        },
-        {
-          term: "员工类型",
-          detail: "在职"
-        },
-        {
-          term: "入职时间",
-          detail: "2020-12-01"
-        },
-        {
-          term: "手机号码",
-          detail: "13800138000"
-        },
-        {
-          term: "钉钉ID",
-          detail: "12345678910"
-        },
-        {
-          term: "员工职位",
-          detail: "产品经理"
-        },
-        {
-          term: "部门内级别",
-          detail: "5"
-        }
-      ],
+      dataUser: {},
       pageConfig: {
         totalCount: 100,
         pageNum: 1,
@@ -230,7 +216,7 @@ export default {
     // this.getTreeData();
     // this.getTableData();
     this.getDataTree();
-    this.getDataTable();
+    // this.getDataTable();
   },
   methods: {
     // 获取通讯录组织树
@@ -249,7 +235,6 @@ export default {
     async getDataTable() {
       const { data } = await axios.get('/json/depttabledata.json')
       this.tableData = data
-      console.log(data,456456)
     },
     // 获取组织表格数据
     getTableData() {
@@ -257,14 +242,23 @@ export default {
     },
     onSearch(val) {
       console.log(val, 999)
+      this.searchForm = {...val};
+      this.getDataTable({
+        currentPage: 1,
+          pageSize: 10,
+          loginUserId,
+          ...this.searchForm
+      })
     },
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
+    // 编辑
     editRow(index,id, rows) {
       // rows.splice(index, 1);
       console.log(index,id,rows, 666)
       // this.drawer = true
+      this.dataUser = rows
       this.dialog = true
     },
     pageChange(val) {
@@ -275,12 +269,15 @@ export default {
       // });
     },
     handleNodeClick(data) {
-      console.log(data.id, 9999);
+      console.log(data, 9999);
+      this.deptlabel = data.label
+      this.getDataTable();
     },
     handleClose(done) {
       if (this.loading) {
         return;
       }
+      console.log(done, 3333)
       this.$confirm('确定要提交表单吗？')
         .then(_ => {
           this.loading = true;
@@ -319,7 +316,6 @@ export default {
 
 <style lang='scss' scoped>
 .addressbook_container {
-  // display: flex;
   .center_l {
     float: left;
     width: 340px;
@@ -335,18 +331,32 @@ export default {
   }
   .center_r {
     overflow: hidden;
-    padding: 20px 20px 0 20px;
-    margin-left: 10px;
+    padding: 0 20px 0 20px;
     background-color: #fff;
     .center_r_bottom {
-      // height: 600px;
-      padding: 10px 20px 0 0;
-      .pagination-container {
-        padding: 20px 16px;
-      }
+      padding: 0 20px 0 0;
     }
     .demo-drawer__content {
       padding: 40px 60px 0 30px;
+      .term {
+        color: #606266;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 22px;
+        padding-bottom: 16px;
+        margin-right: 8px;
+        white-space: nowrap;
+        display: table-cell;
+      }
+      .detail {
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 1.5;
+        width: 100%;
+        padding-bottom: 16px;
+        color: #606266;
+        display: table-cell;
+      }
       .el-select {
         width: 44.5%;
       }

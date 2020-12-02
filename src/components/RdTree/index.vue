@@ -5,9 +5,12 @@
       :data="data"
       :props="defaultProps"
       @node-click="handleNodeClick"
+      :highlight-current="highlight"
     >
       <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span :class="{'greenNode': data.type == 1 ,'redNode': data.type == 2 }">{{ node.label }}</span>
+        <span :class="{ greenNode: data.type == 1, redNode: data.type == 2 }" :title="node.label">{{
+          node.label
+        }}</span>
       </span>
     </el-tree>
   </div>
@@ -17,28 +20,30 @@
 export default {
   inject: ["reload"],
   props: {
-      data: {
-          type: Array,
-          default: () => []
-      },
-      defaultProps: {
-           type: Object,
-          default: () => ({
+    data: {
+      type: Array,
+      default: () => [],
+    },
+    defaultProps: {
+      type: Object,
+      default: () => ({
         children: "children",
         label: "label",
-      })
-      }
+      }),
+    },
+    highlight: {
+      type: Boolean,
+      default: true
+    }
   },
   data() {
-    return {
-     
-    };
+    return {};
   },
   methods: {
     handleNodeClick(data) {
-      this.$emit('nodeClick',data)
-    }
-  }
+      this.$emit("nodeClick", data);
+    },
+  },
 };
 </script>
 
@@ -48,10 +53,10 @@ export default {
   font-size: 14px;
 }
 .greenNode {
-  color: #67C23A;
+  color: #67c23a;
 }
 .redNode {
-  color: #EC5B56;
+  color: #ec5b56;
 }
 .tree-container /deep/ {
   .el-tree {
@@ -79,7 +84,8 @@ export default {
 
   .el-tree-node {
     position: relative;
-    padding-left: 16px;
+    padding-left: 12px;
+    padding-right: 4px;
   }
 
   .el-tree-node__children {

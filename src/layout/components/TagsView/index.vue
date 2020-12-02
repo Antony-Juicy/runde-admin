@@ -193,8 +193,8 @@ export default {
 
 <style lang="scss" scoped>
 .tags-view-container {
-  height: 55px;
-  line-height: 55px;
+  height: 46px;
+  line-height: 46px;
   width: 100%;
   background: #fff;
   border-bottom: 1px solid #d8dce5;
@@ -204,8 +204,8 @@ export default {
       display: inline-block;
       position: relative;
       cursor: pointer;
-      height: 40px;
-      line-height: 40px;
+      height: 34px;
+      line-height: 34px;
       border: 1px solid #d8dce5;
       color: #495060;
       background: #fff;

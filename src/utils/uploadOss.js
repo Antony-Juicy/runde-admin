@@ -63,6 +63,7 @@ export function uploadOss(uploaderInput, isMult, objConfig = {}) {
                         // 非多选的情况下 可以不要reload
                         // console.log("isMult",isMult );
                         resolve(uploadConfig);
+                        console.log(uploadConfig,'uploadConfig---')
                     }else{
                         // 这一整块的内容 是为了图片管理模块 内部批量上传网页的图片处理的 基本不改动
                         options.urlList = options.urlList + uploadConfig + ',';

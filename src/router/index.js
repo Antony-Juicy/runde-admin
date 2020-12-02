@@ -71,6 +71,21 @@ export let asyncRoutes0 = [
       component: () => import('@/views/dashboard/index'),
       meta: { title: '欢迎页', icon: 'dashboard' }
     }]
+  },
+  {
+    path: '/img-management',
+    component: Layout,
+    redirect: '/img-management',
+    meta: {
+      icon:'',
+      title:'图片管理'
+    },
+    children: [{
+      path: '/img-management',
+      name: '/img-management',
+      component: () => import('@/views/img-management/index'),
+      meta: { title: '图片管理', icon: 'dashboard' }
+    }]
   }
 ];
 
