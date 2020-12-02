@@ -5,26 +5,24 @@
       <rd-tree :data="treeData" :defaultProps="defaultProps" @nodeClick="handleNodeClick">
     </rd-tree>
     </div>
-    <div class="center_r">
-      <div class="center_r_bottom">
-        <p style="font-weight: 700;margin-bottom: 20px;">{{deptlabel}}</p>
-        <rd-table
-          :tableData="tableData"
-          :tableKey="tableKey"
-          :loading="loading"
-          :fixedTwoRow="fixedTwoRow"
-          :pageConfig="pageConfig"
-          @select="handleSelect"
-          @pageChange="pageChange"
-        >
-          <template slot="src" slot-scope="scope">
-            <img :src="scope.row.src" style="width:56px;height:56px;" alt="">
-          </template>
-          <template slot="edit" slot-scope="scope">
-            <el-button @click="editRow(scope.$index,scope.row.id,scope.row)" type="text" size="small">编辑</el-button>
-          </template>
-        </rd-table>
-      </div>
+    <div class="center_r w-container">
+      <p style="font-weight: 700;margin-bottom: 20px;">{{deptlabel}}</p>
+      <rd-table
+        :tableData="tableData"
+        :tableKey="tableKey"
+        :loading="loading"
+        :fixedTwoRow="fixedTwoRow"
+        :pageConfig="pageConfig"
+        @select="handleSelect"
+        @pageChange="pageChange"
+      >
+        <template slot="src" slot-scope="scope">
+          <img :src="scope.row.src" style="width:56px;height:56px;" alt="">
+        </template>
+        <template slot="edit" slot-scope="scope">
+          <el-button @click="editRow(scope.$index,scope.row.id,scope.row)" type="text" size="small">编辑</el-button>
+        </template>
+      </rd-table>
       <el-drawer
         title=""
         :before-close="handleClose"
@@ -219,6 +217,23 @@ export default {
     // this.getDataTable();
   },
   methods: {
+    // 操作通讯录树
+    handleNodeClick(data) {
+      console.log(data, 9999);
+      this.deptlabel = data.label
+      this.getDataTable();
+    },
+    // 搜索栏
+    onSearch(val) {
+      console.log(val, 999)
+      this.searchForm = {...val};
+      this.getDataTable({
+        currentPage: 1,
+          pageSize: 10,
+          loginUserId,
+          ...this.searchForm
+      })
+    },
     // 获取通讯录组织树
     getTreeData() {
       this.$fetch('getDeptTreeList').then(res => {
@@ -240,39 +255,37 @@ export default {
     getTableData() {
       console.log('表格数据')
     },
-    onSearch(val) {
-      console.log(val, 999)
-      this.searchForm = {...val};
-      this.getDataTable({
-        currentPage: 1,
-          pageSize: 10,
-          loginUserId,
-          ...this.searchForm
-      })
-    },
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
     // 编辑
     editRow(index,id, rows) {
-      // rows.splice(index, 1);
       console.log(index,id,rows, 666)
-      // this.drawer = true
       this.dataUser = rows
       this.dialog = true
     },
     pageChange(val) {
       console.log(666)
-      // this.getTableData({
-      //   currentPage: val.page,
-      //   showCount: val.limit,
-      // });
+      this.getTableData({
+        currentPage: val.page,
+        showCount: val.limit,
+      });
     },
-    handleNodeClick(data) {
-      console.log(data, 9999);
-      this.deptlabel = data.label
-      this.getDataTable();
+    // 删除多角色
+    removeDomain(item) {
+      var index = this.formDrawer.domains.indexOf(item)
+      if (index !== -1) {
+        this.formDrawer.domains.splice(index, 1)
+      }
     },
+    // 新增多角色
+    addDomain() {
+      this.formDrawer.domains.push({
+        value: '',
+        key: Date.now()
+      });
+    },
+    // 抽屉提交表单
     handleClose(done) {
       if (this.loading) {
         return;
@@ -291,20 +304,7 @@ export default {
         })
         .catch(_ => {});
     },
-    // 删除多角色
-    removeDomain(item) {
-      var index = this.formDrawer.domains.indexOf(item)
-      if (index !== -1) {
-        this.formDrawer.domains.splice(index, 1)
-      }
-    },
-    // 新增多角色
-    addDomain() {
-      this.formDrawer.domains.push({
-        value: '',
-        key: Date.now()
-      });
-    },
+    // 关闭抽屉
     cancelForm() {
       this.loading = false;
       this.dialog = false;
@@ -331,8 +331,6 @@ export default {
   }
   .center_r {
     overflow: hidden;
-    padding: 0 20px 0 20px;
-    background-color: #fff;
     .center_r_bottom {
       padding: 0 20px 0 0;
     }
