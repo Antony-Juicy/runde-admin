@@ -6,7 +6,10 @@
     </rd-tree>
     </div>
     <div class="center_r w-container">
-      <p style="font-weight: 700;margin-bottom: 20px;">{{deptlabel}}</p>
+      <div class="btn-wrapper">
+        <div style="font-weight: 700;margin-bottom: 20px;">{{deptlabel}}</div>
+        <el-button type="primary" icon="el-icon-plus" size="small" @click="handleAdd">添加用户</el-button>
+      </div>
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
@@ -23,9 +26,46 @@
           <el-button @click="editRow(scope.$index,scope.row.id,scope.row)" type="text" size="small">编辑</el-button>
         </template>
       </rd-table>
+      <rd-dialog title="新增用户"
+        :dialogVisible="dialogVisible"
+        @handleClose="handleClose('dataForm')"
+        @submitForm="submitForm('dataForm')">
+        <el-form
+          ref="dataForm"
+          :model="basicInfo"
+          :rules="rules"
+          :label-width="formLabelWidth">
+          <el-form-item label="姓名" prop="name" :label-width="formLabelWidth">
+            <el-input v-model="basicInfo.name" autocomplete="off" placeholder="请输入姓名" />
+          </el-form-item>
+          <el-form-item label="账号" prop="account" :label-width="formLabelWidth">
+            <el-input v-model="basicInfo.account" autocomplete="off" placeholder="请输入账号" />
+          </el-form-item>
+          <el-form-item label="密码" prop="password">
+            <el-input type="password" v-model="basicInfo.password" autocomplete="off"  placeholder="请输入密码"></el-input>
+          </el-form-item>
+          <el-form-item label="部门" prop="dept" :label-width="formLabelWidth">
+            <el-input v-model="basicInfo.dept" autocomplete="off" placeholder="请输入部门" />
+          </el-form-item>
+          <el-form-item label="职位" prop="position" :label-width="formLabelWidth">
+            <el-input v-model="basicInfo.position" autocomplete="off" placeholder="请输入职位" />
+          </el-form-item>
+          <el-form-item label="手机号" prop="phone" :label-width="formLabelWidth">
+            <el-input v-model="basicInfo.phone" autocomplete="off" placeholder="请输入手机号" />
+          </el-form-item>
+          <el-form-item label="钉钉号" prop="ddid" :label-width="formLabelWidth">
+            <el-input v-model="basicInfo.ddid" autocomplete="off" placeholder="请输入钉钉号" />
+          </el-form-item>
+          <el-form-item label="状态" prop="status" :label-width="formLabelWidth">
+            <el-select v-model="basicInfo.status" placeholder="请选择状态">
+              <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+      </rd-dialog>
       <el-drawer
         title=""
-        :before-close="handleClose"
+        :before-close="handleDrawerClose"
         :visible.sync="dialog"
         direction="rtl"
         custom-class="demo-drawer"
@@ -168,6 +208,36 @@ export default {
           placeholder: '请输入ID',
         },
       ],
+      dialogVisible: false,
+      basicInfo: {
+        name: "",
+        account: "",
+        password: "",
+        dept: "",
+        status: "",
+        phone: "",
+        ddid: "",
+        position: "",
+        level: ""
+      },
+      rules: {
+        name: [{ required: true, message: "请输入名字", trigger: "blur" }],
+        account: [{ required: true, message: "请输入账号", trigger: "blur" }],
+        password: [{ required: true, validator: this.$common._validatePassWord, trigger: "blur" }],
+        phone: [{ required: true, validator: this.$common._validatorPhone, trigger: "blur" }],
+        status: [{ required: true, message: "请选择状态", trigger: "blur" }],
+        type: [{ required: true, message: "请选择类型", trigger: "blur" }],
+      },
+      statusOptions: [
+        {
+          label: "正常",
+          value: "1",
+        },
+        {
+          label: "暂停",
+          value: "0",
+        },
+      ],
       tableData: [],
       tableKey: [
         { name: '头像',value: 'src',operate: true,width: 80 },
@@ -255,6 +325,38 @@ export default {
     getTableData() {
       console.log('表格数据')
     },
+    // 打开新增用户弹窗
+    handleAdd() {
+      for (const key in this.basicInfo) {
+        this.basicInfo[key] = "";
+      }
+      this.dialogVisible = true;
+      this.dialogStatus = true;
+    },
+    // 关闭新增用户弹窗
+    handleClose(formName) {
+      this.dialogVisible = false;
+      this.$refs[formName].resetFields();
+    },
+    // 新增用户提交
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          console.log(this.basicInfo, "提交");
+          // this.$fetch("menu_save", {
+          //   ...this.basicInfo,
+            
+          // }).then((res) => {
+          //   this.$message({
+          //     message: "提交成功",
+          //     type: "success",
+          //   });
+          //   this.handleClose("dataForm");
+          //   this.pageChange(this.currentPageInfo);
+          // });
+        }
+      });
+    },
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
@@ -286,7 +388,7 @@ export default {
       });
     },
     // 抽屉提交表单
-    handleClose(done) {
+    handleDrawerClose(done) {
       if (this.loading) {
         return;
       }
@@ -331,8 +433,11 @@ export default {
   }
   .center_r {
     overflow: hidden;
-    .center_r_bottom {
-      padding: 0 20px 0 0;
+    .btn-wrapper {
+      display: flex;
+      flex-direction:row;
+      justify-content : space-between;
+      margin-bottom: 16px;
     }
     .demo-drawer__content {
       padding: 40px 60px 0 30px;
