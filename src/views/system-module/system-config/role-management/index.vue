@@ -19,8 +19,8 @@
       @select="handleSelect"
       @pageChange="pageChange"
     >
-      <template slot="name" slot-scope="scope">
-        <el-tag size="medium">{{ scope.row.name }}</el-tag>
+      <template slot="status" slot-scope="scope">
+        <span>{{scope.row.status | statusFilter }}</span>
       </template>
       <template slot="edit" slot-scope="scope">
         <el-button @click="handleEdit(scope.row)" type="text" size="small"
@@ -176,6 +176,7 @@ export default {
         {
           name: "状态",
           value: "status",
+           operate: true
         },
         {
           name: "创建时间",
@@ -273,6 +274,7 @@ export default {
   },
   mounted() {
     // this.getTableData();
+    this.$common._console();
   },
   methods: {
     handleSelect(rows) {

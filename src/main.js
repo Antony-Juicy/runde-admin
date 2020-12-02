@@ -17,6 +17,8 @@ import RdTable from '@/components/RdTable' // ElDataTable
 import RdDialog from '@/components/RdDialog' // ElDataTable
 
 import Fetch from '@/utils/fetch'
+import Common from '@/utils/common'
+import Filters from '@/utils/filters'
 import '@/utils/directives/preventReClick'
 import '@/utils/directives/btnPermission'
 
@@ -42,6 +44,11 @@ Vue.component('rd-dialog', RdDialog)
 Vue.config.productionTip = false
 
 Vue.prototype.$fetch = Fetch
+Vue.prototype.$common = Common
+Object.keys(Filters).forEach(key => {
+  Vue.filter(key, Filters[key])
+})
+
 new Vue({
   el: '#app',
   router,
