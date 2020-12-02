@@ -217,14 +217,12 @@
 
 <script>
 import RdTree from "@/components/RdTree";
-import searchForm from "@/components/Searchform";
 import UploadOss from "@/components/UploadOss";
 let loginUserId = JSON.parse(localStorage.getItem("userInfo")).userId;
 export default {
   inject: ["reload"],
   components: {
     RdTree,
-    searchForm,
     UploadOss,
   },
   data() {

@@ -49,7 +49,7 @@ const actions = {
         commit('SET_TOKEN', data.token) //在全局vuex中存入state
         setToken(data.token)   //把token存储在本地cookie之中
         commit('SET_NAME', data.username)  //用户名
-        commit('SET_USERID', data.userId)  //密码
+        commit('SET_USERID', data.userId)  //用户id
         localStorage.setItem('userInfo',JSON.stringify(data));
         resolve()
       }).catch(error => {

@@ -7,6 +7,7 @@ const getters = {
   token: state => state.user.token, // token
   avatar: state => state.user.avatar, // 头像
   name: state => state.user.name, // 用户名
+  userId: state => state.user.userId, // 用户名
   introduction: state => state.user.introduction,
   roles: state => state.user.roles, // 用户组 这个项目没用上
   permission_routes: state => state.permission.routes, // 默认路由

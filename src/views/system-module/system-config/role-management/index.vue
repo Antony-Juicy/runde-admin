@@ -273,8 +273,7 @@ export default {
     };
   },
   mounted() {
-    // this.getTableData();
-    this.$common._console();
+    this.getTableData();
   },
   methods: {
     handleSelect(rows) {
