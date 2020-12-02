@@ -1,7 +1,7 @@
 <template>
   <section class="section_box">
       {{row.imagePath}}
-    <Upload-oss v-if="uploadOssElem" :src.sync="row.imagePath" @srcChangeFun="(data)=>{ row.imagePath = data; reloadElem('uploadOssElem')}"/>
+    <Upload-oss v-if="uploadOssElem" :objConfig="{dir:'web/runde_admin',project:'icon_'}" :src.sync="row.imagePath" @srcChangeFun="(data)=>{ row.imagePath = data; reloadElem('uploadOssElem')}"/>
   </section>
 </template>
 
@@ -24,16 +24,16 @@ export default {
     }
   },
   watch: {
-    "pic.name": {
-      handler: function () {
-        this.reloadElem();
-      },
-    },
-    "pic.project": {
-      handler: function () {
-        this.reloadElem();
-      },
-    },
+    // "pic.name": {
+    //   handler: function () {
+    //     this.reloadElem();
+    //   },
+    // },
+    // "pic.project": {
+    //   handler: function () {
+    //     this.reloadElem();
+    //   },
+    // },
   },
   mounted() {},
   methods: {

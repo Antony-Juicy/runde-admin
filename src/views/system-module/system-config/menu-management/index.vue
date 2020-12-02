@@ -1,6 +1,10 @@
 <template>
   <div class="menu-wrapper">
-    <search-form :formOptions="formOptions" :showNum="showNum" @onSearch="onSearch"></search-form>
+    <search-form
+      :formOptions="formOptions"
+      :showNum="showNum"
+      @onSearch="onSearch"
+    ></search-form>
     <div class="menu-wrapper-left">
       <rd-tree
         :data="treeData"
@@ -51,10 +55,20 @@
           :rules="rules"
           :label-width="formLabelWidth"
         >
-          <el-form-item label="父级菜单" prop="parentId" :label-width="formLabelWidth" v-if="dialogStatus">
-            {{selectedTree.name}}（id:{{selectedTree.id}}）
+          <el-form-item
+            label="父级菜单"
+            prop="parentId"
+            :label-width="formLabelWidth"
+            v-if="dialogStatus"
+          >
+            {{ selectedTree.name }}（id:{{ selectedTree.id }}）
           </el-form-item>
-          <el-form-item label="编码" prop="code" :label-width="formLabelWidth" v-if="dialogStatus">
+          <el-form-item
+            label="编码"
+            prop="code"
+            :label-width="formLabelWidth"
+            v-if="dialogStatus"
+          >
             <el-row>
               <el-col :span="16">
                 <el-input
@@ -143,7 +157,19 @@
               placeholder="请输入后端url"
             />
           </el-form-item>
-          <el-form-item label="图标" prop="icon" :label-width="formLabelWidth">
+          <el-form-item label="图标" prop="icon" :label-width="formLabelWidth" class="icon-wrapper">
+            {{ basicInfo.icon }}
+            <Upload-oss
+              v-if="uploadOssElem"
+              :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
+              :src.sync="basicInfo.icon"
+              @srcChangeFun="
+                (data) => {
+                  basicInfo.icon = data;
+                  reloadElem('uploadOssElem');
+                }
+              "
+            />
           </el-form-item>
           <el-form-item
             label="排序编号"
@@ -178,12 +204,14 @@
 <script>
 import RdTree from "@/components/RdTree";
 import searchForm from "@/components/Searchform";
+import UploadOss from "@/components/UploadOss";
 let loginUserId = JSON.parse(localStorage.getItem("userInfo")).userId;
 export default {
   inject: ["reload"],
   components: {
     RdTree,
     searchForm,
+    UploadOss,
   },
   data() {
     return {
@@ -264,10 +292,13 @@ export default {
         frontUrl: "",
         backUrl: "",
         orderNum: "",
-        updateReason:""
+        updateReason: "",
+        icon: ""
       },
       rules: {
-        updateReason: [{ required: true, message: "请输入更新理由", trigger: "blur" }],
+        updateReason: [
+          { required: true, message: "请输入更新理由", trigger: "blur" },
+        ],
         code: [{ required: true, message: "请获取编码", trigger: "blur" }],
         name: [{ required: true, message: "请输入名称", trigger: "blur" }],
         status: [{ required: true, message: "请选择状态", trigger: "blur" }],
@@ -303,7 +334,7 @@ export default {
         children: "children",
         label: "name",
       },
-      selectedTree: '',
+      selectedTree: "",
 
       // 搜索栏
       formOptions: [
@@ -335,8 +366,9 @@ export default {
         },
       ],
       showNum: 4,
-      searchForm: {},
-      currentPageInfo:null
+      searchForm: {}, //搜索栏信息
+      currentPageInfo: null, //当前页数 page和limit
+      uploadOssElem: true,
     };
   },
   mounted() {
@@ -353,7 +385,7 @@ export default {
         currentPage: val.page || 1,
         pageSize: val.limit || 10,
         loginUserId,
-        ...this.searchForm
+        ...this.searchForm,
       });
     },
     getTableData(params) {
@@ -366,7 +398,7 @@ export default {
         params || {
           currentPage: 1,
           pageSize: 10,
-          loginUserId
+          loginUserId,
         }
       ).then((res) => {
         this.tableData = res.data.records;
@@ -379,19 +411,19 @@ export default {
     // 打开新增弹窗
     handleAdd() {
       // 如果没有先选父级结果 弹出提示
-      if(!this.selectedTree) {
-        this.$message({
-          message: '请先选择父级菜单',
-          type: 'warning'
-        })
-        return;
-      }else if(this.selectedTree.type != "0") {
-        this.$message({
-          message: '请选择正确的菜单',
-          type: 'warning'
-        })
-        return;
-      }
+      // if(!this.selectedTree) {
+      //   this.$message({
+      //     message: '请先选择父级菜单',
+      //     type: 'warning'
+      //   })
+      //   return;
+      // }else if(this.selectedTree.type != "0") {
+      //   this.$message({
+      //     message: '请选择正确的菜单',
+      //     type: 'warning'
+      //   })
+      //   return;
+      // }
       for (const key in this.basicInfo) {
         this.basicInfo[key] = "";
       }
@@ -438,36 +470,35 @@ export default {
             return;
           }
 
-          if(this.dialogStatus) {
+          if (this.dialogStatus) {
             // 新增
-            this.$fetch('menu_save',{
+            this.$fetch("menu_save", {
               ...this.basicInfo,
               isOneLevel: 0,
               loginUserId,
-              parentId: this.selectedTree.id
-            }).then(res => {
+              parentId: this.selectedTree.id,
+            }).then((res) => {
               this.$message({
                 message: "提交成功",
                 type: "success",
               });
-              this.handleClose('dataForm');
+              this.handleClose("dataForm");
               this.pageChange(this.currentPageInfo);
-            })
-          }else {
+            });
+          } else {
             // 编辑
-            this.$fetch("menu_edit",{
+            this.$fetch("menu_edit", {
               ...this.basicInfo,
               loginUserId,
-            }).then(res => {
+            }).then((res) => {
               this.$message({
                 message: "编辑成功",
                 type: "success",
               });
-              this.handleClose('dataForm');
-             this.pageChange(this.currentPageInfo);
-            })
+              this.handleClose("dataForm");
+              this.pageChange(this.currentPageInfo);
+            });
           }
-          
         }
       });
     },
@@ -494,16 +525,25 @@ export default {
     },
 
     // 搜索
-    onSearch(data){
-      console.log(data,'data--')
-      this.searchForm = {...data};
+    onSearch(data) {
+      console.log(data, "data--");
+      this.searchForm = { ...data };
       this.getTableData({
         currentPage: 1,
-          pageSize: 10,
-          loginUserId,
-          ...this.searchForm
-      })
-    }
+        pageSize: 10,
+        loginUserId,
+        ...this.searchForm,
+      });
+    },
+
+    // 上传组件
+    reloadElem(dataElem) {
+      // 重新加载组件
+      this[dataElem] = false;
+      this.$nextTick(() => {
+        this[dataElem] = true;
+      });
+    },
   },
 };
 </script>
@@ -528,6 +568,16 @@ export default {
     overflow: hidden;
     .btn-wrapper {
       margin-bottom: 16px;
+    }
+    
+    /deep/ {
+      .img180 {
+        width: 70px;
+        height: 70px;
+      }
+      .icon-wrapper .el-form-item__content {
+        line-height: 0;
+      }
     }
   }
 

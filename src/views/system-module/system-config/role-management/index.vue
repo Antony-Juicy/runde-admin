@@ -146,7 +146,7 @@ export default {
         {
           id: 1,
           roleName: 111,
-          status: 1,
+          status: "1",
           classifyName: "微软",
           remark:
             "看全国分校审批查看全国分校审批查看全国分,校审批查看全国分校审批,查看全国分校审批查,看全国分校审批查看全国分校审批查看全国分校审批查看全国分校审批查",
@@ -154,7 +154,7 @@ export default {
         {
           id: 2,
           roleName: 111,
-          status: 1,
+          status: "1",
           classifyName: "微软",
           remark: "abh瑟夫",
         },

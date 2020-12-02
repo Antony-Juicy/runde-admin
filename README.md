@@ -7,6 +7,12 @@
 
 ```
 
+```
+# 全局公共组件
+表格  RdTable
+弹窗  RdDialog
+```
+
 ```bash
 # 克隆项目
 git clone https://github.com/PanJiaChen/vue-admin-template.git
