@@ -2,6 +2,7 @@ export default {
     getMenuList: {url: '/admin/menu/list', method: 'post'},
     getMenuTreeList:  {url: '/admin/menu/getallmenutree', method: 'get'},
     system_getCode: {url: '/admin/generate/serial', method: 'post'},
+    getDeptTreeList: {url: '/admin/dept/tree', method: 'post'}, // 获取通讯录管理组织机构树
     menu_save: {url:'/admin/menu/save', method: 'post'},
     menu_edit: {url:'/admin/menu/edit', method: 'post'},
     menu_delete: {url:'/admin/menu/delete', method: 'post'},

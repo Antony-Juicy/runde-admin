@@ -1,100 +1,71 @@
 <template>
-  <div class="container">
+  <div class="addressbook_container">
+    <search-form :formOptions = "formOptions" :showNum="showNum" @onSearch = onSearch></search-form>
     <div class="center_l">
-      <rd-tree :data="dataTree" :defaultProps="defaultProps" @node-click="handleNodeClick">
+      <rd-tree :data="treeData" :defaultProps="defaultProps" @nodeClick="handleNodeClick">
     </rd-tree>
     </div>
-    <div class="center_r">
-      <div class="center_r_top">
-        <!-- <el-form id="searchBox" :model="formData" ref="formRef" :inline="true">
-          <el-form-item
-            v-for="(item, index) in formOptions"
-            :key="newKeys[index]"
-            :prop="item.prop"
-            :label="item.label ? item.label + '：' : ''"
-            :rules="item.rules">
-            <formItem v-model="formData[item.prop]" :itemOptions="item" />
+    <div class="center_r w-container">
+      <div class="btn-wrapper">
+        <div style="font-weight: 700;margin-bottom: 20px;">{{deptlabel}}</div>
+        <el-button type="primary" icon="el-icon-plus" size="small" @click="handleAdd">添加用户</el-button>
+      </div>
+      <rd-table
+        :tableData="tableData"
+        :tableKey="tableKey"
+        :loading="loading"
+        :fixedTwoRow="fixedTwoRow"
+        :pageConfig="pageConfig"
+        @select="handleSelect"
+        @pageChange="pageChange"
+      >
+        <template slot="src" slot-scope="scope">
+          <img :src="scope.row.src" style="width:56px;height:56px;" alt="">
+        </template>
+        <template slot="edit" slot-scope="scope">
+          <el-button @click="editRow(scope.$index,scope.row.id,scope.row)" type="text" size="small">编辑</el-button>
+        </template>
+      </rd-table>
+      <rd-dialog title="新增用户"
+        :dialogVisible="dialogVisible"
+        @handleClose="handleClose('dataForm')"
+        @submitForm="submitForm('dataForm')">
+        <el-form
+          ref="dataForm"
+          :model="basicInfo"
+          :rules="rules"
+          :label-width="formLabelWidth">
+          <el-form-item label="姓名" prop="name" :label-width="formLabelWidth">
+            <el-input v-model="basicInfo.name" autocomplete="off" placeholder="请输入姓名" />
           </el-form-item>
-        </el-form> -->
-        <!-- <el-form id="searchBox" :model="formData" ref="formRef" :inline="true"> -->
-
-          <el-input placeholder="请输入姓名" v-model="formData.name" clearable style="width: 20%"></el-input>
-          <el-input placeholder="请输入手机号" v-model="formData.phone" clearable style="width: 20%"></el-input>
-          <el-input placeholder="请输入职位" v-model="formData.zhiwei" clearable style="width: 20%"></el-input>
-          <el-input placeholder="请输入ID" v-model="formData.idcar" clearable style="width: 20%"></el-input>
-        <!-- </el-form> -->
-        <el-button type="primary">搜索</el-button>
-        <el-button type="default" @click="onReset">重置</el-button>
-        <!-- <search-form :formOptions = "formOptions" @onSearch = onSearch></search-form> -->
-      </div>
-      <div class="center_r_bottom">
-        <p style="margin: 0;">医学1战队</p>
-        <el-table
-          :data="tableData"
-          border
-          height="500"
-          style="width: 100%;margin-top:10px;">
-          <el-table-column
-            prop=""
-            label="头像"
-            width="80">
-            <template slot-scope="scope">
-              <img :src="scope.row.src" style="width:50px;height:50px;" alt="">
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="name"
-            label="姓名"
-            width="120">
-          </el-table-column>
-          <el-table-column
-            prop="date"
-            label="手机"
-            width="150">
-          </el-table-column>
-          <el-table-column
-            prop="province"
-            label="部门"
-            width="120">
-          </el-table-column>
-          <el-table-column
-            prop="city"
-            label="职位"
-            width="120">
-          </el-table-column>
-          <el-table-column
-            prop="address"
-            label="角色"
-            width="">
-          </el-table-column>
-          <el-table-column
-            prop="zip"
-            label="状态"
-            width="120">
-          </el-table-column>
-          <el-table-column
-            label="操作"
-            width="120">
-            <template slot-scope="scope">
-              <el-button
-                @click.native.prevent="editRow(scope.$index,scope.row.id, tableData)"
-                type="text"
-                size="small">
-                编辑
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-        <pagination
-          :total="pageConfig.totalCount"
-          :page.sync="pageConfig.pageNum"
-          :limit.sync="pageConfig.pageSize"
-          @pagination="pageChange"
-        />
-      </div>
+          <el-form-item label="账号" prop="account" :label-width="formLabelWidth">
+            <el-input v-model="basicInfo.account" autocomplete="off" placeholder="请输入账号" />
+          </el-form-item>
+          <el-form-item label="密码" prop="password">
+            <el-input type="password" v-model="basicInfo.password" autocomplete="off"  placeholder="请输入密码"></el-input>
+          </el-form-item>
+          <el-form-item label="部门" prop="dept" :label-width="formLabelWidth">
+            <el-input v-model="basicInfo.dept" autocomplete="off" placeholder="请输入部门" />
+          </el-form-item>
+          <el-form-item label="职位" prop="position" :label-width="formLabelWidth">
+            <el-input v-model="basicInfo.position" autocomplete="off" placeholder="请输入职位" />
+          </el-form-item>
+          <el-form-item label="手机号" prop="phone" :label-width="formLabelWidth">
+            <el-input v-model="basicInfo.phone" autocomplete="off" placeholder="请输入手机号" />
+          </el-form-item>
+          <el-form-item label="钉钉号" prop="ddid" :label-width="formLabelWidth">
+            <el-input v-model="basicInfo.ddid" autocomplete="off" placeholder="请输入钉钉号" />
+          </el-form-item>
+          <el-form-item label="状态" prop="status" :label-width="formLabelWidth">
+            <el-select v-model="basicInfo.status" placeholder="请选择状态">
+              <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+      </rd-dialog>
       <el-drawer
         title=""
-        :before-close="handleClose"
+        :before-close="handleDrawerClose"
         :visible.sync="dialog"
         direction="rtl"
         custom-class="demo-drawer"
@@ -105,13 +76,41 @@
         ref="drawer">
         <div class="demo-drawer__content">
           <el-form :model="formDrawer">
-            <DescriptionList
-              title="基本信息"
-              :gutter="20"
-              :col="8"
-              :dataUser="dataUser"
-              :content="dataUser">
-            </DescriptionList>
+            <div class="title_drawer">基本信息</div>
+            <el-row :gutter="24">
+              <el-col :span="8">
+                <div class="term">员工姓名：</div>
+                <div class="detail">{{dataUser.name}}</div>
+              </el-col>
+              <el-col :span="8">
+                <div class="term">所属部门：</div>
+                <div class="detail">{{dataUser.dept}}</div>
+              </el-col>
+              <el-col :span="8">
+                <div class="term">员工类型：</div>
+                <div class="detail">{{dataUser.status}}</div>
+              </el-col>
+              <el-col :span="8">
+                <div class="term">入职时间：</div>
+                <div class="detail">2020-12-01</div>
+              </el-col>
+              <el-col :span="8">
+                <div class="term">手机号码：</div>
+                <div class="detail">{{dataUser.phone}}</div>
+              </el-col>
+              <el-col :span="8">
+                <div class="term">钉钉ID：</div>
+                <div class="detail">12345678910</div>
+              </el-col>
+              <el-col :span="8">
+                <div class="term">员工职位：</div>
+                <div class="detail">{{dataUser.position}}</div>
+              </el-col>
+              <el-col :span="8">
+                <div class="term">部门内级别：</div>
+                <div class="detail">1</div>
+              </el-col>
+            </el-row>
             <el-divider></el-divider>
             <div class="title_drawer">外呼管理</div>
             <el-row :gutter="24">
@@ -138,24 +137,24 @@
             </el-row>
             <el-divider></el-divider>
             <div class="title_drawer">多角色管理</div>
-              <el-form-item
-                v-for="(domain, index) in formDrawer.domains"
-                :key="domain.key"
-                :prop="'domains.' + index + '.value'"
-                label="角色:"
-                :label-width="formLabelWidth">
-                <el-select v-model="domain.value" clearable placeholder="请选择">
-                  <el-option label="省校长" value="sheng"></el-option>
-                  <el-option label="分校长" value="fen"></el-option>
-                  <el-option label="战队长" value="zhan"></el-option>
-                  <el-option label="营销专员" value="ying"></el-option>
-                  <el-option label="电销专员" value="dian"></el-option>
-                </el-select>
-                <i class="el-icon-remove" style="margin-left:10px;color:red;" @click.prevent="removeDomain(domain)"></i>
-              </el-form-item>
-              <el-form-item>
-                <div class="demo-drawer__content_btn" @click="addDomain"> + 添加</div>
-              </el-form-item>
+            <el-form-item
+              v-for="(domain, index) in formDrawer.domains"
+              :key="domain.key"
+              :prop="'domains.' + index + '.value'"
+              label="角色:"
+              :label-width="formLabelWidth">
+              <el-select v-model="domain.value" clearable placeholder="请选择">
+                <el-option label="省校长" value="sheng"></el-option>
+                <el-option label="分校长" value="fen"></el-option>
+                <el-option label="战队长" value="zhan"></el-option>
+                <el-option label="营销专员" value="ying"></el-option>
+                <el-option label="电销专员" value="dian"></el-option>
+              </el-select>
+              <i class="el-icon-remove" style="margin-left:10px;color:red;" @click.prevent="removeDomain(domain)"></i>
+            </el-form-item>
+            <el-form-item>
+              <div class="demo-drawer__content_btn" @click="addDomain"> + 添加</div>
+            </el-form-item>
           </el-form>
           <div class="demo-drawer__footer">
             <el-button @click="cancelForm">取 消</el-button>
@@ -170,338 +169,93 @@
 <script>
 import RdTree from '@/components/RdTree';
 import searchForm from '@/components/Searchform';
-import Pagination from "@/components/Pagination";
-import DescriptionList from "./descriptionList"; 
+import axios from 'axios';
+let loginUserId = JSON.parse(localStorage.getItem("userInfo")).userId;
 export default {
   inject: ["reload"],
   components: {
     RdTree,
-    searchForm,
-    Pagination,
-    DescriptionList
+    searchForm
   },
   data () {
     return {
-      input: '',
-      // formOptions: [
-      //   {
-      //     prop: 'username',
-      //     element: 'el-input',
-      //     initValue: '',
-      //     placeholder: '请输入姓名',
-      //   },
-      //   {
-      //     prop: 'phone',
-      //     element: 'el-input',
-      //     initValue: '',
-      //     placeholder: '请输入手机号',
-      //   },
-      //   {
-      //     prop: 'zhiwei',
-      //     element: 'el-input',
-      //     initValue: '',
-      //     placeholder: '请输入职位',
-      //   },
-      //   {
-      //     prop: 'idcard',
-      //     element: 'el-input',
-      //     initValue: '',
-      //     placeholder: '请输入ID',
-      //   },
-      // ],
-      formData: {
-        name: '',
-        phone: '',
-        zhiwei: '',
-        idcar: ''
+      deptlabel: '',
+      showNum: 4,
+      searchForm: {},
+      formOptions: [
+        {
+          prop: 'username',
+          element: 'el-input',
+          initValue: '',
+          placeholder: '请输入姓名',
+        },
+        {
+          prop: 'phone',
+          element: 'el-input',
+          initValue: '',
+          placeholder: '请输入手机号',
+        },
+        {
+          prop: 'zhiwei',
+          element: 'el-input',
+          initValue: '',
+          placeholder: '请输入职位',
+        },
+        {
+          prop: 'idcard',
+          element: 'el-input',
+          initValue: '',
+          placeholder: '请输入ID',
+        },
+      ],
+      dialogVisible: false,
+      basicInfo: {
+        name: "",
+        account: "",
+        password: "",
+        dept: "",
+        status: "",
+        phone: "",
+        ddid: "",
+        position: "",
+        level: ""
       },
-      tableData: [
+      rules: {
+        name: [{ required: true, message: "请输入名字", trigger: "blur" }],
+        account: [{ required: true, message: "请输入账号", trigger: "blur" }],
+        password: [{ required: true, validator: this.$common._validatePassWord, trigger: "blur" }],
+        phone: [{ required: true, validator: this.$common._validatorPhone, trigger: "blur" }],
+        status: [{ required: true, message: "请选择状态", trigger: "blur" }],
+        type: [{ required: true, message: "请选择类型", trigger: "blur" }],
+      },
+      statusOptions: [
         {
-          id: 2,
-          src: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg',
-          date: '13800138000',
-          name: '飞翔的荷兰人',
-          province: '医学4战队',
-          city: '战队长',
-          address: '省校长、分校长...',
-          zip: '在职'
+          label: "正常",
+          value: "1",
         },
         {
-          id: 1,
-          src: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg',
-          date: '13800138000',
-          name: '飞翔的荷兰人',
-          province: '医学4战队',
-          city: '营销专员',
-          address: '省校长、分校长',
-          zip: '在职'
-        },
-        {
-          id: 1,
-          src: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg',
-          date: '13800138000',
-          name: '飞翔的荷兰人',
-          province: '医学4战队',
-          city: '营销专员',
-          address: '省校长、分校长',
-          zip: '在职'
-        },
-        {
-          id: 1,
-          src: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg',
-          date: '13800138000',
-          name: '飞翔的荷兰人',
-          province: '医学4战队',
-          city: '营销专员',
-          address: '省校长、分校长',
-          zip: '在职'
-        },
-        {
-          id: 1,
-          src: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg',
-          date: '13800138000',
-          name: '飞翔的荷兰人',
-          province: '医学4战队',
-          city: '营销专员',
-          address: '省校长、分校长',
-          zip: '在职'
-        },
-        {
-          id: 1,
-          src: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg',
-          date: '13800138000',
-          name: '飞翔的荷兰人',
-          province: '医学4战队',
-          city: '营销专员',
-          address: '省校长、分校长',
-          zip: '在职'
-        },{
-          id: 1,
-          src: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg',
-          date: '13800138000',
-          name: '飞翔的荷兰人',
-          province: '医学4战队',
-          city: '营销专员',
-          address: '省校长、分校长',
-          zip: '在职'
-        },
-        {
-          id: 1,
-          src: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg',
-          date: '13800138000',
-          name: '飞翔的荷兰人',
-          province: '医学4战队',
-          city: '营销专员',
-          address: '省校长、分校长',
-          zip: '在职'
-        },
-        {
-          id: 1,
-          src: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg',
-          date: '13800138000',
-          name: '飞翔的荷兰人',
-          province: '医学4战队',
-          city: '营销专员',
-          address: '省校长、分校长',
-          zip: '在职'
-        },
-        {
-          id: 1,
-          src: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2763523135,381182796&fm=26&gp=0.jpg',
-          date: '13800138000',
-          name: '飞翔的荷兰人',
-          province: '医学4战队',
-          city: '营销专员',
-          address: '省校长、分校长',
-          zip: '在职'
+          label: "暂停",
+          value: "0",
         },
       ],
-      dataTree: [
-        {
-          label: "经营管理中心",
-          children: [
-            {
-              label: "广西校区",
-              children: [
-                {
-                  label: "三级 1-1-1",
-                  children: [
-                    {
-                      label: "四级级 1-1-1",
-                      children: [
-                        {
-                          label: "五级级 1-1-1",
-                        },
-                      ],
-                    },
-                  ],
-                }
-              ],
-            },
-            {
-              label: "山东校区",
-              children: [
-                {
-                  label: "三级 1-1-1",
-                  children: [
-                    {
-                      label: "四级级 1-1-1",
-                      children: [
-                        {
-                          label: "五级级 1-1-1",
-                        },
-                      ],
-                    },
-                  ],
-                }
-              ],
-            },
-            {
-              label: "广东校区",
-              children: [
-                {
-                  label: "广州分校",
-                  children: [
-                    {
-                      label: "四级级 1-1-1",
-                      children: [
-                        {
-                          label: "五级级 1-1-1",
-                        },
-                      ],
-                    },
-                  ],
-                },
-                {
-                  label: "佛山分校",
-                  children: [
-                    {
-                      label: "四级级 1-1-1",
-                      children: [
-                        {
-                          label: "五级级 1-1-1",
-                        },
-                      ],
-                    },
-                  ],
-                },
-                {
-                  label: "茂名分校",
-                  children: [
-                    {
-                      label: "医学1战队",
-                      children: [
-                        
-                      ],
-                    },
-                    {
-                      label: "医学4战队",
-                      children: [
-                        
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-        {
-          label: "产品开发中心",
-          children: [
-            {
-              label: "二级 2-1",
-              children: [
-                {
-                  label: "三级 2-1-1",
-                },
-              ],
-            },
-            {
-              label: "二级 2-2",
-              children: [
-                {
-                  label: "三级 2-2-1",
-                },
-              ],
-            },
-          ],
-        },
-        {
-          label: "总裁办",
-          children: [
-            {
-              label: "二级 2-1",
-              children: [],
-            }
-          ],
-        },
-        {
-          label: "药学事业群",
-          children: [
-            {
-              label: "二级 2-1",
-              children: [],
-            }
-          ],
-        },
-        {
-          label: "医学事业群",
-          children: [
-            {
-              label: "二级 2-1",
-              children: [],
-            }
-          ],
-        },
-        {
-          label: "学历事业群",
-          children: [
-            {
-              label: "二级 2-1",
-              children: [],
-            }
-          ],
-        },
+      tableData: [],
+      tableKey: [
+        { name: '头像',value: 'src',operate: true,width: 80 },
+        { name: '姓名',value: 'name' },
+        { name: '手机',value: 'phone' },
+        { name: '部门',value: 'dept' },
+        { name: '职位',value: 'position' },
+        { name: '角色',value: 'roles' },
+        { name: '状态',value: 'status' },
+        { name: '编辑',value: 'edit',operate: true,width: 100 },
       ],
+      fixedTwoRow: true,
+      treeData: [],
       defaultProps: {
         children: "children",
         label: "label",
       },
-      dataUser: [
-        {
-          term: "员工姓名",
-          detail: "飞翔的荷兰人"
-        },
-        {
-          term: "所属部门",
-          detail: "系统研发部"
-        },
-        {
-          term: "员工类型",
-          detail: "在职"
-        },
-        {
-          term: "入职时间",
-          detail: "2020-12-01"
-        },
-        {
-          term: "手机号码",
-          detail: "13800138000"
-        },
-        {
-          term: "钉钉ID",
-          detail: "12345678910"
-        },
-        {
-          term: "员工职位",
-          detail: "产品经理"
-        },
-        {
-          term: "部门内级别",
-          detail: "5"
-        }
-      ],
+      dataUser: {},
       pageConfig: {
         totalCount: 100,
         pageNum: 1,
@@ -526,45 +280,98 @@ export default {
       timer: null,
     }
   },
+  mounted() {
+    // this.getTreeData();
+    // this.getTableData();
+    this.getDataTree();
+    // this.getDataTable();
+  },
   methods: {
+    // 操作通讯录树
+    handleNodeClick(data) {
+      console.log(data, 9999);
+      this.deptlabel = data.label
+      this.getDataTable();
+    },
+    // 搜索栏
     onSearch(val) {
       console.log(val, 999)
+      this.searchForm = {...val};
+      this.getDataTable({
+        currentPage: 1,
+          pageSize: 10,
+          loginUserId,
+          ...this.searchForm
+      })
     },
-    onReset() {
-      console.log(9999)
-      this.$refs.formRef.resetFields();
+    // 获取通讯录组织树
+    getTreeData() {
+      this.$fetch('getDeptTreeList').then(res => {
+        console.log(res.data.records,'tree')
+        this.treeData = res.data.records;
+      })
     },
+    // 获取本地通讯录组织树
+    async getDataTree() {
+      const { data } = await axios.get('/json/depttreedata.json')
+      this.treeData = data
+    },
+    // 获取本地组织表格数据
+    async getDataTable() {
+      const { data } = await axios.get('/json/depttabledata.json')
+      this.tableData = data
+    },
+    // 获取组织表格数据
+    getTableData() {
+      console.log('表格数据')
+    },
+    // 打开新增用户弹窗
+    handleAdd() {
+      for (const key in this.basicInfo) {
+        this.basicInfo[key] = "";
+      }
+      this.dialogVisible = true;
+      this.dialogStatus = true;
+    },
+    // 关闭新增用户弹窗
+    handleClose(formName) {
+      this.dialogVisible = false;
+      this.$refs[formName].resetFields();
+    },
+    // 新增用户提交
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          console.log(this.basicInfo, "提交");
+          // this.$fetch("menu_save", {
+          //   ...this.basicInfo,
+            
+          // }).then((res) => {
+          //   this.$message({
+          //     message: "提交成功",
+          //     type: "success",
+          //   });
+          //   this.handleClose("dataForm");
+          //   this.pageChange(this.currentPageInfo);
+          // });
+        }
+      });
+    },
+    handleSelect(rows) {
+      console.log(rows, "rows---");
+    },
+    // 编辑
     editRow(index,id, rows) {
-      // rows.splice(index, 1);
-      console.log(index,id, 666)
-      // this.drawer = true
+      console.log(index,id,rows, 666)
+      this.dataUser = rows
       this.dialog = true
     },
     pageChange(val) {
+      console.log(666)
       this.getTableData({
         currentPage: val.page,
         showCount: val.limit,
       });
-    },
-    handleNodeClick(data) {
-      console.log(data, 9999);
-    },
-    handleClose(done) {
-      if (this.loading) {
-        return;
-      }
-      this.$confirm('确定要提交表单吗？')
-        .then(_ => {
-          this.loading = true;
-          this.timer = setTimeout(() => {
-            done();
-            // 动画关闭需要一定的时间
-            setTimeout(() => {
-              this.loading = false;
-            }, 400);
-          }, 2000);
-        })
-        .catch(_ => {});
     },
     // 删除多角色
     removeDomain(item) {
@@ -580,6 +387,26 @@ export default {
         key: Date.now()
       });
     },
+    // 抽屉提交表单
+    handleDrawerClose(done) {
+      if (this.loading) {
+        return;
+      }
+      console.log(done, 3333)
+      this.$confirm('确定要提交表单吗？')
+        .then(_ => {
+          this.loading = true;
+          this.timer = setTimeout(() => {
+            done();
+            // 动画关闭需要一定的时间
+            setTimeout(() => {
+              this.loading = false;
+            }, 400);
+          }, 2000);
+        })
+        .catch(_ => {});
+    },
+    // 关闭抽屉
     cancelForm() {
       this.loading = false;
       this.dialog = false;
@@ -590,104 +417,49 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-.container {
-  display: flex;
+.addressbook_container {
   .center_l {
-    width: 20%;
-    // height: 300px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    .tree-container /deep/ {
-      .el-tree {
-        .el-tree-node__expand-icon.el-icon-caret-right {
-          &::before {
-            content: url(https://rdimg.rundejy.com/web/runde_console/static/new_test_more.png) !important;
-          }
-          &.is-leaf {
-            &::before {
-              content: "" !important;
-            }
-          }
-          &.expanded {
-            transform: none !important;
-            &::before {
-              content: url(https://rdimg.rundejy.com/web/runde_console/static/new_test_less.png) !important;
-            }
-          }
+    float: left;
+    width: 340px;
+    margin-right: 24px;
+    .tree-container {
+        /deep/ .el-tree {
+          padding-top: 24px;
+           height: calc(100vh - 190px);
+           overflow: auto;
+           padding-bottom: 24px;
         }
-      }
-
-      .el-tree > .el-tree-node:after {
-        border-top: none;
-      }
-
-      .el-tree-node {
-        position: relative;
-        padding-left: 16px;
-      }
-
-      .el-tree-node__children {
-        padding-left: 16px;
-      }
-
-      .el-tree-node :last-child:before {
-        height: 38px;
-      }
-
-      .el-tree > .el-tree-node:before {
-        border-left: none;
-      }
-
-      .el-tree-node:before {
-        content: "";
-        left: -4px;
-        position: absolute;
-        right: auto;
-        border-width: 1px;
-      }
-
-      .el-tree-node:after {
-        content: "";
-        left: -4px;
-        position: absolute;
-        right: auto;
-        border-width: 1px;
-      }
-
-      .el-tree-node:before {
-        border-left: 1px solid #e3e3e3;
-        bottom: 0px;
-        height: 100%;
-        top: -26px;
-        width: 1px;
-      }
-
-      .el-tree-node:after {
-        border-top: 1px solid #e3e3e3;
-        height: 20px;
-        top: 12px;
-        width: 24px;
-      }
     }
   }
   .center_r {
-    width: 80%;
-    padding: 20px;
-    margin-left: 10px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    .center_r_top {
-      // margin-bottom: 20px;
-    }
-    .center_r_bottom {
-      height: 600px;
-      padding: 20px 20px 20px 0;
-      .pagination-container {
-        padding: 20px 16px;
-      }
+    overflow: hidden;
+    .btn-wrapper {
+      display: flex;
+      flex-direction:row;
+      justify-content : space-between;
+      margin-bottom: 16px;
     }
     .demo-drawer__content {
       padding: 40px 60px 0 30px;
+      .term {
+        color: #606266;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 22px;
+        padding-bottom: 16px;
+        margin-right: 8px;
+        white-space: nowrap;
+        display: table-cell;
+      }
+      .detail {
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 1.5;
+        width: 100%;
+        padding-bottom: 16px;
+        color: #606266;
+        display: table-cell;
+      }
       .el-select {
         width: 44.5%;
       }
