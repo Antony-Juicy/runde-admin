@@ -6,10 +6,7 @@
     </rd-tree>
     </div>
     <div class="center_r w-container">
-      <div class="btn-wrapper">
-        <div style="font-weight: 700;margin-bottom: 20px;">{{deptlabel}}</div>
-        <el-button type="primary" icon="el-icon-plus" size="small" @click="handleAdd">添加用户</el-button>
-      </div>
+      <div style="font-weight: 700;margin-bottom: 20px;">{{deptlabel}}</div>
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
@@ -26,43 +23,6 @@
           <el-button @click="editRow(scope.$index,scope.row.id,scope.row)" type="text" size="small">编辑</el-button>
         </template>
       </rd-table>
-      <rd-dialog title="新增用户"
-        :dialogVisible="dialogVisible"
-        @handleClose="handleClose('dataForm')"
-        @submitForm="submitForm('dataForm')">
-        <el-form
-          ref="dataForm"
-          :model="basicInfo"
-          :rules="rules"
-          :label-width="formLabelWidth">
-          <el-form-item label="姓名" prop="name" :label-width="formLabelWidth">
-            <el-input v-model="basicInfo.name" autocomplete="off" placeholder="请输入姓名" />
-          </el-form-item>
-          <el-form-item label="账号" prop="account" :label-width="formLabelWidth">
-            <el-input v-model="basicInfo.account" autocomplete="off" placeholder="请输入账号" />
-          </el-form-item>
-          <el-form-item label="密码" prop="password">
-            <el-input type="password" v-model="basicInfo.password" autocomplete="off"  placeholder="请输入密码"></el-input>
-          </el-form-item>
-          <el-form-item label="部门" prop="dept" :label-width="formLabelWidth">
-            <el-input v-model="basicInfo.dept" autocomplete="off" placeholder="请输入部门" />
-          </el-form-item>
-          <el-form-item label="职位" prop="position" :label-width="formLabelWidth">
-            <el-input v-model="basicInfo.position" autocomplete="off" placeholder="请输入职位" />
-          </el-form-item>
-          <el-form-item label="手机号" prop="phone" :label-width="formLabelWidth">
-            <el-input v-model="basicInfo.phone" autocomplete="off" placeholder="请输入手机号" />
-          </el-form-item>
-          <el-form-item label="钉钉号" prop="ddid" :label-width="formLabelWidth">
-            <el-input v-model="basicInfo.ddid" autocomplete="off" placeholder="请输入钉钉号" />
-          </el-form-item>
-          <el-form-item label="状态" prop="status" :label-width="formLabelWidth">
-            <el-select v-model="basicInfo.status" placeholder="请选择状态">
-              <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
-            </el-select>
-          </el-form-item>
-        </el-form>
-      </rd-dialog>
       <el-drawer
         title=""
         :before-close="handleDrawerClose"
@@ -134,27 +94,33 @@
                   <el-input v-model="formDrawer.name" autocomplete="off"></el-input>
                 </el-form-item>
               </el-col>
+              <el-col :span="12">
+                <el-form-item label="公司类型:" :label-width="formLabelWidth">
+                  <el-input v-model="formDrawer.companyType" autocomplete="off"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="工作手机:" :label-width="formLabelWidth">
+                  <el-input v-model="formDrawer.workPhone" autocomplete="off"></el-input>
+                </el-form-item>
+              </el-col>
             </el-row>
             <el-divider></el-divider>
             <div class="title_drawer">多角色管理</div>
-            <el-form-item
-              v-for="(domain, index) in formDrawer.domains"
-              :key="domain.key"
-              :prop="'domains.' + index + '.value'"
-              label="角色:"
-              :label-width="formLabelWidth">
-              <el-select v-model="domain.value" clearable placeholder="请选择">
-                <el-option label="省校长" value="sheng"></el-option>
-                <el-option label="分校长" value="fen"></el-option>
-                <el-option label="战队长" value="zhan"></el-option>
-                <el-option label="营销专员" value="ying"></el-option>
-                <el-option label="电销专员" value="dian"></el-option>
-              </el-select>
-              <i class="el-icon-remove" style="margin-left:10px;color:red;" @click.prevent="removeDomain(domain)"></i>
-            </el-form-item>
-            <el-form-item>
-              <div class="demo-drawer__content_btn" @click="addDomain"> + 添加</div>
-            </el-form-item>
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item label="角色:" :label-width="formLabelWidth">
+                  <el-select v-model="formDrawer.valueDept" multiple placeholder="请选择">
+                    <el-option
+                      v-for="item in options"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
           </el-form>
           <div class="demo-drawer__footer">
             <el-button @click="cancelForm">取 消</el-button>
@@ -208,26 +174,6 @@ export default {
           placeholder: '请输入ID',
         },
       ],
-      dialogVisible: false,
-      basicInfo: {
-        name: "",
-        account: "",
-        password: "",
-        dept: "",
-        status: "",
-        phone: "",
-        ddid: "",
-        position: "",
-        level: ""
-      },
-      rules: {
-        name: [{ required: true, message: "请输入名字", trigger: "blur" }],
-        account: [{ required: true, message: "请输入账号", trigger: "blur" }],
-        password: [{ required: true, validator: this.$common._validatePassWord, trigger: "blur" }],
-        phone: [{ required: true, validator: this.$common._validatorPhone, trigger: "blur" }],
-        status: [{ required: true, message: "请选择状态", trigger: "blur" }],
-        type: [{ required: true, message: "请选择类型", trigger: "blur" }],
-      },
       statusOptions: [
         {
           label: "正常",
@@ -253,7 +199,7 @@ export default {
       treeData: [],
       defaultProps: {
         children: "children",
-        label: "label",
+        label: "name",
       },
       dataUser: {},
       pageConfig: {
@@ -265,31 +211,38 @@ export default {
       loading: false,
       formDrawer: {
         name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: '',
-        domains: [{
-          value: ''
-        }],
+        valueDept: []
       },
+      options: [
+      {
+        value: '选项1',
+        label: '黄金糕'
+      }, {
+        value: '选项2',
+        label: '双皮奶'
+      }, {
+        value: '选项3',
+        label: '蚵仔煎'
+      }, {
+        value: '选项4',
+        label: '龙须面'
+      }, {
+        value: '选项5',
+        label: '北京烤鸭'
+      }],
       formLabelWidth: '80px',
       timer: null,
     }
   },
   mounted() {
-    // this.getTreeData();
+    this.getTreeData();
     // this.getTableData();
-    this.getDataTree();
+    // this.getDataTree();
     // this.getDataTable();
   },
   methods: {
     // 操作通讯录树
     handleNodeClick(data) {
-      console.log(data, 9999);
       this.deptlabel = data.label
       this.getDataTable();
     },
@@ -325,38 +278,6 @@ export default {
     getTableData() {
       console.log('表格数据')
     },
-    // 打开新增用户弹窗
-    handleAdd() {
-      for (const key in this.basicInfo) {
-        this.basicInfo[key] = "";
-      }
-      this.dialogVisible = true;
-      this.dialogStatus = true;
-    },
-    // 关闭新增用户弹窗
-    handleClose(formName) {
-      this.dialogVisible = false;
-      this.$refs[formName].resetFields();
-    },
-    // 新增用户提交
-    submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          console.log(this.basicInfo, "提交");
-          // this.$fetch("menu_save", {
-          //   ...this.basicInfo,
-            
-          // }).then((res) => {
-          //   this.$message({
-          //     message: "提交成功",
-          //     type: "success",
-          //   });
-          //   this.handleClose("dataForm");
-          //   this.pageChange(this.currentPageInfo);
-          // });
-        }
-      });
-    },
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
@@ -371,20 +292,6 @@ export default {
       this.getTableData({
         currentPage: val.page,
         showCount: val.limit,
-      });
-    },
-    // 删除多角色
-    removeDomain(item) {
-      var index = this.formDrawer.domains.indexOf(item)
-      if (index !== -1) {
-        this.formDrawer.domains.splice(index, 1)
-      }
-    },
-    // 新增多角色
-    addDomain() {
-      this.formDrawer.domains.push({
-        value: '',
-        key: Date.now()
       });
     },
     // 抽屉提交表单
@@ -459,16 +366,6 @@ export default {
         padding-bottom: 16px;
         color: #606266;
         display: table-cell;
-      }
-      .el-select {
-        width: 44.5%;
-      }
-      .demo-drawer__content_btn {
-        width: 100%;
-        text-align: center;
-        color: skyblue;
-        border-radius: 10px;
-        border: 1px dashed #ccc;
       }
       .title_drawer {
         font-weight: 700;
