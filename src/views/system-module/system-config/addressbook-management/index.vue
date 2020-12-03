@@ -2,7 +2,7 @@
   <div class="addressbook_container">
     <search-form :formOptions = "formOptions" :showNum="showNum" @onSearch = onSearch></search-form>
     <div class="center_l">
-      <rd-tree :data="treeData" :defaultProps="defaultProps" @nodeClick="handleNodeClick">
+      <rd-tree :data="treeData" :defaultProps="defaultProps" @nodeClick="handleNodeClick" :default-expanded-keys="defaultKeys">
     </rd-tree>
     </div>
     <div class="center_r w-container">
@@ -197,6 +197,7 @@ export default {
       ],
       fixedTwoRow: true,
       treeData: [],
+      defaultKeys:[],
       defaultProps: {
         children: "children",
         label: "name",
@@ -243,7 +244,7 @@ export default {
   methods: {
     // 操作通讯录树
     handleNodeClick(data) {
-      this.deptlabel = data.label
+      this.deptlabel = data.name
       this.getDataTable();
     },
     // 搜索栏
@@ -260,8 +261,14 @@ export default {
     // 获取通讯录组织树
     getTreeData() {
       this.$fetch('getDeptTreeList').then(res => {
-        console.log(res.data.records,'tree')
         this.treeData = res.data.records;
+        this.treeData.forEach(item => {
+          if(item.children && item.children.length) {
+            item.children.forEach(ele => {
+              this.defaultKeys.push(ele.id)
+            })
+          }
+        })
       })
     },
     // 获取本地通讯录组织树
