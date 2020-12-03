@@ -126,6 +126,7 @@
         node-key="id"
         ref="tree"
         show-checkbox
+        :default-expanded-keys="defaultKeys"
         @node-click="handleNodeClick"
         class="authority-tree"
       >
@@ -265,25 +266,39 @@ export default {
           }]
         }],
       defaultProps: {
-        children: "children",
-        label: "label",
+       children: "children",
+        label: "name",
       },
       currentPageInfo:null,
-      selectedRoleId:''
+      selectedRoleId:'',
+      defaultKeys:[]
     };
   },
   mounted() {
     this.getTableData();
+    this.getTreeData();
   },
   methods: {
+    getTreeData() {
+      this.$fetch("getMenuTreeList").then((res) => {
+        this.treeData = res.data.records;
+        this.treeData.forEach(item => {
+          if(item.children&& item.children.length) {
+            item.children.forEach(ele => {
+              this.defaultKeys.push(ele.id)
+            })
+          }
+        })
+      });
+    },
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
     pageChange(val) {
       this.currentPageInfo = val;
       this.getTableData({
-        currentPage: val.page || 1,
-        pageSize: val.limit || 10,
+        currentPage: val&&val.page || 1,
+        pageSize: val&&val.limit || 10,
         loginUserId
       });
     },
@@ -344,7 +359,7 @@ export default {
                 type: "success",
               });
               this.handleClose('dataForm');
-              this.pageChange(this.currentPageInfo);
+              this.pageChange();
             })
           }else {
             // 编辑
@@ -381,10 +396,6 @@ export default {
         })
         return;
       }
-      console.log({
-        menuIds: selectedIdArr.join(','),
-        roleIds: this.selectedRoleId
-      },'888')
       this.$fetch('menu_impower',{
         menuIds: selectedIdArr.join(','),
         roleIds: this.selectedRoleId
