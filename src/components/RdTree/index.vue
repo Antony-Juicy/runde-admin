@@ -6,6 +6,7 @@
       :props="defaultProps"
       @node-click="handleNodeClick"
       :highlight-current="highlight"
+      :default-expanded-keys="defaultExpandedKeys"
     >
       <span class="custom-tree-node" slot-scope="{ node, data }">
         <span :class="{ greenNode: data.type == 1, redNode: data.type == 2 }" :title="node.label">{{
@@ -34,6 +35,10 @@ export default {
     highlight: {
       type: Boolean,
       default: true
+    },
+    defaultExpandedKeys: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -60,6 +65,17 @@ export default {
 }
 .tree-container /deep/ {
   .el-tree {
+    &::-webkit-scrollbar {
+      /*滚动条整体样式*/
+      width : 10px;  /*高宽分别对应横竖滚动条的尺寸*/
+      height: 1px;
+    }
+    &::-webkit-scrollbar-thumb {
+      /*滚动条里面小方块*/
+      border-radius: 10px;
+      box-shadow   : inset 0 0 5px #d0d1d3;
+      background   : #d0d1d3;
+    }
     .el-tree-node__expand-icon.el-icon-caret-right {
       &::before {
         content: url(https://rdimg.rundejy.com/web/runde_console/static/new_test_more.png) !important;

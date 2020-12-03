@@ -5,11 +5,12 @@
       :showNum="showNum"
       @onSearch="onSearch"
     ></search-form>
-    <div class="menu-wrapper-left">
+    <div class="menu-wrapper-left beauty-scroll">
       <rd-tree
         :data="treeData"
         :defaultProps="defaultProps"
         @nodeClick="handleNodeClick"
+        :defaultExpandedKeys="defaultKeys"
       >
       </rd-tree>
     </div>
@@ -227,6 +228,7 @@ export default {
   },
   data() {
     return {
+      defaultKeys:[],
       tabPosition: "left",
       text: "",
       tableData: [
@@ -385,8 +387,8 @@ export default {
     };
   },
   mounted() {
-    // this.getTableData();
-    // this.getTreeData();
+    this.getTableData();
+    this.getTreeData();
   },
   methods: {
     handleSelect(rows) {
@@ -395,8 +397,8 @@ export default {
     pageChange(val) {
       this.currentPageInfo = val;
       this.getTableData({
-        currentPage: val.page || 1,
-        pageSize: val.limit || 10,
+        currentPage: val&&val.page || 1,
+        pageSize: val&&val.limit || 10,
         loginUserId,
         ...this.searchForm,
       });
@@ -424,19 +426,19 @@ export default {
     // 打开新增弹窗
     handleAdd() {
       // 如果没有先选父级结果 弹出提示
-      // if(!this.selectedTree) {
-      //   this.$message({
-      //     message: '请先选择父级菜单',
-      //     type: 'warning'
-      //   })
-      //   return;
-      // }else if(this.selectedTree.type != "0") {
-      //   this.$message({
-      //     message: '请选择正确的菜单',
-      //     type: 'warning'
-      //   })
-      //   return;
-      // }
+      if(!this.selectedTree) {
+        this.$message({
+          message: '请先选择父级菜单',
+          type: 'warning'
+        })
+        return;
+      }else if(this.selectedTree.type != "0") {
+        this.$message({
+          message: '请选择正确的菜单',
+          type: 'warning'
+        })
+        return;
+      }
       for (const key in this.basicInfo) {
         this.basicInfo[key] = "";
       }
@@ -496,7 +498,7 @@ export default {
                 type: "success",
               });
               this.handleClose("dataForm");
-              this.pageChange(this.currentPageInfo);
+              this.pageChange();
             });
           } else {
             // 编辑
@@ -524,29 +526,40 @@ export default {
         type: "warning",
       })
         .then(async () => {
-          const res = await this.$fetch("menu_delete", { id: data.row.id });
-          if (res) {
+          const res = await this.$fetch("menu_delete", {
+            ids: data.id,
+            loginUserId,
+          }).then(res => {
+            if (res) {
             this.$message({
+              message: "删除成功",
               type: "success",
-              message: "删除成功!",
             });
             setTimeout(() => {
-              this.pageChange(this.currentPageInfo);
+              this.getTableData();
             }, 50);
           }
+          })
+
+          
         })
         .catch(() => {});
     },
 
     // 操作菜单树
     handleNodeClick(data) {
-      console.log(data, "---");
       this.selectedTree = data;
     },
     getTreeData() {
       this.$fetch("getMenuTreeList").then((res) => {
-        console.log(res.data.records, "tree");
         this.treeData = res.data.records;
+        this.treeData.forEach(item => {
+          if(item.children&& item.children.length) {
+            item.children.forEach(ele => {
+              this.defaultKeys.push(ele.id)
+            })
+          }
+        })
       });
     },
 
