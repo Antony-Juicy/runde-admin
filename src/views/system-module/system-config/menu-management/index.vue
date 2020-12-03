@@ -10,7 +10,7 @@
         :data="treeData"
         :defaultProps="defaultProps"
         @nodeClick="handleNodeClick"
-        :defaultExpandedKeys="defaultKeys"
+        :default-expanded-keys="defaultKeys"
       >
       </rd-tree>
     </div>

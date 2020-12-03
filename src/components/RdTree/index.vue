@@ -4,6 +4,7 @@
       :indent="0"
       :data="data"
       :props="defaultProps"
+      node-key="id"
       @node-click="handleNodeClick"
       :highlight-current="highlight"
       :default-expanded-keys="defaultExpandedKeys"
@@ -38,11 +39,13 @@ export default {
     },
     defaultExpandedKeys: {
       type: Array,
-      default: () => []
+      default: () => [
+      ]
     }
   },
   data() {
-    return {};
+    return {
+    };
   },
   methods: {
     handleNodeClick(data) {

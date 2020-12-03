@@ -275,8 +275,8 @@ export default {
     };
   },
   mounted() {
-    // this.getTableData();
-    // this.getTreeData();
+    this.getTableData();
+    this.getTreeData();
   },
   methods: {
     getTreeData() {
