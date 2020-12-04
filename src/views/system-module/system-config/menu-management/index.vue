@@ -608,12 +608,13 @@ export default {
         padding-top: 24px;
         height: calc(100vh - 260px);
         overflow: auto;
-        padding-bottom: 24px;
+        // padding-bottom: 24px;
       }
     }
   }
   .menu-wrapper-right {
     overflow: hidden;
+    // margin-bottom: 24px;
     .btn-wrapper {
       margin-bottom: 16px;
     }

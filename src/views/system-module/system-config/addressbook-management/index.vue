@@ -280,6 +280,7 @@ export default {
     async getDataTable() {
       const { data } = await axios.get('/json/depttabledata.json')
       this.tableData = data
+      this.pageConfig.totalCount = res.data.total
     },
     // 获取组织表格数据
     getTableData() {
@@ -339,7 +340,7 @@ export default {
     .tree-container {
         /deep/ .el-tree {
           padding-top: 24px;
-           height: calc(100vh - 190px);
+           height: calc(100vh - 260px);
            overflow: auto;
            padding-bottom: 24px;
         }

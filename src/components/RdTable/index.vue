@@ -126,6 +126,12 @@ export default {
 }
 /deep/ {
   .el-table {
+    .el-table__body-wrapper {
+      min-height: 50vh;
+      .el-table__empty-block {
+        height: 100%;
+      }
+    }
     .el-table__header {
       th {
         background-color: #FAFAFA;
@@ -135,6 +141,7 @@ export default {
       }
     }
     .el-table__body {
+      height: 100%;
       td {
         color: #333333;
         font-weight: 400;

@@ -37,8 +37,8 @@ export default {
   min-height: 100vh;
   width: 100%;
   position: relative;
-  overflow: hidden;
-  padding: 0 25px;
+  // overflow: hidden;
+  padding: 0 25px 25px 25px;
   box-sizing: border-box;
   background-color: #F0F2F5;
 }
