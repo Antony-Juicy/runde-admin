@@ -141,7 +141,7 @@ export default {
 /deep/ {
   .el-table {
     .el-table__body-wrapper {
-      min-height: 50vh;
+      // min-height: 50vh;
       .el-table__empty-block {
         height: 100%;
       }

@@ -34,8 +34,8 @@
         @select="handleSelect"
         @pageChange="pageChange"
       >
-        <template slot="name" slot-scope="scope">
-          <el-tag size="medium">{{ scope.row.name }}</el-tag>
+         <template slot="type" slot-scope="scope">
+          <span>{{ scope.row.type | typeFilter}}</span>
         </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
@@ -266,6 +266,7 @@ export default {
         {
           name: "类型",
           value: "type",
+          operate: true
         },
         {
           name: "路径",
@@ -385,6 +386,20 @@ export default {
       currentPageInfo: null, //当前页数 page和limit
       uploadOssElem: true,
     };
+  },
+  filters: {
+    typeFilter(status){
+        switch(status){
+            case '0':
+                return '目录';
+            case '1':
+                return '菜单';
+            case '2':
+                return '令牌';
+            default:
+                return '';
+        }
+    }
   },
   mounted() {
     this.getTableData();
