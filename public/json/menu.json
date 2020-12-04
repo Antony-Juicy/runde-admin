@@ -74,6 +74,61 @@
                     "children": []
                   }
                 ]
+              },
+              {
+                "id": 98,
+                "name": "系统管理2",
+                "backUrl": "",
+                "frontUrl": "system-config2",
+                "type": "0",
+                "orderNum": 0,
+                "children": [
+                  {
+                    "id": 162,
+                    "name": "账号管理2",
+                    "backUrl": "",
+                    "frontUrl": "system-module/system-config/user-management2",
+                    "type": "0",
+                    "orderNum": 0,
+                    "children": []
+                  },
+                  {
+                    "id": 37,
+                    "name": "通讯录管理2",
+                    "backUrl": "",
+                    "frontUrl": "system-module/system-config/addressbook-management2",
+                    "type": "0",
+                    "orderNum": 0,
+                    "children": []
+                  },
+                  {
+                    "id": 212,
+                    "name": "职能管理2",
+                    "backUrl": "",
+                    "frontUrl": "system-module/system-config/role-management2",
+                    "type": "0",
+                    "orderNum": 0,
+                    "children": []
+                  },
+                  {
+                    "id": 202,
+                    "name": "权限管理2",
+                    "backUrl": "",
+                    "frontUrl": "system-module/system-config/authority-management2",
+                    "type": "0",
+                    "orderNum": 0,
+                    "children": []
+                  },
+                  {
+                    "id": 12,
+                    "name": "菜单管理2",
+                    "backUrl": "",
+                    "frontUrl": "system-module/system-config/menu-management2",
+                    "type": "0",
+                    "orderNum": 0,
+                    "children": []
+                  }
+                ]
               }
             ]
           },

@@ -11,19 +11,23 @@
       <router-view :key="key"/>
       <!-- <keep-alive :include="cachedViews">
         <router-view :key="key"></router-view>
-      </keep-alive>-->
+      </keep-alive> -->
     </transition>
   </section>
 </template>
 
 <script>
+import { mapState } from "vuex";
 import Breadcrumb from '@/components/Breadcrumb'
 export default {
   name: "AppMain",
   computed: {
     key() {
       return this.$route.path;
-    }
+    },
+    //  ...mapState({
+    //   cachedViews: state => state.tagsView.cachedViews,
+    // }),
   },
   components: {
     Breadcrumb
@@ -37,8 +41,8 @@ export default {
   min-height: 100vh;
   width: 100%;
   position: relative;
-  overflow: hidden;
-  padding: 0 25px;
+  // overflow: hidden;
+  padding: 0 25px 25px 25px;
   box-sizing: border-box;
   background-color: #F0F2F5;
 }

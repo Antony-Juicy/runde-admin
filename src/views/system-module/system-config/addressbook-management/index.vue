@@ -13,6 +13,7 @@
         :loading="loading"
         :fixedTwoRow="fixedTwoRow"
         :pageConfig="pageConfig"
+        :emptyText="emptyText"
         @select="handleSelect"
         @pageChange="pageChange"
       >
@@ -193,8 +194,9 @@ export default {
         { name: '职位',value: 'position' },
         { name: '角色',value: 'roles' },
         { name: '状态',value: 'status' },
-        { name: '编辑',value: 'edit',operate: true,width: 100 },
+        { name: '操作',value: 'edit',operate: true,width: 100 },
       ],
+      emptyText: '暂无数据，请选择相应的组织架构',
       fixedTwoRow: true,
       treeData: [],
       defaultKeys:[],
@@ -204,7 +206,7 @@ export default {
       },
       dataUser: {},
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
@@ -280,6 +282,7 @@ export default {
     async getDataTable() {
       const { data } = await axios.get('/json/depttabledata.json')
       this.tableData = data
+      this.pageConfig.totalCount = res.data.total
     },
     // 获取组织表格数据
     getTableData() {
@@ -339,7 +342,7 @@ export default {
     .tree-container {
         /deep/ .el-tree {
           padding-top: 24px;
-           height: calc(100vh - 190px);
+           height: calc(100vh - 260px);
            overflow: auto;
            padding-bottom: 24px;
         }
