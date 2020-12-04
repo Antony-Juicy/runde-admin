@@ -87,6 +87,7 @@ const actions = {
       let index = 0;
       function trans(currentRoutes, index) {
         index = index + 1;
+        
         currentRoutes.forEach(item => {
           item.path = item.frontUrl;
           item.meta = {
@@ -100,7 +101,10 @@ const actions = {
             if (index == 1) {
               item.component = Layout;
             } else {
-              item.component = (resolve) => require([`@/views/${item.meta.fullPath}`], resolve)
+              
+              item.component = (resolve,reject) => {
+                return require([`@/views/${item.meta.fullPath}`], resolve)
+              }
             }
             trans(item.children, index)
           } else {

@@ -564,6 +564,12 @@ export default {
     // 操作菜单树
     handleNodeClick(data) {
       this.selectedTree = data;
+      this.getTableData({
+          currentPage: 1,
+          pageSize: 10,
+          loginUserId,
+          parentId: data.id
+        })
     },
     getTreeData() {
       this.$fetch("getMenuTreeList").then((res) => {
