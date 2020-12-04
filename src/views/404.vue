@@ -14,6 +14,10 @@
         </div> -->
         <div class="bullshit__headline">{{ message }}</div>
         <div class="bullshit__info">请检查你输入的地址是否正确</div>
+        <p class="tips2">
+            <span id="secTime">{{count_down}}</span>
+            <a id="secA" @click="toHome">秒后自动跳转到主页</a>
+          </p>
         <a href="" class="bullshit__return-home">返回主页</a>
       </div>
     </div>
@@ -24,9 +28,38 @@
 
 export default {
   name: 'Page404',
+  data(){
+    return {
+      count_down: 4,
+      timer: null
+    }
+  },
+  mounted(){
+    this.timer = setInterval(() => this.count_down--, 1000);
+  },
   computed: {
     message() {
       return '您访问的页面不存在'
+    }
+  },
+   beforeDestroy() {
+    this.clearTimer();
+  },
+   methods: {
+    clearTimer() {
+      clearInterval(this.timer);
+      this.timer = null;
+    },
+    toHome() {
+        window.location.href = '/'
+    }
+  },
+   watch: {
+    count_down() {
+      if (this.count_down <= 0) {
+        this.clearTimer();
+        this.toHome();
+      }
     }
   }
 }

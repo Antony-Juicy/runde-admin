@@ -7,6 +7,10 @@
       border
       @selection-change="handleSelectionChange"
     >
+      <div slot="empty">
+        <img src="@/assets/empty-image.png" alt="" class="img-empty">
+        <p>{{emptyText}}</p>
+      </div>
       <el-table-column v-if="multiple" type="selection" width="55">
       </el-table-column>
       <template v-for="(item, key) in tableKey">
@@ -96,6 +100,11 @@ export default {
     fixedTwoRow: {
       type:Boolean,
       default: false
+    },
+    // 没有数据的时候显示的内容
+    emptyText: {
+      type: String,
+      default: '暂无数据'
     }
   },
   components: {
@@ -117,6 +126,11 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.img-empty {
+  width: 260px;
+  height: 260px;
+  margin-top: 20px;
+}
 .twoRowContainer {
   /deep/ {
     .el-table__body td {
