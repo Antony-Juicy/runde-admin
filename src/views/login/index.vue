@@ -61,7 +61,9 @@
                 tabindex="3"
                 class="verifyCode-input"
                 auto-complete="on"/>
-                <img style="width:40%;height:100%" :src="imgCode" alt="" @click="changeImgcode">
+                <div style="float:right;width:40%;height:50px%;" >
+                  <img style="width:80%;height:80%;" :src="imgCode" alt="" @click="changeImgcode">
+                </div>
             </el-form-item>
             
             <el-form-item prop="" style="margin: 0;">
@@ -98,6 +100,7 @@
 
 <script>
 import { validUsername } from "@/utils/validate";
+import { Base64 } from 'js-base64';
 
 export default {
   name: "Login",
@@ -157,7 +160,8 @@ export default {
     }
   },
   mounted () {
-    this.getImgcode()
+    this.getImgcode();
+    this.getCookie();
   },
   methods: {
     handleClick(tab, event) {
@@ -175,7 +179,7 @@ export default {
     },
     getImgcode() {
       this.$fetch('user_getImgcode').then(res => {
-        this.imgCode = res.data.captchaBase64;
+        this.imgCode = 'data:image/png;base64,' + res.data.captchaBase64;
       })
     },
     changeImgcode() {
@@ -192,6 +196,13 @@ export default {
             .then(() => {
               this.$router.push({ path: this.redirect || "/" });
               this.loading = false;
+              if (this.checked == true) {
+                let password = Base64.encode(this.loginForm.password); // base64 加密
+                this.setCookie(this.loginForm.username, password, 7);
+              }else {
+                console.log("清空Cookie");
+                this.clearCookie();
+              }
             })
             .catch(() => {
               this.loading = false;
@@ -201,6 +212,29 @@ export default {
           return false;
         }
       });
+    },
+    setCookie(c_name, c_pwd, exdays) {
+      var exdate = new Date();
+      exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * exdays);
+      window.document.cookie = "username" + "=" + c_name + ";path=/;expires=" + exdate.toGMTString();
+      window.document.cookie = "password" + "=" + c_pwd + ";path=/;expires=" + exdate.toGMTString();
+    },
+    getCookie: function() {
+      if (document.cookie.length > 0) {
+        var arr = document.cookie.split('; ');
+        for (var i = 0; i < arr.length; i++) {
+          var arr2 = arr[i].split('=');
+          if (arr2[0] == 'username') {
+            this.loginForm.username = arr2[1];
+          } else if (arr2[0] == 'password') {
+            this.loginForm.password = Base64.decode(arr2[1]); // base64 解密
+          }
+        }
+        this.checked = true;
+      }
+    },
+    clearCookie: function() {
+      this.setCookie("", "", -1); //修改2值都为空，天数为负1天就行
     }
   }
 };
@@ -237,22 +271,6 @@ $light_gray: #eee;
       display: inline-block;
       height: 50px;
       width: 85%;
-
-      input {
-        // background: transparent;
-        // border: 0px;
-        // -webkit-appearance: none;
-        // border-radius: 0px;
-        // padding: 12px 5px 12px 15px;
-        // color: $light_gray;
-        // height: 47px;
-        // caret-color: $cursor;
-
-        &:-webkit-autofill {
-          // box-shadow: 0 0 0px 1000px $bg inset !important;
-          // -webkit-text-fill-color: $cursor !important;
-        }
-      }
     }
     .el-form-item {
       border: 1px solid rgba(255, 255, 255, 0.1);
