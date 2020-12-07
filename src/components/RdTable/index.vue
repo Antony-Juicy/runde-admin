@@ -6,6 +6,7 @@
       :class="{'twoRowContainer': fixedTwoRow}"
       border
       @selection-change="handleSelectionChange"
+      @sort-change="handelSortChange"
     >
       <div slot="empty">
         <img src="@/assets/empty-image.png" alt="" class="img-empty">
@@ -17,6 +18,8 @@
         <el-table-column
           v-if="!item.operate && !item.showTooltip"
           :key="key"
+          :fixed="item.fixed"
+          :sortable="item.sortable"
           :prop="item.value"
           :label="item.name"
           :width="item.width"
@@ -24,6 +27,8 @@
 
         <el-table-column
           v-else-if="item.showTooltip"
+          :fixed="item.fixed"
+          :sortable="item.sortable"
           :key="key"
           :prop="item.value"
           :label="item.name"
@@ -41,6 +46,8 @@
         <el-table-column
           v-else
           :key="key"
+          :fixed="item.fixed"
+          :sortable="item.sortable"
           :prop="item.value"
           :label="item.name"
           :width="item.width"
@@ -77,6 +84,13 @@ export default {
       default: () => [],
     },
     // 表格的配置等
+    /**
+     * sortable 排序 'custom' | true | false
+     * fixed  固定列  'left' | 'right
+     * width  列宽    (Number)
+     * operate 自定义模板
+     * showTooltip 是否出现悬浮窗 true | false
+     */
     tableKey: {
       type: Array,
       default: () => [],
@@ -120,6 +134,9 @@ export default {
     },
     pageChange(val){
       this.$emit("pageChange",val);
+    },
+    handelSortChange(data){
+      this.$emit("sortChange", data);
     }
   },
 };
