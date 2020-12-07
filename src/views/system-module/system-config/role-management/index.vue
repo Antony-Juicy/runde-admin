@@ -170,10 +170,6 @@ export default {
           name: "名称",
           value: "roleName",
         },
-         {
-          name: "归属部门",
-          value: "deptName",
-        },
         {
           name: "状态",
           value: "status",
