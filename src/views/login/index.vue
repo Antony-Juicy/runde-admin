@@ -61,8 +61,8 @@
                 tabindex="3"
                 class="verifyCode-input"
                 auto-complete="on"/>
-                <div style="float:right;width:40%;height:50px%;" >
-                  <img style="width:80%;height:80%;" :src="imgCode" alt="" @click="changeImgcode">
+                <div style="float:right;width:40%;height:50px;" >
+                  <img style="width:82%;height:40px;" :src="imgCode" alt="" @click="changeImgcode">
                 </div>
             </el-form-item>
             
@@ -326,5 +326,8 @@ $light_gray: #eee;
     cursor: pointer;
     user-select: none;
   }
+}
+/deep/ .el-form-item__error{
+  margin-left: 34px;
 }
 </style>
