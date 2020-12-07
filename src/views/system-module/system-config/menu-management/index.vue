@@ -33,6 +33,7 @@
         :pageConfig="pageConfig"
         @select="handleSelect"
         @pageChange="pageChange"
+        @sortChange="sortChange"
       >
          <template slot="type" slot-scope="scope">
           <span>{{ scope.row.type | typeFilter}}</span>
@@ -253,7 +254,7 @@ export default {
         {
           name: "ID",
           value: "id",
-          width: 80,
+          width: 80
         },
         {
           name: "名称",
@@ -287,6 +288,7 @@ export default {
           value: "edit",
           operate: true,
           width: 120,
+          fixed:'right'
         },
       ],
       fixedTwoRow: true,
@@ -613,6 +615,10 @@ export default {
         this[dataElem] = true;
       });
     },
+
+    sortChange(data){
+      console.log(data,'data--')
+    }
   },
 };
 </script>
