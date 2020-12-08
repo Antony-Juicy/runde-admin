@@ -1,11 +1,8 @@
 <template>
   <div class="role-wrapper">
     <div class="group-wrapper">
-      <el-radio-group v-model="tabPosition" @change="handleTabClick" style="margin-bottom: 30px">
-        <el-radio-button label="top">top</el-radio-button>
-        <el-radio-button label="right">right</el-radio-button>
-        <el-radio-button label="bottom">bottom</el-radio-button>
-        <el-radio-button label="left">left</el-radio-button>
+      <el-radio-group v-model="tabPermission" @change="handleTabClick">
+        <el-radio-button :label="item.id" v-for="(item,index) in permissionGroup" :key="index">{{item.name}}</el-radio-button>
       </el-radio-group>
     </div>
     <div class="btn-wrapper">
@@ -82,6 +79,17 @@
             >
           </el-row>
         </el-form-item>
+        <el-form-item label="分组" prop="parentId" :label-width="formLabelWidth">
+          <el-select v-model="basicInfo.parentId" placeholder="分组">
+            <el-option
+              v-for="item in permissionGroup2"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item
           label="名称"
           prop="roleName"
@@ -157,8 +165,30 @@ export default {
   inject: ["reload"],
   data() {
     return {
-      tabPosition: "top",
-      text: "",
+      tabPermission: "",
+      permissionGroup:[
+        {
+          id:1,
+          name:'技术'
+        },
+        {
+          id:2,
+          name:'财务'
+        },
+        {
+          id:3,
+          name:'教务'
+        },
+        {
+          id:4,
+          name:'市场'
+        },
+        {
+          id:5,
+          name:'事业部'
+        },
+      ],
+      permissionGroup2:[],
       tableData: [
         {
           id: 1,
@@ -223,6 +253,7 @@ export default {
         status: "",
         remark: "",
         updateReason: "",
+        parentId:""
       },
       rules: {
         roleCode: [{ required: true, message: "请获取编码", trigger: "blur" }],
@@ -231,6 +262,7 @@ export default {
         ],
         roleName: [{ required: true, message: "请输入名称", trigger: "blur" }],
         status: [{ required: true, message: "请选择状态", trigger: "blur" }],
+        parentId: [{ required: true, message: "请选择分组", trigger: "blur" }],
       },
       options: [
         {
@@ -306,6 +338,11 @@ export default {
   mounted() {
     this.getTableData();
     this.getTreeData();
+    this.permissionGroup2 = [...this.permissionGroup];
+    this.permissionGroup2.unshift({
+      id: 0,
+      name:'父组'
+    })
   },
   methods: {
     getTreeData() {
@@ -459,6 +496,11 @@ export default {
 .role-wrapper {
   background-color: #fff;
   padding: 20px;
+  .group-wrapper {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    // border-bottom: 1px solid #EBEEF5;
+  }
   .btn-wrapper {
     margin-bottom: 16px;
   }
