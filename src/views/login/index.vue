@@ -1,5 +1,6 @@
 <template>
-  <div class="login-container">
+  <div class="login-container" :style="bigBg">
+    <!-- 测试环境 -->
     <el-form
       ref="loginForm"
       :model="loginForm"
@@ -8,6 +9,7 @@
       auto-complete="on"
       label-width="auto"
       label-position="left"
+      v-if="show"
     >
       <div class="title-container">
         <h3 class="title">欢迎访问润德大教务平台</h3>
@@ -26,7 +28,8 @@
                 name="username"
                 type="text"
                 tabindex="1"
-                auto-complete="on"/>
+                auto-complete="on"
+              />
             </el-form-item>
 
             <el-form-item prop="password">
@@ -42,13 +45,16 @@
                 name="password"
                 tabindex="2"
                 auto-complete="on"
-                @keyup.enter.native="handleLogin"/>
+                @keyup.enter.native="handleLogin"
+              />
               <span class="show-pwd" @click="showPwd">
-                <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+                <svg-icon
+                  :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
+                />
               </span>
             </el-form-item>
 
-            <el-form-item prop="VerifyCode" style="margin-bottom: 10px;">
+            <el-form-item prop="VerifyCode" style="margin-bottom: 10px">
               <span class="svg-container">
                 <!-- <svg-icon icon-class="password" /> -->
               </span>
@@ -60,26 +66,40 @@
                 type="text"
                 tabindex="3"
                 class="verifyCode-input"
-                auto-complete="on"/>
-                <div style="float:right;width:40%;height:50px;" >
-                  <img style="width:82%;height:40px;" :src="imgCode" alt="" @click="changeImgcode">
-                </div>
+                auto-complete="on"
+              />
+              <div style="float: right; width: 40%; height: 50px">
+                <img
+                  style="width: 82%; height: 40px"
+                  :src="imgCode"
+                  alt=""
+                  @click="changeImgcode"
+                />
+              </div>
             </el-form-item>
-            
-            <el-form-item prop="" style="margin: 0;">
+
+            <el-form-item prop="" style="margin: 0">
               <el-checkbox v-model="checked">记住密码</el-checkbox>
-              <a href="https://baidu.com" style="float:right;color:#409EFF;">忘记密码</a>
+              <a href="https://baidu.com" style="float: right; color: #409eff"
+                >忘记密码</a
+              >
             </el-form-item>
 
             <el-button
               :loading="loading"
               type="primary"
-              style="width:100%;margin-bottom:4px;"
-              @click.native.prevent="handleLogin">登陆
+              style="width: 100%; margin-bottom: 4px"
+              @click.native.prevent="handleLogin"
+              >登陆
             </el-button>
-            <p style="font-size:14px;text-align:center;">
+            <p style="font-size: 14px; text-align: center">
               建议使用
-              <a href="https://www.google.cn/intl/zh-CN/chrome/" target="_Blank" style="color:#409EFF;">谷歌浏览器</a>
+              <a
+                href="https://www.google.cn/intl/zh-CN/chrome/"
+                target="_Blank"
+                style="color: #409eff"
+                >谷歌浏览器</a
+              >
               访问
             </p>
           </el-tab-pane>
@@ -88,20 +108,21 @@
           </el-tab-pane>
         </el-tabs>
       </div>
-      
 
-      <div class="tips">
-        <!-- <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>-->
-      </div>
+      <div class="tips"></div>
     </el-form>
+
+    <!-- 正式环境 -->
+    <div class="production-wrapper" v-else>
+      <productionCode/>
+    </div>
   </div>
 </template>
 
 <script>
 import { validUsername } from "@/utils/validate";
-import { Base64 } from 'js-base64';
-
+import { Base64 } from "js-base64";
+import productionCode from './components/productionCode'
 export default {
   name: "Login",
   data() {
@@ -127,39 +148,51 @@ export default {
       }
     };
     return {
-      activeName: 'first',
+      activeName: "first",
       checked: false,
-      imgCode: '',
+      imgCode: "",
       loginForm: {
         username: "",
         password: "",
-        VerifyCode: ""
+        VerifyCode: "",
       },
       loginRules: {
         username: [
-          { required: true, trigger: "blur", validator: validateUsername }
+          { required: true, trigger: "blur", validator: validateUsername },
         ],
         password: [
-          { required: true, trigger: "blur", validator: validatePassword }
+          { required: true, trigger: "blur", validator: validatePassword },
         ],
         VerifyCode: [
-          { required: true, trigger: "blur", validator: validateVerifyCode }
-        ]
+          { required: true, trigger: "blur", validator: validateVerifyCode },
+        ],
       },
       loading: false,
       passwordType: "password",
-      redirect: undefined
+      redirect: undefined,
+      bigBg: {
+        backgroundImage: 'url('+ require("../../assets/bg.png") +')'
+      }
     };
+  },
+  components:{
+    productionCode
   },
   watch: {
     $route: {
-      handler: function(route) {
+      handler: function (route) {
         this.redirect = route.query && route.query.redirect;
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
-  mounted () {
+  computed: {
+    show() {
+      return process.env.NODE_ENV == "development";
+    },
+  },
+  mounted() {
+    console.log(process.env, "999");
     this.getImgcode();
     this.getCookie();
   },
@@ -178,20 +211,20 @@ export default {
       });
     },
     getImgcode() {
-      this.$fetch('user_getImgcode').then(res => {
-        this.imgCode = 'data:image/png;base64,' + res.data.captchaBase64;
-      })
+      this.$fetch("user_getImgcode").then((res) => {
+        this.imgCode = "data:image/png;base64," + res.data.captchaBase64;
+      });
     },
     changeImgcode() {
-      this.getImgcode()
+      this.getImgcode();
     },
     handleLogin() {
-      this.$refs.loginForm.validate(valid => {
+      this.$refs.loginForm.validate((valid) => {
         if (valid) {
           this.loading = true;
           this.$store
             .dispatch("user/login", {
-              ...this.loginForm
+              ...this.loginForm,
             })
             .then(() => {
               this.$router.push({ path: this.redirect || "/" });
@@ -199,7 +232,7 @@ export default {
               if (this.checked == true) {
                 let password = Base64.encode(this.loginForm.password); // base64 加密
                 this.setCookie(this.loginForm.username, password, 7);
-              }else {
+              } else {
                 console.log("清空Cookie");
                 this.clearCookie();
               }
@@ -216,27 +249,29 @@ export default {
     setCookie(c_name, c_pwd, exdays) {
       var exdate = new Date();
       exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * exdays);
-      window.document.cookie = "username" + "=" + c_name + ";path=/;expires=" + exdate.toGMTString();
-      window.document.cookie = "password" + "=" + c_pwd + ";path=/;expires=" + exdate.toGMTString();
+      window.document.cookie =
+        "username" + "=" + c_name + ";path=/;expires=" + exdate.toGMTString();
+      window.document.cookie =
+        "password" + "=" + c_pwd + ";path=/;expires=" + exdate.toGMTString();
     },
-    getCookie: function() {
+    getCookie: function () {
       if (document.cookie.length > 0) {
-        var arr = document.cookie.split('; ');
+        var arr = document.cookie.split("; ");
         for (var i = 0; i < arr.length; i++) {
-          var arr2 = arr[i].split('=');
-          if (arr2[0] == 'username') {
+          var arr2 = arr[i].split("=");
+          if (arr2[0] == "username") {
             this.loginForm.username = arr2[1];
-          } else if (arr2[0] == 'password') {
+          } else if (arr2[0] == "password") {
             this.loginForm.password = Base64.decode(arr2[1]); // base64 解密
           }
         }
         this.checked = true;
       }
     },
-    clearCookie: function() {
+    clearCookie: function () {
       this.setCookie("", "", -1); //修改2值都为空，天数为负1天就行
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -249,7 +284,7 @@ $light_gray: #eee;
   min-height: 100%;
   width: 100%;
   background-color: $bg;
-  background-image: url('../../assets/bg.png');
+  // background-image: url("../../assets/bg.png");
   background-size: 100% 100%;
   background-repeat: no-repeat;
   overflow: hidden;
@@ -326,8 +361,19 @@ $light_gray: #eee;
     cursor: pointer;
     user-select: none;
   }
+
+  .production-wrapper {
+    width: 350px;
+    height: 430px;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+  }
 }
-/deep/ .el-form-item__error{
+/deep/ .el-form-item__error {
   margin-left: 34px;
 }
 </style>
