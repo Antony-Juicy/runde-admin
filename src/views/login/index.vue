@@ -48,6 +48,7 @@
               <el-input
                 ref="VerifyCode"
                 v-model="loginForm.VerifyCode"
+                prefix-icon=" el-icon-help"
                 placeholder="请输入验证码"
                 name="VerifyCode"
                 type="text"
