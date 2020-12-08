@@ -68,13 +68,14 @@
 
             <el-form-item prop="" style="margin: 0">
               <el-checkbox v-model="checked">记住密码</el-checkbox>
-              <a href="https://baidu.com" style="float:right;margin-right:20px;color:#409EFF;">忘记密码</a>
+              <a href="javascript:;" style="float:right;margin-right:20px;color:#409EFF;">忘记密码</a>
             </el-form-item>
 
             <el-button
               :loading="loading"
               type="primary"
               style="width:90%;margin-left:20px;"
+              v-prevent-re-click="2000"
               @click.native.prevent="handleLogin">登陆
             </el-button>
             <p style="font-size: 14px; text-align: center">
