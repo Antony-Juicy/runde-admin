@@ -1,5 +1,25 @@
-## Build Setup
+# 大教务前端
 
+## 文件夹说明
+```
+├─assets 资源目录，未编译的静态资源如 scss、js
+├─components 组件目录
+├─fetch api 接口
+├─layout 整体布局
+├─router 路由
+├─store vuex全局状态管理
+├─styles 公共样式
+├─utils 全局工具类/全局过滤器/全局指令
+├─views 页面目录
+├─App.vue 入口页面
+├─main.js 入口文件
+├─permission.js 路由权限控制入口文件  
+├─.env.development 开发环境的接口地址
+├─.env.production  生产环境的接口地址
+
+```
+
+## 全局配置
 
 ```
 # 全局指令
@@ -24,18 +44,18 @@
 /utils/filters
 ```
 
+## Build Setup
+
 ```bash
 # 克隆项目
-git clone https://github.com/PanJiaChen/vue-admin-template.git
+git clone http://39.108.184.230:8082/jiaowu_web_team/runde-admin.git
 
 # 进入项目目录
-cd rundeOfficialAdmin
+cd runde-admin
 
 # 安装依赖
-npm install
+npm install或者cnpm install
 
-# 建议不要直接使用 cnpm 安装以来，会有各种诡异的 bug。可以通过如下操作解决 npm 下载速度慢的问题
-npm install --registry=https://registry.npm.taobao.org
 
 # 启动服务
 npm run dev
@@ -70,4 +90,3 @@ npm run lint
 npm run lint -- --fix
 ```
 
-Copyright (c) 2019 Shuaifang
