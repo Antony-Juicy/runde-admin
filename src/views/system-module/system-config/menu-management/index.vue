@@ -31,6 +31,7 @@
         :loading="loading"
         :fixedTwoRow="fixedTwoRow"
         :pageConfig="pageConfig"
+        :filterColumn="true"
         @select="handleSelect"
         @pageChange="pageChange"
         @sortChange="sortChange"
@@ -292,11 +293,11 @@ export default {
         {
           name: "ID",
           value: "id",
-          width: 80,
+          width: 80
         },
         {
           name: "名称",
-          value: "name",
+          value: "name"
         },
         {
           name: "类型",

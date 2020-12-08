@@ -1,12 +1,12 @@
 <template>
   <div class="table-wrapper">
-    <div class="filter-bar">
+    <div class="filter-bar" v-if="filterColumn">
       <el-popover
         placement="bottom"
-        width="400"
+        width="150"
         trigger="click">
-        <el-checkbox v-model="checked">备选项</el-checkbox>
-        <el-button slot="reference" size="small"><i class="el-icon-s-data"></i></el-button>
+          <el-checkbox v-for="item in tableKey" :label="item.value" :key="item.value" v-model="item.show" @change="checkboxChange">{{item.name}}</el-checkbox>
+        <el-button slot="reference" size="small"><i class="el-icon-finished" style="font-size: 14px"></i></el-button>
       </el-popover>
     </div>
     <el-table
@@ -23,7 +23,7 @@
       </div>
       <el-table-column v-if="multiple" type="selection" width="55">
       </el-table-column>
-      <template v-for="(item, key) in tableKey">
+      <template v-for="(item, key) in checkColumn">
         <el-table-column
           v-if="!item.operate && !item.showTooltip"
           :key="key"
@@ -84,6 +84,7 @@
 
 <script>
 import Pagination from "@/components/Pagination";
+const cityOptions = ['上海', '北京', '广州', '深圳'];
 export default {
   name: "RdTable",
   props: {
@@ -128,6 +129,11 @@ export default {
     emptyText: {
       type: String,
       default: '暂无数据'
+    },
+    // 是否显示筛选列按钮
+    filterColumn: {
+      type: Boolean,
+      default: false
     }
   },
   components: {
@@ -135,10 +141,28 @@ export default {
   },
   data() {
     return {
-      checked: true
+       checkAll: false,
+        checkedCities: [],
+        cities: cityOptions,
+        isIndeterminate: true,
+        tableKeyData:[]
     };
   },
+  created(){
+    this.tableKey.forEach(item => {
+      item.show = true;
+    })
+    this.tableKeyData = this.tableKey;
+  },
+  computed:{
+    checkColumn(){
+      return this.tableKeyData.filter(item => item.show)
+    }
+  },
   methods: {
+    checkboxChange(val){
+      this.tableKeyData = JSON.parse(JSON.stringify(this.tableKey));
+    },
     handleSelectionChange(rows) {
       this.$emit("select", rows);
     },
@@ -147,6 +171,9 @@ export default {
     },
     handelSortChange(data){
       this.$emit("sortChange", data);
+    },
+    handleCheckedCitiesChange(val){
+      console.log(val,'valll')
     }
   },
 };
@@ -158,7 +185,7 @@ export default {
   .filter-bar {
     position: absolute;
     right: 0;
-    top: -40px;
+    top: -48px;
   }
 }
 .img-empty {
@@ -174,6 +201,10 @@ export default {
   }
 }
 /deep/ {
+  .el-checkbox {
+    display: block;
+    margin-bottom: 6px;
+  }
   .el-table {
     .el-table__body-wrapper {
       // min-height: 50vh;
