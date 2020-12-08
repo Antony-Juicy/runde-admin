@@ -1,12 +1,20 @@
 <template>
   <div class="role-wrapper">
+    <div class="group-wrapper">
+      <el-radio-group v-model="tabPosition" @change="handleTabClick" style="margin-bottom: 30px">
+        <el-radio-button label="top">top</el-radio-button>
+        <el-radio-button label="right">right</el-radio-button>
+        <el-radio-button label="bottom">bottom</el-radio-button>
+        <el-radio-button label="left">left</el-radio-button>
+      </el-radio-group>
+    </div>
     <div class="btn-wrapper">
       <el-button
         type="primary"
         icon="el-icon-plus"
         size="small"
         @click="handleAdd"
-        >添加角色</el-button
+        >添加</el-button
       >
     </div>
     <!-- 表格 -->
@@ -20,7 +28,7 @@
       @pageChange="pageChange"
     >
       <template slot="status" slot-scope="scope">
-        <span>{{scope.row.status | statusFilter }}</span>
+        <span>{{ scope.row.status | statusFilter }}</span>
       </template>
       <template slot="edit" slot-scope="scope">
         <el-button @click="handleEdit(scope.row)" type="text" size="small"
@@ -49,7 +57,12 @@
         :rules="rules"
         :label-width="formLabelWidth"
       >
-        <el-form-item label="编码" prop="roleCode" :label-width="formLabelWidth" v-if="dialogStatus">
+        <el-form-item
+          label="编码"
+          prop="roleCode"
+          :label-width="formLabelWidth"
+          v-if="dialogStatus"
+        >
           <el-row>
             <el-col :span="16">
               <el-input
@@ -59,7 +72,10 @@
                 disabled
             /></el-col>
             <el-col :span="8"
-              ><el-button type="primary" size="small" style="margin-left: 5px"
+              ><el-button
+                type="primary"
+                size="small"
+                style="margin-left: 5px"
                 @click="getCode"
                 >获取编码</el-button
               ></el-col
@@ -141,7 +157,7 @@ export default {
   inject: ["reload"],
   data() {
     return {
-      tabPosition: "left",
+      tabPosition: "top",
       text: "",
       tableData: [
         {
@@ -173,7 +189,7 @@ export default {
         {
           name: "状态",
           value: "status",
-           operate: true
+          operate: true,
         },
         {
           name: "创建时间",
@@ -206,11 +222,13 @@ export default {
         roleName: "",
         status: "",
         remark: "",
-        updateReason:""
+        updateReason: "",
       },
       rules: {
         roleCode: [{ required: true, message: "请获取编码", trigger: "blur" }],
-        updateReason: [{ required: true, message: "请输入修改事由", trigger: "blur" }],
+        updateReason: [
+          { required: true, message: "请输入修改事由", trigger: "blur" },
+        ],
         roleName: [{ required: true, message: "请输入名称", trigger: "blur" }],
         status: [{ required: true, message: "请选择状态", trigger: "blur" }],
       },
@@ -226,48 +244,63 @@ export default {
       ],
       // 配置权限
       authorityVisible: false,
-      treeData:[{
+      treeData: [
+        {
           id: 1,
-          label: '一级 1',
-          children: [{
-            id: 4,
-            label: '二级 1-1',
-            children: [{
-              id: 9,
-              label: '三级 1-1-1'
-            }, {
-              id: 10,
-              label: '三级 1-1-2'
-            }]
-          }]
-        }, {
+          label: "一级 1",
+          children: [
+            {
+              id: 4,
+              label: "二级 1-1",
+              children: [
+                {
+                  id: 9,
+                  label: "三级 1-1-1",
+                },
+                {
+                  id: 10,
+                  label: "三级 1-1-2",
+                },
+              ],
+            },
+          ],
+        },
+        {
           id: 2,
-          label: '一级 2',
-          children: [{
-            id: 5,
-            label: '二级 2-1'
-          }, {
-            id: 6,
-            label: '二级 2-2'
-          }]
-        }, {
+          label: "一级 2",
+          children: [
+            {
+              id: 5,
+              label: "二级 2-1",
+            },
+            {
+              id: 6,
+              label: "二级 2-2",
+            },
+          ],
+        },
+        {
           id: 3,
-          label: '一级 3',
-          children: [{
-            id: 7,
-            label: '二级 3-1'
-          }, {
-            id: 8,
-            label: '二级 3-2'
-          }]
-        }],
+          label: "一级 3",
+          children: [
+            {
+              id: 7,
+              label: "二级 3-1",
+            },
+            {
+              id: 8,
+              label: "二级 3-2",
+            },
+          ],
+        },
+      ],
       defaultProps: {
-       children: "children",
+        children: "children",
         label: "name",
       },
-      currentPageInfo:null,
-      selectedRoleId:'',
-      defaultKeys:[]
+      currentPageInfo: null,
+      selectedRoleId: "",
+      defaultKeys: [],
     };
   },
   mounted() {
@@ -278,13 +311,13 @@ export default {
     getTreeData() {
       this.$fetch("getMenuTreeList").then((res) => {
         this.treeData = res.data.records;
-        this.treeData.forEach(item => {
-          if(item.children&& item.children.length) {
-            item.children.forEach(ele => {
-              this.defaultKeys.push(ele.id)
-            })
+        this.treeData.forEach((item) => {
+          if (item.children && item.children.length) {
+            item.children.forEach((ele) => {
+              this.defaultKeys.push(ele.id);
+            });
           }
-        })
+        });
       });
     },
     handleSelect(rows) {
@@ -293,9 +326,9 @@ export default {
     pageChange(val) {
       this.currentPageInfo = val;
       this.getTableData({
-        currentPage: val&&val.page || 1,
-        pageSize: val&&val.limit || 10,
-        loginUserId
+        currentPage: (val && val.page) || 1,
+        pageSize: (val && val.limit) || 10,
+        loginUserId,
       });
     },
     getTableData(params) {
@@ -308,7 +341,7 @@ export default {
         params || {
           currentPage: 1,
           pageSize: 10,
-          loginUserId
+          loginUserId,
         }
       ).then((res) => {
         this.tableData = res.data.records;
@@ -344,32 +377,32 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log(this.basicInfo, "提交");
-          if(this.dialogStatus) {
+          if (this.dialogStatus) {
             // 新增
-            this.$fetch('role_save',{
+            this.$fetch("role_save", {
               ...this.basicInfo,
-              loginUserId
-            }).then(res => {
+              loginUserId,
+            }).then((res) => {
               this.$message({
                 message: "提交成功",
                 type: "success",
               });
-              this.handleClose('dataForm');
+              this.handleClose("dataForm");
               this.pageChange();
-            })
-          }else {
+            });
+          } else {
             // 编辑
-            this.$fetch("role_edit",{
+            this.$fetch("role_edit", {
               ...this.basicInfo,
               loginUserId,
-            }).then(res => {
+            }).then((res) => {
               this.$message({
                 message: "编辑成功",
                 type: "success",
               });
-              this.handleClose('dataForm');
-             this.pageChange(this.currentPageInfo);
-            })
+              this.handleClose("dataForm");
+              this.pageChange(this.currentPageInfo);
+            });
           }
         }
       });
@@ -383,36 +416,40 @@ export default {
       this.authorityVisible = false;
     },
     submitFormAuthority() {
-      console.log(this.$refs.tree.getCheckedKeys(),'key');
+      console.log(this.$refs.tree.getCheckedKeys(), "key");
       let selectedIdArr = this.$refs.tree.getCheckedKeys();
-      if(!selectedIdArr.length) {
+      if (!selectedIdArr.length) {
         this.$message({
-          message: '请选择权限',
-          type: 'warning'
-        })
+          message: "请选择权限",
+          type: "warning",
+        });
         return;
       }
-      this.$fetch('menu_impower',{
-        menuIds: selectedIdArr.join(','),
-        roleIds: this.selectedRoleId
-      }).then(res => {
+      this.$fetch("menu_impower", {
+        menuIds: selectedIdArr.join(","),
+        roleIds: this.selectedRoleId,
+      }).then((res) => {
         this.$message({
           message: "保存成功",
           type: "success",
         });
         this.handleCloseAuthority();
-      })
-
+      });
     },
     handleNodeClick() {},
 
     // 获取编码
-    getCode(){
-      this.$fetch('system_getCode',{
-        flagType: 2
-      }).then(res => {
+    getCode() {
+      this.$fetch("system_getCode", {
+        flagType: 2,
+      }).then((res) => {
         this.basicInfo.roleCode = res.data;
-      })
+      });
+    },
+
+    // 点击权限组的分类
+    handleTabClick(data){
+      console.log(data,'data---')
     }
   },
 };
@@ -430,7 +467,7 @@ export default {
   }
   /deep/ {
     .el-input.is-disabled .el-input__inner {
-          color: #767a82;
+      color: #767a82;
     }
   }
 }

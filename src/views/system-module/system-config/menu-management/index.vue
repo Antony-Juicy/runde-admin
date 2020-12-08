@@ -35,8 +35,13 @@
         @pageChange="pageChange"
         @sortChange="sortChange"
       >
-         <template slot="type" slot-scope="scope">
-          <span>{{ scope.row.type | typeFilter}}</span>
+        <template slot="type" slot-scope="scope">
+          <span>{{ scope.row.type | typeFilter }}</span>
+        </template>
+        <template slot="frontUrl" slot-scope="scope">
+          <span>{{
+            scope.row.type == "0" ? scope.row.frontUrl : scope.row.backUrl
+          }}</span>
         </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
@@ -122,7 +127,10 @@
             </el-select>
           </el-form-item>
           <el-form-item label="类型" prop="type" :label-width="formLabelWidth">
-            <el-select v-model="basicInfo.type" placeholder="请选择类型">
+            <el-select
+              v-model="basicInfo.type"
+              placeholder="请选择类型"
+            >
               <el-option
                 v-for="item in typeOptions"
                 :key="item.value"
@@ -150,6 +158,7 @@
             label="前端url"
             prop="frontUrl"
             :label-width="formLabelWidth"
+            v-show="basicInfo.type == '0'"
           >
             <el-input
               v-model="basicInfo.frontUrl"
@@ -161,11 +170,40 @@
             label="后端url"
             prop="backUrl"
             :label-width="formLabelWidth"
+            v-show="basicInfo.type == '1'"
           >
             <el-input
               v-model="basicInfo.backUrl"
               autocomplete="off"
               placeholder="请输入后端url"
+            />
+          </el-form-item>
+          <el-form-item
+            label="过滤类型"
+            prop="filterType"
+            :label-width="formLabelWidth"
+            v-show="basicInfo.type == '2'"
+          >
+            <el-select v-model="basicInfo.filterType" placeholder="请选择类型">
+              <el-option
+                v-for="item in filterTypeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            label="过滤条件"
+            prop="filterWhere"
+            :label-width="formLabelWidth"
+            v-show="basicInfo.type == '2'"
+          >
+            <el-input
+              v-model="basicInfo.filterWhere"
+              autocomplete="off"
+              placeholder="请输入过滤条件"
             />
           </el-form-item>
           <el-form-item
@@ -229,7 +267,7 @@ export default {
   },
   data() {
     return {
-      defaultKeys:[],
+      defaultKeys: [],
       tabPosition: "left",
       text: "",
       tableData: [
@@ -254,29 +292,31 @@ export default {
         {
           name: "ID",
           value: "id",
-          width: 80
+          width: 80,
         },
         {
           name: "名称",
           value: "name",
         },
         {
-          name: "排序",
-          value: "orderNum",
-        },
-        {
           name: "类型",
           value: "type",
-          operate: true
+          operate: true,
         },
         {
           name: "路径",
           value: "frontUrl",
           showTooltip: false,
+          operate: true,
         },
         {
           name: "图标",
           value: "icon",
+        },
+        {
+          name: "排序",
+          value: "orderNum",
+          // width: 100
         },
         {
           name: "备注",
@@ -288,7 +328,7 @@ export default {
           value: "edit",
           operate: true,
           width: 120,
-          fixed:'right'
+          fixed: "right",
         },
       ],
       fixedTwoRow: true,
@@ -312,6 +352,8 @@ export default {
         orderNum: "",
         updateReason: "",
         icon: "",
+        filterType: "",
+        filterWhere:""
       },
       rules: {
         updateReason: [
@@ -321,6 +363,18 @@ export default {
         name: [{ required: true, message: "请输入名称", trigger: "blur" }],
         status: [{ required: true, message: "请选择状态", trigger: "blur" }],
         type: [{ required: true, message: "请选择类型", trigger: "blur" }],
+        frontUrl: [
+          { required: true, message: "请输入前端url", trigger: "blur" },
+        ],
+        backUrl: [
+          { required: true, message: "请输入后端url", trigger: "blur" },
+        ],
+        filterType: [
+          { required: true, message: "请选择过滤类型", trigger: "blur" },
+        ],
+        filterWhere: [
+          { required: true, message: "请输入过滤条件", trigger: "blur" },
+        ]
       },
       options: [
         {
@@ -370,15 +424,15 @@ export default {
           options: [
             {
               label: "目录",
-              value: 0,
+              value: "0",
             },
             {
               label: "菜单",
-              value: 1,
+              value: "1",
             },
             {
               label: "令牌",
-              value: 2,
+              value: "2",
             },
           ],
         },
@@ -387,21 +441,35 @@ export default {
       searchForm: {}, //搜索栏信息
       currentPageInfo: null, //当前页数 page和limit
       uploadOssElem: true,
+      filterTypeOptions: [
+        {
+          label: "数据过滤",
+          value: "1",
+        },
+        {
+          label: "按钮",
+          value: "2",
+        },
+        {
+          label: "列表列显示",
+          value: "3",
+        },
+      ],
     };
   },
   filters: {
-    typeFilter(status){
-        switch(status){
-            case '0':
-                return '目录';
-            case '1':
-                return '菜单';
-            case '2':
-                return '令牌';
-            default:
-                return '';
-        }
-    }
+    typeFilter(status) {
+      switch (status) {
+        case "0":
+          return "目录";
+        case "1":
+          return "菜单";
+        case "2":
+          return "令牌";
+        default:
+          return "";
+      }
+    },
   },
   mounted() {
     this.getTableData();
@@ -414,8 +482,8 @@ export default {
     pageChange(val) {
       this.currentPageInfo = val;
       this.getTableData({
-        currentPage: val&&val.page || 1,
-        pageSize: val&&val.limit || 10,
+        currentPage: (val && val.page) || 1,
+        pageSize: (val && val.limit) || 10,
         loginUserId,
         ...this.searchForm,
       });
@@ -443,17 +511,17 @@ export default {
     // 打开新增弹窗
     handleAdd() {
       // 如果没有先选父级结果 弹出提示
-      if(!this.selectedTree) {
+      if (!this.selectedTree) {
         this.$message({
-          message: '请先选择父级菜单',
-          type: 'warning'
-        })
+          message: "请先选择父级菜单",
+          type: "warning",
+        });
         return;
-      }else if(this.selectedTree.type != "0") {
+      } else if (this.selectedTree.type != "0") {
         this.$message({
-          message: '请选择正确的菜单',
-          type: 'warning'
-        })
+          message: "请选择正确的菜单",
+          type: "warning",
+        });
         return;
       }
       for (const key in this.basicInfo) {
@@ -546,19 +614,17 @@ export default {
           const res = await this.$fetch("menu_delete", {
             ids: data.id,
             loginUserId,
-          }).then(res => {
+          }).then((res) => {
             if (res) {
-            this.$message({
-              message: "删除成功",
-              type: "success",
-            });
-            setTimeout(() => {
-              this.getTableData();
-            }, 50);
-          }
-          })
-
-          
+              this.$message({
+                message: "删除成功",
+                type: "success",
+              });
+              setTimeout(() => {
+                this.getTableData();
+              }, 50);
+            }
+          });
         })
         .catch(() => {});
     },
@@ -567,22 +633,22 @@ export default {
     handleNodeClick(data) {
       this.selectedTree = data;
       this.getTableData({
-          currentPage: 1,
-          pageSize: 10,
-          loginUserId,
-          parentId: data.id
-        })
+        currentPage: 1,
+        pageSize: 10,
+        loginUserId,
+        parentId: data.id,
+      });
     },
     getTreeData() {
       this.$fetch("getMenuTreeList").then((res) => {
         this.treeData = res.data.records;
-        this.treeData.forEach(item => {
-          if(item.children&& item.children.length) {
-            item.children.forEach(ele => {
-              this.defaultKeys.push(ele.id)
-            })
+        this.treeData.forEach((item) => {
+          if (item.children && item.children.length) {
+            item.children.forEach((ele) => {
+              this.defaultKeys.push(ele.id);
+            });
           }
-        })
+        });
       });
     },
 
@@ -616,8 +682,9 @@ export default {
       });
     },
 
-    sortChange(data){
-      console.log(data,'data--')
+    // 排序发生变化的时候
+    sortChange(data) {
+      console.log(data, "data--");
     }
   },
 };

@@ -1,5 +1,14 @@
 <template>
   <div class="table-wrapper">
+    <div class="filter-bar">
+      <el-popover
+        placement="bottom"
+        width="400"
+        trigger="click">
+        <el-checkbox v-model="checked">备选项</el-checkbox>
+        <el-button slot="reference" size="small"><i class="el-icon-s-data"></i></el-button>
+      </el-popover>
+    </div>
     <el-table
       :data="tableData"
       v-loading="loading"
@@ -126,6 +135,7 @@ export default {
   },
   data() {
     return {
+      checked: true
     };
   },
   methods: {
@@ -143,6 +153,14 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.table-wrapper {
+  position: relative;
+  .filter-bar {
+    position: absolute;
+    right: 0;
+    top: -40px;
+  }
+}
 .img-empty {
   width: 260px;
   height: 260px;
