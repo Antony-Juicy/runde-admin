@@ -14,14 +14,12 @@
       </div>
       <div class="tabs-container">
         <el-tabs v-model="activeName" @tab-click="handleClick" :stretch="true">
-          <el-tab-pane label="账号密码登录" name="first">
+          <el-tab-pane label="账号密码登录" name="first" style="padding-top:25px;">
             <el-form-item prop="username">
-              <span class="svg-container">
-                <svg-icon icon-class="user" />
-              </span>
               <el-input
                 ref="username"
                 v-model="loginForm.username"
+                prefix-icon="el-icon-user"
                 placeholder="请输入用户名"
                 name="username"
                 type="text"
@@ -30,14 +28,12 @@
             </el-form-item>
 
             <el-form-item prop="password">
-              <span class="svg-container">
-                <svg-icon icon-class="password" />
-              </span>
               <el-input
                 :key="passwordType"
                 ref="password"
                 v-model="loginForm.password"
                 :type="passwordType"
+                prefix-icon="el-icon-lock"
                 placeholder="请输入密码"
                 name="password"
                 tabindex="2"
@@ -49,9 +45,6 @@
             </el-form-item>
 
             <el-form-item prop="VerifyCode" style="margin-bottom: 10px;">
-              <span class="svg-container">
-                <!-- <svg-icon icon-class="password" /> -->
-              </span>
               <el-input
                 ref="VerifyCode"
                 v-model="loginForm.VerifyCode"
@@ -61,20 +54,20 @@
                 tabindex="3"
                 class="verifyCode-input"
                 auto-complete="on"/>
-                <div style="float:right;width:40%;height:50px;" >
-                  <img style="width:82%;height:40px;" :src="imgCode" alt="" @click="changeImgcode">
+                <div style="float:right;width:40%;height:40px;" >
+                  <img style="width:88%;height:40px;" :src="imgCode" alt="" @click="changeImgcode">
                 </div>
             </el-form-item>
             
             <el-form-item prop="" style="margin: 0;">
               <el-checkbox v-model="checked">记住密码</el-checkbox>
-              <a href="https://baidu.com" style="float:right;color:#409EFF;">忘记密码</a>
+              <a href="https://baidu.com" style="float:right;margin-right:20px;color:#409EFF;">忘记密码</a>
             </el-form-item>
 
             <el-button
               :loading="loading"
               type="primary"
-              style="width:100%;margin-bottom:4px;"
+              style="width:90%;margin-left:20px;"
               @click.native.prevent="handleLogin">登陆
             </el-button>
             <p style="font-size:14px;text-align:center;">
@@ -84,7 +77,14 @@
             </p>
           </el-tab-pane>
           <el-tab-pane label="钉钉扫码登录" name="second">
-            钉钉二维码
+            <!-- 钉钉二维码 -->
+            <div class="login_qrcode">
+              <img src="../../assets/jwqrcode.png" alt="">
+            </div>
+            <div class="login_qrcode_text">
+              请使用钉钉扫描二维码登录
+              <span class="el-icon-refresh">刷新</span>
+            </div>
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -267,20 +267,37 @@ $light_gray: #eee;
     height: 430px;
     padding: 20px;
     background-color: #fff;
+    .login_qrcode {
+      padding: 20px;
+      img {
+        width: 250px;
+        height: 250px;
+        display: block;
+        margin: 0 auto;
+      }
+    }
+    .login_qrcode_text {
+      text-align: center;
+      span {
+        color: #38adff;
+        cursor: pointer;
+      }
+    }
     .el-input {
       display: inline-block;
-      height: 50px;
-      width: 85%;
+      height: 40px;
+      width: 90%;
+      margin-left: 20px;
     }
     .el-form-item {
       border: 1px solid rgba(255, 255, 255, 0.1);
       margin-bottom: 20px;
       color: #454545;
       .verifyCode-input {
-        width: 50%;
+        width: 54%;
       }
       .el-checkbox {
-        margin-left: 14px;
+        margin-left: 22px;
       }
     }
   }
@@ -320,7 +337,7 @@ $light_gray: #eee;
   .show-pwd {
     position: absolute;
     right: 40px;
-    top: 7px;
+    top: 3px;
     font-size: 16px;
     color: $dark_gray;
     cursor: pointer;
@@ -328,6 +345,6 @@ $light_gray: #eee;
   }
 }
 /deep/ .el-form-item__error{
-  margin-left: 34px;
+  margin-left: 24px;
 }
 </style>
