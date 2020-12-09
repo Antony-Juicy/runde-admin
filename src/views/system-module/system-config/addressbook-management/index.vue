@@ -51,7 +51,7 @@
                 <div class="detail">{{dataUser.campusName}}</div>
               </el-col>
               <el-col :span="8">
-                <div class="term">员工类型：</div>
+                <div class="term">状态：</div>
                 <div class="detail">{{dataUser.status | statusFilter}}</div>
               </el-col>
               <el-col :span="8">
@@ -367,17 +367,17 @@ export default {
       }
       console.log(done, 3333)
       this.$confirm('确定要提交表单吗？')
-        .then(_ => {
-          this.loading = true;
-          this.timer = setTimeout(() => {
-            done();
-            // 动画关闭需要一定的时间
-            setTimeout(() => {
-              this.loading = false;
-            }, 400);
-          }, 2000);
-        })
-        .catch(_ => {});
+        // .then(_ => {
+        //   this.loading = true;
+        //   this.timer = setTimeout(() => {
+        //     done();
+        //     // 动画关闭需要一定的时间
+        //     setTimeout(() => {
+        //       this.loading = false;
+        //     }, 400);
+        //   }, 2000);
+        // })
+        // .catch(_ => {});
     },
     // 关闭抽屉
     cancelForm() {
