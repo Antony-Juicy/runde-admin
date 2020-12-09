@@ -213,7 +213,6 @@
             :label-width="formLabelWidth"
             class="icon-wrapper"
           >
-            {{ basicInfo.menuIcon }}
             <Upload-oss
               v-if="uploadOssElem"
               :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
@@ -588,6 +587,7 @@ export default {
               });
               setTimeout(() => {
                 this.getTableData();
+                this.getTreeData();
               }, 50);
             }
           });
@@ -624,6 +624,7 @@ export default {
         flagType: 5,
       }).then((res) => {
         this.basicInfo.code = res.data;
+        console.log(this.basicInfo.code,'this.basicInfo.code---')
       });
     },
 
@@ -687,6 +688,10 @@ export default {
       .icon-wrapper .el-form-item__content {
         line-height: 0;
       }
+
+      .el-input.is-disabled .el-input__inner {
+      color: #767a82;
+    }
     }
   }
 
