@@ -41,7 +41,7 @@
             <el-row :gutter="24">
               <el-col :span="8">
                 <div class="term">员工姓名：</div>
-                <div class="detail">{{dataUser.name}}</div>
+                <div class="detail">{{dataUser.staffName}}</div>
               </el-col>
               <el-col :span="8">
                 <div class="term">所属部门：</div>
@@ -53,27 +53,27 @@
               </el-col>
               <el-col :span="8">
                 <div class="term">入职时间：</div>
-                <div class="detail">2020-12-01</div>
+                <div class="detail">{{dataUser.hireDate}}</div>
               </el-col>
               <el-col :span="8">
                 <div class="term">手机号码：</div>
-                <div class="detail">{{dataUser.phone}}</div>
+                <div class="detail">{{dataUser.staffPhone}}</div>
               </el-col>
               <el-col :span="8">
                 <div class="term">钉钉ID：</div>
-                <div class="detail">12345678910</div>
+                <div class="detail">{{dataUser.dingdingUserId}}</div>
               </el-col>
               <el-col :span="8">
                 <div class="term">员工职位：</div>
-                <div class="detail">{{dataUser.position}}</div>
+                <div class="detail">{{dataUser.positionName}}</div>
               </el-col>
               <el-col :span="8">
                 <div class="term">部门内级别：</div>
-                <div class="detail">1</div>
+                <div class="detail">{{dataUser.rankLevel}}</div>
               </el-col>
             </el-row>
             <el-divider></el-divider>
-            <div class="title_drawer">外呼管理</div>
+            <!-- <div class="title_drawer">外呼管理</div>
             <el-row :gutter="24">
               <el-col :span="12">
                 <el-form-item label="七陌坐席:" :label-width="formLabelWidth">
@@ -106,7 +106,7 @@
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-divider></el-divider>
+            <el-divider></el-divider> -->
             <div class="title_drawer">多角色管理</div>
             <el-row :gutter="24">
               <el-col :span="12">
@@ -147,23 +147,24 @@ export default {
   data () {
     return {
       deptlabel: '',
+      campusId: "", // 部门id
       showNum: 4,
       searchForm: {},
       formOptions: [
         {
-          prop: 'username',
+          prop: 'staffName',
           element: 'el-input',
           initValue: '',
           placeholder: '请输入姓名',
         },
         {
-          prop: 'phone',
+          prop: 'staffPhone',
           element: 'el-input',
           initValue: '',
           placeholder: '请输入手机号',
         },
         {
-          prop: 'zhiwei',
+          prop: 'positionName',
           element: 'el-input',
           initValue: '',
           placeholder: '请输入职位',
@@ -217,64 +218,66 @@ export default {
         valueDept: []
       },
       options: [
-      {
-        value: '选项1',
-        label: '黄金糕'
-      }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
-      }],
+        // {
+        //   value: '选项1',
+        //   label: '黄金糕'
+        // }, {
+        //   value: '选项2',
+        //   label: '双皮奶'
+        // }, {
+        //   value: '选项3',
+        //   label: '蚵仔煎'
+        // }, {
+        //   value: '选项4',
+        //   label: '龙须面'
+        // }, {
+        //   value: '选项5',
+        //   label: '北京烤鸭'
+        // }
+      ],
       formLabelWidth: '80px',
       timer: null,
     }
   },
   mounted() {
     this.getTreeData();
-    this.getTableData();
+    // this.getTableData();
     // this.getDataTree();
     // this.getDataTable();
   },
   methods: {
     // 操作通讯录树
     handleNodeClick(data) {
-      this.deptlabel = data.name
-      this.getDataTable();
+      this.deptlabel = data.campusName
+      this.campusId = data.id
+      this.getTableData();
     },
     // 搜索栏
     onSearch(val) {
       console.log(val, 999)
       this.searchForm = {...val};
-      this.getDataTable({
+      this.getTableData({
         currentPage: 1,
-          pageSize: 10,
-          loginUserId,
-          ...this.searchForm
+        pageSize: 10,
+        loginUserId,
+        campusId: this.campusId,
+        ...this.searchForm
       })
     },
     // 获取通讯录组织树
     getTreeData() {
       this.$fetch(
         'getDeptTreeList',{
-          loginUserId: 8
+          loginUserId
         }).then(res => {
         this.treeData = res.data;
-        console.log(this.treeData,65656565)
-        // this.treeData.forEach(item => {
-        //   if(item.children && item.children.length) {
-        //     item.children.forEach(ele => {
-        //       this.defaultKeys.push(ele.id)
-        //     })
-        //   }
-        // })
+        this.treeData.forEach(item => {
+          if(item.children && item.children.length) {
+            item.children.forEach(ele => {
+              this.defaultKeys.push(ele.id)
+            })
+          }
+        })
       })
     },
     // 获取本地通讯录组织树
@@ -289,24 +292,50 @@ export default {
       this.pageConfig.totalCount = res.data.total
     },
     // 获取组织表格数据
-    getTableData() {
+    getTableData(params) {
       this.$fetch(
-        "getDeptTableList",{
-          campusId: 2,
-          loginUserId: 8,
+        "getDeptTableList",
+        params || {
+          campusId: this.campusId,
+          loginUserId,
           currentPage: 1,
           pageSize: 10
         }).then(res => {
-        this.treeData = res.data.records;
-      })
+          this.tableData = res.data.records;
+        })
+    },
+    getDeptUserDetailData(id) {
+      this.$fetch(
+        "getDeptUserDetail",{
+          id
+        }).then(res => {
+          this.dataUser = res.data
+        })
+    },
+    getRoleList() {
+      this.$fetch("role_list",{
+        currentPage: 1,
+        pageSize: 10000,
+        loginUserId,
+        deptPid:0
+      }).then((res) => {
+        console.log(res, 7766666)
+        this.options = res.data.records.map(item => ({
+          value: item.id,
+          label: item.roleName
+        }));
+        console.log(this.options, 88888)
+      });
     },
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
     // 编辑
     editRow(index,id, rows) {
-      console.log(index,id,rows, 666)
-      this.dataUser = rows
+      // console.log(index,id,rows, 666)
+      // this.dataUser = rows
+      this.getDeptUserDetailData(id)
+      this.getRoleList()
       this.dialog = true
     },
     pageChange(val) {
@@ -362,12 +391,6 @@ export default {
   }
   .center_r {
     overflow: hidden;
-    .btn-wrapper {
-      display: flex;
-      flex-direction:row;
-      justify-content : space-between;
-      margin-bottom: 16px;
-    }
     .demo-drawer__content {
       padding: 40px 60px 0 30px;
       .term {
