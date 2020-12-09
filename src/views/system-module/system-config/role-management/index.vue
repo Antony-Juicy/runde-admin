@@ -80,7 +80,7 @@
           </el-row>
         </el-form-item>
         <el-form-item label="分组" prop="parentId" :label-width="formLabelWidth">
-          <el-select v-model="basicInfo.parentId" placeholder="分组">
+          <el-select v-model="basicInfo.parentId" placeholder="请选择分组">
             <el-option
               v-for="item in permissionGroup2"
               :key="item.id"
