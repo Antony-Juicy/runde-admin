@@ -39,9 +39,9 @@
         <template slot="menuType" slot-scope="scope">
           <span>{{ scope.row.menuType | typeFilter }}</span>
         </template>
-        <template slot="frontUrl" slot-scope="scope">
+        <template slot="menuUrl" slot-scope="scope">
           <span>{{
-            scope.row.menuType == "0" ? scope.row.frontUrl : scope.row.backUrl
+            scope.row.menuType == "0" ? scope.row.menuUrl : scope.row.menuBackUrl
           }}</span>
         </template>
         <template slot="edit" slot-scope="scope">
@@ -157,24 +157,24 @@
           </el-form-item>
           <el-form-item
             label="前端url"
-            prop="frontUrl"
+            prop="menuUrl"
             :label-width="formLabelWidth"
-            v-show="basicInfo.menuType == '0'"
+            v-if="basicInfo.menuType == '0'"
           >
             <el-input
-              v-model="basicInfo.frontUrl"
+              v-model="basicInfo.menuUrl"
               autocomplete="off"
               placeholder="请输入前端url"
             />
           </el-form-item>
           <el-form-item
             label="后端url"
-            prop="backUrl"
+            prop="menuBackUrl"
             :label-width="formLabelWidth"
-            v-show="basicInfo.menuType == '1'"
+            v-if="basicInfo.menuType == '1'"
           >
             <el-input
-              v-model="basicInfo.backUrl"
+              v-model="basicInfo.menuBackUrl"
               autocomplete="off"
               placeholder="请输入后端url"
             />
@@ -183,7 +183,7 @@
             label="过滤类型"
             prop="filterType"
             :label-width="formLabelWidth"
-            v-show="basicInfo.menuType == '2'"
+            v-if="basicInfo.menuType == '2'"
           >
             <el-select v-model="basicInfo.filterType" placeholder="请选择类型">
               <el-option
@@ -199,7 +199,7 @@
             label="过滤条件"
             prop="filterWhere"
             :label-width="formLabelWidth"
-            v-show="basicInfo.menuType == '2'"
+            v-if="basicInfo.menuType == '2'"
           >
             <el-input
               v-model="basicInfo.filterWhere"
@@ -209,18 +209,18 @@
           </el-form-item>
           <el-form-item
             label="图标"
-            prop="icon"
+            prop="menuIcon"
             :label-width="formLabelWidth"
             class="icon-wrapper"
           >
-            {{ basicInfo.icon }}
+            {{ basicInfo.menuIcon }}
             <Upload-oss
               v-if="uploadOssElem"
               :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
-              :src.sync="basicInfo.icon"
+              :src.sync="basicInfo.menuIcon"
               @srcChangeFun="
                 (data) => {
-                  basicInfo.icon = data;
+                  basicInfo.menuIcon = data;
                   reloadElem('uploadOssElem');
                 }
               "
@@ -290,13 +290,13 @@ export default {
         },
         {
           name: "路径",
-          value: "frontUrl",
+          value: "menuUrl",
           showTooltip: false,
           operate: true,
         },
         {
           name: "图标",
-          value: "icon",
+          value: "menuIcon",
         },
         {
           name: "排序",
@@ -332,11 +332,11 @@ export default {
         status: "",
         menuType: "",
         remark: "",
-        frontUrl: "",
-        backUrl: "",
+        menuUrl: "",
+        menuBackUrl: "",
         orderNum: "",
         updateReason: "",
-        icon: "",
+        menuIcon: "",
         filterType: "",
         filterWhere:""
       },
@@ -348,10 +348,10 @@ export default {
         menuName: [{ required: true, message: "请输入名称", trigger: "blur" }],
         status: [{ required: true, message: "请选择状态", trigger: "blur" }],
         menuType: [{ required: true, message: "请选择类型", trigger: "blur" }],
-        frontUrl: [
+        menuUrl: [
           { required: true, message: "请输入前端url", trigger: "blur" },
         ],
-        backUrl: [
+        menuBackUrl: [
           { required: true, message: "请输入后端url", trigger: "blur" },
         ],
         filterType: [
@@ -496,19 +496,19 @@ export default {
     // 打开新增弹窗
     handleAdd() {
       // 如果没有先选父级结果 弹出提示
-      if (!this.selectedTree) {
-        this.$message({
-          message: "请先选择父级菜单",
-          type: "warning",
-        });
-        return;
-      } else if (this.selectedTree.menuType != "0") {
-        this.$message({
-          message: "请选择正确的菜单",
-          type: "warning",
-        });
-        return;
-      }
+      // if (!this.selectedTree) {
+      //   this.$message({
+      //     message: "请先选择父级菜单",
+      //     type: "warning",
+      //   });
+      //   return;
+      // } else if (this.selectedTree.menuType != "0") {
+      //   this.$message({
+      //     message: "请选择正确的菜单",
+      //     type: "warning",
+      //   });
+      //   return;
+      // }
       for (const key in this.basicInfo) {
         this.basicInfo[key] = "";
       }
@@ -533,27 +533,6 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log(this.basicInfo, "提交");
-          if (this.basicInfo.menuType == "0" && !this.basicInfo.frontUrl) {
-            this.$message({
-              message: "请输入前端url",
-              type: "warning",
-            });
-            return;
-          }
-          if (this.basicInfo.menuType == "1" && !this.basicInfo.backUrl) {
-            this.$message({
-              message: "请输入后端url",
-              type: "warning",
-            });
-            return;
-          }
-          if (this.basicInfo.orderNum && isNaN(this.basicInfo.orderNum)) {
-            this.$message({
-              message: "请输入正确的排序编号",
-              type: "warning",
-            });
-            return;
-          }
 
           if (this.dialogStatus) {
             // 新增
@@ -569,6 +548,7 @@ export default {
               });
               this.handleClose("dataForm");
               this.pageChange();
+              this.getTreeData();
             });
           } else {
             // 编辑
@@ -582,6 +562,7 @@ export default {
               });
               this.handleClose("dataForm");
               this.pageChange(this.currentPageInfo);
+              this.getTreeData();
             });
           }
         }
