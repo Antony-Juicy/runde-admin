@@ -11,5 +11,6 @@ export default {
     menu_impower: {url:'/admin/sec/menu/bindmenurole', method: 'post'},
     getDeptTableList: {url: '/admin/staff/page', method: 'post'}, // 获取通讯录管理部门成员
     getDeptTreeList: {url: '/admin/staff/campus/list', method: 'post'}, // 获取通讯录管理组织机构树
-    getDeptUserDetail: {url: '/admin/staff/detail', method: 'get'} // 获取通讯录管理部门成员详情
+    getDeptUserDetail: {url: '/admin/staff/detail', method: 'get'}, // 获取通讯录管理部门成员详情
+    role_getMeunList:{url:'/admin/staff/detail', method: 'get'}
 }
