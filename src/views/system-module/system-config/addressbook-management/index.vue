@@ -20,6 +20,9 @@
         <template slot="src" slot-scope="scope">
           <img :src="scope.row.src" style="width:56px;height:56px;" alt="">
         </template>
+        <template slot="status" slot-scope="scope">
+          <span>{{ scope.row.status | statusFilter }}</span>
+        </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="editRow(scope.$index,scope.row.id,scope.row)" type="text" size="small">编辑</el-button>
         </template>
@@ -45,11 +48,11 @@
               </el-col>
               <el-col :span="8">
                 <div class="term">所属部门：</div>
-                <div class="detail">{{dataUser.dept}}</div>
+                <div class="detail">{{dataUser.campusName}}</div>
               </el-col>
               <el-col :span="8">
                 <div class="term">员工类型：</div>
-                <div class="detail">{{dataUser.status}}</div>
+                <div class="detail">{{dataUser.status | statusFilter}}</div>
               </el-col>
               <el-col :span="8">
                 <div class="term">入职时间：</div>
@@ -194,7 +197,7 @@ export default {
         { name: '部门',value: 'campusName' },
         { name: '职位',value: 'positionName' },
         { name: '角色',value: 'roleName' },
-        { name: '状态',value: 'status' },
+        { name: '状态',value: 'status',operate: true },
         { name: '操作',value: 'edit',operate: true,width: 100 },
       ],
       emptyText: '暂无数据，请选择相应的组织架构',
@@ -244,6 +247,18 @@ export default {
     // this.getTableData();
     // this.getDataTree();
     // this.getDataTable();
+  },
+  filters: {
+    statusFilter(status){
+      switch(status){
+        case "Normal":
+          return '在职';
+        case "Stop":
+          return '离职';
+        default:
+          return '';
+      }
+    }
   },
   methods: {
     // 操作通讯录树
