@@ -587,6 +587,7 @@ export default {
               });
               setTimeout(() => {
                 this.getTableData();
+                this.getTreeData();
               }, 50);
             }
           });
