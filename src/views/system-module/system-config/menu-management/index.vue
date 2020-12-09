@@ -228,22 +228,22 @@
           </el-form-item>
           <el-form-item
             label="排序编号"
-            prop="orderNum"
+            prop="menuOrder"
             :label-width="formLabelWidth"
           >
             <el-input
-              v-model="basicInfo.orderNum"
+              v-model="basicInfo.menuOrder"
               autocomplete="off"
               placeholder="请输入排序编号"
             />
           </el-form-item>
           <el-form-item
             label="备注"
-            prop="remark"
+            prop="description"
             :label-width="formLabelWidth"
           >
             <el-input
-              v-model="basicInfo.remark"
+              v-model="basicInfo.description"
               autocomplete="off"
               placeholder="请输入备注"
               type="textarea"
@@ -300,12 +300,12 @@ export default {
         },
         {
           name: "排序",
-          value: "orderNum",
+          value: "menuOrder",
           // width: 100
         },
         {
           name: "备注",
-          value: "remark",
+          value: "description",
           showTooltip: true,
         },
         {
@@ -331,10 +331,10 @@ export default {
         menuName: "",
         status: "",
         menuType: "",
-        remark: "",
+        description: "",
         menuUrl: "",
         menuBackUrl: "",
-        orderNum: "",
+        menuOrder: "",
         updateReason: "",
         menuIcon: "",
         filterType: "",

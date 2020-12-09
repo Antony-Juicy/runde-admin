@@ -267,11 +267,11 @@ export default {
       options: [
         {
           label: "正常",
-          value: "1",
+          value: 1,
         },
         {
           label: "暂停",
-          value: "0",
+          value: 0,
         },
       ],
       // 配置权限
@@ -328,7 +328,7 @@ export default {
       ],
       defaultProps: {
         children: "children",
-        label: "name",
+        label: "menuName",
       },
       currentPageInfo: null,
       selectedRoleId: "",
@@ -342,6 +342,18 @@ export default {
     // 获取权限组
     this.getGroupData();
     
+  },
+  filters: {
+    statusFilter(status){
+        switch(status){
+            case 0:
+                return '暂停';
+            case 1:
+                return '正常';
+            default:
+                return '';
+        }
+    }
   },
   methods: {
     getGroupData(){
@@ -443,6 +455,7 @@ export default {
               });
               this.handleClose("dataForm");
               this.handleTabClick(this.tabPermission);
+              this.getGroupData();
             });
           } else {
             // 编辑
@@ -481,7 +494,7 @@ export default {
       }
       this.$fetch("menu_impower", {
         menuIds: selectedIdArr.join(","),
-        roleIds: this.selectedRoleId,
+        roleId: this.selectedRoleId,
       }).then((res) => {
         this.$message({
           message: "保存成功",

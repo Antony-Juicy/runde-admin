@@ -87,13 +87,22 @@ service.interceptors.response.use(
     }
   },
   error => {
-    console.log('err' + error) // for debug
-    hideLoading()
-    Message({
-      message: '网络繁忙，请稍后重试', // error.message,
-      type: 'error',
-      duration: 5 * 1000
-    })
+    let status = error.response.status;
+    hideLoading();
+    if (status === 401 || status === 403) {
+      Message({
+        message: '没有权限访问', // error.message,
+        type: 'error',
+        duration: 5 * 1000
+      })
+    }else {
+      Message({
+        message: '网络繁忙，请稍后重试', // error.message,
+        type: 'error',
+        duration: 5 * 1000
+      })
+    }
+    console.log('err:' + error) // for debug
     return Promise.reject(error)
   }
 )
