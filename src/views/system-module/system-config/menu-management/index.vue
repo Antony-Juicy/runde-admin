@@ -36,12 +36,12 @@
         @pageChange="pageChange"
         @sortChange="sortChange"
       >
-        <template slot="type" slot-scope="scope">
-          <span>{{ scope.row.type | typeFilter }}</span>
+        <template slot="menuType" slot-scope="scope">
+          <span>{{ scope.row.menuType | typeFilter }}</span>
         </template>
         <template slot="frontUrl" slot-scope="scope">
           <span>{{
-            scope.row.type == "0" ? scope.row.frontUrl : scope.row.backUrl
+            scope.row.menuType == "0" ? scope.row.frontUrl : scope.row.backUrl
           }}</span>
         </template>
         <template slot="edit" slot-scope="scope">
@@ -77,7 +77,7 @@
             :label-width="formLabelWidth"
             v-if="dialogStatus"
           >
-            {{ selectedTree.name }}（id:{{ selectedTree.id }}）
+            {{ selectedTree.menuName }}（id:{{ selectedTree.id }}）
           </el-form-item>
           <el-form-item
             label="编码"
@@ -105,9 +105,9 @@
               >
             </el-row>
           </el-form-item>
-          <el-form-item label="名称" prop="name" :label-width="formLabelWidth">
+          <el-form-item label="名称" prop="menuName" :label-width="formLabelWidth">
             <el-input
-              v-model="basicInfo.name"
+              v-model="basicInfo.menuName"
               autocomplete="off"
               placeholder="请输入名称"
             />
@@ -127,9 +127,9 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="类型" prop="type" :label-width="formLabelWidth">
+          <el-form-item label="类型" prop="menuType" :label-width="formLabelWidth">
             <el-select
-              v-model="basicInfo.type"
+              v-model="basicInfo.menuType"
               placeholder="请选择类型"
             >
               <el-option
@@ -159,7 +159,7 @@
             label="前端url"
             prop="frontUrl"
             :label-width="formLabelWidth"
-            v-show="basicInfo.type == '0'"
+            v-show="basicInfo.menuType == '0'"
           >
             <el-input
               v-model="basicInfo.frontUrl"
@@ -171,7 +171,7 @@
             label="后端url"
             prop="backUrl"
             :label-width="formLabelWidth"
-            v-show="basicInfo.type == '1'"
+            v-show="basicInfo.menuType == '1'"
           >
             <el-input
               v-model="basicInfo.backUrl"
@@ -183,7 +183,7 @@
             label="过滤类型"
             prop="filterType"
             :label-width="formLabelWidth"
-            v-show="basicInfo.type == '2'"
+            v-show="basicInfo.menuType == '2'"
           >
             <el-select v-model="basicInfo.filterType" placeholder="请选择类型">
               <el-option
@@ -199,7 +199,7 @@
             label="过滤条件"
             prop="filterWhere"
             :label-width="formLabelWidth"
-            v-show="basicInfo.type == '2'"
+            v-show="basicInfo.menuType == '2'"
           >
             <el-input
               v-model="basicInfo.filterWhere"
@@ -272,22 +272,6 @@ export default {
       tabPosition: "left",
       text: "",
       tableData: [
-        {
-          id: 1,
-          name: 111,
-          status: 1,
-          classifyName: "微软",
-          icon: "https://rdimg.rundejy.com/web/runde_admin/icon_hs.png",
-          remark:
-            "看全国分校审批查看全国分校审批查看全国分,校审批查看全国分校审批,查看全国分校审批查,看全国分校审批查看全国分校审批查看全国分校审批查看全国分校审批查",
-        },
-        {
-          id: 2,
-          name: 111,
-          status: 1,
-          classifyName: "微软",
-          remark: "abh瑟夫",
-        },
       ],
       tableKey: [
         {
@@ -297,11 +281,11 @@ export default {
         },
         {
           name: "名称",
-          value: "name"
+          value: "menuName"
         },
         {
           name: "类型",
-          value: "type",
+          value: "menuType",
           operate: true,
         },
         {
@@ -344,9 +328,9 @@ export default {
       formLabelWidth: "100px",
       basicInfo: {
         code: "11",
-        name: "",
+        menuName: "",
         status: "",
-        type: "",
+        menuType: "",
         remark: "",
         frontUrl: "",
         backUrl: "",
@@ -361,9 +345,9 @@ export default {
           { required: true, message: "请输入更新理由", trigger: "blur" },
         ],
         code: [{ required: true, message: "请获取编码", trigger: "blur" }],
-        name: [{ required: true, message: "请输入名称", trigger: "blur" }],
+        menuName: [{ required: true, message: "请输入名称", trigger: "blur" }],
         status: [{ required: true, message: "请选择状态", trigger: "blur" }],
-        type: [{ required: true, message: "请选择类型", trigger: "blur" }],
+        menuType: [{ required: true, message: "请选择类型", trigger: "blur" }],
         frontUrl: [
           { required: true, message: "请输入前端url", trigger: "blur" },
         ],
@@ -405,20 +389,20 @@ export default {
       treeData: [],
       defaultProps: {
         children: "children",
-        label: "name",
+        label: "menuName",
       },
       selectedTree: "",
 
       // 搜索栏
       formOptions: [
         {
-          prop: "name",
+          prop: "menuName",
           element: "el-input",
           initValue: "",
           placeholder: "请输入名称",
         },
         {
-          prop: "type",
+          prop: "menuType",
           element: "el-select",
           initValue: "",
           placeholder: "请选择类型",
@@ -518,7 +502,7 @@ export default {
           type: "warning",
         });
         return;
-      } else if (this.selectedTree.type != "0") {
+      } else if (this.selectedTree.menuType != "0") {
         this.$message({
           message: "请选择正确的菜单",
           type: "warning",
@@ -549,14 +533,14 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log(this.basicInfo, "提交");
-          if (this.basicInfo.type == "0" && !this.basicInfo.frontUrl) {
+          if (this.basicInfo.menuType == "0" && !this.basicInfo.frontUrl) {
             this.$message({
               message: "请输入前端url",
               type: "warning",
             });
             return;
           }
-          if (this.basicInfo.type == "1" && !this.basicInfo.backUrl) {
+          if (this.basicInfo.menuType == "1" && !this.basicInfo.backUrl) {
             this.$message({
               message: "请输入后端url",
               type: "warning",

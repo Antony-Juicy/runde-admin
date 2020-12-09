@@ -2,7 +2,7 @@
   <div class="role-wrapper">
     <div class="group-wrapper">
       <el-radio-group v-model="tabPermission" @change="handleTabClick">
-        <el-radio-button :label="item.id" v-for="(item,index) in permissionGroup" :key="index">{{item.name}}</el-radio-button>
+        <el-radio-button :label="item.id" v-for="(item,index) in permissionGroup" :key="index">{{item.roleName}}</el-radio-button>
       </el-radio-group>
     </div>
     <div class="btn-wrapper">
@@ -84,7 +84,7 @@
             <el-option
               v-for="item in permissionGroup2"
               :key="item.id"
-              :label="item.name"
+              :label="item.roleName"
               :value="item.id"
             >
             </el-option>
@@ -336,15 +336,32 @@ export default {
     };
   },
   mounted() {
-    this.getTableData();
+    // 获取配置权限弹窗的树状
     this.getTreeData();
-    this.permissionGroup2 = [...this.permissionGroup];
-    this.permissionGroup2.unshift({
-      id: 0,
-      name:'父组'
-    })
+
+    // 获取权限组
+    this.getGroupData();
+    
   },
   methods: {
+    getGroupData(){
+      this.$fetch("role_list",{
+         currentPage: 1,
+          pageSize: 10000,
+          loginUserId,
+          deptPid:0
+      }).then((res) => {
+        this.permissionGroup = res.data.records;
+        this.tabPermission = this.permissionGroup[0].id;
+        this.handleTabClick(this.tabPermission)
+        // 弹窗的下拉
+        this.permissionGroup2 = [...this.permissionGroup];
+        this.permissionGroup2.unshift({
+          id: 0,
+          roleName:'父组'
+        })
+      });
+    },
     getTreeData() {
       this.$fetch("getMenuTreeList").then((res) => {
         this.treeData = res.data.records;
@@ -425,7 +442,7 @@ export default {
                 type: "success",
               });
               this.handleClose("dataForm");
-              this.pageChange();
+              this.handleTabClick(this.tabPermission);
             });
           } else {
             // 编辑
@@ -438,7 +455,7 @@ export default {
                 type: "success",
               });
               this.handleClose("dataForm");
-              this.pageChange(this.currentPageInfo);
+              this.handleTabClick(this.tabPermission);
             });
           }
         }
@@ -486,7 +503,12 @@ export default {
 
     // 点击权限组的分类
     handleTabClick(data){
-      console.log(data,'data---')
+      this.getTableData({
+        deptPid: data,
+         currentPage: 1,
+          pageSize: 10,
+          loginUserId
+      })
     }
   },
 };
