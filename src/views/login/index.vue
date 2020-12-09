@@ -144,6 +144,7 @@ export default {
       activeName: "first",
       checked: false,
       imgCode: "",
+      slatkey: "",
       loginForm: {
         username: "",
         password: "",
@@ -206,6 +207,8 @@ export default {
     getImgcode() {
       this.$fetch("user_getImgcode").then((res) => {
         this.imgCode = "data:image/png;base64," + res.data.captchaBase64;
+        this.slatkey = res.data.saltkey
+        console.log(res,8888)
       });
     },
     changeImgcode() {
@@ -218,6 +221,7 @@ export default {
           this.$store
             .dispatch("user/login", {
               ...this.loginForm,
+              slatkey: this.slatkey
             })
             .then(() => {
               this.$router.push({ path: this.redirect || "/" });
