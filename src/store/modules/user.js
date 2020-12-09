@@ -40,10 +40,10 @@ const mutations = {
 const actions = {
   // user login
   login({ commit }, userInfo) {
-    const { username, password } = userInfo
+    const { username, password, VerifyCode } = userInfo
     return new Promise((resolve, reject) => {
 
-      Fetch('user_login',{ username: username.trim(), password: md5(password) }).then(response => {
+      Fetch('user_login',{ username: username.trim(), password: md5(password), code: VerifyCode }).then(response => {
         const { data } = response
         console.log(data)
         commit('SET_TOKEN', data.token) //在全局vuex中存入state
