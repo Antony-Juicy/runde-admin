@@ -154,6 +154,7 @@
         ref="tree"
         show-checkbox
         :default-expanded-keys="defaultKeys"
+        :default-checked-keys="defaultChekedKeys"
         @node-click="handleNodeClick"
         class="authority-tree"
       >
@@ -169,6 +170,7 @@ export default {
   data() {
     return {
       tabPermission: "",
+      defaultChekedKeys:[],
       permissionGroup:[
         {
           id:1,
@@ -480,8 +482,16 @@ export default {
     },
     // -----配置权限弹窗的处理--------
     handleAuthority(data) {
-      this.selectedRoleId = data.id;
-      this.authorityVisible = true;
+      this.defaultChekedKeys = [];
+      // 获取该角色拥有的权限
+      this.$fetch('role_getMeunList',{
+        roleId: data.id
+      }).then(res => {
+        this.defaultChekedKeys = res.msg.split(',');
+        this.selectedRoleId = data.id;
+        this.authorityVisible = true;
+      })
+      
     },
     handleCloseAuthority(formName) {
       this.authorityVisible = false;
