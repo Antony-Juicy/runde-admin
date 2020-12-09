@@ -144,6 +144,7 @@
     <rd-dialog
       :title="'权限配置'"
       :dialogVisible="authorityVisible"
+      v-if="showAuthority"
       @handleClose="handleCloseAuthority('authorityForm')"
       @submitForm="submitFormAuthority('authorityForm')"
     >
@@ -339,6 +340,7 @@ export default {
       currentPageInfo: null,
       selectedRoleId: "",
       defaultKeys: [],
+      showAuthority: true
     };
   },
   mounted() {
@@ -487,7 +489,11 @@ export default {
       this.$fetch('role_getMeunList',{
         roleId: data.id
       }).then(res => {
+        this.defaultChekedKeys = [];
         this.defaultChekedKeys = res.msg.split(',');
+        this.$forceUpdate();
+        
+        console.log(this.defaultChekedKeys,'this.defaultChekedKeys--')
         this.selectedRoleId = data.id;
         this.authorityVisible = true;
       })
@@ -495,6 +501,12 @@ export default {
     },
     handleCloseAuthority(formName) {
       this.authorityVisible = false;
+        this.showAuthority = false;
+        this.$nextTick(()=>{
+          this.showAuthority = true;
+        })
+      
+      this.getTreeData();
     },
     submitFormAuthority() {
       console.log(this.$refs.tree.getCheckedKeys(), "key");

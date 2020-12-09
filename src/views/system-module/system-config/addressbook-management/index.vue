@@ -318,6 +318,7 @@ export default {
           pageSize: 10
         }).then(res => {
           this.tableData = res.data.records;
+          this.pageConfig.totalCount = res.data.total;
         })
     },
     getDeptUserDetailData(id) {
@@ -326,6 +327,7 @@ export default {
           id
         }).then(res => {
           this.dataUser = res.data
+          this.formDrawer.valueDept = this.dataUser.userRoleResponseList.map(item => item.roleId)
         })
     },
     getRoleList() {
@@ -340,7 +342,7 @@ export default {
           value: item.id,
           label: item.roleName
         }));
-        // console.log(this.options, 88888)
+        console.log(this.options, 88888)
       });
     },
     handleSelect(rows) {
