@@ -151,6 +151,7 @@ export default {
     return {
       deptlabel: '',
       campusId: "", // 部门id
+      campususerId: "", // 部门成员id
       showNum: 4,
       searchForm: {},
       formOptions: [
@@ -332,14 +333,14 @@ export default {
         currentPage: 1,
         pageSize: 10000,
         loginUserId,
-        deptPid:0
+        // deptPid:0
       }).then((res) => {
-        console.log(res, 7766666)
+        // console.log(res, 7766666)
         this.options = res.data.records.map(item => ({
           value: item.id,
           label: item.roleName
         }));
-        console.log(this.options, 88888)
+        // console.log(this.options, 88888)
       });
     },
     handleSelect(rows) {
@@ -347,11 +348,12 @@ export default {
     },
     // 编辑
     editRow(index,id, rows) {
-      // console.log(index,id,rows, 666)
+      console.log(index,id,rows, 666)
       // this.dataUser = rows
       this.getDeptUserDetailData(id)
       this.getRoleList()
       this.dialog = true
+      this.campususerId = id
     },
     pageChange(val) {
       console.log(666)
@@ -365,19 +367,28 @@ export default {
       if (this.loading) {
         return;
       }
-      console.log(done, 3333)
-      this.$confirm('确定要提交表单吗？')
-        // .then(_ => {
-        //   this.loading = true;
-        //   this.timer = setTimeout(() => {
-        //     done();
-        //     // 动画关闭需要一定的时间
-        //     setTimeout(() => {
-        //       this.loading = false;
-        //     }, 400);
-        //   }, 2000);
-        // })
-        // .catch(_ => {});
+      let roleIds = this.formDrawer.valueDept.toString()
+      console.log(roleIds, 999999)
+      // return
+      // console.log(done, 3333)
+      // this.$confirm('确定要提交表单吗？')
+      this.$fetch(
+        "deptUser_save",{
+          userId: this.campususerId,
+          roleIds
+        })
+        .then(_ => {
+          this.loading = true;
+          this.onSearch()
+          this.timer = setTimeout(() => {
+            done();
+            // 动画关闭需要一定的时间
+            setTimeout(() => {
+              this.loading = false;
+            }, 400);
+          }, 2000);
+        })
+        .catch(_ => {});
     },
     // 关闭抽屉
     cancelForm() {
