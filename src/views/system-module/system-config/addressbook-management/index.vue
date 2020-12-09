@@ -192,7 +192,7 @@ export default {
       ],
       tableData: [],
       tableKey: [
-        { name: '头像',value: 'src',operate: true,width: 80 },
+        // { name: '头像',value: 'src',operate: true,width: 80 },
         { name: '姓名',value: 'staffName' },
         { name: '手机',value: 'staffPhone' },
         { name: '部门',value: 'campusName' },
@@ -270,7 +270,7 @@ export default {
     },
     // 搜索栏
     onSearch(val) {
-      console.log(val, 999)
+      // console.log(val, 999)
       this.searchForm = {...val};
       this.getTableData({
         currentPage: 1,
@@ -348,15 +348,15 @@ export default {
     },
     // 编辑
     editRow(index,id, rows) {
-      console.log(index,id,rows, 666)
+      // console.log(index,id,rows, 666)
       // this.dataUser = rows
       this.getDeptUserDetailData(id)
       this.getRoleList()
       this.dialog = true
-      this.campususerId = id
+      this.campususerId = rows.userId
     },
     pageChange(val) {
-      console.log(666)
+      // console.log(666)
       this.getTableData({
         currentPage: val.page,
         showCount: val.limit,
@@ -368,7 +368,7 @@ export default {
         return;
       }
       let roleIds = this.formDrawer.valueDept.toString()
-      console.log(roleIds, 999999)
+      // console.log(roleIds, 999999)
       // return
       // console.log(done, 3333)
       // this.$confirm('确定要提交表单吗？')
