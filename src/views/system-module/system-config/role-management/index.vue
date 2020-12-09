@@ -27,6 +27,9 @@
       <template slot="status" slot-scope="scope">
         <span>{{ scope.row.status | statusFilter }}</span>
       </template>
+      <template slot="createAt" slot-scope="scope">
+        <span>{{ $common._formatDates(scope.row.createAt)}}</span>
+      </template>
       <template slot="edit" slot-scope="scope">
         <el-button @click="handleEdit(scope.row)" type="text" size="small"
           >编辑</el-button
@@ -223,7 +226,8 @@ export default {
         },
         {
           name: "创建时间",
-          value: "createTime",
+          value: "createAt",
+          operate: true
         },
         {
           name: "备注",

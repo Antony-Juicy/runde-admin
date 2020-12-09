@@ -12,5 +12,6 @@ export default {
     getDeptTableList: {url: '/admin/staff/page', method: 'post'}, // 获取通讯录管理部门成员
     getDeptTreeList: {url: '/admin/staff/campus/list', method: 'post'}, // 获取通讯录管理组织机构树
     getDeptUserDetail: {url: '/admin/staff/detail', method: 'get'}, // 获取通讯录管理部门成员详情
-    deptUser_save: {url: '/admin/staff/save', method: 'get'} // 通讯录成员详情保存
+    deptUser_save: {url: '/admin/staff/save', method: 'get'}, // 通讯录成员详情保存
+    role_getMeunList:{url:'/admin/staff/detail', method: 'get'}
 }

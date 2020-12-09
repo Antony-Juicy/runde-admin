@@ -18,6 +18,25 @@ const $common = {
             callback();
         }
     },
+    // 年月日时分时间处理
+    _formatDates(date) {
+        let time = new Date(date)
+        if(!time) {
+          return ''
+        }
+        let year = time.getFullYear();
+        let month = time.getMonth() + 1;
+        let day = time.getDate();
+        let hours = time.getHours();
+        let second = time.getSeconds();
+
+        if (month < 10) month = `0${month}`;
+        if (day < 10) day = `0${day}`
+        if (hours < 10) hours = `0${hours}`
+        if (second < 10) second = `0${second}`
+
+        return `${year}-${month}-${day} ${hours}:${second}`;
+    }
 }
 
 export default $common
