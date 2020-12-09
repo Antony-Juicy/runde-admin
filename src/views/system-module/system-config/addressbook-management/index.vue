@@ -188,11 +188,11 @@ export default {
       tableData: [],
       tableKey: [
         { name: '头像',value: 'src',operate: true,width: 80 },
-        { name: '姓名',value: 'name' },
-        { name: '手机',value: 'phone' },
-        { name: '部门',value: 'dept' },
-        { name: '职位',value: 'position' },
-        { name: '角色',value: 'roles' },
+        { name: '姓名',value: 'staffName' },
+        { name: '手机',value: 'staffPhone' },
+        { name: '部门',value: 'campusName' },
+        { name: '职位',value: 'positionName' },
+        { name: '角色',value: 'roleName' },
         { name: '状态',value: 'status' },
         { name: '操作',value: 'edit',operate: true,width: 100 },
       ],
@@ -202,7 +202,7 @@ export default {
       defaultKeys:[],
       defaultProps: {
         children: "children",
-        label: "name",
+        label: "campusName",
       },
       dataUser: {},
       pageConfig: {
@@ -239,7 +239,7 @@ export default {
   },
   mounted() {
     this.getTreeData();
-    // this.getTableData();
+    this.getTableData();
     // this.getDataTree();
     // this.getDataTable();
   },
@@ -262,15 +262,19 @@ export default {
     },
     // 获取通讯录组织树
     getTreeData() {
-      this.$fetch('getDeptTreeList').then(res => {
-        this.treeData = res.data.records;
-        this.treeData.forEach(item => {
-          if(item.children && item.children.length) {
-            item.children.forEach(ele => {
-              this.defaultKeys.push(ele.id)
-            })
-          }
-        })
+      this.$fetch(
+        'getDeptTreeList',{
+          loginUserId: 8
+        }).then(res => {
+        this.treeData = res.data;
+        console.log(this.treeData,65656565)
+        // this.treeData.forEach(item => {
+        //   if(item.children && item.children.length) {
+        //     item.children.forEach(ele => {
+        //       this.defaultKeys.push(ele.id)
+        //     })
+        //   }
+        // })
       })
     },
     // 获取本地通讯录组织树
@@ -286,7 +290,15 @@ export default {
     },
     // 获取组织表格数据
     getTableData() {
-      console.log('表格数据')
+      this.$fetch(
+        "getDeptTableList",{
+          campusId: 2,
+          loginUserId: 8,
+          currentPage: 1,
+          pageSize: 10
+        }).then(res => {
+        this.treeData = res.data.records;
+      })
     },
     handleSelect(rows) {
       console.log(rows, "rows---");
