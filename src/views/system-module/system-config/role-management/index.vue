@@ -463,7 +463,10 @@ export default {
               });
               this.handleClose("dataForm");
               this.handleTabClick(this.tabPermission);
-              this.getGroupData();
+              console.log(this.tabPermission,this.basicInfo.parentId,'this.tabPermission--')
+              if(this.basicInfo.parentId == "") {
+                this.getGroupData();
+              }
             });
           } else {
             // 编辑

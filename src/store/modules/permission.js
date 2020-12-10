@@ -94,7 +94,8 @@ const actions = {
             id: item.id,
             title: item.name,
             fullPath: item.frontUrl,
-            icon: item.icon
+            icon: item.icon,
+            keepAlive: true
           }
           item.name = item.frontUrl + '?' + new Date().getTime()
           if (item.children && item.children.length) {
