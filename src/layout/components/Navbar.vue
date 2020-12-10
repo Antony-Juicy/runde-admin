@@ -1,7 +1,9 @@
 <template>
   <div class="navbar">
     <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
-
+    <div class="refresh-container">
+      <i class="el-icon-refresh-right" @click="handleRefresh"></i>
+    </div>
     <el-tabs v-model="activeName" @tab-click="handleClick" type="card">
       <el-tab-pane :label="item.title" :name="item.index" v-for="(item,index) in navList" :key="index">{{item.fullPath}}</el-tab-pane>
     </el-tabs>
@@ -83,6 +85,9 @@ export default {
         router.addRoutes(accessRoutes)
         localStorage.setItem('tabIndex',this.navList[Number(tab.index)].id)
         localStorage.removeItem('clickMenu')
+    },
+    handleRefresh(){
+      this.$emit('refresh')
     }
   }
 }
@@ -108,6 +113,17 @@ export default {
     &:hover {
       background: rgba(0, 0, 0, .025)
     }
+  }
+
+  .refresh-container {
+    line-height: 54px;
+    height: 100%;
+    float: left;
+    cursor: pointer;
+    z-index: 999;
+    color: #fff;
+    font-size: 22px ;
+    padding: 0 15px;
   }
 
   .breadcrumb-container {

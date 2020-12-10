@@ -4,17 +4,12 @@
     <sidebar class="sidebar-container"/>
     <div :class="{hasTagsView:needTagsView}" class="main-container">
       <div :class="{'fixed-header':fixedHeader}">
-        <navbar/>
+        <navbar @refresh="refresh"/>
         <tags-view v-if="needTagsView"/>
       </div>
-      <app-main/>
-      <!-- <right-panel v-if="showSettings">
-        <settings />
-      </right-panel>-->
+      <app-main :key="viewId"/>
     </div>
 
-    <!-- mixin Album -->
-    <!-- <el-album v-model="albumDialog"></el-album> -->
   </div>
 </template>
 
@@ -38,7 +33,8 @@ export default {
       showSettings: state => state.settings.showSettings,
       needTagsView: state => state.settings.tagsView,
       fixedHeader: state => state.settings.fixedHeader,
-      albumDialog: state => state.app.albumDialog
+      albumDialog: state => state.app.albumDialog,
+      viewId: state => state.appViews.viewId
     }),
     sidebar() {
       return this.$store.state.app.sidebar;
@@ -58,7 +54,13 @@ export default {
       };
     }
   },
+  mounted(){
+    console.log(this.viewId,'getViewId')
+  },
   methods: {
+    refresh(){
+      this.$store.dispatch("appViews/setViewId")
+    },
     handleClickOutside() {
       this.$store.dispatch("app/closeSideBar", { withoutAnimation: false });
     }
