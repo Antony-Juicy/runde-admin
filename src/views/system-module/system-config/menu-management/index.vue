@@ -261,6 +261,7 @@ import UploadOss from "@/components/UploadOss";
 let loginUserId = JSON.parse(localStorage.getItem("userInfo")).userId;
 export default {
   inject: ["reload"],
+  name:'menu-management',
   components: {
     RdTree,
     UploadOss,

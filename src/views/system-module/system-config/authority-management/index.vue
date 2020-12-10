@@ -15,6 +15,7 @@
 import RdTree from '@/components/RdTree'
 export default {
   inject: ["reload"],
+  name:'authority-management',
   components: {
     RdTree
   },

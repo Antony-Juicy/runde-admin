@@ -2,7 +2,7 @@
   <div v-if="!item.hidden" class="menu-wrapper" >
     <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow">
       <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path)">
-        <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{'submenu-title-noDropdown':!isNest}" @click.native="handleClickMenu">
+        <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{'submenu-title-noDropdown':!isNest}" @click.native="handleClickMenu(onlyOneChild.path)">
           <item :icon="onlyOneChild.meta.icon||(item.meta&&item.meta.icon)" :title="onlyOneChild.meta.title" />
         </el-menu-item>
       </app-link>
@@ -90,8 +90,12 @@ export default {
       }
       return path.resolve(this.basePath, routePath)
     },
-    handleClickMenu(){
+    handleClickMenu(path){
       localStorage.setItem('clickMenu',true)
+      // 去掉exlude名单 添加缓存
+      setTimeout(()=>{
+        this.$store.dispatch("appViews/changeKeepAlive",this.$route.name)
+      },100)
     }
   }
 }

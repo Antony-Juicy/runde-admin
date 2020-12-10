@@ -39,7 +39,17 @@ export const constantRoutes = [
       component: () => import('@/views/dashboard/index'),
       meta: { title: '欢迎页', icon: 'dashboard' }
     }]
-  }
+  },
+  {
+    path: '/redirect', // 重定向路由
+    // component: () => import('@/views/layout/components/Sidebar/redirect'), hidden: true
+    component: Layout,
+    hidden: true,
+    children: [{
+      path: '',
+      component: () => import('@/layout/components/Sidebar/redirect')
+    }]
+}
 ]
 
 const createRouter = () => new Router({

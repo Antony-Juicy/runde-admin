@@ -4,13 +4,13 @@
       <Breadcrumb />
     </transition>
     <transition name="fade-transform" mode="out-in">
-      <keep-alive>
-        <router-view v-if="$route.meta.keepAlive" :key="key"></router-view>
+      <keep-alive :exclude="keepAliveCom">
+        <router-view :key="key"></router-view>
       </keep-alive>
     </transition>
-    <transition name="el-fade-in" mode="out-in">
+    <!-- <transition name="el-fade-in" mode="out-in">
       <router-view v-if="!$route.meta.keepAlive" :key="key"></router-view>
-    </transition>
+    </transition> -->
   </section>
 </template>
 
@@ -23,9 +23,26 @@ export default {
     key() {
       return this.$route.path;
     },
-    //  ...mapState({
-    //   cachedViews: state => state.tagsView.cachedViews,
-    // }),
+     ...mapState({
+      viewId: state => state.appViews.viewId,
+      keepAlivePage: state => state.appViews.keepAlivePage
+    }),
+  },
+  watch:{
+    keepAlivePage(val){
+      let val2 = val.map(item => {
+        return item.split('?')[0].split('/').pop()
+      });
+      this.keepAliveCom = [...val2]
+    }
+  },
+  data(){
+    return {
+      keepAliveCom:[]
+    }
+  },
+  mounted(){
+    console.log(this.keepAlivePage,'keep')
   },
   components: {
     Breadcrumb,

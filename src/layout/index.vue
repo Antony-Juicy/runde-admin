@@ -26,6 +26,7 @@ export default {
     TagsView
   },
   mixins: [ResizeMixin],
+  
   computed: {
     ...mapState({
       sidebar: state => state.app.sidebar,
@@ -57,9 +58,20 @@ export default {
   mounted(){
     console.log(this.viewId,'getViewId')
   },
+  watch:{
+    viewId(val){
+      console.log(val,'vavlll')
+    }
+  },
   methods: {
     refresh(){
-      this.$store.dispatch("appViews/setViewId")
+      console.log(this.$route,'route')
+       // 加入exclude名单 清除缓存
+       this.$store.dispatch("appViews/addKeepAlivePage",this.$route.name)
+       // 去掉exlude名单 添加缓存
+      setTimeout(()=>{
+        this.$store.dispatch("appViews/changeKeepAlive",this.$route.name)
+      },100)
     },
     handleClickOutside() {
       this.$store.dispatch("app/closeSideBar", { withoutAnimation: false });

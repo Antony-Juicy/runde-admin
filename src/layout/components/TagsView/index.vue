@@ -138,9 +138,9 @@ export default {
           this.toLastView(visitedViews, view)
         }
       })
-      if(this.$route.meta.keepAlive) {
-        this.$route.meta.keepAlive = false;
-      }
+      // 加入exclude名单 清除缓存
+      this.$store.dispatch("appViews/addKeepAlivePage",this.$route.name)
+
     },
     closeOthersTags() {
       this.$router.push(this.selectedTag)
@@ -192,9 +192,10 @@ export default {
       this.visible = false
     },
     clickTag(tag){
-      if(!this.$route.meta.keepAlive){
-          this.$route.meta.keepAlive = true;
-      }
+      // if(!this.$route.meta.keepAlive){
+      //     this.$route.meta.keepAlive = true;
+      // }
+      
     }
   }
 }
