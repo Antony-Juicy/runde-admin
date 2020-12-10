@@ -1,24 +1,22 @@
 <template>
   <section class="app-main">
     <transition name="fade-transform" mode="out-in">
-      <!-- <div :key="$route.meta.title" class="app-title">
-        <span>{{$route.meta.title}}</span>
-        <span>{{$route.meta.subtitle}}</span>
-      </div> -->
-      <Breadcrumb/>
+      <Breadcrumb />
     </transition>
     <transition name="fade-transform" mode="out-in">
-      <router-view :key="key"/>
-      <!-- <keep-alive :include="cachedViews">
-        <router-view :key="key"></router-view>
-      </keep-alive> -->
+      <keep-alive>
+        <router-view v-if="$route.meta.keepAlive" :key="key"></router-view>
+      </keep-alive>
+    </transition>
+    <transition name="el-fade-in" mode="out-in">
+      <router-view v-if="!$route.meta.keepAlive" :key="key"></router-view>
     </transition>
   </section>
 </template>
 
 <script>
 import { mapState } from "vuex";
-import Breadcrumb from '@/components/Breadcrumb'
+import Breadcrumb from "@/components/Breadcrumb";
 export default {
   name: "AppMain",
   computed: {
@@ -30,8 +28,8 @@ export default {
     // }),
   },
   components: {
-    Breadcrumb
-  }
+    Breadcrumb,
+  },
 };
 </script>
 
@@ -44,7 +42,7 @@ export default {
   // overflow: hidden;
   padding: 0 25px 25px 25px;
   box-sizing: border-box;
-  background-color: #F0F2F5;
+  background-color: #f0f2f5;
 }
 .fixed-header + .app-main {
   padding-top: 105px;
