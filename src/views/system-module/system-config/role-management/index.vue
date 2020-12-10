@@ -7,13 +7,14 @@
     </div>
     <div class="btn-wrapper">
       <el-button
-        type="primary"
+        type="primatestry"
         icon="el-icon-plus"
         size="small"
         @click="handleAdd"
         >添加</el-button
       >
     </div>
+    
     <!-- 表格 -->
     <rd-table
       :tableData="tableData"

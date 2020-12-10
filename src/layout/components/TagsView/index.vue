@@ -9,7 +9,7 @@
         :to="{ path: tag.path, query: tag.query, fullPath: tag.fullPath }"
         tag="span"
         class="tags-view-item"
-        @click.middle.native="closeSelectedTag(tag)"
+        @click.native="clickTag(tag)"
         @contextmenu.prevent.native="openMenu(tag,$event)"
       >
         {{ tag.title }}
@@ -52,6 +52,7 @@ export default {
     $route() {
       this.addTags()
       this.moveToCurrentTag()
+      
     },
     visible(value) {
       if (value) {
@@ -137,6 +138,9 @@ export default {
           this.toLastView(visitedViews, view)
         }
       })
+      if(this.$route.meta.keepAlive) {
+        this.$route.meta.keepAlive = false;
+      }
     },
     closeOthersTags() {
       this.$router.push(this.selectedTag)
@@ -186,6 +190,11 @@ export default {
     },
     closeMenu() {
       this.visible = false
+    },
+    clickTag(tag){
+      if(!this.$route.meta.keepAlive){
+          this.$route.meta.keepAlive = true;
+      }
     }
   }
 }
