@@ -9,9 +9,10 @@ export default {
     role_save: {url:'/admin/sec/role/save', method: 'post'},
     role_edit: {url:'/admin/sec/role/edit', method: 'post'},
     menu_impower: {url:'/admin/sec/menu/bindmenurole', method: 'post'},
-    getDeptTableList: {url: '/admin/staff/page', method: 'post'}, // 获取通讯录管理部门成员
-    getDeptTreeList: {url: '/admin/staff/campus/list', method: 'post'}, // 获取通讯录管理组织机构树
-    getDeptUserDetail: {url: '/admin/staff/detail', method: 'get'}, // 获取通讯录管理部门成员详情
-    deptUser_save: {url: '/admin/sec/menu/bindrole', method: 'post'}, // 通讯录成员多角色保存
+    staff_list: {url: '/admin/staff/page', method: 'post'},
+    staff_tree: {url: '/admin/staff/campus/list', method: 'post'},
+    staff_detail: {url: '/admin/staff/detail', method: 'get'},
+    staff_detail_save: {url: '/admin/staff/save', method: 'get'},
+    staff_role_list: {url: '/admin/sec/menu/bindrole', method: 'post'},
     role_getMeunList:{url:'/admin/sec/role/roleByidMenu', method: 'get'}
 }

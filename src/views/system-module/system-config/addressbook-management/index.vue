@@ -18,7 +18,7 @@
         @pageChange="pageChange"
       >
         <template slot="src" slot-scope="scope">
-          <img :src="scope.row.src" style="width:56px;height:56px;" alt="">
+          <img :src="scope.row.src | userLogoUrl" style="width:56px;height:56px;" alt="">
         </template>
         <template slot="status" slot-scope="scope">
           <span>{{ scope.row.status | statusFilter }}</span>
@@ -180,19 +180,9 @@ export default {
           placeholder: '请输入ID',
         },
       ],
-      statusOptions: [
-        {
-          label: "正常",
-          value: "1",
-        },
-        {
-          label: "暂停",
-          value: "0",
-        },
-      ],
       tableData: [],
       tableKey: [
-        // { name: '头像',value: 'src',operate: true,width: 80 },
+        { name: '头像',value: 'src',operate: true,width: 80 },
         { name: '姓名',value: 'staffName' },
         { name: '手机',value: 'staffPhone' },
         { name: '部门',value: 'campusName' },
@@ -221,26 +211,10 @@ export default {
         name: '',
         valueDept: []
       },
-      options: [
-        // {
-        //   value: '选项1',
-        //   label: '黄金糕'
-        // }, {
-        //   value: '选项2',
-        //   label: '双皮奶'
-        // }, {
-        //   value: '选项3',
-        //   label: '蚵仔煎'
-        // }, {
-        //   value: '选项4',
-        //   label: '龙须面'
-        // }, {
-        //   value: '选项5',
-        //   label: '北京烤鸭'
-        // }
-      ],
+      options: [],
       formLabelWidth: '80px',
       timer: null,
+      userLogoUrl: require('@/assets/userlogo.png')
     }
   },
   mounted() {
@@ -270,7 +244,6 @@ export default {
     },
     // 搜索栏
     onSearch(val) {
-      // console.log(val, 999)
       this.searchForm = {...val};
       this.getTableData({
         currentPage: 1,
@@ -283,7 +256,7 @@ export default {
     // 获取通讯录组织树
     getTreeData() {
       this.$fetch(
-        'getDeptTreeList',{
+        'staff_tree',{
           loginUserId
         }).then(res => {
         this.treeData = res.data;
@@ -310,7 +283,7 @@ export default {
     // 获取组织表格数据
     getTableData(params) {
       this.$fetch(
-        "getDeptTableList",
+        "staff_list",
         params || {
           campusId: this.campusId,
           loginUserId,
@@ -321,9 +294,9 @@ export default {
           this.pageConfig.totalCount = res.data.total;
         })
     },
-    getDeptUserDetailData(id) {
+    getUserDetailData(id) {
       this.$fetch(
-        "getDeptUserDetail",{
+        "staff_detail",{
           id
         }).then(res => {
           this.dataUser = res.data
@@ -334,15 +307,13 @@ export default {
       this.$fetch("role_list",{
         currentPage: 1,
         pageSize: 10000,
-        loginUserId,
-        // deptPid:0
+        loginUserId
       }).then((res) => {
-        // console.log(res, 7766666)
         this.options = res.data.records.map(item => ({
           value: item.id,
           label: item.roleName
         }));
-        console.log(this.options, 88888)
+        // console.log(this.options, 88888)
       });
     },
     handleSelect(rows) {
@@ -352,7 +323,7 @@ export default {
     editRow(index,id, rows) {
       // console.log(index,id,rows, 666)
       // this.dataUser = rows
-      this.getDeptUserDetailData(id)
+      this.getUserDetailData(id)
       this.getRoleList()
       this.dialog = true
       this.campususerId = rows.userId
@@ -370,12 +341,9 @@ export default {
         return;
       }
       let roleIds = this.formDrawer.valueDept.toString()
-      // console.log(roleIds, 999999)
-      // return
-      // console.log(done, 3333)
       // this.$confirm('确定要提交表单吗？')
       this.$fetch(
-        "deptUser_save",{
+        "staff_role_list",{
           userId: this.campususerId,
           roleIds
         })
