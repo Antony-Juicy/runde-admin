@@ -7,6 +7,7 @@
       node-key="id"
       @node-click="handleNodeClick"
       :highlight-current="highlight"
+      :expand-on-click-node="false"
       :default-expanded-keys="defaultExpandedKeys"
     >
       <span class="custom-tree-node" slot-scope="{ node, data }">
