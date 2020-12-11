@@ -33,7 +33,8 @@ export default {
       let val2 = val.map(item => {
         return item.split('?')[0].split('/').pop()
       });
-      this.keepAliveCom = [...val2]
+      val2.unshift('appRedirect')
+      this.keepAliveCom = [...new Set(val2)]
     }
   },
   data(){

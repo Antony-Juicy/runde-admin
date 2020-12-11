@@ -139,7 +139,7 @@ export default {
         }
       })
       // 加入exclude名单 清除缓存
-      this.$store.dispatch("appViews/addKeepAlivePage",this.$route.name)
+      this.$store.dispatch("appViews/addKeepAlivePage",view.name)
 
     },
     closeOthersTags() {
@@ -192,10 +192,7 @@ export default {
       this.visible = false
     },
     clickTag(tag){
-      // if(!this.$route.meta.keepAlive){
-      //     this.$route.meta.keepAlive = true;
-      // }
-      
+      sessionStorage.setItem('defaultActive', JSON.stringify(tag.fullPath))
     }
   }
 }

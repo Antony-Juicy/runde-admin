@@ -139,6 +139,7 @@ const actions = {
         //   loginUserId: JSON.parse(localStorage.getItem('userInfo')).userId,
         //   type: 0
         // })
+        // let menuList = data.records;
         const { data } = await axios.get('/json/menu.json')
         let menuList = data.data.records;
         let processedRoutes = []

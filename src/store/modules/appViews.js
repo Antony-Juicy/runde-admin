@@ -1,6 +1,6 @@
 const state = {
     viewId: 1,
-    keepAlivePage: []
+    keepAlivePage: ['appRedirect']
 };
 const getters = {
     getViewId: state => {
@@ -27,6 +27,7 @@ const actions = {
         context.commit("setViewId", payload);
     },
     addKeepAlivePage({ commit }, name) {
+        console.log(name,'addKeepAlivePage--')
         commit('ADD_KEEP_ALVE', name)
     },
     changeKeepAlive({ commit }, name) {

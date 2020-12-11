@@ -1,15 +1,18 @@
 <template>
   <div :class="classObj" class="app-wrapper">
-    <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
-    <sidebar class="sidebar-container"/>
-    <div :class="{hasTagsView:needTagsView}" class="main-container">
-      <div :class="{'fixed-header':fixedHeader}">
-        <navbar @refresh="refresh"/>
-        <tags-view v-if="needTagsView"/>
+    <div
+      v-if="device === 'mobile' && sidebar.opened"
+      class="drawer-bg"
+      @click="handleClickOutside"
+    />
+    <sidebar class="sidebar-container" />
+    <div :class="{ hasTagsView: needTagsView }" class="main-container">
+      <div :class="{ 'fixed-header': fixedHeader }">
+        <navbar @refresh="refresh" />
+        <tags-view v-if="needTagsView" />
       </div>
-      <app-main :key="viewId"/>
+      <app-main />
     </div>
-
   </div>
 </template>
 
@@ -23,19 +26,18 @@ export default {
     Navbar,
     Sidebar,
     AppMain,
-    TagsView
+    TagsView,
   },
   mixins: [ResizeMixin],
-  
+
   computed: {
     ...mapState({
-      sidebar: state => state.app.sidebar,
-      device: state => state.app.device,
-      showSettings: state => state.settings.showSettings,
-      needTagsView: state => state.settings.tagsView,
-      fixedHeader: state => state.settings.fixedHeader,
-      albumDialog: state => state.app.albumDialog,
-      viewId: state => state.appViews.viewId
+      sidebar: (state) => state.app.sidebar,
+      device: (state) => state.app.device,
+      showSettings: (state) => state.settings.showSettings,
+      needTagsView: (state) => state.settings.tagsView,
+      fixedHeader: (state) => state.settings.fixedHeader,
+      albumDialog: (state) => state.app.albumDialog
     }),
     sidebar() {
       return this.$store.state.app.sidebar;
@@ -51,32 +53,26 @@ export default {
         hideSidebar: !this.sidebar.opened,
         openSidebar: this.sidebar.opened,
         withoutAnimation: this.sidebar.withoutAnimation,
-        mobile: this.device === "mobile"
+        mobile: this.device === "mobile",
       };
-    }
+    },
   },
-  mounted(){
-    console.log(this.viewId,'getViewId')
-  },
-  watch:{
-    viewId(val){
-      console.log(val,'vavlll')
-    }
-  },
+
   methods: {
-    refresh(){
-      console.log(this.$route,'route')
-       // 加入exclude名单 清除缓存
-       this.$store.dispatch("appViews/addKeepAlivePage",this.$route.name)
-       // 去掉exlude名单 添加缓存
-      setTimeout(()=>{
-        this.$store.dispatch("appViews/changeKeepAlive",this.$route.name)
-      },100)
+    refresh() {
+      const url = this.$route.fullPath;
+      const fullPath = encodeURI(url);
+      this.$router.replace({
+        path: "/redirect",
+        query: {
+          path: encodeURI(fullPath),
+        },
+      });
     },
     handleClickOutside() {
       this.$store.dispatch("app/closeSideBar", { withoutAnimation: false });
-    }
-  }
+    },
+  },
 };
 </script>
 

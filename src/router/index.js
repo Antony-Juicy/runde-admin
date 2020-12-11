@@ -47,7 +47,7 @@ export const constantRoutes = [
     hidden: true,
     children: [{
       path: '',
-      component: () => import('@/layout/components/Sidebar/redirect')
+      component: () => import('@/views/redirect')
     }]
 }
 ]
