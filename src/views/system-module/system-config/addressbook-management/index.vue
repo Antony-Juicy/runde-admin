@@ -18,7 +18,7 @@
         @pageChange="pageChange"
       >
         <template slot="src" slot-scope="scope">
-          <img :src="scope.row.src | userLogoUrl" style="width:56px;height:56px;" alt="">
+          <img :src="scope.row.src || userLogoUrl" style="width:56px;height:56px;" alt="">
         </template>
         <template slot="status" slot-scope="scope">
           <span>{{ scope.row.status | statusFilter }}</span>
@@ -56,7 +56,7 @@
               </el-col>
               <el-col :span="8">
                 <div class="term">入职时间：</div>
-                <div class="detail">{{dataUser.hireDate}}</div>
+                <div class="detail">{{$common._formatDates(dataUser.hireDate)}}</div>
               </el-col>
               <el-col :span="8">
                 <div class="term">手机号码：</div>
