@@ -11,7 +11,7 @@
       :default-expanded-keys="defaultExpandedKeys"
     >
       <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span :class="{ greenNode: data.type == 1, redNode: data.type == 2 }" :title="node.label">{{
+        <span :class="{ greenNode: data.menuType == 1, redNode: data.menuType == 2 }" :title="node.label">{{
           node.label
         }}</span>
       </span>

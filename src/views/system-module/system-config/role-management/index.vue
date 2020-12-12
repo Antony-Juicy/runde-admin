@@ -7,7 +7,7 @@
     </div>
     <div class="btn-wrapper">
       <el-button
-        type="primatestry"
+        type="primary"
         icon="el-icon-plus"
         size="small"
         @click="handleAdd"
@@ -157,9 +157,15 @@
         show-checkbox
         :default-expanded-keys="defaultKeys"
         :default-checked-keys="defaultChekedKeys"
+        :check-strictly="true"
         @node-click="handleNodeClick"
         class="authority-tree"
       >
+        <span class="custom-tree-node" slot-scope="{ node, data }">
+          <span :class="{ greenNode: data.menuType == 1, redNode: data.menuType == 2 }" :title="node.label">{{
+            node.label
+          }}</span>
+        </span>
       </el-tree>
     </rd-dialog>
   </div>
@@ -198,21 +204,6 @@ export default {
       ],
       permissionGroup2:[],
       tableData: [
-        {
-          id: 1,
-          roleName: 111,
-          status: "1",
-          classifyName: "微软",
-          remark:
-            "看全国分校审批查看全国分校审批查看全国分,校审批查看全国分校审批,查看全国分校审批查,看全国分校审批查看全国分校审批查看全国分校审批查看全国分校审批查",
-        },
-        {
-          id: 2,
-          roleName: 111,
-          status: "1",
-          classifyName: "微软",
-          remark: "abh瑟夫",
-        },
       ],
       tableKey: [
         {
@@ -577,6 +568,18 @@ export default {
     .el-input.is-disabled .el-input__inner {
       color: #767a82;
     }
+    .greenNode {
+      color: #67c23a;
+    }
+    .redNode {
+      color: #ec5b56;
+    }
   }
+  .greenNode {
+      color: #67c23a;
+    }
+    .redNode {
+      color: #ec5b56;
+    }
 }
 </style>

@@ -135,6 +135,11 @@ const actions = {
   async getRoutesInfo({ commit }) {
     return new Promise(async (resolve) => {
       try {
+        Fetch('user_getMenuList', {
+          loginUserId: JSON.parse(localStorage.getItem('userInfo')).userId,
+          type: 0
+        })
+        
         // const { data } = await Fetch('user_getMenuList', {
         //   loginUserId: JSON.parse(localStorage.getItem('userInfo')).userId,
         //   type: 0

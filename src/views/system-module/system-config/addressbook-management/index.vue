@@ -76,40 +76,49 @@
               </el-col>
             </el-row>
             <el-divider></el-divider>
-            <!-- <div class="title_drawer">外呼管理</div>
+            <div class="title_drawer">外呼管理</div>
             <el-row :gutter="24">
               <el-col :span="12">
-                <el-form-item label="七陌坐席:" :label-width="formLabelWidth">
-                  <el-input v-model="formDrawer.name" autocomplete="off"></el-input>
+                <el-form-item label="七陌坐席:" :label-width="formLabelWidth" placeholder="请输入七陌坐席">
+                  <el-input v-model="outBound.qimoAccount" autocomplete="off"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="七陌密码:" :label-width="formLabelWidth">
-                  <el-input v-model="formDrawer.name" autocomplete="off"></el-input>
+                <el-form-item label="七陌密码:" :label-width="formLabelWidth" placeholder="请输入七陌密码">
+                  <el-input v-model="outBound.qimoPwd" autocomplete="off" type="password"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="智博坐席:" :label-width="formLabelWidth">
-                  <el-input v-model="formDrawer.name" autocomplete="off"></el-input>
+                <el-form-item label="智博坐席:" :label-width="formLabelWidth" placeholder="请输入智博坐席">
+                  <el-input v-model="outBound.zhiboAccount" autocomplete="off"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="智博密码:" :label-width="formLabelWidth">
-                  <el-input v-model="formDrawer.name" autocomplete="off"></el-input>
+                <el-form-item label="智博密码:" :label-width="formLabelWidth" placeholder="请输入智博密码">
+                  <el-input v-model="outBound.zhiboPwd" autocomplete="off" type="password"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label="公司类型:" :label-width="formLabelWidth">
-                  <el-input v-model="formDrawer.companyType" autocomplete="off"></el-input>
+                  <el-select v-model="outBound.companyType" placeholder="请选择公司类型">
+                    <el-option
+                      :label="'广东长兴润德教育科技有限公司'"
+                      :value="'Runde'">
+                    </el-option>
+                    <el-option
+                      :label="'广州正德教育科技有限公司'"
+                      :value="'Zhengde'">
+                    </el-option>
+                  </el-select>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="工作手机:" :label-width="formLabelWidth">
-                  <el-input v-model="formDrawer.workPhone" autocomplete="off"></el-input>
+                <el-form-item label="工作手机:" :label-width="formLabelWidth" placeholder="请输入工作手机">
+                  <el-input v-model="outBound.workPhone" autocomplete="off"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-divider></el-divider> -->
+            <el-divider></el-divider>
             <div class="title_drawer">多角色管理</div>
             <el-row :gutter="24">
               <el-col :span="12">
@@ -209,17 +218,26 @@ export default {
       dialog: false,
       loading: false,
       formDrawer: {
-        name: '',
         valueDept: []
+      },
+      outBound: {
+        qimoAccount:"",
+        qimoPwd:"",
+        zhiboAccount:"",
+        zhiboPwd:"",
+        companyType:"",
+        workPhone:""
       },
       options: [],
       formLabelWidth: '80px',
       timer: null,
-      userLogoUrl: require('@/assets/userlogo.png')
+      userLogoUrl: require('@/assets/userlogo.png'),
+      currentId:''
     }
   },
   mounted() {
     this.getTreeData();
+    this.getRoleList();
     // this.getTableData();
     // this.getDataTree();
     // this.getDataTable();
@@ -302,6 +320,7 @@ export default {
         }).then(res => {
           this.dataUser = res.data
           this.formDrawer.valueDept = this.dataUser.userRoleResponseList.map(item => item.roleId)
+          this.outBound = {...res.data}
         })
     },
     getRoleList() {
@@ -325,9 +344,10 @@ export default {
       // console.log(index,id,rows, 666)
       // this.dataUser = rows
       this.getUserDetailData(id)
-      this.getRoleList()
+      
       this.dialog = true
       this.campususerId = rows.userId
+      this.currentId = id;
     },
     pageChange(val) {
       // console.log(666)
@@ -342,12 +362,22 @@ export default {
         return;
       }
       let roleIds = this.formDrawer.valueDept.toString()
-      // this.$confirm('确定要提交表单吗？')
-      this.$fetch(
+      Promise.all([ this.$fetch(
         "staff_role_list",{
           userId: this.campususerId,
           roleIds
-        })
+        }), this.$fetch(
+        "staff_detail_save",{
+          userId: this.campususerId,
+          loginUserId,
+          companyType: this.outBound.companyType,
+          id: this.currentId,
+          qimoAccount: this.outBound.qimoAccount,
+          qimoPwd: this.outBound.qimoPwd,
+          staffPhone: this.outBound.staffPhone,
+          zhiboAccount: this.outBound.zhiboAccount,
+          zhiboAccount: this.outBound.zhiboPwd
+        })])
         .then(_ => {
           this.loading = true;
           this.onSearch()
@@ -357,9 +387,10 @@ export default {
             setTimeout(() => {
               this.loading = false;
             }, 400);
-          }, 2000);
+          }, 500);
         })
         .catch(_ => {});
+        
     },
     // 关闭抽屉
     cancelForm() {
@@ -380,7 +411,7 @@ export default {
     .tree-container {
         /deep/ .el-tree {
           padding-top: 24px;
-           height: calc(100vh - 260px);
+           height: calc(100vh - 300px);
            overflow: auto;
            padding-bottom: 24px;
         }

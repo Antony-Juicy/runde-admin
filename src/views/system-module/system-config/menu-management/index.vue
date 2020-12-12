@@ -496,19 +496,19 @@ export default {
     // 打开新增弹窗
     handleAdd() {
       // 如果没有先选父级结果 弹出提示
-      // if (!this.selectedTree) {
-      //   this.$message({
-      //     message: "请先选择父级菜单",
-      //     type: "warning",
-      //   });
-      //   return;
-      // } else if (this.selectedTree.menuType != "0") {
-      //   this.$message({
-      //     message: "请选择正确的菜单",
-      //     type: "warning",
-      //   });
-      //   return;
-      // }
+      if (!this.selectedTree) {
+        this.$message({
+          message: "请先选择父级菜单",
+          type: "warning",
+        });
+        return;
+      } else if (this.selectedTree.menuType != "0") {
+        this.$message({
+          message: "请选择正确的菜单",
+          type: "warning",
+        });
+        return;
+      }
       for (const key in this.basicInfo) {
         this.basicInfo[key] = "";
       }
