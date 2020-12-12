@@ -411,7 +411,7 @@ export default {
     .tree-container {
         /deep/ .el-tree {
           padding-top: 24px;
-           height: calc(100vh - 300px);
+           height: calc(100vh - 260px);
            overflow: auto;
            padding-bottom: 24px;
         }

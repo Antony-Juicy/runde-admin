@@ -37,7 +37,7 @@ export const constantRoutes = [
       path: '/dashboard',
       name: 'home',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: '欢迎页', icon: 'dashboard' }
+      meta: { title: '欢迎页' }
     }]
   },
   {
@@ -79,7 +79,7 @@ export let asyncRoutes0 = [
       path: '/dashboard',
       name: 'dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: '欢迎页', icon: 'dashboard' }
+      meta: { title: '欢迎页' }
     }]
   },
   // {

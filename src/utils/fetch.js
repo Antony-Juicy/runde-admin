@@ -65,7 +65,7 @@ service.interceptors.response.use(
       })
 
       // 4: Illegal token;
-      if (res.code === 401 || res.code === 403) {
+      if (res.code === 401 || res.code === 4) {
         let msg = '您已注销，可以取消以留在此页，或重新登录。'
         if (res.code === -37 && msg) {
           msg = res.msg

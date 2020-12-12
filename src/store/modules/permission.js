@@ -94,7 +94,7 @@ const actions = {
             id: item.id,
             title: item.name,
             fullPath: item.frontUrl,
-            icon: item.icon,
+            icon: item.menuIcon,
             keepAlive: true
           }
           item.name = item.frontUrl + '?' + new Date().getTime()
@@ -135,11 +135,7 @@ const actions = {
   async getRoutesInfo({ commit }) {
     return new Promise(async (resolve) => {
       try {
-        Fetch('user_getMenuList', {
-          loginUserId: JSON.parse(localStorage.getItem('userInfo')).userId,
-          type: 0
-        })
-        
+
         // const { data } = await Fetch('user_getMenuList', {
         //   loginUserId: JSON.parse(localStorage.getItem('userInfo')).userId,
         //   type: 0
