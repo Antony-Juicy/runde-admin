@@ -28,14 +28,14 @@ const $common = {
         let month = time.getMonth() + 1;
         let day = time.getDate();
         let hours = time.getHours();
-        let second = time.getSeconds();
+        let minutes = time.getMinutes();
 
         if (month < 10) month = `0${month}`;
         if (day < 10) day = `0${day}`
         if (hours < 10) hours = `0${hours}`
-        if (second < 10) second = `0${second}`
+        if (minutes < 10) minutes = `0${minutes}`
 
-        return `${year}-${month}-${day} ${hours}:${second}`;
+        return `${year}-${month}-${day} ${hours}:${minutes}`;
     }
 }
 
