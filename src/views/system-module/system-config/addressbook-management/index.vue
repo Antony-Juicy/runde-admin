@@ -370,9 +370,9 @@ export default {
           id: this.currentId,
           qimoAccount: this.outBound.qimoAccount,
           qimoPwd: this.outBound.qimoPwd,
-          staffPhone: this.outBound.staffPhone,
+          workPhone: this.outBound.workPhone,
           zhiboAccount: this.outBound.zhiboAccount,
-          zhiboAccount: this.outBound.zhiboPwd
+          zhiboPwd: this.outBound.zhiboPwd
         })])
         .then(_ => {
           this.loading = true;
@@ -448,6 +448,12 @@ export default {
         display: flex;
         justify-content: flex-end;
         margin-top: 20px;
+      }
+    }
+    /deep/ .el-table {
+      .el-table__body-wrapper {
+        height: 550px;
+        overflow: auto;
       }
     }
   }
