@@ -18,7 +18,7 @@
         @pageChange="pageChange"
       >
         <template slot="src" slot-scope="scope">
-          <img :src="scope.row.src || userLogoUrl" style="width:56px;height:56px;" alt="">
+          <img :src="scope.row.src || userLogoUrl" style="width:40px;height:40px;" alt="">
         </template>
         <template slot="status" slot-scope="scope">
           <span>{{ scope.row.status | statusFilter }}</span>
