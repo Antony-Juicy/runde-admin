@@ -183,12 +183,12 @@ export default {
           initValue: '',
           placeholder: '请输入职位',
         },
-        {
-          prop: 'idcard',
-          element: 'el-input',
-          initValue: '',
-          placeholder: '请输入ID',
-        },
+        // {
+        //   prop: 'idcard',
+        //   element: 'el-input',
+        //   initValue: '',
+        //   placeholder: '请输入ID',
+        // },
       ],
       tableData: [],
       tableKey: [
@@ -357,6 +357,7 @@ export default {
         return;
       }
       let roleIds = this.formDrawer.valueDept.toString()
+      console.log(this.dataUser,this.outBound, 'this.dataUser----this.outBound')
       Promise.all([ this.$fetch(
         "staff_role_list",{
           userId: this.campususerId,
@@ -403,17 +404,18 @@ export default {
     float: left;
     width: 340px;
     margin-right: 24px;
+    overflow: auto;
     .tree-container {
         /deep/ .el-tree {
           padding-top: 24px;
-           height: calc(100vh - 260px);
-           overflow: auto;
-           padding-bottom: 24px;
+          height: 707px;
+          overflow: auto;
         }
     }
   }
   .center_r {
     overflow: hidden;
+    height: 707px;
     .demo-drawer__content {
       padding: 40px 60px 0 30px;
       .term {
