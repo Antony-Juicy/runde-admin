@@ -196,7 +196,7 @@ export default {
 .twoRowContainer {
   /deep/ {
     .el-table__body td {
-       height: 71px;
+       height: 55px;
     }
   }
 }
@@ -225,7 +225,6 @@ export default {
       td {
         color: #333333;
         font-weight: 400;
-       
         .cell {
             text-overflow: -o-ellipsis-lastline;
             overflow: hidden;
@@ -237,6 +236,9 @@ export default {
           }
       }
     }
+  }
+  .el-table td, .el-table th {
+        padding: 3px 0;
   }
   .tooltip-wrapper {
     max-width: 400px;
