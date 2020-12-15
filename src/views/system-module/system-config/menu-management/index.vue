@@ -668,16 +668,14 @@ export default {
     .tree-container {
       /deep/ .el-tree {
         padding-top: 24px;
-        // height: calc(100vh - 260px);
         height: 707px;
         overflow: auto;
-        // padding-bottom: 24px;
       }
     }
   }
   .menu-wrapper-right {
     overflow: hidden;
-    // margin-bottom: 24px;
+    min-height: 707px;
     .btn-wrapper {
       margin-bottom: 8px;
     }
