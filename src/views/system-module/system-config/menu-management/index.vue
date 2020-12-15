@@ -131,6 +131,7 @@
             <el-select
               v-model="basicInfo.menuType"
               placeholder="请选择类型"
+              :disabled="!dialogStatus"
             >
               <el-option
                 v-for="item in typeOptions"

@@ -175,7 +175,7 @@ export default {
 </script>
 
 <style lang="scss">
-.el-form-item {
-  margin-bottom: 10px;
-}
+// .el-form-item {
+//   margin-bottom: 10px;
+// }
 </style>

@@ -143,6 +143,7 @@ const actions = {
         let menuList = data.records;
         // const { data } = await axios.get('/json/menu.json')
         // let menuList = data.data.records;
+        console.log(menuList,'menuList')
         let processedRoutes = []
         let btnRoutes = []
         commit('SET_MENULIST', menuList)
@@ -150,20 +151,23 @@ const actions = {
         commit('SET_BTNROUTES', btnRoutes)
         let menuRouters = []
         /*先取出模块，没有父id的就是模块菜单*/
-        menuRouters = menuList[0].children.map(m => {
-          return {
-            path: '/' + m.frontUrl,
-            id: m.id,
-            title: m.name,
-            fullPath: '/' + m.frontUrl,
-            children: m.children,
-            meta: {
+        if(menuList.length){
+          menuRouters = menuList[0].children.map(m => {
+            return {
+              path: '/' + m.frontUrl,
               id: m.id,
               title: m.name,
-              fullPath: '/' + m.frontUrl
+              fullPath: '/' + m.frontUrl,
+              children: m.children,
+              meta: {
+                id: m.id,
+                title: m.name,
+                fullPath: '/' + m.frontUrl
+              }
             }
-          }
-        })
+          })
+        }
+        
         menuRouters.unshift({
           path: '/dashboard',
           title: '首页',
