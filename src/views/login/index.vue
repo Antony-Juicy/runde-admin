@@ -9,7 +9,6 @@
       auto-complete="on"
       label-width="auto"
       label-position="left"
-      v-if="show"
     >
       <div class="title-container">
         <h3 class="title">欢迎访问润德大教务平台</h3>
@@ -106,9 +105,9 @@
     </el-form>
 
     <!-- 正式环境 -->
-    <div class="production-wrapper" v-else>
+    <!-- <div class="production-wrapper" v-else>
       <productionCode/>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -180,13 +179,12 @@ export default {
       immediate: true,
     },
   },
-  computed: {
-    show() {
-      return process.env.NODE_ENV != "production";
-    },
-  },
+  // computed: {
+  //   show() {
+  //     // return process.env.NODE_ENV = "production";
+  //   },
+  // },
   mounted() {
-    console.log(process.env, "999");
     this.getImgcode();
     this.getCookie();
   },

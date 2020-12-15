@@ -70,7 +70,7 @@ const actions = {
   },
 
   // user logout
-  logout({ commit, state }) {
+  logout({ commit, dispatch, state }) {
     return new Promise((resolve, reject) => {
       Fetch('user_logout',{
         loginUserId: JSON.parse(localStorage.getItem('userInfo')).userId
@@ -79,7 +79,8 @@ const actions = {
         removeToken()
         resetRouter()
         commit('SET_ROLES', '')
-        localStorage.clear();
+        localStorage.clear()
+        dispatch('tagsView/delAllViews', null, { root: true })
         const { msg } = res
         resolve(msg)
       }).catch(error => {
@@ -89,10 +90,12 @@ const actions = {
   },
 
   // remove token
-  resetToken({ commit }) {
+  resetToken({ commit, dispatch }) {
     return new Promise(resolve => {
       commit('SET_TOKEN', '')
       removeToken()
+      dispatch('tagsView/delAllViews', null, { root: true })
+      localStorage.clear()
       resolve()
     })
   },

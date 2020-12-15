@@ -11,7 +11,6 @@ import md5 from 'md5';
 const appId = 'cc83f3dd7c45afce86f802903ad715b8';
 const appKey = '328adda459d6d4d4bf9a94eae2ebf307';
 
-
 // axios.defaults.withCredentials = true
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, 
@@ -89,11 +88,35 @@ service.interceptors.response.use(
   error => {
     let status = error.response.status;
     hideLoading();
-    if (status === 401 || status === 403) {
+    if (status === 401) {
       Message({
-        message: '没有权限访问', // error.message,
+        message: '您没有权限访问', // error.message,
         type: 'error',
         duration: 5 * 1000
+      })
+    }else if (status === 402) {
+      let msg = '您的登录已过期，请重新登录。'
+        // to re-login
+        MessageBox.confirm(msg, '确认注销', {
+          confirmButtonText: '重新登录',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          store.dispatch('user/resetToken').then(() => {
+            location.reload()
+          })
+        })
+    }else if (status === 403) {
+      let msg = '您的账号在异地登录，请重新登录。'
+      // to re-login
+      MessageBox.confirm(msg, '确认注销', {
+        confirmButtonText: '重新登录',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        store.dispatch('user/resetToken').then(() => {
+          location.reload()
+        })
       })
     }else {
       Message({
@@ -178,7 +201,6 @@ const $fetch = async (apiName, params, config) => {
     newConfig.url = appendUrlParams(newConfig.url, urlParams);
   }
 
-  
   return service(newConfig);
 }
 
