@@ -160,8 +160,8 @@ export default {
   data () {
     return {
       deptlabel: '',
-      campusId: "", // 部门id
-      campususerId: "", // 部门成员id
+      campusId: 1, // 组织id
+      campususerId: "", // 组织成员id
       showNum: 4,
       searchForm: {},
       formOptions: [
@@ -192,13 +192,13 @@ export default {
       ],
       tableData: [],
       tableKey: [
-        { name: '头像',value: 'src',operate: true,width: 80 },
-        { name: '姓名',value: 'staffName' },
-        { name: '手机',value: 'staffPhone' },
+        { name: '头像',value: 'src',operate: true,width: 62 },
+        { name: '姓名',value: 'staffName',width: 120 },
+        { name: '手机',value: 'staffPhone',width: 120 },
         { name: '部门',value: 'campusName' },
         { name: '职位',value: 'positionName' },
         { name: '角色',value: 'roleName' },
-        { name: '状态',value: 'status',operate: true },
+        { name: '状态',value: 'status',operate: true,width: 100 },
         { name: '操作',value: 'edit',operate: true,width: 100 },
       ],
       emptyText: '暂无数据，请选择相应的组织架构',
@@ -238,9 +238,7 @@ export default {
   mounted() {
     this.getTreeData();
     this.getRoleList();
-    // this.getTableData();
-    // this.getDataTree();
-    // this.getDataTable();
+    this.getTableData();
   },
   filters: {
     statusFilter(status){
@@ -257,6 +255,7 @@ export default {
   methods: {
     // 操作通讯录树
     handleNodeClick(data) {
+      console.log(data,'data----')
       this.deptlabel = data.campusName
       this.campusId = data.id
       this.getTableData();
@@ -288,19 +287,12 @@ export default {
         })
       })
     },
-    // 获取本地通讯录组织树
-    async getDataTree() {
-      const { data } = await axios.get('/json/depttreedata.json')
-      this.treeData = data
-    },
-    // 获取本地组织表格数据
-    async getDataTable() {
-      const { data } = await axios.get('/json/depttabledata.json')
-      this.tableData = data
-      this.pageConfig.totalCount = res.data.total
-    },
-    // 获取组织表格数据
+    // 获取部门成员列表
     getTableData(params) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".el-table",
+      });
       this.$fetch(
         "staff_list",
         params || {
@@ -311,8 +303,12 @@ export default {
         }).then(res => {
           this.tableData = res.data.records;
           this.pageConfig.totalCount = res.data.total;
+          setTimeout(() => {
+            loading.close();
+          }, 200);
         })
     },
+    // 获取成员信息
     getUserDetailData(id) {
       this.$fetch(
         "staff_detail",{
@@ -323,6 +319,7 @@ export default {
           this.outBound = {...res.data}
         })
     },
+    // 获取成员多角色
     getRoleList() {
       this.$fetch("role_list",{
         currentPage: 1,
@@ -333,7 +330,6 @@ export default {
           value: item.id,
           label: item.roleName
         }));
-        // console.log(this.options, 88888)
       });
     },
     handleSelect(rows) {
@@ -341,7 +337,6 @@ export default {
     },
     // 编辑
     editRow(index,id, rows) {
-      // console.log(index,id,rows, 666)
       // this.dataUser = rows
       this.getUserDetailData(id)
       
@@ -350,10 +345,10 @@ export default {
       this.currentId = id;
     },
     pageChange(val) {
-      // console.log(666)
       this.getTableData({
         currentPage: val.page,
-        showCount: val.limit,
+        pageSize: val.limit,
+        campusId: this.campusId
       });
     },
     // 抽屉提交表单
