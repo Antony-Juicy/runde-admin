@@ -58,12 +58,12 @@ export default {
   width: 100%;
   position: relative;
   // overflow: hidden;
-  padding: 0 25px 25px 25px;
+  padding: 0 20px 5px 20px;
   box-sizing: border-box;
   background-color: #f0f2f5;
 }
 .fixed-header + .app-main {
-  padding-top: 105px;
+  padding-top: 102px;
 }
 .app-title {
   padding: 20px 0;

@@ -185,7 +185,7 @@ export default {
   .filter-bar {
     position: absolute;
     right: 0;
-    top: -48px;
+    top: -40px;
   }
 }
 .img-empty {
@@ -217,7 +217,7 @@ export default {
         background-color: #FAFAFA;
         color: #333333;
         font-weight: 600;
-        height: 50px;
+        height: 43px;
       }
     }
     .el-table__body {

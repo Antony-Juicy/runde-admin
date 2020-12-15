@@ -668,7 +668,8 @@ export default {
     .tree-container {
       /deep/ .el-tree {
         padding-top: 24px;
-        height: calc(100vh - 260px);
+        // height: calc(100vh - 260px);
+        height: 707px;
         overflow: auto;
         // padding-bottom: 24px;
       }
@@ -678,7 +679,7 @@ export default {
     overflow: hidden;
     // margin-bottom: 24px;
     .btn-wrapper {
-      margin-bottom: 16px;
+      margin-bottom: 8px;
     }
 
     /deep/ {

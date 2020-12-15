@@ -183,7 +183,7 @@ export default {
   }
   .search-box-wrapper2 {
     background-color: #fff;
-    padding: 24px 0 24px 24px;
+    padding: 15px;
   }
   .btn-box {
     display: flex;

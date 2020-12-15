@@ -559,7 +559,7 @@ export default {
     // border-bottom: 1px solid #EBEEF5;
   }
   .btn-wrapper {
-    margin-bottom: 16px;
+    margin-bottom: 8px;
   }
   .authority-tree {
     padding-left: 20px;
