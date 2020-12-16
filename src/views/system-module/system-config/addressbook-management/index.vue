@@ -193,13 +193,13 @@ export default {
       tableData: [],
       tableKey: [
         { name: '头像',value: 'src',operate: true,width: 62 },
-        { name: '姓名',value: 'staffName',width: 120 },
-        { name: '手机',value: 'staffPhone',width: 120 },
+        { name: '姓名',value: 'staffName' },
+        { name: '手机',value: 'staffPhone' },
         { name: '部门',value: 'campusName' },
         { name: '职位',value: 'positionName' },
         { name: '角色',value: 'roleName' },
-        { name: '状态',value: 'status',operate: true,width: 100 },
-        { name: '操作',value: 'edit',operate: true,width: 100 },
+        { name: '状态',value: 'status',operate: true },
+        { name: '操作',value: 'edit',operate: true,width: 100},
       ],
       emptyText: '暂无数据，请选择相应的组织架构',
       fixedTwoRow: true,
@@ -452,7 +452,7 @@ export default {
     }
     /deep/ .el-table {
       .el-table__body-wrapper {
-        height: 550px;
+        max-height: 550px;
         overflow: auto;
       }
     }

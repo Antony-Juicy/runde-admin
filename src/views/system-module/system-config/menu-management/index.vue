@@ -313,8 +313,7 @@ export default {
           name: "操作",
           value: "edit",
           operate: true,
-          width: 120,
-          fixed: "right",
+          width: 120
         },
       ],
       fixedTwoRow: true,
@@ -694,6 +693,10 @@ export default {
       .el-input.is-disabled .el-input__inner {
       color: #767a82;
     }
+    .el-table__body-wrapper {
+        max-height: 550px;
+        overflow: auto;
+      }
     }
   }
 

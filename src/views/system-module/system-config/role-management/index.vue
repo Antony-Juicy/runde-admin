@@ -333,7 +333,8 @@ export default {
       currentPageInfo: null,
       selectedRoleId: "",
       defaultKeys: [],
-      showAuthority: true
+      showAuthority: true,
+      deptPid: 0
     };
   },
   mounted() {
@@ -391,11 +392,13 @@ export default {
       console.log(rows, "rows---");
     },
     pageChange(val) {
+      console.log(val,'pagechange')
       this.currentPageInfo = val;
       this.getTableData({
         currentPage: (val && val.page) || 1,
         pageSize: (val && val.limit) || 10,
         loginUserId,
+        deptPid: this.deptPid
       });
     },
     getTableData(params) {
@@ -564,6 +567,7 @@ export default {
 
     // 点击权限组的分类
     handleTabClick(data){
+      this.deptPid = data;
       this.getTableData({
         deptPid: data,
          currentPage: 1,

@@ -21,8 +21,8 @@
               首页
             </el-dropdown-item>
           </router-link>
-          <el-dropdown-item divided>
-            <span style="display:block;" @click="logout">注销</span>
+          <el-dropdown-item divided  @click.native="logout">
+            <span style="display:block;">注销</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
