@@ -626,6 +626,7 @@ export default {
         flagType: 5,
       }).then((res) => {
         this.basicInfo.code = res.data;
+        this.$forceUpdate();
         console.log(this.basicInfo.code,'this.basicInfo.code---')
       });
     },
