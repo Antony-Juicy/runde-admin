@@ -24,7 +24,7 @@
                 "id": 18,
                 "name": "系统管理",
                 "backUrl": "",
-                "frontUrl": "system-config",
+                "frontUrl": "system",
                 "type": "0",
                 "orderNum": 0,
                 "children": [
@@ -32,7 +32,7 @@
                     "id": 37,
                     "name": "通讯录管理",
                     "backUrl": "",
-                    "frontUrl": "system-module/system-config/addressbook-management",
+                    "frontUrl": "system-module/system/addressbook",
                     "type": "0",
                     "orderNum": 0,
                     "children": []
@@ -41,7 +41,7 @@
                     "id": 21,
                     "name": "角色管理",
                     "backUrl": "",
-                    "frontUrl": "system-module/system-config/role-management",
+                    "frontUrl": "system-module/system/role",
                     "type": "0",
                     "orderNum": 0,
                     "children": []
@@ -50,7 +50,45 @@
                     "id": 1,
                     "name": "权限管理",
                     "backUrl": "",
-                    "frontUrl": "system-module/system-config/menu-management",
+                    "frontUrl": "system-module/system/menu",
+                    "type": "0",
+                    "orderNum": 0,
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": 101,
+            "name": "CRM",
+            "backUrl": "",
+            "frontUrl": "crm-module",
+            "type": "0",
+            "orderNum": 0,
+            "children": [
+              {
+                "id": 102,
+                "name": "机会管理",
+                "backUrl": "",
+                "frontUrl": "chance",
+                "type": "0",
+                "orderNum": 0,
+                "children": [
+                  {
+                    "id": 103,
+                    "name": "机会分配",
+                    "backUrl": "",
+                    "frontUrl": "crm-module/chance/assign-chance",
+                    "type": "0",
+                    "orderNum": 0,
+                    "children": []
+                  },
+                  {
+                    "id": 104,
+                    "name": "我的机会",
+                    "backUrl": "",
+                    "frontUrl": "crm-module/chance/my-chance",
                     "type": "0",
                     "orderNum": 0,
                     "children": []
