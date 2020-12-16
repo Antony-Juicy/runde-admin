@@ -58,7 +58,7 @@
         :rules="rules"
         :label-width="formLabelWidth"
       >
-        <el-form-item
+        <!-- <el-form-item
           label="编码"
           prop="roleCode"
           :label-width="formLabelWidth"
@@ -82,7 +82,7 @@
               ></el-col
             >
           </el-row>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="分组" prop="parentId" :label-width="formLabelWidth">
           <el-select v-model="basicInfo.parentId" placeholder="请选择分组">
             <el-option
@@ -248,7 +248,7 @@ export default {
       dialogStatus: true, //弹窗状态： true 新增 false 编辑
       formLabelWidth: "100px",
       basicInfo: {
-        roleCode: "",
+        // roleCode: "",
         roleName: "",
         status: "",
         remark: "",
@@ -256,7 +256,7 @@ export default {
         parentId:""
       },
       rules: {
-        roleCode: [{ required: true, message: "请获取编码", trigger: "blur" }],
+        // roleCode: [{ required: true, message: "请获取编码", trigger: "blur" }],
         updateReason: [
           { required: true, message: "请输入修改事由", trigger: "blur" },
         ],

@@ -79,7 +79,7 @@
           >
             {{ selectedTree.menuName }}（id:{{ selectedTree.id }}）
           </el-form-item>
-          <el-form-item
+          <!-- <el-form-item
             label="编码"
             prop="code"
             :label-width="formLabelWidth"
@@ -104,7 +104,7 @@
                 ></el-col
               >
             </el-row>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="名称" prop="menuName" :label-width="formLabelWidth">
             <el-input
               v-model="basicInfo.menuName"
@@ -327,7 +327,7 @@ export default {
       dialogStatus: true, //弹窗状态： true 新增 false 编辑
       formLabelWidth: "100px",
       basicInfo: {
-        code: "11",
+        // code: "11",
         menuName: "",
         status: "",
         menuType: "",
@@ -344,7 +344,7 @@ export default {
         updateReason: [
           { required: true, message: "请输入更新理由", trigger: "blur" },
         ],
-        code: [{ required: true, message: "请获取编码", trigger: "blur" }],
+        // code: [{ required: true, message: "请获取编码", trigger: "blur" }],
         menuName: [{ required: true, message: "请输入名称", trigger: "blur" }],
         status: [{ required: true, message: "请选择状态", trigger: "blur" }],
         menuType: [{ required: true, message: "请选择类型", trigger: "blur" }],
@@ -530,6 +530,8 @@ export default {
     },
     // 提交
     submitForm(formName) {
+      this.$forceUpdate();
+      console.log(this.basicInfo, "提交前");
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log(this.basicInfo, "提交");
