@@ -61,8 +61,8 @@ export default {
     width: 100%;
 
     & .sidebar-logo {
-      width: 114px;
-      height: 36px;
+      width: 136px;
+      height: 45px;
       vertical-align: middle;
       margin-right: 12px;
     }
@@ -82,6 +82,7 @@ export default {
   &.collapse {
     .sidebar-logo {
       margin-right: 0px;
+      margin-left: 5px;
     }
   }
 }

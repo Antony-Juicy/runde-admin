@@ -157,7 +157,7 @@
         show-checkbox
         :default-expanded-keys="defaultKeys"
         :default-checked-keys="defaultChekedKeys"
-        :check-strictly="true"
+        :check-strictly="false"
         @node-click="handleNodeClick"
         class="authority-tree"
       >
@@ -485,13 +485,37 @@ export default {
       this.$fetch('role_getMeunList',{
         roleId: data.id
       }).then(res => {
-        this.defaultChekedKeys = [];
-        this.defaultChekedKeys = res.msg.split(',');
-        this.$forceUpdate();
+        // this.defaultChekedKeys = [];
+        // this.defaultChekedKeys = res.msg.split(',');
+        // this.$forceUpdate();
         
         console.log(this.defaultChekedKeys,'this.defaultChekedKeys--')
+        
         this.selectedRoleId = data.id;
         this.authorityVisible = true;
+
+        let resData= res.data;//获取后端数据（包含半选节点，数据结构为 数组...[{id:XX,pid:XXX},...]）
+        let checked = [];//需要选中的节点
+        let pidArr=[];//获取父节点
+        for (let item of resData) {
+            pidArr.push(item.parentId);
+        }
+
+        for (let item of resData) {
+            let id=item.menuId;
+            let isP=pidArr.includes(id);
+            console.log(id,isP,'isp',pidArr)
+            if(!isP){
+                checked.push(id);
+            }
+        }
+
+        console.log(checked,'checked---')
+
+        this.$nextTick( ()=> {
+            this.$refs.tree.setCheckedKeys([]);
+            this.$refs.tree.setCheckedKeys(checked);
+        });
       })
       
     },
@@ -505,8 +529,9 @@ export default {
       this.getTreeData();
     },
     submitFormAuthority() {
-      console.log(this.$refs.tree.getCheckedKeys(), "key");
+
       let selectedIdArr = this.$refs.tree.getCheckedKeys();
+      let halfSelectedIdArr = this.$refs.tree.getHalfCheckedKeys();
       if (!selectedIdArr.length) {
         this.$message({
           message: "请选择权限",
@@ -514,8 +539,9 @@ export default {
         });
         return;
       }
+      
       this.$fetch("menu_impower", {
-        menuIds: selectedIdArr.join(","),
+        menuIds: selectedIdArr.concat(halfSelectedIdArr).join(","),
         roleId: this.selectedRoleId,
       }).then((res) => {
         this.$message({
