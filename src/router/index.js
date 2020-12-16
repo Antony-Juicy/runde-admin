@@ -88,13 +88,13 @@ export let asyncRoutes0 = [
   //   redirect: '/img-management',
   //   meta: {
   //     icon:'',
-  //     title:'图片管理'
+  //     title:'test'
   //   },
   //   children: [{
   //     path: '/img-management',
   //     name: '/img-management',
-  //     component: () => import('@/views/img-management/index'),
-  //     meta: { title: '图片管理', icon: 'dashboard' }
+  //     component: () => import('@/views/test'),
+  //     meta: { title: 'test'}
   //   }]
   // }
 ];

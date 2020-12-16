@@ -3,7 +3,7 @@
  */
 <template>
   <div class="search-form-box">
-    <div :class="{'search-box-wrapper': !showAll, 'search-box-wrapper2': true}">
+    <div :class="{'search-box-wrapper': !showAll, 'search-box-wrapper2': showAll}">
       <el-form id="searchBox" :model="formData" ref="formRef" :inline="true">
         <template v-for="(item, index) in formOptions">
           <template v-if="index < showItem">
@@ -90,6 +90,7 @@ export default {
     };
   },
 
+
   created() {
     this.addInitValue();
     this.showItem = this.showNum;
@@ -100,6 +101,10 @@ export default {
     this.$nextTick(function() {
       this.closeSearch();
     });
+    if(this.formOptions.length < 6){
+      console.log(document.querySelector('#searchBox'),'666')
+      document.querySelector('#searchBox').style.width = 262 * this.formOptions.length + 'px'; 
+    }
   },
 
   methods: {
@@ -142,6 +147,13 @@ export default {
       if(this.showAll) {
         // 展开
         this.showItem = this.formOptions.length;
+        setTimeout(() => {
+        let formItemDoms = document.querySelectorAll('.el-form-item');
+        for(let i=0; i< formItemDoms.length; i++){
+          console.log(formItemDoms[i].contains(document.querySelector('.el-date-editor')),888)
+          formItemDoms[i].style.width = `calc(${100/this.showNum}% - 22px)`
+        }
+        }, 0);
       }else {
         this.showItem = this.showNum;
       }
@@ -179,11 +191,34 @@ export default {
     display: flex;
     align-items: center;
     width: 100%;
-    // justify-content: space-between;
+    background-color: #fff;
+    padding: 15px;
+     #searchBox {
+      width: calc(100% - 180px);
+      
+      display: flex;
+      .el-form-item {
+        flex: 1;
+        max-width: 250px;
+          /deep/.el-form-item__content {
+          width: 100%;
+        }
+      }
+      
+    }
   }
   .search-box-wrapper2 {
     background-color: #fff;
     padding: 15px;
+    width: 100%;
+    #searchBox {
+      .el-form-item {
+        max-width: 250px;
+        /deep/.el-form-item__content {
+          width: 100%;
+        }
+      }
+    }
   }
   .btn-box {
     display: flex;
@@ -202,7 +237,7 @@ export default {
       padding-right: 0;
     }
     .el-form-item {
-      margin-right: 20px;
+      margin-right: 12px;
       margin-bottom: 0;
 
       &.is-error {
@@ -212,17 +247,17 @@ export default {
     // el-input宽度
     /deep/ .form-item {
       > .el-input:not(.el-date-editor) {
-        width: 330px;
+        width: 100%;
       }
     }
     /deep/ .el-input-number {
-      width: 330px;
+      width: 100%;
     }
     /deep/ .el-select {
-      width: 330px;
+      width: 100%;
     }
     /deep/ .el-date-picker {
-      width: 240px;
+      // width: 240px;
     }
     /deep/ .el-range-separator {
       padding: 0;
