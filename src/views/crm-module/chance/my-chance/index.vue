@@ -4,8 +4,7 @@
 
 <script>
 export default {
-  inject: ["reload"],
-  name:'mychance-management',
+  name:'my-chance',
   data () {
     return {
       
