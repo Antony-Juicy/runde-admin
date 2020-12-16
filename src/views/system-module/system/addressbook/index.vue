@@ -152,7 +152,7 @@ import axios from 'axios';
 let loginUserId = JSON.parse(localStorage.getItem("userInfo")).userId;
 export default {
   inject: ["reload"],
-  name:'addressbook-management',
+  name:'addressbook',
   components: {
     RdTree,
     searchForm

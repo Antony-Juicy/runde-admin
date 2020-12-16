@@ -175,7 +175,7 @@
 let loginUserId = JSON.parse(localStorage.getItem("userInfo")).userId;
 export default {
   inject: ["reload"],
-  name:'role-management',
+  name:'role',
   data() {
     return {
       tabPermission: "",
