@@ -1,9 +1,10 @@
 <template>
-  <div>图书合作方页面</div>
+  <div></div>
 </template>
 
 <script>
 export default {
+  name:'assign-chance',
   data () {
     return {
       
@@ -12,6 +13,6 @@ export default {
 }
 </script>
 
-<style>
+<style lang='scss' scoped>
 
 </style>
