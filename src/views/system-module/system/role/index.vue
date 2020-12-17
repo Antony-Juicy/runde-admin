@@ -260,7 +260,10 @@ export default {
         updateReason: [
           { required: true, message: "请输入修改事由", trigger: "blur" },
         ],
-        roleName: [{ required: true, message: "请输入名称", trigger: "blur" }],
+        roleName: [
+          { required: true, message: "请输入名称", trigger: "blur" },
+           {  max: 25, message: '长度不多于25个字符', trigger: 'blur' }
+        ],
         status: [{ required: true, message: "请选择状态", trigger: "blur" }],
         parentId: [{ required: true, message: "请选择分组", trigger: "blur" }],
       },
@@ -409,9 +412,9 @@ export default {
       this.$fetch(
         "role_list",
         params || {
-          currentPage: 1,
-          pageSize: 10,
           loginUserId,
+          ...this.pageConfig,
+          deptPid: this.deptPid
         }
       ).then((res) => {
         this.tableData = res.data.records;
@@ -476,7 +479,8 @@ export default {
                 type: "success",
               });
               this.handleClose("dataForm");
-              this.handleTabClick(this.tabPermission);
+              // this.handleTabClick(this.tabPermission);
+              this.getTableData();
             });
           }
         }
@@ -569,12 +573,8 @@ export default {
     // 点击权限组的分类
     handleTabClick(data){
       this.deptPid = data;
-      this.getTableData({
-        deptPid: data,
-         currentPage: 1,
-          pageSize: 10,
-          loginUserId
-      })
+      this.pageConfig.currentPage = 1;
+      this.getTableData();
     }
   },
 };

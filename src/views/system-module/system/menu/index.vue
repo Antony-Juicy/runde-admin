@@ -39,6 +39,9 @@
         <template slot="menuType" slot-scope="scope">
           <span>{{ scope.row.menuType | typeFilter }}</span>
         </template>
+         <!-- <template slot="menuIcon" slot-scope="scope">
+          <img :src="scope.row.menuIcon" alt="" style="width: 37px;">
+        </template> -->
         <template slot="menuUrl" slot-scope="scope">
           <span>{{
             scope.row.menuType == "0" ? scope.row.menuUrl : scope.row.menuBackUrl
@@ -298,6 +301,7 @@ export default {
         {
           name: "图标",
           value: "menuIcon",
+          // operate: true
         },
         {
           name: "排序",
@@ -307,7 +311,7 @@ export default {
         {
           name: "备注",
           value: "description",
-          showTooltip: true,
+          showTooltip: true
         },
         {
           name: "操作",
@@ -345,7 +349,10 @@ export default {
           { required: true, message: "请输入更新理由", trigger: "blur" },
         ],
         // code: [{ required: true, message: "请获取编码", trigger: "blur" }],
-        menuName: [{ required: true, message: "请输入名称", trigger: "blur" }],
+        menuName: [
+          { required: true, message: "请输入名称", trigger: "blur" },
+          {  max: 25, message: '长度不多于25个字符', trigger: 'blur' }
+        ],
         status: [{ required: true, message: "请选择状态", trigger: "blur" }],
         menuType: [{ required: true, message: "请选择类型", trigger: "blur" }],
         menuUrl: [
@@ -671,14 +678,16 @@ export default {
     .tree-container {
       /deep/ .el-tree {
         padding-top: 24px;
-        height: 707px;
+        // height: 707px;
+        height: calc(100vh - 230px);
         overflow: auto;
       }
     }
   }
   .menu-wrapper-right {
     overflow: hidden;
-    min-height: 707px;
+    // height: 707px;
+    height: calc(100vh - 230px);
     .btn-wrapper {
       margin-bottom: 8px;
     }

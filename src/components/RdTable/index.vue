@@ -46,7 +46,7 @@
           <template slot-scope="scope">
             <el-tooltip placement="top" popper-class="tooltip-wrapper" effect="light">
               <div slot="content">{{scope.row[item.value]}}</div>
-              <div>{{scope.row.remark}}</div>
+              <div>{{scope.row[item.value]}}</div>
             </el-tooltip>
           </template>
         </el-table-column>

@@ -2,7 +2,9 @@
   <div class="navbar">
     <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
     <div class="refresh-container">
-      <i class="el-icon-refresh-right" @click="handleRefresh"></i>
+      <el-button  v-prevent-re-click="500" @click="handleRefresh">
+        <i class="el-icon-refresh-right" ></i>
+      </el-button>
     </div>
     <el-tabs v-model="activeName" @tab-click="handleClick" type="card">
       <el-tab-pane :label="item.title" :name="item.index" v-for="(item,index) in navList" :key="index">{{item.fullPath}}</el-tab-pane>
@@ -124,6 +126,16 @@ export default {
     color: #fff;
     font-size: 22px ;
     padding: 0 15px;
+    /deep/ {
+      .el-button {
+        border: none;
+        background: #041527;
+        color: #fff;
+        width: 30px;
+        font-size: 22px;
+        padding: 0;
+      }
+    }
   }
 
   .breadcrumb-container {

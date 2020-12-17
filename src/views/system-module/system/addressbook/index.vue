@@ -265,13 +265,15 @@ export default {
     // 搜索栏
     onSearch(val) {
       this.searchForm = {...val};
-      this.getTableData({
-        currentPage: 1,
-        pageSize: 10,
-        loginUserId,
-        campusId: this.campusId,
-        ...this.searchForm
-      })
+      // this.getTableData({
+      //   currentPage: 1,
+      //   pageSize: 10,
+      //   loginUserId,
+      //   campusId: this.campusId,
+      //   ...this.searchForm
+      // })
+      this.pageConfig.currentPage = 1;
+      this.getTableData();
     },
     // 获取通讯录组织树
     getTreeData() {
@@ -385,7 +387,8 @@ export default {
         })])
         .then(_ => {
           this.loading = true;
-          this.onSearch()
+          // this.onSearch()
+          this.getTableData();
           this.timer = setTimeout(() => {
             done();
             // 动画关闭需要一定的时间
@@ -417,14 +420,16 @@ export default {
     .tree-container {
         /deep/ .el-tree {
           padding-top: 24px;
-          height: 707px;
+          // height: 707px;
+          height: calc(100vh - 230px);
           overflow: auto;
         }
     }
   }
   .center_r {
     overflow: hidden;
-    height: 707px;
+    // height: 707px;
+    height: calc(100vh - 230px);
     .demo-drawer__content {
       padding: 40px 60px 0 30px;
       .term {
