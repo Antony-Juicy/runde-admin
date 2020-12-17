@@ -123,12 +123,13 @@
             <el-row :gutter="24">
               <el-col :span="12">
                 <el-form-item label="角色:" :label-width="formLabelWidth">
-                  <el-select v-model="formDrawer.valueDept" multiple placeholder="请选择">
+                  <el-select v-model="formDrawer.valueDept" filterable multiple placeholder="请选择">
                     <el-option
                       v-for="item in options"
                       :key="item.value"
                       :label="item.label"
-                      :value="item.value">
+                      :value="item.value"
+                      >
                     </el-option>
                   </el-select>
                 </el-form-item>
@@ -258,6 +259,7 @@ export default {
       console.log(data,'data----')
       this.deptlabel = data.campusName
       this.campusId = data.id
+      this.pageConfig.currentPage = 1;
       this.getTableData();
     },
     // 搜索栏
@@ -298,8 +300,8 @@ export default {
         params || {
           campusId: this.campusId,
           loginUserId,
-          currentPage: 1,
-          pageSize: 10
+          ...this.pageConfig,  //页数
+          ...this.searchForm  //搜索条件
         }).then(res => {
           this.tableData = res.data.records;
           this.pageConfig.totalCount = res.data.total;
@@ -333,7 +335,6 @@ export default {
         })).filter((item)=>{
           return item.status == "1"
         });
-        console.log(this.options,'this.options')
       });
     },
     handleSelect(rows) {
@@ -349,10 +350,14 @@ export default {
       this.currentId = id;
     },
     pageChange(val) {
+      this.pageConfig.currentPage = val.page;
+      this.pageConfig.pageSize = val.limit;
       this.getTableData({
         currentPage: val.page,
         pageSize: val.limit,
-        campusId: this.campusId
+        campusId: this.campusId,
+        ...this.searchForm,
+        loginUserId
       });
     },
     // 抽屉提交表单

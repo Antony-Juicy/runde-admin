@@ -100,7 +100,7 @@
           :label-width="formLabelWidth"
         >
           <el-input
-            v-model="basicInfo.roleName"
+            v-model.trim = "basicInfo.roleName"
             autocomplete="off"
             placeholder="请输入角色名称"
           />
@@ -123,7 +123,7 @@
           v-if="!dialogStatus"
         >
           <el-input
-            v-model="basicInfo.updateReason"
+            v-model.trim ="basicInfo.updateReason"
             autocomplete="off"
             placeholder="请输入修改事由"
             type="textarea"

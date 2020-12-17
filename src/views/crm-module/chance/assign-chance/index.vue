@@ -94,7 +94,7 @@ export default {
     },
     // 打开新增弹窗
     handleAll() {
-      console.log(666)
+      // console.log(666)
     },
     handleSelect(rows) {
       console.log(rows, "rows---");

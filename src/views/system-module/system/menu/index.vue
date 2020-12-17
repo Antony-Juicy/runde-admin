@@ -107,7 +107,7 @@
           </el-form-item> -->
           <el-form-item label="名称" prop="menuName" :label-width="formLabelWidth">
             <el-input
-              v-model="basicInfo.menuName"
+              v-model.trim ="basicInfo.menuName"
               autocomplete="off"
               placeholder="请输入名称"
             />
@@ -149,7 +149,7 @@
             v-if="!dialogStatus"
           >
             <el-input
-              v-model="basicInfo.updateReason"
+              v-model.trim="basicInfo.updateReason"
               autocomplete="off"
               placeholder="请输入更新理由"
               type="textarea"
@@ -163,7 +163,7 @@
             v-if="basicInfo.menuType == '0'"
           >
             <el-input
-              v-model="basicInfo.menuUrl"
+              v-model.trim="basicInfo.menuUrl"
               autocomplete="off"
               placeholder="请输入前端url"
             />
@@ -175,7 +175,7 @@
             v-if="basicInfo.menuType == '1'"
           >
             <el-input
-              v-model="basicInfo.menuBackUrl"
+              v-model.trim = "basicInfo.menuBackUrl"
               autocomplete="off"
               placeholder="请输入后端url"
             />
@@ -203,7 +203,7 @@
             v-if="basicInfo.menuType == '2'"
           >
             <el-input
-              v-model="basicInfo.filterWhere"
+              v-model.trim ="basicInfo.filterWhere"
               autocomplete="off"
               placeholder="请输入过滤条件"
             />
@@ -232,7 +232,7 @@
             :label-width="formLabelWidth"
           >
             <el-input
-              v-model="basicInfo.menuOrder"
+              v-model.trim ="basicInfo.menuOrder"
               autocomplete="off"
               placeholder="请输入排序编号"
             />
@@ -243,7 +243,7 @@
             :label-width="formLabelWidth"
           >
             <el-input
-              v-model="basicInfo.description"
+              v-model.trim ="basicInfo.description"
               autocomplete="off"
               placeholder="请输入备注"
               type="textarea"
