@@ -212,7 +212,7 @@ export default {
       dataUser: {},
       pageConfig: {
         totalCount: 0,
-        pageNum: 1,
+        currentPage: 1,
         pageSize: 10,
       },
       dialog: false,
@@ -328,8 +328,12 @@ export default {
       }).then((res) => {
         this.options = res.data.records.map(item => ({
           value: item.id,
-          label: item.roleName
-        }));
+          label: item.roleName,
+          status: item.status
+        })).filter((item)=>{
+          return item.status == "1"
+        });
+        console.log(this.options,'this.options')
       });
     },
     handleSelect(rows) {

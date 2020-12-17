@@ -74,7 +74,7 @@
     <template v-if="pageConfig && pageConfig.totalCount">
       <pagination
         :total="pageConfig.totalCount"
-        :page.sync="pageConfig.pageNum"
+        :page.sync="pageConfig.currentPage"
         :limit.sync="pageConfig.pageSize"
         @pagination="pageChange"
       />

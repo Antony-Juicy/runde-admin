@@ -319,7 +319,7 @@ export default {
       fixedTwoRow: true,
       pageConfig: {
         totalCount: 100,
-        pageNum: 1,
+        currentPage: 1,
         pageSize: 10,
       },
       loading: false,
@@ -373,15 +373,15 @@ export default {
       ],
       typeOptions: [
         {
-          label: "目录",
+          label: "菜单",
           value: "0",
         },
         {
-          label: "菜单",
+          label: "接口",
           value: "1",
         },
         {
-          label: "令牌",
+          label: "数据权限",
           value: "2",
         },
       ],
@@ -408,15 +408,15 @@ export default {
           placeholder: "请选择类型",
           options: [
             {
-              label: "目录",
+              label: "菜单",
               value: "0",
             },
             {
-              label: "菜单",
+              label: "接口",
               value: "1",
             },
             {
-              label: "令牌",
+              label: "数据权限",
               value: "2",
             },
           ],
@@ -440,17 +440,18 @@ export default {
           value: "3",
         },
       ],
+      parentId: null
     };
   },
   filters: {
     typeFilter(status) {
       switch (status) {
         case "0":
-          return "目录";
-        case "1":
           return "菜单";
+        case "1":
+          return "接口";
         case "2":
-          return "令牌";
+          return "数据权限";
         default:
           return "";
       }
@@ -466,11 +467,15 @@ export default {
     },
     pageChange(val) {
       this.currentPageInfo = val;
+      this.pageConfig.currentPage = val.page;
+      this.pageConfig.pageSize = val.limit;
+      console.log(this.searchForm,'this.searchForm--')
       this.getTableData({
         currentPage: (val && val.page) || 1,
         pageSize: (val && val.limit) || 10,
         loginUserId,
         ...this.searchForm,
+        parentId: this.parentId
       });
     },
     getTableData(params) {
@@ -481,9 +486,10 @@ export default {
       this.$fetch(
         "getMenuList",
         params || {
-          currentPage: 1,
-          pageSize: 10,
           loginUserId,
+          ...this.pageConfig,  //页数
+          ...this.searchForm,  //搜索条件
+          parentId: this.parentId//父级id
         }
       ).then((res) => {
         this.tableData = res.data.records;
@@ -563,7 +569,8 @@ export default {
                 type: "success",
               });
               this.handleClose("dataForm");
-              this.pageChange(this.currentPageInfo);
+              // this.pageChange(this.currentPageInfo);
+              this.getTableData();
               this.getTreeData();
             });
           }
@@ -601,12 +608,9 @@ export default {
     // 操作菜单树
     handleNodeClick(data) {
       this.selectedTree = data;
-      this.getTableData({
-        currentPage: 1,
-        pageSize: 10,
-        loginUserId,
-        parentId: data.id,
-      });
+      this.parentId = data.id;
+      this.pageConfig.currentPage = 1;
+      this.getTableData();
     },
     getTreeData() {
       this.$fetch("getMenuTreeList").then((res) => {
@@ -634,14 +638,10 @@ export default {
 
     // 搜索
     onSearch(data) {
-      console.log(data, "data--");
+      console.log(data, "data--",this.currentPageInfo);
       this.searchForm = { ...data };
-      this.getTableData({
-        currentPage: 1,
-        pageSize: 10,
-        loginUserId,
-        ...this.searchForm,
-      });
+      this.pageConfig.currentPage = 1;
+      this.getTableData();
     },
 
     // 上传组件

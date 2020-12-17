@@ -240,7 +240,7 @@ export default {
       fixedTwoRow: true,
       pageConfig: {
         totalCount: 100,
-        pageNum: 1,
+        currentPage: 1,
         pageSize: 10,
       },
       loading: false,
@@ -428,6 +428,7 @@ export default {
       }
       this.dialogVisible = true;
       this.dialogStatus = true;
+      this.basicInfo.parentId = this.tabPermission;
     },
     // 打开编辑弹窗
     handleEdit(row) {
