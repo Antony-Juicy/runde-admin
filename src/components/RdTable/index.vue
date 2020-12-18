@@ -13,6 +13,7 @@
       :data="tableData"
       v-loading="loading"
       :class="{'twoRowContainer': fixedTwoRow}"
+      :height="tbodyHeight"
       border
       @selection-change="handleSelectionChange"
       @sort-change="handelSortChange"
@@ -133,6 +134,11 @@ export default {
     // 是否显示筛选列按钮
     filterColumn: {
       type: Boolean,
+      default: false
+    },
+    // 固定表头时，设置表体的高度
+    tbodyHeight: {
+      type: Number,
       default: false
     }
   },

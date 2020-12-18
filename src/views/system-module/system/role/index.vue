@@ -512,7 +512,6 @@ export default {
         for (let item of resData) {
             let id=item.menuId;
             let isP=pidArr.includes(id);
-            console.log(id,isP,'isp',pidArr)
             if(!isP){
                 checked.push(id);
             }

@@ -77,7 +77,7 @@ export default {
     showNum: {
       type: Number,
       default(){
-        return 3; //默认展示搜索
+        return 7; //默认展示搜索
       }
     }
   },
@@ -86,7 +86,7 @@ export default {
     return {
       showAll: true,//是否展开全部
       formData: {},
-      showItem: 3
+      showItem: 7
     };
   },
 

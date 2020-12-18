@@ -14,6 +14,7 @@
         :fixedTwoRow="fixedTwoRow"
         :pageConfig="pageConfig"
         :emptyText="emptyText"
+        :tbodyHeight="600"
         @select="handleSelect"
         @pageChange="pageChange"
       >
@@ -200,7 +201,7 @@ export default {
         { name: '职位',value: 'positionName' },
         { name: '角色',value: 'roleName' },
         { name: '状态',value: 'status',operate: true },
-        { name: '操作',value: 'edit',operate: true,width: 100},
+        { name: '操作', value: 'edit', operate: true, width: 100, fixed: 'right'},
       ],
       emptyText: '暂无数据，请选择相应的组织架构',
       fixedTwoRow: true,
@@ -429,7 +430,7 @@ export default {
   .center_r {
     overflow: hidden;
     // height: 707px;
-    height: calc(100vh - 230px);
+    min-height: calc(100vh - 230px);
     .demo-drawer__content {
       padding: 40px 60px 0 30px;
       .term {
@@ -464,10 +465,17 @@ export default {
         margin-top: 20px;
       }
     }
-    /deep/ .el-table {
-      .el-table__body-wrapper {
-        max-height: 550px;
-        overflow: auto;
+
+    .table-wrapper {
+      /deep/ {
+        .el-table {
+          max-height: 600px;
+          height: auto!important;
+          .el-table__body-wrapper {
+            max-height: 556px;
+            height: auto!important;
+          }
+        }
       }
     }
   }

@@ -98,18 +98,19 @@ const actions = {
             keepAlive: true
           }
           item.name = item.frontUrl + '?' + new Date().getTime()
+          item.meta.fullPath = item.meta.fullPath.indexOf('/') == 0 ?item.meta.fullPath : '/' + item.meta.fullPath;
           if (item.children && item.children.length) {
             if (index == 1) {
               item.component = Layout;
             } else {
               
               item.component = (resolve,reject) => {
-                return require([`@/views/${item.meta.fullPath}`], resolve)
+                return require([`@/views${item.meta.fullPath}`], resolve)
               }
             }
             trans(item.children, index)
           } else {
-            item.component = (resolve) => require([`@/views/${item.meta.fullPath}`], resolve)
+            item.component = (resolve) => require([`@/views${item.meta.fullPath}`], resolve)
           }
           if (item.path && item.path.indexOf('/') != 0) {
             item.path = '/' + item.path;

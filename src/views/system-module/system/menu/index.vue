@@ -28,10 +28,10 @@
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
-        :loading="loading"
         :fixedTwoRow="fixedTwoRow"
         :pageConfig="pageConfig"
         :filterColumn="true"
+        :tbodyHeight="600"
         @select="handleSelect"
         @pageChange="pageChange"
         @sortChange="sortChange"
@@ -39,9 +39,9 @@
         <template slot="menuType" slot-scope="scope">
           <span>{{ scope.row.menuType | typeFilter }}</span>
         </template>
-         <!-- <template slot="menuIcon" slot-scope="scope">
-          <img :src="scope.row.menuIcon" alt="" style="width: 37px;">
-        </template> -->
+        <template slot="status" slot-scope="scope">
+          <span>{{ scope.row.status | statusFilter }}</span>
+        </template>
         <template slot="menuUrl" slot-scope="scope">
           <span>{{
             scope.row.menuType == "0" ? scope.row.menuUrl : scope.row.menuBackUrl
@@ -234,9 +234,11 @@
             prop="menuOrder"
             :label-width="formLabelWidth"
           >
-            <el-input
+            <el-input-number
+              controls-position="right"
               v-model.trim ="basicInfo.menuOrder"
               autocomplete="off"
+              :min="0"
               placeholder="请输入排序编号"
             />
           </el-form-item>
@@ -299,9 +301,9 @@ export default {
           operate: true,
         },
         {
-          name: "图标",
-          value: "menuIcon",
-          // operate: true
+          name: "状态",
+          value: "status",
+          operate: true
         },
         {
           name: "排序",
@@ -317,7 +319,8 @@ export default {
           name: "操作",
           value: "edit",
           operate: true,
-          width: 120
+          width: 120,
+          fixed: 'right'
         },
       ],
       fixedTwoRow: true,
@@ -326,7 +329,6 @@ export default {
         currentPage: 1,
         pageSize: 10,
       },
-      loading: false,
       dialogVisible: false,
       dialogStatus: true, //弹窗状态： true 新增 false 编辑
       formLabelWidth: "100px",
@@ -463,6 +465,16 @@ export default {
           return "";
       }
     },
+    statusFilter(status){
+        switch(status){
+            case "0":
+                return '暂停';
+            case "1":
+                return '正常';
+            default:
+                return '';
+        }
+    }
   },
   mounted() {
     this.getTableData();
@@ -678,7 +690,6 @@ export default {
     .tree-container {
       /deep/ .el-tree {
         padding-top: 24px;
-        // height: 707px;
         height: calc(100vh - 230px);
         overflow: auto;
       }
@@ -686,10 +697,22 @@ export default {
   }
   .menu-wrapper-right {
     overflow: hidden;
-    // height: 707px;
-    height: calc(100vh - 230px);
+    min-height: calc(100vh - 230px);
     .btn-wrapper {
       margin-bottom: 8px;
+    }
+
+    .table-wrapper {
+      /deep/ {
+        .el-table {
+          max-height: 600px;
+          height: auto!important;
+          .el-table__body-wrapper {
+            max-height: 556px;
+            height: auto!important;
+          }
+        }
+      }
     }
 
     /deep/ {
@@ -704,10 +727,6 @@ export default {
       .el-input.is-disabled .el-input__inner {
       color: #767a82;
     }
-    .el-table__body-wrapper {
-        max-height: 550px;
-        overflow: auto;
-      }
     }
   }
 

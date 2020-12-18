@@ -11,6 +11,13 @@
 ├─styles 公共样式
 ├─utils 全局工具类/全局过滤器/全局指令
 ├─views 页面目录
+    ├─crm-module CRM模块
+    |    ├─chance 机会管理
+    ├─system-module 系统模块
+        ├─system 系统管理
+            ├─addressbook 通讯录管理
+            ├─menu 菜单管理
+            ├─role 角色管理
 ├─App.vue 入口页面
 ├─main.js 入口文件
 ├─permission.js 路由权限控制入口文件  
@@ -18,6 +25,7 @@
 ├─.env.production  生产环境的接口地址
 
 ```
+
 
 ## 全局配置
 
