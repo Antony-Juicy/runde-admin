@@ -42,9 +42,6 @@ export default {
       keepAliveCom:[]
     }
   },
-  mounted(){
-    console.log(this.keepAlivePage,'keep')
-  },
   components: {
     Breadcrumb,
   },

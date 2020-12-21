@@ -267,7 +267,7 @@ import UploadOss from "@/components/UploadOss";
 let loginUserId = JSON.parse(localStorage.getItem("userInfo")).userId;
 export default {
   inject: ["reload"],
-  name:'menu',
+  name:'menus',
   components: {
     RdTree,
     UploadOss,
@@ -574,7 +574,7 @@ export default {
                 type: "success",
               });
               this.handleClose("dataForm");
-              this.pageChange();
+              this.getTableData();
               this.getTreeData();
             });
           } else {
@@ -588,7 +588,6 @@ export default {
                 type: "success",
               });
               this.handleClose("dataForm");
-              // this.pageChange(this.currentPageInfo);
               this.getTableData();
               this.getTreeData();
             });
@@ -700,19 +699,6 @@ export default {
     min-height: calc(100vh - 230px);
     .btn-wrapper {
       margin-bottom: 8px;
-    }
-
-    .table-wrapper {
-      /deep/ {
-        .el-table {
-          max-height: 600px;
-          height: auto!important;
-          .el-table__body-wrapper {
-            max-height: 556px;
-            height: auto!important;
-          }
-        }
-      }
     }
 
     /deep/ {

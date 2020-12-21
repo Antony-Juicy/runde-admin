@@ -34,32 +34,78 @@
       <div class="main-left w-container">
         <search-form
           :formOptions="formOptions"
+          :showNum="6"
           @onSearch="onSearch"
         ></search-form>
-         <rd-table
-            :tableData="tableData"
-            :tableKey="tableKey"
-            :pageConfig="pageConfig"
-            :filterColumn="true"
-            @pageChange="pageChange"
-          >
-        <template slot="edit" slot-scope="scope">
-          <el-button @click="handleEdit(scope.row)" type="text" size="small"
-            >编辑</el-button
-          >
-          <el-divider direction="vertical"></el-divider>
+        <el-divider></el-divider>
+        <div class="btn-wrapper">
           <el-button
-            @click="handleDelete(scope.row)"
-            type="text"
+            type="success"
             size="small"
-            style="color: #ec5b56"
-            >删除</el-button
+            @click="handleAdd"
+            >成单</el-button
           >
-        </template>
-      </rd-table>
+          <el-button
+            type="warning"
+            size="small"
+            @click="handleAdd"
+            >释放</el-button
+          >
+          <el-button
+            type="danger"
+            size="small"
+            @click="handleAdd"
+            >失效</el-button
+          >
+          <el-button
+            type="primary"
+            size="small"
+            @click="handleAdd"
+            >添加</el-button
+          >
+          <el-button
+            type="info"
+            size="small"
+            @click="handleAdd"
+            >AI呼叫</el-button
+          >
+          <el-button
+            size="small"
+            @click="handleAdd"
+            >导入</el-button
+          >
+        </div>
+        <rd-table
+          :tableData="tableData"
+          :tableKey="tableKey"
+          :pageConfig="pageConfig"
+          :filterColumn="true"
+          :multiple="true"
+          highlight-current-row
+          @pageChange="pageChange"
+        >
+          <template slot="edit" slot-scope="scope">
+            <el-button @click="handleEdit(scope.row)" type="text" size="small"
+              >编辑</el-button
+            >
+            <el-divider direction="vertical"></el-divider>
+            <el-button
+              @click="handleDelete(scope.row)"
+              type="text"
+              size="small"
+              style="color: #ec5b56"
+              >删除</el-button
+            >
+          </template>
+        </rd-table>
       </div>
       <div class="main-right w-container">
-        456
+        <div class="contact">
+          <div class="contact-title">
+            <span>联系电话：</span><span>15692026183</span>
+          </div>
+        </div>
+        <div class="basicInfo"></div>
       </div>
     </div>
   </div>
@@ -90,72 +136,208 @@ export default {
           label: "在线外呼（总部）",
         },
       ],
-       // 搜索栏
+      // 搜索栏
       formOptions: [
         {
           prop: "menuName",
           element: "el-input",
-          initValue: "",
-          placeholder: "请输入名称",
+          placeholder: "请输入学员姓名",
+        },
+         {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "请输入学员手机",
+        },
+         {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "请输入标签",
+        },
+         {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "请选择学历",
+          options:[
+            {
+              label:'博士',
+              value: 0
+            },
+            {
+              label:'硕士',
+              value: 1
+            }
+          ]
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "请选择机会状态",
+          options:[
+            {
+              label:'博士',
+              value: 0
+            },
+            {
+              label:'硕士',
+              value: 1
+            }
+          ]
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "请选择机会来源",
+          options:[
+            {
+              label:'博士',
+              value: 0
+            },
+            {
+              label:'硕士',
+              value: 1
+            }
+          ]
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "请选择查询排序方法",
+          options:[
+            {
+              label:'博士',
+              value: 0
+            },
+            {
+              label:'硕士',
+              value: 1
+            }
+          ]
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "请选择项目",
+          options:[
+            {
+              label:'博士',
+              value: 0
+            },
+            {
+              label:'硕士',
+              value: 1
+            }
+          ]
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "请选择咨询科目",
+          options:[
+            {
+              label:'博士',
+              value: 0
+            },
+            {
+              label:'硕士',
+              value: 1
+            }
+          ]
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "请选择咨询课程",
+          options:[
+            {
+              label:'博士',
+              value: 0
+            },
+            {
+              label:'硕士',
+              value: 1
+            }
+          ]
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "请选择呼叫状态",
+          options:[
+            {
+              label:'博士',
+              value: 0
+            },
+            {
+              label:'硕士',
+              value: 1
+            }
+          ]
         }
       ],
       tableData: [
+        {id: 1},
+        {id: 2},
+        {id: 3},
       ],
       tableKey: [
         {
-          name: "ID",
+          name: "姓名",
           value: "id",
-          width: 80
+          width: 80,
         },
         {
-          name: "名称",
-          value: "menuName"
+          name: "手机号",
+          value: "menuName",
         },
         {
-          name: "类型",
+          name: "回收倒计时",
           value: "menuType",
           operate: true,
         },
         {
-          name: "路径",
+          name: "机会来源",
           value: "menuUrl",
-          showTooltip: false,
+        },
+        {
+          name: "回访",
+          value: "status",
           operate: true,
         },
         {
-          name: "状态",
-          value: "status",
-          operate: true
-        },
-        {
-          name: "排序",
+          name: "最近回访",
           value: "menuOrder",
           // width: 100
         },
         {
-          name: "备注",
-          value: "description",
-          showTooltip: true
+          name: "下次回访",
+          value: "description1"
         },
         {
-          name: "操作",
-          value: "edit",
-          operate: true,
-          width: 120
+          name: "跟进状态",
+          value: "description2"
         },
+         {
+          name: "创建时间",
+          value: "description3"
+        },
+         {
+          name: "呼叫状态",
+          value: "description4"
+        }
       ],
-       pageConfig: {
+      pageConfig: {
         totalCount: 0,
         currentPage: 1,
         pageSize: 10,
-      }
+      },
     };
   },
   methods: {
     handleClick(tab, event) {
       console.log(tab, event);
     },
-    onSearch(){
+    onSearch() {},
+    handleAdd(){
 
     },
     pageChange(val) {
@@ -169,7 +351,7 @@ export default {
       //   ...this.searchForm,
       //   parentId: this.parentId
       // });
-    }
+    },
   },
 };
 </script>
@@ -199,23 +381,30 @@ export default {
           background-color: #f8f8f8;
           border: none;
         }
+        
       }
     }
   }
   .main {
     display: flex;
     .main-left {
-      flex: 1;
+      width: calc(100% - 26% - 15px);
       margin-right: 15px;
       .search-form-box {
-        margin-left: -15px;
+        margin: -15px -15px 0 -15px;
       }
-      .table-wrapper {
-        margin-top: -15px;
+      .btn-wrapper {
+        margin-bottom: 15px;
       }
     }
     .main-right {
-      width: 25%;
+      width: 26%;
+    }
+    /deep/ {
+      .el-divider--horizontal {
+          margin-top: 0;
+          margin-bottom: 15px;
+        }
     }
   }
 }

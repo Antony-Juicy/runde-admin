@@ -466,18 +466,6 @@ export default {
       }
     }
 
-    .table-wrapper {
-      /deep/ {
-        .el-table {
-          max-height: 600px;
-          height: auto!important;
-          .el-table__body-wrapper {
-            max-height: 556px;
-            height: auto!important;
-          }
-        }
-      }
-    }
   }
 }
 </style>

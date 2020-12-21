@@ -16,7 +16,7 @@
     ├─system-module 系统模块
         ├─system 系统管理
             ├─addressbook 通讯录管理
-            ├─menu 菜单管理
+            ├─menus 菜单管理
             ├─role 角色管理
 ├─App.vue 入口页面
 ├─main.js 入口文件

@@ -102,7 +102,6 @@ export default {
       this.closeSearch();
     });
     if(this.formOptions.length < 6){
-      console.log(document.querySelector('#searchBox'),'666')
       document.querySelector('#searchBox').style.width = 262 * this.formOptions.length + 'px'; 
     }
   },
@@ -226,7 +225,7 @@ export default {
     // padding-top: 5px;
     float: right;
     align-items: center;
-    margin-right: 20px;
+    // margin-right: 20px;
     button {
       height: 28px;
     }

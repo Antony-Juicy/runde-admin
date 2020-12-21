@@ -13,8 +13,10 @@
       :data="tableData"
       v-loading="loading"
       :class="{'twoRowContainer': fixedTwoRow}"
-      :height="tbodyHeight"
+      :max-height="tbodyHeight"
       border
+      :highlight-current-row="highlightCurrentRow"
+      @current-change="handleCurrentChange"
       @selection-change="handleSelectionChange"
       @sort-change="handelSortChange"
     >
@@ -138,7 +140,12 @@ export default {
     },
     // 固定表头时，设置表体的高度
     tbodyHeight: {
-      type: Number,
+      type: Number | String,
+      default: '100%'
+    },
+    // 点击是否高亮
+    highlightCurrentRow: {
+      type: Boolean,
       default: false
     }
   },
@@ -179,7 +186,10 @@ export default {
       this.$emit("sortChange", data);
     },
     handleCheckedCitiesChange(val){
-      console.log(val,'valll')
+      console.log(val,'valll');
+    },
+    handleCurrentChange(data){
+      this.$emit("currentChange",data);
     }
   },
 };
