@@ -31,7 +31,7 @@
         @handleClose="handleClose('dataForm')"
         @submitForm="submitForm('dataForm')"
       >
-        <el-form :inline="true" :model="formInline" class="formLabelWidth">
+        <el-form :inline="true" :model="formInline" :label-width="formLabelWidth">
           <el-form-item label="组织架构：">
             <el-select v-model="formInline.region" placeholder="活动区域">
               <!-- <el-option label="区域一" value="shanghai"></el-option>
@@ -45,26 +45,41 @@
             </el-select>
           </el-form-item>
           <el-divider></el-divider>
-          <el-table :data="formInline.tableData" border>
-            <el-table-column label="参数名" align="center" prop="text">
-              <template slot-scope="scope" >
-                <div>{{constArr[scope.$index]}}</div>
-              </template>
-            </el-table-column>
-            <!-- <el-table-column
-              prop="name"
-              align="center"
-              label="参数名">
-            </el-table-column> -->
-            <el-table-column
-              label="设置"
-              align="center"
-              width="200">
-              <template slot-scope="scope">
-                <el-input v-model="scope.row.address"></el-input>
-              </template>
-            </el-table-column>
-          </el-table>
+          <el-form-item label="参数名：" :label-width="formLabelWidth2">
+            <div>设置<a href="javascript:;" style="color:blue;" @click="defaultNumber">（点击加载默认参数）</a></div>
+          </el-form-item>
+          <el-form-item label="注册人保护天数：" prop="day" :label-width="formLabelWidth2">
+            <el-input-number controls-position="right" v-model.trim ="formInline.day" autocomplete="off" :min="0" /> 天
+          </el-form-item>
+          <el-form-item label="机会上限总数量：" prop="day" :label-width="formLabelWidth2">
+            <el-input-number controls-position="right" v-model.trim ="formInline.day" autocomplete="off" :min="0" /> 个
+          </el-form-item>
+          <el-form-item label="锁定客户上限数量：" prop="day" :label-width="formLabelWidth2">
+            <el-input-number controls-position="right" v-model.trim ="formInline.day" autocomplete="off" :min="0" /> 个
+          </el-form-item>
+          <el-form-item label="延长锁定次数：" prop="day" :label-width="formLabelWidth2">
+            <el-input-number controls-position="right" v-model.trim ="formInline.day" autocomplete="off" :min="0" /> 次
+          </el-form-item>
+          <el-form-item label="延长锁定天数：" prop="day" :label-width="formLabelWidth2">
+            <el-input-number controls-position="right" v-model.trim ="formInline.day" autocomplete="off" :min="0" /> 天
+          </el-form-item>
+          <el-form-item label="销售机会未跟进超期天数：" prop="day" :label-width="formLabelWidth2">
+            <el-input-number controls-position="right" v-model.trim ="formInline.day" autocomplete="off" :min="0" /> 天
+          </el-form-item>
+          <el-form-item label="销售机会未成单超期天数：" prop="day" :label-width="formLabelWidth2">
+            <el-input-number controls-position="right" v-model.trim ="formInline.day" autocomplete="off" :min="0" /> 天
+          </el-form-item>
+          <el-form-item label="机会公海（分校/战队）新机会超期未成单天数：" prop="day" :label-width="formLabelWidth2">
+            <el-input-number controls-position="right" v-model.trim ="formInline.day" autocomplete="off" :min="0" /> 天
+          </el-form-item>
+          <el-form-item label="机会公海（分校/战队）旧机会超期未成单天数：" prop="day" :label-width="formLabelWidth2">
+            <el-input-number controls-position="right" v-model.trim ="formInline.day" autocomplete="off" :min="0" /> 天
+          </el-form-item>
+          <el-form-item label="机会公海（省校/部长）主线公海超期未成单天数：" prop="day" :label-width="formLabelWidth2">
+            <el-input-number controls-position="right" v-model.trim ="formInline.day" autocomplete="off" :min="0" /> 天
+          </el-form-item>
+          <!-- <el-divider></el-divider> -->
+          <p style="margin: 10px 0 0 30px;"><span style="color:red;">提示：</span>添加配置之后需等到下一天的0点才生效！</p>
         </el-form>
       </rd-dialog>
     </div>
@@ -109,35 +124,13 @@ export default {
       dialogVisible: false,
       dialogStatus: true, //弹窗状态： true 新增 false 编辑
       formLabelWidth: "100px",
+      formLabelWidth2: "350px",
       widthNew: "700px",
       formInline: {
         user: '',
         region: '',
-        tableData: [
-          { address: '' },
-          { address: '' },
-          { address: '' },
-          { address: '' },
-          { address: '' },
-          { address: '' },
-          { address: '' },
-          { address: '' },
-          { address: '' },
-          { address: '' }
-        ]
+        day: '',
       },
-      constArr: [
-        "注册人保护天数",
-        "机会上限总数量",
-        "锁定客户上限数量",
-        "延长锁定次数",
-        "延长锁定天数",
-        "机会公海（分校/战队）新机会超期未成单天数",
-        "机会公海（分校/战队）旧机会超期未成单天数",
-        "销售机会未跟进超期天数",
-        "销售机会未成单超期天数",
-        "机会公海（省校/部长）主线公海超期未成单天数"
-      ]
     }
   },
   methods: {
@@ -172,6 +165,10 @@ export default {
       this.dialogVisible = false;
       // this.$refs[formName].resetFields();
     },
+    // 加载默认参数
+    defaultNumber() {
+      this.formInline.day = 10
+    }
   }
 }
 </script>
@@ -182,7 +179,10 @@ export default {
     margin-bottom: 8px;
   }
   .el-divider--horizontal {
-    margin: 0;
+    margin: 0 0 20px;
+  }
+  .el-form--inline .el-form-item {
+    margin: 0 0 5px 0;
   }
 }
 </style>

@@ -3,7 +3,7 @@
     <search-form :formOptions = "formOptions" :showNum="showNum" @onSearch = onSearch></search-form>
     <div class="w-container">
       <div class="btn-wrapper">
-        <el-button type="primary" size="small">质检</el-button>
+        <el-button type="primary" size="small" @click="openDrawer">质检</el-button>
       </div>
       <rd-table
         :tableData="tableData"
@@ -15,16 +15,19 @@
         @pageChange="pageChange"
       >
       </rd-table>
+      <rd-drawer :dialogVisible="dialogVisible" :size="drawerSize" @handleClose="closeDrawer()"></rd-drawer>
     </div>
   </div>
 </template>
 
 <script>
 import searchForm from '@/components/Searchform';
+import rdDrawer from '@/components/RdDrawer';
 export default {
   name:'invalidation-chance',
   components: {
-    searchForm
+    searchForm,
+    rdDrawer
   },
   data () {
     return {
@@ -109,6 +112,10 @@ export default {
         pageSize: 10,
       },
       loading: false,
+
+      // 抽屉部分参数
+      dialogVisible: false,
+      drawerSize: '50%'
     }
   },
   methods: {
@@ -121,6 +128,15 @@ export default {
     },
     pageChange(val) {
       console.log(val,'pagechange')
+    },
+    openDrawer() {
+      this.dialogVisible = true;
+      console.log(this.dialogVisible, 666)
+    },
+    // 关闭
+    closeDrawer(formName) {
+      this.dialogVisible = false;
+      // this.$refs[formName].resetFields();
     },
   }
 }
