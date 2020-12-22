@@ -39,41 +39,22 @@
         ></search-form>
         <el-divider></el-divider>
         <div class="btn-wrapper">
-          <el-button
-            type="success"
-            size="small"
-            @click="handleAdd"
+          <el-button type="success" size="small" @click="handleAdd"
             >成单</el-button
           >
-          <el-button
-            type="warning"
-            size="small"
-            @click="handleAdd"
+          <el-button type="warning" size="small" @click="handleAdd"
             >释放</el-button
           >
-          <el-button
-            type="danger"
-            size="small"
-            @click="handleAdd"
+          <el-button type="danger" size="small" @click="handleAdd"
             >失效</el-button
           >
-          <el-button
-            type="primary"
-            size="small"
-            @click="handleAdd"
+          <el-button type="primary" size="small" @click="handleAdd"
             >添加</el-button
           >
-          <el-button
-            type="info"
-            size="small"
-            @click="handleAdd"
+          <el-button type="info" size="small" @click="handleAdd"
             >AI呼叫</el-button
           >
-          <el-button
-            size="small"
-            @click="handleAdd"
-            >导入</el-button
-          >
+          <el-button size="small" @click="handleAdd">导入</el-button>
         </div>
         <rd-table
           :tableData="tableData"
@@ -104,6 +85,185 @@
           <div class="contact-title">
             <span>联系电话：</span><span>15692026183</span>
           </div>
+          <el-form
+            ref="dataForm"
+            :model="basicInfo"
+            :rules="rules"
+            :label-width="formLabelWidth"
+          >
+            <el-form-item label="跟进状态" prop="status">
+              <el-select
+                v-model="basicInfo.status"
+                placeholder="请选择"
+                size="small"
+              >
+                <el-option
+                  v-for="item in statusArr"
+                  :key="item.value"
+                  :label="item.name"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="下次联系" prop="nextTime">
+              <el-input
+                v-model.trim="basicInfo.nextTime"
+                autocomplete="off"
+                placeholder="请选择"
+                size="small"
+              />
+            </el-form-item>
+            <el-form-item label="跟进详情" prop="detail">
+              <el-input
+                v-model.trim="basicInfo.detail"
+                autocomplete="off"
+                type="textarea"
+                placeholder="请输入回访内容"
+                size="small"
+              />
+            </el-form-item>
+            <el-form-item>
+              <el-button
+                type="primary"
+                size="small"
+                @click="submitForm('dataForm')"
+                class="fr"
+                >确定</el-button
+              >
+            </el-form-item>
+          </el-form>
+          <div class="contact-title">
+            <span>基本资料</span>&nbsp;&nbsp;&nbsp;<el-button
+              type="warning"
+              size="small"
+              >点击查看参与活动详情</el-button
+            >
+          </div>
+          <el-form
+            ref="dataForm2"
+            :model="basicInfo"
+            :rules="rules"
+            :label-width="formLabelWidth"
+          >
+            <el-form-item label="机会来源" prop="nextTime">
+              <el-input
+                v-model.trim="basicInfo.nextTime"
+                autocomplete="off"
+                placeholder="请输入"
+                size="small"
+              />
+            </el-form-item>
+            <el-form-item label="活动名称" prop="detail">
+              <el-input
+                v-model.trim="basicInfo.detail"
+                autocomplete="off"
+                placeholder="请输入回访内容"
+                size="small"
+              />
+            </el-form-item>
+            <el-row :gutter="5">
+              <el-col :span="12">
+                <el-form-item label="注册人" prop="detail">
+                  <el-input
+                    v-model.trim="basicInfo.detail"
+                    autocomplete="off"
+                    placeholder="请输入回访内容"
+                    size="small"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12"
+                ><el-form-item label="赛道" prop="detail">
+                  <el-input
+                    v-model.trim="basicInfo.detail"
+                    autocomplete="off"
+                    placeholder="请输入回访内容"
+                    size="small"
+                  /> </el-form-item
+              ></el-col>
+            </el-row>
+            <el-row :gutter="5">
+              <el-col :span="12">
+                <el-form-item label="学员姓名" prop="detail">
+                  <el-input
+                    v-model.trim="basicInfo.detail"
+                    autocomplete="off"
+                    placeholder="请输入回访内容"
+                    size="small"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12"
+                ><el-form-item label="性别" prop="detail">
+                  <el-input
+                    v-model.trim="basicInfo.detail"
+                    autocomplete="off"
+                    placeholder="请输入回访内容"
+                    size="small"
+                  /> </el-form-item
+              ></el-col>
+            </el-row>
+            <el-row :gutter="5">
+              <el-col :span="12">
+                <el-form-item label="学历" prop="detail">
+                  <el-input
+                    v-model.trim="basicInfo.detail"
+                    autocomplete="off"
+                    placeholder="请输入回访内容"
+                    size="small"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12"
+                ><el-form-item label="咨询项目" prop="detail">
+                  <el-input
+                    v-model.trim="basicInfo.detail"
+                    autocomplete="off"
+                    placeholder="请输入回访内容"
+                    size="small"
+                  /> </el-form-item
+              ></el-col>
+            </el-row>
+            <el-row :gutter="5">
+              <el-col :span="12">
+                <el-form-item label="咨询科目" prop="detail">
+                  <el-input
+                    v-model.trim="basicInfo.detail"
+                    autocomplete="off"
+                    placeholder="请输入回访内容"
+                    size="small"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12"
+                ><el-form-item label="咨询课程" prop="detail">
+                  <el-input
+                    v-model.trim="basicInfo.detail"
+                    autocomplete="off"
+                    placeholder="请输入回访内容"
+                    size="small"
+                  /> </el-form-item
+              ></el-col>
+            </el-row>
+            <el-form-item label="咨询版型" prop="detail">
+                  <el-input
+                    v-model.trim="basicInfo.detail"
+                    autocomplete="off"
+                    placeholder="请输入回访内容"
+                    size="small"
+                  /> </el-form-item
+              >
+            <el-form-item>
+              <el-button
+                type="primary"
+                size="small"
+                @click="submitForm('dataForm2')"
+                class="fr"
+                >确定</el-button
+              >
+            </el-form-item>
+          </el-form>
         </div>
         <div class="basicInfo"></div>
       </div>
@@ -143,142 +303,138 @@ export default {
           element: "el-input",
           placeholder: "请输入学员姓名",
         },
-         {
+        {
           prop: "menuName",
           element: "el-input",
           placeholder: "请输入学员手机",
         },
-         {
+        {
           prop: "menuName",
           element: "el-input",
           placeholder: "请输入标签",
         },
-         {
+        {
           prop: "menuName",
           element: "el-select",
           placeholder: "请选择学历",
-          options:[
+          options: [
             {
-              label:'博士',
-              value: 0
+              label: "博士",
+              value: 0,
             },
             {
-              label:'硕士',
-              value: 1
-            }
-          ]
+              label: "硕士",
+              value: 1,
+            },
+          ],
         },
         {
           prop: "menuName",
           element: "el-select",
           placeholder: "请选择机会状态",
-          options:[
+          options: [
             {
-              label:'博士',
-              value: 0
+              label: "博士",
+              value: 0,
             },
             {
-              label:'硕士',
-              value: 1
-            }
-          ]
+              label: "硕士",
+              value: 1,
+            },
+          ],
         },
         {
           prop: "menuName",
           element: "el-select",
           placeholder: "请选择机会来源",
-          options:[
+          options: [
             {
-              label:'博士',
-              value: 0
+              label: "博士",
+              value: 0,
             },
             {
-              label:'硕士',
-              value: 1
-            }
-          ]
+              label: "硕士",
+              value: 1,
+            },
+          ],
         },
         {
           prop: "menuName",
           element: "el-select",
           placeholder: "请选择查询排序方法",
-          options:[
+          options: [
             {
-              label:'博士',
-              value: 0
+              label: "博士",
+              value: 0,
             },
             {
-              label:'硕士',
-              value: 1
-            }
-          ]
+              label: "硕士",
+              value: 1,
+            },
+          ],
         },
         {
           prop: "menuName",
           element: "el-select",
           placeholder: "请选择项目",
-          options:[
+          options: [
             {
-              label:'博士',
-              value: 0
+              label: "博士",
+              value: 0,
             },
             {
-              label:'硕士',
-              value: 1
-            }
-          ]
+              label: "硕士",
+              value: 1,
+            },
+          ],
         },
         {
           prop: "menuName",
           element: "el-select",
           placeholder: "请选择咨询科目",
-          options:[
+          options: [
             {
-              label:'博士',
-              value: 0
+              label: "博士",
+              value: 0,
             },
             {
-              label:'硕士',
-              value: 1
-            }
-          ]
+              label: "硕士",
+              value: 1,
+            },
+          ],
         },
         {
           prop: "menuName",
           element: "el-select",
           placeholder: "请选择咨询课程",
-          options:[
+          options: [
             {
-              label:'博士',
-              value: 0
+              label: "博士",
+              value: 0,
             },
             {
-              label:'硕士',
-              value: 1
-            }
-          ]
+              label: "硕士",
+              value: 1,
+            },
+          ],
         },
         {
           prop: "menuName",
           element: "el-select",
           placeholder: "请选择呼叫状态",
-          options:[
+          options: [
             {
-              label:'博士',
-              value: 0
+              label: "博士",
+              value: 0,
             },
             {
-              label:'硕士',
-              value: 1
-            }
-          ]
-        }
+              label: "硕士",
+              value: 1,
+            },
+          ],
+        },
       ],
-      tableData: [
-        {id: 1},
-        {id: 2},
-        {id: 3},
-      ],
+      tableData: [{ id: 1 }, { id: 2 }, { id: 3 }],
       tableKey: [
         {
           name: "姓名",
@@ -310,25 +466,41 @@ export default {
         },
         {
           name: "下次回访",
-          value: "description1"
+          value: "description1",
         },
         {
           name: "跟进状态",
-          value: "description2"
+          value: "description2",
         },
-         {
+        {
           name: "创建时间",
-          value: "description3"
+          value: "description3",
         },
-         {
+        {
           name: "呼叫状态",
-          value: "description4"
-        }
+          value: "description4",
+        },
       ],
       pageConfig: {
         totalCount: 0,
         currentPage: 1,
         pageSize: 10,
+      },
+      formLabelWidth: "80px",
+      statusArr: [],
+      basicInfo: {
+        status: "",
+        nextTime: "",
+        detail: "",
+      },
+      rules: {
+        status: [{ required: true, message: "请选择状态", trigger: "blur" }],
+        nextTime: [
+          { required: true, message: "请选择下次联系时间", trigger: "blur" },
+        ],
+        detail: [
+          { required: true, message: "请输入回访内容", trigger: "blur" },
+        ],
       },
     };
   },
@@ -337,9 +509,7 @@ export default {
       console.log(tab, event);
     },
     onSearch() {},
-    handleAdd(){
-
-    },
+    handleAdd() {},
     pageChange(val) {
       // this.pageConfig.currentPage = val.page;
       // this.pageConfig.pageSize = val.limit;
@@ -351,6 +521,13 @@ export default {
       //   ...this.searchForm,
       //   parentId: this.parentId
       // });
+    },
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          console.log(this.basicInfo, "提交");
+        }
+      });
     },
   },
 };
@@ -381,7 +558,6 @@ export default {
           background-color: #f8f8f8;
           border: none;
         }
-        
       }
     }
   }
@@ -399,12 +575,32 @@ export default {
     }
     .main-right {
       width: 26%;
+      .contact {
+        .contact-title {
+          line-height: 40px;
+          border-bottom: 1px solid #eee;
+          margin-bottom: 10px;
+          font-size: 14px;
+          font-weight: 500;
+        }
+        /deep/ {
+          .el-form {
+            // width: 90%;
+          }
+          .el-form-item {
+            margin-bottom: 13px;
+          }
+          .el-form-item__error {
+            line-height: 0.5;
+          }
+        }
+      }
     }
     /deep/ {
       .el-divider--horizontal {
-          margin-top: 0;
-          margin-bottom: 15px;
-        }
+        margin-top: 0;
+        margin-bottom: 15px;
+      }
     }
   }
 }

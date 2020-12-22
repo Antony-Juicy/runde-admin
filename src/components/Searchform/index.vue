@@ -147,9 +147,9 @@ export default {
         // 展开
         this.showItem = this.formOptions.length;
         setTimeout(() => {
-        let formItemDoms = document.querySelectorAll('.el-form-item');
+        let formItemDoms = document.querySelectorAll('#searchBox .el-form-item');
         for(let i=0; i< formItemDoms.length; i++){
-          console.log(formItemDoms[i].contains(document.querySelector('.el-date-editor')),888)
+          console.log(formItemDoms[i].contains(document.querySelector('#searchBox .el-date-editor')),888)
           formItemDoms[i].style.width = `calc(${100/this.showNum}% - 22px)`
         }
         }, 0);
