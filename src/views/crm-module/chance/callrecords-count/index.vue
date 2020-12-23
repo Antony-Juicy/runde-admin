@@ -17,6 +17,7 @@
     </div>
     <div class="mt-15 w-container">
       <search-form :formOptions = "formOptions2" :showNum="3" @onSearch = onSearch></search-form>
+      <el-button type="primary" size="small" @click="openChanceNum">详情弹窗</el-button>
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
@@ -31,23 +32,51 @@
           <el-button @click="handleNumbel(scope.row)" type="default" size="small">{{scope.row.opportunityNum}}</el-button>
         </template>
       </rd-table>
+      <rd-dialog
+        :title="chanceStatus ? '的机会详情' : ''"
+        :dialogVisible="chanceVisible"
+        :width="widthNew"
+        @handleClose="closeChanceNum('dataForm')"
+        @submitForm="submitForm('dataForm')">
+        机会详情机会详情机会详情机会详情机会详情机会详情机会详情机会详情机会详情机会详情
+        <el-button size="small" @click="openDrawer">抽屉</el-button>
+        <rd-table
+          :tableData="tableChanceData"
+          :tableKey="tableChanceKey"
+          :loading="loading"
+          :fixedTwoRow="fixedTwoRow"
+          :pageConfig="pageConfig"
+          :filterColumn="true"
+          :tbodyHeight="600"
+          @select="handleSelect"
+          @pageChange="pageChange">
+        </rd-table>
+      </rd-dialog>
+      <rd-drawer :dialogVisible="drawerVisible" :size="drawerSize" @handleClose="closeDrawer()"></rd-drawer>
     </div>
   </div>
 </template>
 
 <script>
 import searchForm from '@/components/Searchform';
+import rdDrawer from '@/components/RdDrawer';
 export default {
   name:'callrecords-count',
   components: {
-    searchForm
+    searchForm,
+    rdDrawer
   },
   data () {
     return {
       showNum: 4,
       searchForm: {},
       formOptions: [
-        { prop: 'campus_name', element: 'el-select', initValue: '', placeholder: '请选择分校' },
+        {
+          prop: 'campus_name',
+          element: 'el-select',
+          initValue: '',
+          placeholder: '请选择分校'
+        },
         { 
           prop: 'campus_name',
           element: 'el-select',
@@ -100,6 +129,45 @@ export default {
         pageSize: 10,
       },
       loading: false,
+
+      // 机会持有数量弹窗参数
+      widthNew: '90%',
+      chanceStatus: true,
+      chanceVisible: false,
+      formChanceOptions: [],
+      tableChanceData: [],
+      tableChanceKey:[
+        { name: '机会ID',value: 'id',operate: true,fixed: "left" },
+        { name: '姓名',value: 'studentName',operate: true,fixed: "left" },
+        { name: '手机号',value: 'phone' },
+        { name: '校区名',value: 'campusName' },
+        { name: '机会截止',value: 'recoveryTime' },
+        { name: '回访',value: 'feedbackCount' },
+        { name: '微信',value: 'wechat' },
+        { name: '性别',value: 'gender' },
+        { name: '跟进老师',value: 'marketName' },
+        { name: '学历',value: 'eduBackground' },
+        { name: '咨询项目',value: 'enquireProductNameOne' },
+        { name: '咨询科目',value: 'enquireSubjectNameOne' },
+        { name: '咨询班型',value: 'enquireClassOne' },
+        { name: '意向内容',value: 'intention' },
+        { name: '客户等级',value: 'customerLevel' },
+        { name: '机会来源',value: 'saleSource' },
+        { name: '活动名称',value: 'labelInfoName' },
+        { name: '备注',value: 'remark' },
+        { name: '最近回访内容',value: 'recentFeedbackContent',operate: true,width: 120 },
+        { name: '最近回访时间',value: 'recentFeedbackTime',operate: true,width: 120 },
+        { name: '下次回访时间',value: 'nextFeedBackTime',operate: true,width: 120 },
+        { name: '分配时间',value: 'allotTime' },
+        { name: '状态',value: 'invalidStatus' },
+        { name: '跟进状态',value: 'status' },
+        { name: '创建时间',value: 'createAt' },
+        { name: '赛道',value: 'opportunityCampusNature',operate: true,fixed: "right" },
+      ],
+      
+      // 回访抽屉参数
+      drawerVisible: false,
+      drawerSize: '50%'
     }
   },
   methods: {
@@ -115,7 +183,29 @@ export default {
     },
     handleNumbel() {
       console.log(6666)
-    }
+    },
+
+    // 机会拥有数量详情
+    openChanceNum() {
+      this.chanceVisible = true;
+    },
+    closeChanceNum(formName) {
+      this.chanceVisible = false;
+    },
+    submitForm() {
+      console.log(666);
+      this.closeChanceNum("dataForm")
+    },
+
+    // 抽屉
+    openDrawer(rows) {
+      this.drawerVisible = true;
+      console.log(this.drawerVisible, 666)
+    },
+    closeDrawer(formName) {
+      this.drawerVisible = false;
+      // this.$refs[formName].resetFields();
+    },
   }
 }
 </script>

@@ -3,18 +3,54 @@
     <search-form :formOptions = "formOptions" :showNum="showNum" @onSearch = onSearch></search-form>
     <div class="w-container">
       <div class="btn-wrapper">
-        <el-button type="primary" size="small" @click="openDrawer">质检</el-button>
+        <el-button type="primary" size="small" @click="openDetect">质检</el-button>
+        <el-button size="small" @click="openDrawer">抽屉</el-button>
       </div>
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
         :loading="loading"
         :fixedTwoRow="fixedTwoRow"
+        :multiple="true"
         :pageConfig="pageConfig"
         @select="handleSelect"
         @pageChange="pageChange"
       >
       </rd-table>
+      <rd-dialog
+        :title="detectStatus ? '质检' : '质检详情'"
+        :dialogVisible="detectVisible"
+        :width="widthNew"
+        @handleClose="closeDetect('dataForm')"
+        @submitForm="submitForm('dataForm')"
+      >
+        <el-form ref="dataForm" :model="detectForm" label-width="100px">
+          <el-form-item label="机会失效">
+            <el-radio-group v-model="detectForm.resource">
+              <el-radio :label="0">是</el-radio>
+              <el-radio :label="1">否</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="失效原因" v-if="detectForm.resource !== 1 ">
+            <el-select v-model="detectForm.region" placeholder="请选择失效原因">
+              <el-option label="无法核实" value="0"></el-option>
+              <el-option label="无法联系" value="1"></el-option>
+              <el-option label="否认咨询" value="2"></el-option>
+              <el-option label="已报名" value="3"></el-option>
+              <el-option label="公司内部人员" value="4"></el-option>
+              <el-option label="已从支线成交" value="5"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="质检详情">
+            <el-input
+              v-model.trim="detectForm.detail"
+              autocomplete="off"
+              type="textarea"
+              placeholder="请输入详情"
+            />
+          </el-form-item>
+        </el-form>
+      </rd-dialog>
       <rd-drawer :dialogVisible="dialogVisible" :size="drawerSize" @handleClose="closeDrawer()"></rd-drawer>
     </div>
   </div>
@@ -91,7 +127,7 @@ export default {
       ],
       tableData: [],
       tableKey: [
-        { name: '机会ID',value: 'id' },
+        { name: '机会ID',value: 'id',operate: true,sortable: true },
         { name: '姓名',value: 'studentName' },
         { name: '手机号码',value: 'phone' },
         { name: '跟进次数',value: 'feedbackCount' },
@@ -113,7 +149,18 @@ export default {
       },
       loading: false,
 
-      // 抽屉部分参数
+      // 质检弹窗参数
+      widthNew: "600px",
+      detectVisible: false,
+      detectStatus: true, // 状态：true 质检 false 质检详情
+      detectForm: {
+        resource: 0,
+        region: '',
+        detail: ''
+      },
+
+
+      // 回访抽屉参数
       dialogVisible: false,
       drawerSize: '50%'
     }
@@ -129,11 +176,25 @@ export default {
     pageChange(val) {
       console.log(val,'pagechange')
     },
+
+    // 质检
+    openDetect() {
+      this.detectVisible = true;
+    },
+    closeDetect(formName) {
+      this.detectVisible = false;
+      this.$refs[formName].resetFields();
+    },
+    submitForm(formName) {
+      console.log(this.detectForm, 666);
+      this.closeDetect("dataForm")
+    },
+
+    // 抽屉
     openDrawer(rows) {
       this.dialogVisible = true;
       console.log(this.dialogVisible, 666)
     },
-    // 关闭
     closeDrawer(formName) {
       this.dialogVisible = false;
       // this.$refs[formName].resetFields();
