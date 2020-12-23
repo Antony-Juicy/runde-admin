@@ -9,25 +9,41 @@
       :size="size">
       <div class="drawer-content">
         <el-tabs v-model="activeName" @tab-click="handleClick">
-          <el-tab-pane label="沟通动态" name="second">沟通动态</el-tab-pane>
-          <el-tab-pane label="日志记录" name="first">日志记录</el-tab-pane>
-          <el-tab-pane label="手机外呼" name="third">手机外呼</el-tab-pane>
-          <el-tab-pane label="总部外呼" name="fourth">总部外呼</el-tab-pane>
-          <el-tab-pane label="小号外呼" name="five">小号外呼</el-tab-pane>
-          <el-tab-pane label="分校外呼" name="six">分校外呼</el-tab-pane>
-          <el-tab-pane label="AI通话" name="seven">AI通话</el-tab-pane>
+          <el-tab-pane label="沟通动态" name="second">
+            <communicationdynamics-table></communicationdynamics-table>
+          </el-tab-pane>
+          <el-tab-pane label="日志记录" name="first">
+            <diaryrecords-table></diaryrecords-table>
+          </el-tab-pane>
+          <el-tab-pane label="手机外呼" name="third">
+            <callout-table></callout-table>
+          </el-tab-pane>
+          <el-tab-pane label="总部外呼" name="fourth">
+            <qimocall-table></qimocall-table>
+          </el-tab-pane>
+          <el-tab-pane label="小号外呼" name="five">
+            <qimomincall-table></qimomincall-table>
+          </el-tab-pane>
+          <el-tab-pane label="分校外呼" name="six">
+            <branchcall-table></branchcall-table>
+          </el-tab-pane>
+          <el-tab-pane label="AI通话" name="seven">
+            <aicall-table></aicall-table>
+          </el-tab-pane>
         </el-tabs>
-        <el-table :data="gridData">
-          <el-table-column property="date" label="日期" width="150"></el-table-column>
-          <el-table-column property="name" label="姓名" width="200"></el-table-column>
-          <el-table-column property="address" label="地址"></el-table-column>
-        </el-table>
       </div>
     </el-drawer>
   </div>
 </template>
 
 <script>
+import aicallTable from './aicall-table';
+import branchcallTable from './branchcall-table';
+import calloutTable from './callout-table';
+import communicationdynamicsTable from './communicationdynamics-table';
+import diaryrecordsTable from './diaryrecords-table';
+import qimocallTable from './qimocall-table';
+import qimomincallTable from './qimomincall-table';
 export default {
   name: 'RdDrawer',
   props: {
@@ -44,34 +60,19 @@ export default {
       default: '50%'
     }
   },
+  components: {
+    aicallTable,
+    branchcallTable,
+    calloutTable,
+    communicationdynamicsTable,
+    diaryrecordsTable,
+    qimocallTable,
+    qimomincallTable
+  },
   data () {
     return {
       visible: this.dialogVisible,
       activeName: 'second',
-
-      
-      gridData: [
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, 
-        {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, 
-        {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }
-      ],
     }
   },
   watch: {
@@ -84,7 +85,7 @@ export default {
   },
   methods: {
     handleClick(tab, event) {
-      console.log(tab, event);
+      // console.log(tab, event);
     },
     beforeClose(){
       this.$emit('handleClose',false)
@@ -105,7 +106,7 @@ export default {
     }
     .el-drawer.rtl {
       top: 200px;
-      height: 70%;
+      // height: 70%;
     }
   }
 }

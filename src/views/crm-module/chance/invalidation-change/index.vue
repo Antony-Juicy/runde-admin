@@ -129,7 +129,7 @@ export default {
     pageChange(val) {
       console.log(val,'pagechange')
     },
-    openDrawer() {
+    openDrawer(rows) {
       this.dialogVisible = true;
       console.log(this.dialogVisible, 666)
     },
