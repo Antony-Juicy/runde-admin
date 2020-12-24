@@ -97,7 +97,7 @@ export default {
 <style lang="scss" scoped>
 .drawer-form-box {
   .drawer-content {
-    padding: 0 60px 0 30px;
+    padding: 0 30px 0 30px;
   }
   /deep/ {
     .el-drawer__header {
@@ -105,7 +105,7 @@ export default {
       margin-bottom: 10px;
     }
     .el-drawer.rtl {
-      top: 200px;
+      top: 150px;
       // height: 70%;
     }
   }
