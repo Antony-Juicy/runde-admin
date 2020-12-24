@@ -27,7 +27,7 @@ export default {
   },
   data () {
     return {
-      showNum: 5,
+      showNum: 6,
       searchForm: {},
       formOptions: [
         { prop: 'name', element: 'el-select', initValue: '', placeholder: '停留模块' },

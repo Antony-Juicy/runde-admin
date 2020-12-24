@@ -31,7 +31,7 @@
         @handleClose="handleClose('dataForm')"
         @submitForm="submitForm('dataForm')"
       >
-        <el-form :inline="true" :model="formInline" :label-width="formLabelWidth">
+        <el-form :inline="true" ref="dataForm" :model="formInline" :label-width="formLabelWidth">
           <el-form-item label="组织架构：">
             <el-select v-model="formInline.region" placeholder="活动区域">
               <!-- <el-option label="区域一" value="shanghai"></el-option>
@@ -49,34 +49,34 @@
             <div>设置<a href="javascript:;" style="color:blue;" @click="defaultNumber">（点击加载默认参数）</a></div>
           </el-form-item>
           <el-form-item label="注册人保护天数：" prop="day" :label-width="formLabelWidth2">
-            <el-input-number controls-position="right" v-model.trim ="formInline.day" autocomplete="off" :min="0" /> 天
+            <el-input-number controls-position="right" v-model.trim ="formInline.createrProtectDay" autocomplete="off" :min="0" /> 天
           </el-form-item>
           <el-form-item label="机会上限总数量：" prop="day" :label-width="formLabelWidth2">
-            <el-input-number controls-position="right" v-model.trim ="formInline.day" autocomplete="off" :min="0" /> 个
+            <el-input-number controls-position="right" v-model.trim ="formInline.opportunityLimit" autocomplete="off" :min="0" /> 个
           </el-form-item>
           <el-form-item label="锁定客户上限数量：" prop="day" :label-width="formLabelWidth2">
-            <el-input-number controls-position="right" v-model.trim ="formInline.day" autocomplete="off" :min="0" /> 个
+            <el-input-number controls-position="right" v-model.trim ="formInline.lockLimit" autocomplete="off" :min="0" /> 个
           </el-form-item>
           <el-form-item label="延长锁定次数：" prop="day" :label-width="formLabelWidth2">
-            <el-input-number controls-position="right" v-model.trim ="formInline.day" autocomplete="off" :min="0" /> 次
+            <el-input-number controls-position="right" v-model.trim ="formInline.extendLockTimes" autocomplete="off" :min="0" /> 次
           </el-form-item>
           <el-form-item label="延长锁定天数：" prop="day" :label-width="formLabelWidth2">
-            <el-input-number controls-position="right" v-model.trim ="formInline.day" autocomplete="off" :min="0" /> 天
+            <el-input-number controls-position="right" v-model.trim ="formInline.extendLockDay" autocomplete="off" :min="0" /> 天
           </el-form-item>
           <el-form-item label="销售机会未跟进超期天数：" prop="day" :label-width="formLabelWidth2">
-            <el-input-number controls-position="right" v-model.trim ="formInline.day" autocomplete="off" :min="0" /> 天
+            <el-input-number controls-position="right" v-model.trim ="formInline.seaNewWcdOverDay" autocomplete="off" :min="0" /> 天
           </el-form-item>
           <el-form-item label="销售机会未成单超期天数：" prop="day" :label-width="formLabelWidth2">
-            <el-input-number controls-position="right" v-model.trim ="formInline.day" autocomplete="off" :min="0" /> 天
+            <el-input-number controls-position="right" v-model.trim ="formInline.seaOldWcdOverDay" autocomplete="off" :min="0" /> 天
           </el-form-item>
           <el-form-item label="机会公海（分校/战队）新机会超期未成单天数：" prop="day" :label-width="formLabelWidth2">
-            <el-input-number controls-position="right" v-model.trim ="formInline.day" autocomplete="off" :min="0" /> 天
+            <el-input-number controls-position="right" v-model.trim ="formInline.opportunityWgjOverDay" autocomplete="off" :min="0" /> 天
           </el-form-item>
           <el-form-item label="机会公海（分校/战队）旧机会超期未成单天数：" prop="day" :label-width="formLabelWidth2">
-            <el-input-number controls-position="right" v-model.trim ="formInline.day" autocomplete="off" :min="0" /> 天
+            <el-input-number controls-position="right" v-model.trim ="formInline.opportunityWcdOverDay" autocomplete="off" :min="0" /> 天
           </el-form-item>
           <el-form-item label="机会公海（省校/部长）主线公海超期未成单天数：" prop="day" :label-width="formLabelWidth2">
-            <el-input-number controls-position="right" v-model.trim ="formInline.day" autocomplete="off" :min="0" /> 天
+            <el-input-number controls-position="right" v-model.trim ="formInline.seaProvinceTrunkWcdOverDay" autocomplete="off" :min="0" /> 天
           </el-form-item>
           <!-- <el-divider></el-divider> -->
           <p style="margin: 10px 0 0 30px;"><span style="color:red;">提示：</span>添加配置之后需等到下一天的0点才生效！</p>
@@ -129,7 +129,16 @@ export default {
       formInline: {
         user: '',
         region: '',
-        day: '',
+        createrProtectDay: '',
+        opportunityLimit: '',
+        lockLimit: '',
+        extendLockTimes: '',
+        extendLockDay: '',
+        seaNewWcdOverDay: '',
+        seaOldWcdOverDay: '',
+        opportunityWgjOverDay: '',
+        opportunityWcdOverDay: '',
+        seaProvinceTrunkWcdOverDay: ''
       },
     }
   },
@@ -163,11 +172,20 @@ export default {
     handleClose(formName) {
       console.log(888)
       this.dialogVisible = false;
-      // this.$refs[formName].resetFields();
+      this.$refs[formName].resetFields();
     },
     // 加载默认参数
     defaultNumber() {
-      this.formInline.day = 10
+      this.formInline.createrProtectDay = 30;
+      this.formInline.opportunityLimit = 300;
+      this.formInline.lockLimit = 20;
+      this.formInline.extendLockTimes = 2
+      this.formInline.extendLockDay = 7;
+      this.formInline.seaNewWcdOverDay = 15;
+      this.formInline.seaOldWcdOverDay = 5;
+      this.formInline.opportunityWgjOverDay = 3;
+      this.formInline.opportunityWcdOverDay = 7;
+      this.formInline.seaProvinceTrunkWcdOverDay = 15;
     }
   }
 }
@@ -179,10 +197,20 @@ export default {
     margin-bottom: 8px;
   }
   .el-divider--horizontal {
-    margin: 0 0 20px;
+    margin: 10px 0 10px;
   }
   .el-form--inline .el-form-item {
     margin: 0 0 5px 0;
+  }
+  /deep/ {
+    .el-dialog {
+      .el-dialog__header {
+        padding: 23px 23px 10px 23px;
+      }
+      .el-dialog__body {
+        padding: 10px 20px;
+      }
+    }
   }
 }
 </style>

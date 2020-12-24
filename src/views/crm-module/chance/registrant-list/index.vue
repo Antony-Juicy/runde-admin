@@ -27,7 +27,7 @@ export default {
   },
   data () {
     return {
-      showNum: 5,
+      showNum: 6,
       searchForm: {},
       formOptions: [
         { prop: 'studentName', element: 'el-input', initValue: '', placeholder: '请输入学员姓名' },

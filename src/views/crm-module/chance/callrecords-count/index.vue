@@ -1,13 +1,76 @@
 <template>
   <div class="callrecordscount_container">
-    <search-form :formOptions = "formOptions" :showNum="showNum" @onSearch = onSearch></search-form>
     <div class="w-container">
+      <el-row :gutter="5">
+        <el-col :span="4">
+          <el-select v-model="campusName" filterable placeholder="请选择部门">
+            <el-option
+              v-for="item in campusNameOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-col>
+        <el-col :span="4">
+          <el-select v-model="callType" filterable placeholder="请选择呼叫方式" @change="selectOne">
+            <el-option
+              v-for="item in callOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-col>
+      </el-row>
+    </div>
+    <div class="mt-15 w-container">
       <div class="card-wrapper">
         <el-row :gutter="12">
-          <el-col :span="4" v-for="item in 6" :key="item">
+          <el-col :span="4">
             <el-card shadow="hover">
               <div class="call-total">
-                <div class="call-title">今日有效呼叫</div>
+                <div class="call-title">机会持有总数(个)</div>
+                <div class="call-content">0</div>
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :span="4">
+            <el-card shadow="hover">
+              <div class="call-total">
+                <div class="call-title">今日有效呼叫数(个)</div>
+                <div class="call-content">0</div>
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :span="4">
+            <el-card shadow="hover">
+              <div class="call-total">
+                <div class="call-title">今日呼叫数(个)</div>
+                <div class="call-content">0</div>
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :span="4">
+            <el-card shadow="hover">
+              <div class="call-total">
+                <div class="call-title">未接通(个)</div>
+                <div class="call-content">0</div>
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :span="4">
+            <el-card shadow="hover">
+              <div class="call-total">
+                <div class="call-title">呼叫总时长(s)</div>
+                <div class="call-content">0</div>
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :span="4">
+            <el-card shadow="hover">
+              <div class="call-total">
+                <div class="call-title">平均时长(s)</div>
                 <div class="call-content">0</div>
               </div>
             </el-card>
@@ -16,7 +79,7 @@
       </div>
     </div>
     <div class="mt-15 w-container">
-      <search-form :formOptions = "formOptions2" :showNum="3" @onSearch = onSearch></search-form>
+      <search-form :formOptions = "formOptions" @onSearch = onSearch></search-form>
       <el-button type="primary" size="small" @click="openChanceNum">详情弹窗</el-button>
       <rd-table
         :tableData="tableData"
@@ -38,7 +101,7 @@
         :width="widthNew"
         @handleClose="closeChanceNum('dataForm')"
         @submitForm="submitForm('dataForm')">
-        机会详情机会详情机会详情机会详情机会详情机会详情机会详情机会详情机会详情机会详情
+        <search-form :formOptions = "formChanceOptions" @onSearch = onSearch></search-form>
         <el-button size="small" @click="openDrawer">抽屉</el-button>
         <rd-table
           :tableData="tableChanceData"
@@ -68,45 +131,19 @@ export default {
   },
   data () {
     return {
+      campusName: '',
+      campusNameOptions: [],
+      callType: '0',
+      callOptions: [
+        { value: "0", label: "全部" },
+        { value: "1", label: "手机外呼" },
+        { value: "2", label: "在线外呼（总部）" },
+        { value: "3", label: "在线外呼（分校）" },
+        { value: "4", label: "一键回呼" }
+      ],
       showNum: 4,
       searchForm: {},
       formOptions: [
-        {
-          prop: 'campus_name',
-          element: 'el-select',
-          initValue: '',
-          placeholder: '请选择分校'
-        },
-        { 
-          prop: 'campus_name',
-          element: 'el-select',
-          initValue: '',
-          placeholder: '请选择呼叫',
-          options: [
-            {
-              value: "0",
-              label: "全部",
-            },
-            {
-              value: "1",
-              label: "手机外呼",
-            },
-            {
-              value: "2",
-              label: "在线外呼（总部）",
-            },
-            {
-              value: "3",
-              label: "在线外呼（分校）",
-            },
-            {
-              value: "4",
-              label: "一键回呼",
-            }
-          ]
-        }
-      ],
-      formOptions2: [
         { prop: 'campus_name', element: 'el-input', initValue: '', placeholder: '请输入姓名' },
         { prop: 'campus_name', element: 'el-input', initValue: '', placeholder: '请输入职位' },
         { prop: 'campus_name', element: 'el-input', initValue: '', placeholder: '请输入手机号码' },
@@ -134,7 +171,18 @@ export default {
       widthNew: '90%',
       chanceStatus: true,
       chanceVisible: false,
-      formChanceOptions: [],
+      formChanceOptions: [
+        { prop: 'chanceType', element: 'el-select', initValue: '', placeholder: '机会类型' },
+        { prop: 'studentName', element: 'el-input', initValue: '', placeholder: '学生姓名' },
+        { prop: 'studentPhone', element: 'el-input', initValue: '', placeholder: '学生手机' },
+        { prop: 'labelInfoName', element: 'el-input', initValue: '', placeholder: '活动名称' },
+        { prop: 'enquireProductNameOne', element: 'el-select', initValue: '', placeholder: '请选择咨询项目' },
+        { prop: 'enquireSubjectNameOne', element: 'el-select', initValue: '', placeholder: '请先选择咨询项目' },
+        { prop: 'customerClassify', element: 'el-select', initValue: '', placeholder: '客户分类' },
+        { prop: 'saleSource', element: 'el-select', initValue: '', placeholder: '销售来源' },
+        { prop: 'eduBackground', element: 'el-select', initValue: '', placeholder: '学历' },
+        { prop: 'status', element: 'el-select', initValue: '', placeholder: '机会状态' } 
+      ],
       tableChanceData: [],
       tableChanceKey:[
         { name: '机会ID',value: 'id',operate: true,fixed: "left" },
@@ -171,6 +219,9 @@ export default {
     }
   },
   methods: {
+    selectOne(value) {
+      console.log(value, 888)
+    },
     onSearch(val) {
       this.searchForm = {...val};
       console.log(val,this.searchForm , 'val---')
@@ -234,6 +285,19 @@ export default {
         border: none;
       }
       
+    }
+  }
+  /deep/ {
+    .el-dialog {
+      .el-dialog__header {
+        padding: 23px 23px 10px 23px;
+      }
+      .el-dialog__body {
+        padding: 10px 20px;
+        .search-box-wrapper {
+          padding: 0;
+        }
+      }
     }
   }
 }

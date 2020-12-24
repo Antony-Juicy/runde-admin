@@ -31,7 +31,7 @@
               <el-radio :label="1">否</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="失效原因" v-if="detectForm.resource !== 1 ">
+          <el-form-item label="失效原因" v-if="detectForm.resource !== 1 " prop="region">
             <el-select v-model="detectForm.region" placeholder="请选择失效原因">
               <el-option label="无法核实" value="0"></el-option>
               <el-option label="无法联系" value="1"></el-option>
@@ -41,7 +41,7 @@
               <el-option label="已从支线成交" value="5"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="质检详情">
+          <el-form-item label="质检详情" prop="detail">
             <el-input
               v-model.trim="detectForm.detail"
               autocomplete="off"
@@ -67,7 +67,7 @@ export default {
   },
   data () {
     return {
-      showNum: 5,
+      showNum: 6,
       searchForm: {},
       formOptions: [
         {
