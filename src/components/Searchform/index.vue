@@ -101,8 +101,13 @@ export default {
     this.$nextTick(function() {
       this.closeSearch();
     });
-    if(this.formOptions.length < 6){
-      document.querySelector('#searchBox').style.width = 262 * this.formOptions.length + 'px'; 
+    if(this.formOptions.length < 6 ){
+      let datePikerArr = this.formOptions.filter(item => item.element== "el-date-picker");
+      if(datePikerArr.length){
+        document.querySelector('#searchBox').style.width = 262 * (this.formOptions.length - datePikerArr.length) + 412 * datePikerArr.length + 'px'; 
+      }else {
+        document.querySelector('#searchBox').style.width = 262 * this.formOptions.length + 'px'; 
+      }
     }
   },
 

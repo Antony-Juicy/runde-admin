@@ -1,6 +1,6 @@
 <template>
   <div class="assignchange_container">
-    <search-form :formOptions = "formOptions" :showNum="showNum" @onSearch = onSearch></search-form>
+    <search-form :formOptions = "formOptions" @onSearch = onSearch></search-form>
     <div class="w-container">
     <div class="btn-wrapper">
       <el-button size="small" @click="handleAll">全部</el-button>
@@ -44,7 +44,6 @@ export default {
   },
   data () {
     return {
-      showNum: 3,
       searchForm: {},
       formOptions: [
         {
