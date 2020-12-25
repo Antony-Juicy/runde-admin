@@ -12,6 +12,7 @@
     <el-table
       :data="tableData"
       v-loading="loading"
+      :ref="tableName"
       :class="{'twoRowContainer': fixedTwoRow}"
       :max-height="tbodyHeight"
       border
@@ -147,6 +148,11 @@ export default {
     highlightCurrentRow: {
       type: Boolean,
       default: false
+    },
+    // table的ref命名
+    tableName: {
+      type: String,
+      default: "myTable"
     }
   },
   components: {
@@ -190,7 +196,11 @@ export default {
     },
     handleCurrentChange(data){
       this.$emit("currentChange",data);
+    },
+    toggleRowSelection(){
+      return this.$refs[this.tableName].toggleRowSelection
     }
+
   },
 };
 </script>
