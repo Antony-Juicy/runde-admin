@@ -4,7 +4,6 @@
       <fullDialog v-model="showDetail" title="查看活动详情" @change="fullDialogChange">
           <activityDetail/>
       </fullDialog>
-
     <div class="top-total w-container">
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="私海客户" name="first"></el-tab-pane>
@@ -37,7 +36,6 @@
     </div>
     <div class="main mt-15">
       <div class="main-left w-container">
-        <!-- {{cutdown}} -->
         <search-form
           :formOptions="formOptions"
           :showNum="6"
@@ -67,12 +65,14 @@
           :tableKey="tableKey"
           :pageConfig="pageConfig"
           :filterColumn="true"
+          :fixedTwoRow="true"
           :multiple="true"
           highlight-current-row
           @pageChange="pageChange"
+          @select="handelSelect"
         >
-          <template slot="id">
-            {{cutdown}}
+          <template slot="cutdown" slot-scope="scope">
+            <span style="color:red">{{newArr[scope.$index].newCutdown}}</span>
           </template>
           <template slot="edit" slot-scope="scope">
             <el-button @click="handleEdit(scope.row)" type="text" size="small"
@@ -446,7 +446,7 @@ export default {
           ],
         },
       ],
-      tableData: [{ id: 1 }, { id: 2 }, { id: 3 }],
+      tableData: [{ id: 1 ,cutdown: 1608897351706}, { id: 2,cutdown: new Date('2020/12/24 12:00').getTime() }, { id: 3 }],
       tableKey: [
         {
           name: "姓名",
@@ -459,8 +459,9 @@ export default {
         },
         {
           name: "回收倒计时",
-          value: "menuType",
+          value: "cutdown",
           operate: true,
+          width: 160
         },
         {
           name: "机会来源",
@@ -470,6 +471,7 @@ export default {
           name: "回访",
           value: "status",
           operate: true,
+          width: 60
         },
         {
           name: "最近回访",
@@ -514,7 +516,8 @@ export default {
           { required: true, message: "请输入", trigger: "blur" },
         ],
       },
-      cutdown: ""
+      selectedData:[],
+      newArr:[]
     };
   },
   components:{
@@ -522,16 +525,10 @@ export default {
     fullDialog
   },
   mounted(){
-    let newTime = new Date(); //定义结束时间
-        let endtime = newTime.setDate(newTime.getDate() + 30);
-        console.log(new Date(endtime),4564)
+    this.getCutdown();
     setInterval(() => {
-      this.cutdown = this.$common.showtime(endtime)
+      this.getCutdown();
     }, 1000);
-    // setInterval(()=>{
-    //   this.cutdown = this.$common.showtime(30)
-    //   console.log(this.cutdown,'this.cutdown')
-    // },1000)
   },
   methods: {
     handleClick(tab, event) {
@@ -553,6 +550,20 @@ export default {
     },
     fullDialogChange(val){
       this.showDetail = val;
+    },
+    getCutdown(){
+      
+      this.newArr = this.tableData.map(item => {
+        if(item.cutdown){
+          item.newCutdown = this.$common.showtime(item.cutdown)
+        }
+        return item
+      })
+
+    },
+    handelSelect(val){
+      console.log(val,'valll')
+      this.selectedData = val;
     }
   },
 };
@@ -560,7 +571,7 @@ export default {
 
 <style lang='scss' scoped>
 .my-chance-container {
-      // position: relative;
+   
   .top-total {
     padding-top: 6px;
     .card-wrapper {

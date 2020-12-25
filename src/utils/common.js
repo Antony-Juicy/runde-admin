@@ -38,9 +38,10 @@ const $common = {
         return `${year}-${month}-${day} ${hours}:${minutes}`;
     },
 
-    // 倒计时功能
-    showtime(endtime){
+    // 30天倒计时功能
+    showtime(time){
         let nowtime = new Date();  //获取当前时间
+        let endtime = new Date(time).setDate(new Date(time).getDate() + 30)
         let lefttime = endtime - nowtime.getTime(),  //距离结束时间的毫秒数
         leftd = Math.floor(lefttime/(1000*60*60*24)),  //计算天数
         lefth = Math.floor(lefttime/(1000*60*60)%24),  //计算小时数
