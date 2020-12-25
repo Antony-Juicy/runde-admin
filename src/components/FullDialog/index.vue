@@ -42,7 +42,7 @@ export default {
   height: calc(100% - 102px);
   position: absolute;
   background: #fff;
-  z-index: 999;
+  z-index: 8;
   top: 98px;
   right: 0;
   overflow: hidden;
