@@ -1,6 +1,6 @@
 <template>
   <div class="importphonequery_container">
-    <search-form :formOptions = "formOptions" :showNum="showNum" @onSearch = onSearch></search-form>
+    <search-form :formOptions = "formOptions" @onSearch = onSearch></search-form>
     <div class="w-container">
       <div class="btn-wrapper">
         <el-button type="primary" size="small">导入查询</el-button>
