@@ -32,6 +32,7 @@
     </div>
     <div class="main mt-15">
       <div class="main-left w-container">
+        <!-- {{cutdown}} -->
         <search-form
           :formOptions="formOptions"
           :showNum="6"
@@ -65,6 +66,9 @@
           highlight-current-row
           @pageChange="pageChange"
         >
+          <template slot="id">
+            {{cutdown}}
+          </template>
           <template slot="edit" slot-scope="scope">
             <el-button @click="handleEdit(scope.row)" type="text" size="small"
               >编辑</el-button
@@ -119,7 +123,7 @@
                 v-model.trim="basicInfo.detail"
                 autocomplete="off"
                 type="textarea"
-                placeholder="请输入回访内容"
+                placeholder="请输入"
                 size="small"
               />
             </el-form-item>
@@ -137,6 +141,7 @@
             <span>基本资料</span>&nbsp;&nbsp;&nbsp;<el-button
               type="warning"
               size="small"
+              @click="dialogVisible = true"
               >点击查看参与活动详情</el-button
             >
           </div>
@@ -158,7 +163,7 @@
               <el-input
                 v-model.trim="basicInfo.detail"
                 autocomplete="off"
-                placeholder="请输入回访内容"
+                placeholder="请输入"
                 size="small"
               />
             </el-form-item>
@@ -168,7 +173,7 @@
                   <el-input
                     v-model.trim="basicInfo.detail"
                     autocomplete="off"
-                    placeholder="请输入回访内容"
+                    placeholder="请输入"
                     size="small"
                   />
                 </el-form-item>
@@ -178,7 +183,7 @@
                   <el-input
                     v-model.trim="basicInfo.detail"
                     autocomplete="off"
-                    placeholder="请输入回访内容"
+                    placeholder="请输入"
                     size="small"
                   /> </el-form-item
               ></el-col>
@@ -189,7 +194,7 @@
                   <el-input
                     v-model.trim="basicInfo.detail"
                     autocomplete="off"
-                    placeholder="请输入回访内容"
+                    placeholder="请输入"
                     size="small"
                   />
                 </el-form-item>
@@ -199,7 +204,7 @@
                   <el-input
                     v-model.trim="basicInfo.detail"
                     autocomplete="off"
-                    placeholder="请输入回访内容"
+                    placeholder="请输入"
                     size="small"
                   /> </el-form-item
               ></el-col>
@@ -210,7 +215,7 @@
                   <el-input
                     v-model.trim="basicInfo.detail"
                     autocomplete="off"
-                    placeholder="请输入回访内容"
+                    placeholder="请输入"
                     size="small"
                   />
                 </el-form-item>
@@ -220,7 +225,7 @@
                   <el-input
                     v-model.trim="basicInfo.detail"
                     autocomplete="off"
-                    placeholder="请输入回访内容"
+                    placeholder="请输入"
                     size="small"
                   /> </el-form-item
               ></el-col>
@@ -231,7 +236,7 @@
                   <el-input
                     v-model.trim="basicInfo.detail"
                     autocomplete="off"
-                    placeholder="请输入回访内容"
+                    placeholder="请输入"
                     size="small"
                   />
                 </el-form-item>
@@ -241,7 +246,7 @@
                   <el-input
                     v-model.trim="basicInfo.detail"
                     autocomplete="off"
-                    placeholder="请输入回访内容"
+                    placeholder="请输入"
                     size="small"
                   /> </el-form-item
               ></el-col>
@@ -250,7 +255,7 @@
                   <el-input
                     v-model.trim="basicInfo.detail"
                     autocomplete="off"
-                    placeholder="请输入回访内容"
+                    placeholder="请输入"
                     size="small"
                   /> </el-form-item
               >
@@ -265,13 +270,20 @@
             </el-form-item>
           </el-form>
         </div>
-        <div class="basicInfo"></div>
+        <!-- 活动详情弹窗 -->
+        <el-dialog
+          title="查看活动详情"
+          :visible.sync="dialogVisible"
+          width="90%">
+          <activityDetail/>
+        </el-dialog>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import activityDetail from "./detail";
 export default {
   name: "my-chance",
   data() {
@@ -439,7 +451,7 @@ export default {
         {
           name: "姓名",
           value: "id",
-          width: 80,
+          operate: true
         },
         {
           name: "手机号",
@@ -499,10 +511,27 @@ export default {
           { required: true, message: "请选择下次联系时间", trigger: "blur" },
         ],
         detail: [
-          { required: true, message: "请输入回访内容", trigger: "blur" },
+          { required: true, message: "请输入", trigger: "blur" },
         ],
       },
+      dialogVisible: false,
+      cutdown: ""
     };
+  },
+  components:{
+    activityDetail
+  },
+  mounted(){
+    let newTime = new Date(); //定义结束时间
+        let endtime = newTime.setDate(newTime.getDate() + 30);
+        console.log(new Date(endtime),4564)
+    setInterval(() => {
+      this.cutdown = this.$common.showtime(endtime)
+    }, 1000);
+    // setInterval(()=>{
+    //   this.cutdown = this.$common.showtime(30)
+    //   console.log(this.cutdown,'this.cutdown')
+    // },1000)
   },
   methods: {
     handleClick(tab, event) {
@@ -521,14 +550,7 @@ export default {
       //   ...this.searchForm,
       //   parentId: this.parentId
       // });
-    },
-    submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          console.log(this.basicInfo, "提交");
-        }
-      });
-    },
+    }
   },
 };
 </script>
