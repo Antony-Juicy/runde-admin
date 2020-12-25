@@ -300,6 +300,6 @@ export default {
 
 <style lang="scss" scoped>
 .my-chance-detail {
-  margin-top: -25px;
+  margin-top: -15px;
 }
 </style>
