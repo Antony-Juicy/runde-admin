@@ -1,5 +1,10 @@
 <template>
   <div class="my-chance-container">
+    <!-- 全屏弹窗 -->
+      <fullDialog v-model="showDetail" title="查看活动详情" @change="fullDialogChange">
+          <activityDetail/>
+      </fullDialog>
+
     <div class="top-total w-container">
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="私海客户" name="first"></el-tab-pane>
@@ -141,7 +146,7 @@
             <span>基本资料</span>&nbsp;&nbsp;&nbsp;<el-button
               type="warning"
               size="small"
-              @click="dialogVisible = true"
+              @click="showDetail=true"
               >点击查看参与活动详情</el-button
             >
           </div>
@@ -270,13 +275,6 @@
             </el-form-item>
           </el-form>
         </div>
-        <!-- 活动详情弹窗 -->
-        <el-dialog
-          title="查看活动详情"
-          :visible.sync="dialogVisible"
-          width="90%">
-          <activityDetail/>
-        </el-dialog>
       </div>
     </div>
   </div>
@@ -284,10 +282,12 @@
 
 <script>
 import activityDetail from "./detail";
+import fullDialog from '@/components/FullDialog'
 export default {
   name: "my-chance",
   data() {
     return {
+      showDetail: false,
       activeName: "first",
       chanceValue: "0",
       chanceOptions: [
@@ -514,12 +514,12 @@ export default {
           { required: true, message: "请输入", trigger: "blur" },
         ],
       },
-      dialogVisible: false,
       cutdown: ""
     };
   },
   components:{
-    activityDetail
+    activityDetail,
+    fullDialog
   },
   mounted(){
     let newTime = new Date(); //定义结束时间
@@ -550,6 +550,9 @@ export default {
       //   ...this.searchForm,
       //   parentId: this.parentId
       // });
+    },
+    fullDialogChange(val){
+      this.showDetail = val;
     }
   },
 };
@@ -557,6 +560,7 @@ export default {
 
 <style lang='scss' scoped>
 .my-chance-container {
+      // position: relative;
   .top-total {
     padding-top: 6px;
     .card-wrapper {

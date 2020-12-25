@@ -82,32 +82,6 @@
           >
             {{ selectedTree.menuName }}（id:{{ selectedTree.id }}）
           </el-form-item>
-          <!-- <el-form-item
-            label="编码"
-            prop="code"
-            :label-width="formLabelWidth"
-            v-if="dialogStatus"
-          >
-            <el-row>
-              <el-col :span="16">
-                <el-input
-                  v-model="basicInfo.code"
-                  autocomplete="off"
-                  placeholder="请点击获取编码"
-                  disabled
-              /></el-col>
-              <el-col :span="8"
-                ><el-button
-                  type="primary"
-                  size="small"
-                  style="margin-left: 5px"
-                  @click="getCode"
-                  v-prevent-re-click="2000"
-                  >获取编码</el-button
-                ></el-col
-              >
-            </el-row>
-          </el-form-item> -->
           <el-form-item label="名称" prop="menuName" :label-width="formLabelWidth">
             <el-input
               v-model.trim ="basicInfo.menuName"
@@ -551,7 +525,7 @@ export default {
     // 关闭
     handleClose(formName) {
       this.dialogVisible = false;
-      this.$refs[formName].resetFields();
+      // this.$refs[formName].resetFields();
     },
     // 提交
     submitForm(formName) {
