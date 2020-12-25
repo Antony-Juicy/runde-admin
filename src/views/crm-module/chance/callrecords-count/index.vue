@@ -80,7 +80,7 @@
     </div>
     <div class="mt-15 w-container">
       <search-form :formOptions = "formOptions" @onSearch = onSearch></search-form>
-      <el-button type="primary" size="small" @click="openChanceNum">详情弹窗</el-button>
+      <el-button type="primary" size="small" @click="openfullDialogChange">详情弹窗</el-button>
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
@@ -95,12 +95,27 @@
           <el-button @click="handleNumbel(scope.row)" type="default" size="small">{{scope.row.opportunityNum}}</el-button>
         </template>
       </rd-table>
-      <rd-dialog
+      <!-- <rd-dialog
         :title="chanceStatus ? '的机会详情' : ''"
         :dialogVisible="chanceVisible"
         :width="widthNew"
         @handleClose="closeChanceNum('dataForm')"
-        @submitForm="submitForm('dataForm')">
+        @submitForm="submitForm('dataForm')"> -->
+        <!-- <search-form :formOptions = "formChanceOptions" @onSearch = onSearch></search-form>
+        <el-button size="small" @click="openDrawer">抽屉</el-button>
+        <rd-table
+          :tableData="tableChanceData"
+          :tableKey="tableChanceKey"
+          :loading="loading"
+          :fixedTwoRow="fixedTwoRow"
+          :pageConfig="pageConfig"
+          :filterColumn="true"
+          :tbodyHeight="600"
+          @select="handleSelect"
+          @pageChange="pageChange">
+        </rd-table> -->
+      <!-- </rd-dialog> -->
+      <fullDialog v-model="showDetail" title="查看活动详情" @change="fullDialogChange">
         <search-form :formOptions = "formChanceOptions" @onSearch = onSearch></search-form>
         <el-button size="small" @click="openDrawer">抽屉</el-button>
         <rd-table
@@ -114,7 +129,7 @@
           @select="handleSelect"
           @pageChange="pageChange">
         </rd-table>
-      </rd-dialog>
+      </fullDialog>
       <rd-drawer :dialogVisible="drawerVisible" :size="drawerSize" @handleClose="closeDrawer()"></rd-drawer>
     </div>
   </div>
@@ -122,11 +137,13 @@
 
 <script>
 import searchForm from '@/components/Searchform';
+import fullDialog from '@/components/FullDialog';
 import rdDrawer from '@/components/RdDrawer';
 export default {
   name:'callrecords-count',
   components: {
     searchForm,
+    fullDialog,
     rdDrawer
   },
   data () {
@@ -168,9 +185,10 @@ export default {
       loading: false,
 
       // 机会持有数量弹窗参数
-      widthNew: '90%',
-      chanceStatus: true,
-      chanceVisible: false,
+      // widthNew: '90%',
+      // chanceStatus: true,
+      // chanceVisible: false,
+      showDetail: false,
       formChanceOptions: [
         { prop: 'chanceType', element: 'el-select', initValue: '', placeholder: '机会类型' },
         { prop: 'studentName', element: 'el-input', initValue: '', placeholder: '学生姓名' },
@@ -237,15 +255,21 @@ export default {
     },
 
     // 机会拥有数量详情
-    openChanceNum() {
-      this.chanceVisible = true;
+    // openChanceNum() {
+    //   this.chanceVisible = true;
+    // },
+    // closeChanceNum(formName) {
+    //   this.chanceVisible = false;
+    // },
+    // submitForm() {
+    //   console.log(666);
+    //   this.closeChanceNum("dataForm")
+    // },
+    openfullDialogChange() {
+      this.showDetail = true;
     },
-    closeChanceNum(formName) {
-      this.chanceVisible = false;
-    },
-    submitForm() {
-      console.log(666);
-      this.closeChanceNum("dataForm")
+    fullDialogChange(val){
+      this.showDetail = val;
     },
 
     // 抽屉
