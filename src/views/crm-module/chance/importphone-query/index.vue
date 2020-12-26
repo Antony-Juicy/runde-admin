@@ -3,7 +3,7 @@
     <search-form :formOptions = "formOptions" @onSearch = onSearch></search-form>
     <div class="w-container">
       <div class="btn-wrapper">
-        <el-button type="primary" size="small">导入查询</el-button>
+        <el-button type="primary" size="small" @click="openDialog">导入查询</el-button>
       </div>
       <rd-table
         :tableData="tableData"
@@ -23,6 +23,37 @@
           >
         </template>
       </rd-table>
+      <rd-dialog
+        title="导入手机号码查询订单"
+        :dialogVisible="dialogVisible"
+        @handleClose="closeDialog('dataForm')"
+        @submitForm="submitForm('dataForm')"
+      >
+        <el-form ref="dataForm" :model="phoneForm" label-width="150px">
+          <el-form-item label="导入模版">
+            <el-button type="primary" size="small">点击下载模版</el-button>
+          </el-form-item>
+          <el-form-item label="文件">
+            <el-upload
+              class="upload-demo"
+              action="https://jsonplaceholder.typicode.com/posts/"
+              :on-change="handleChange"
+              :file-list="fileList">
+              <el-button size="small" type="primary">选择文件</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="跟进详情" prop="detail">
+            <el-input
+              v-model.trim="phoneForm.detail"
+              autocomplete="off"
+              type="textarea"
+              placeholder="请勿输入备注"
+              size="small"
+            />
+          </el-form-item>
+          <P style="color:red;text-align: center;">特别提醒 导入模版中【手机号码】不能为空.否则会导入失败！！！</P>
+        </el-form>
+      </rd-dialog>
     </div>
   </div>
 </template>
@@ -65,6 +96,21 @@ export default {
         pageSize: 10,
       },
       loading: false,
+
+      // 导入手机弹窗参数
+      dialogVisible: false,
+      phoneForm: {
+        detail: ''
+      },
+      fileList: [
+        // {
+        //   name: 'food.jpeg',
+        //   url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
+        // }, {
+        //   name: 'food2.jpeg',
+        //   url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
+        // }
+      ]
     }
   },
   methods: {
@@ -78,6 +124,20 @@ export default {
     pageChange(val) {
       console.log(val,'pagechange')
     },
+    // 导入手机号码弹窗
+    openDialog() {
+      this.dialogVisible = true;
+    },
+    closeDialog(formName) {
+      this.dialogVisible = false;
+      // this.$refs[formName].resetFields();
+    },
+    submitForm(formName) {
+      this.closeDialog("dataForm")
+    },
+    handleChange(file, fileList) {
+      this.fileList = fileList.slice(-3);
+    }
   }
 }
 </script>
