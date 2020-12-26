@@ -252,7 +252,7 @@ export default {
     };
   },
   components: {
-    rdDrawer,
+    rdDrawer
   },
   mounted() {
     this.getCutdown();

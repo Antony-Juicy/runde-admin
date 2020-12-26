@@ -42,9 +42,14 @@
     padding: 15px;
 }
 
+.btn-wrapper {
+  margin-bottom: 15px;
+}
+
 .mt-15 {
   margin-top: 15px;
 }
+
 
 .fl {
   float: left;
@@ -62,6 +67,16 @@
     width: 20px;
     height: 20px;
     margin-right: 5px;
+}
+
+.visit-container {
+  display: inline-block;
+  padding: 5px;
+  border: 1px solid #dcdfe6;
+  line-height: 9px;
+  border-radius: 2px;
+  color: #606266;
+  cursor: pointer;
 }
 
 

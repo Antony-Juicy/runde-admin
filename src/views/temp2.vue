@@ -21,35 +21,34 @@
         :tableData="tableData"
         :tableKey="tableKey"
         :pageConfig="pageConfig"
-        :filterColumn="true"
         :multiple="true"
         fixedTwoRow
         highlight-current-row
         @pageChange="pageChange"
         @select="handelSelect"
       >
-        <!-- 跟进次数 -->
-        <template slot="visit" slot-scope="scope">
-            <span class="visit-container" @click="drawerVisible = true">{{
-            scope.row.visit || 0
-            }}</span>
+        <template slot="edit" slot-scope="scope">
+          <el-button @click="handleEdit(scope.row)" type="text" size="small"
+            >编辑</el-button
+          >
+          <el-divider direction="vertical"></el-divider>
+          <el-button
+            @click="handleDelete(scope.row)"
+            type="text"
+            size="small"
+            style="color: #ec5b56"
+            >删除</el-button
+          >
         </template>
       </rd-table>
     </div>
-    <!-- 回访抽屉 -->
-    <rd-drawer
-      :dialogVisible="drawerVisible"
-      :size="drawerSize"
-      @handleClose="drawerVisible = false"
-    ></rd-drawer>
   </div>
 </template>
 
 <script>
 let id = 0;
-import rdDrawer from "@/components/RdDrawer";
 export default {
-  name: "branch-school",
+  name: "temp2",
   data() {
     return {
       formOptions: [
@@ -176,10 +175,6 @@ export default {
       ],
       tableKey: [
         {
-          name: "机会ID",
-          value: "name",
-        },
-        {
           name: "姓名",
           value: "name",
         },
@@ -189,68 +184,39 @@ export default {
           operate: true
         },
         {
-          name: "学历",
-          value: "cutdown"
+          name: "回收倒计时",
+          value: "cutdown",
+          operate: true,
+          width: 155,
         },
         {
-          name: "咨询项目",
+          name: "机会来源",
           value: "menuUrl",
         },
         {
-          name: "咨询科目",
-          value: "visit"
-        },
-        {
-          name: "咨询班型",
-          value: "menuOrder"
-        },
-        {
-          name: "跟进次数",
+          name: "回访",
           value: "visit",
           operate: true,
-          width: 60
+          width: 60,
+        },
+        {
+          name: "最近回访",
+          value: "menuOrder",
+          // width: 100
+        },
+        {
+          name: "下次回访",
+          value: "description1",
         },
         {
           name: "跟进状态",
           value: "description2",
         },
         {
-          name: "跟进老师",
+          name: "创建时间",
           value: "description3",
         },
         {
-          name: "跟进时间",
-          value: "description4",
-        },
-         {
-          name: "创建时间",
-          value: "description4",
-        },
-         {
-          name: "进入公海时间",
-          value: "description4",
-        },
-         {
-          name: "机会来源",
-          value: "description4",
-        },
-         {
-          name: "分校/战队",
-          value: "description4",
-        },
-         {
-          name: "省份",
-          value: "description4",
-        },
-         {
-          name: "城市",
-          value: "description4",
-        },
-         {
-          name: "地址",
-          value: "description4",
-        },
-         {
           name: "呼叫状态",
           value: "description4",
         },
@@ -260,12 +226,8 @@ export default {
         currentPage: 1,
         pageSize: 10,
       },
-      selectedData:[],
-      drawerVisible: false
+      selectedData:[]
     };
-  },
-  components:{
-      rdDrawer
   },
   methods: {
     onSearch() {},

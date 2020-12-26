@@ -1,15 +1,12 @@
 <template>
-  <div class="branch-school">
+  <div class="primary-line">
     <search-form
       :formOptions="formOptions"
       :showNum="7"
       @onSearch="onSearch"
     ></search-form>
-    <div class="w-container">
+    <div class="main-wrapper">
       <div class="btn-wrapper">
-        <el-button type="primary" size="small" @click="handleAdd"
-          >领取</el-button
-        >
         <el-button type="warning" size="small" @click="handleAdd"
           >分配</el-button
         >
@@ -21,47 +18,46 @@
         :tableData="tableData"
         :tableKey="tableKey"
         :pageConfig="pageConfig"
-        :filterColumn="true"
         :multiple="true"
         fixedTwoRow
         highlight-current-row
         @pageChange="pageChange"
         @select="handelSelect"
       >
-        <!-- 跟进次数 -->
-        <template slot="visit" slot-scope="scope">
-            <span class="visit-container" @click="drawerVisible = true">{{
-            scope.row.visit || 0
-            }}</span>
+        <template slot="edit" slot-scope="scope">
+          <el-button @click="handleEdit(scope.row)" type="text" size="small"
+            >编辑</el-button
+          >
+          <el-divider direction="vertical"></el-divider>
+          <el-button
+            @click="handleDelete(scope.row)"
+            type="text"
+            size="small"
+            style="color: #ec5b56"
+            >删除</el-button
+          >
         </template>
       </rd-table>
     </div>
-    <!-- 回访抽屉 -->
-    <rd-drawer
-      :dialogVisible="drawerVisible"
-      :size="drawerSize"
-      @handleClose="drawerVisible = false"
-    ></rd-drawer>
   </div>
 </template>
 
 <script>
 let id = 0;
-import rdDrawer from "@/components/RdDrawer";
 export default {
-  name: "branch-school",
+  name: "temp2",
   data() {
     return {
       formOptions: [
         {
           prop: "menuName",
           element: "el-select",
-          placeholder: "员工状态",
+          placeholder: "跟进老师",
         },
         {
           prop: "menuName",
           element: "el-select",
-          placeholder: "跟进老师",
+          placeholder: "注册人",
         },
         {
           prop: "menuName",
@@ -90,33 +86,18 @@ export default {
         },
         {
           prop: "menuName",
-          element: "el-input",
-          placeholder: "地址",
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "注册人",
-        },
-        {
-          prop: "menuName",
           element: "el-select",
           placeholder: "学历",
         },
         {
           prop: "menuName",
           element: "el-select",
-          placeholder: "来源",
+          placeholder: "机会来源",
         },
         {
           prop: "menuName",
           element: "el-select",
           placeholder: "组织架构",
-        },
-        {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "呼叫状态",
         },
         {
           prop: "menuName",
@@ -175,9 +156,9 @@ export default {
         { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
       ],
       tableKey: [
-        {
-          name: "机会ID",
-          value: "name",
+          {
+          name: "ID",
+          value: "id",
         },
         {
           name: "姓名",
@@ -189,68 +170,39 @@ export default {
           operate: true
         },
         {
-          name: "学历",
-          value: "cutdown"
+          name: "回收倒计时",
+          value: "cutdown",
+          operate: true,
+          width: 155,
         },
         {
-          name: "咨询项目",
+          name: "机会来源",
           value: "menuUrl",
         },
         {
-          name: "咨询科目",
-          value: "visit"
-        },
-        {
-          name: "咨询班型",
-          value: "menuOrder"
-        },
-        {
-          name: "跟进次数",
+          name: "回访",
           value: "visit",
           operate: true,
-          width: 60
+          width: 60,
+        },
+        {
+          name: "最近回访",
+          value: "menuOrder",
+          // width: 100
+        },
+        {
+          name: "下次回访",
+          value: "description1",
         },
         {
           name: "跟进状态",
           value: "description2",
         },
         {
-          name: "跟进老师",
+          name: "创建时间",
           value: "description3",
         },
         {
-          name: "跟进时间",
-          value: "description4",
-        },
-         {
-          name: "创建时间",
-          value: "description4",
-        },
-         {
-          name: "进入公海时间",
-          value: "description4",
-        },
-         {
-          name: "机会来源",
-          value: "description4",
-        },
-         {
-          name: "分校/战队",
-          value: "description4",
-        },
-         {
-          name: "省份",
-          value: "description4",
-        },
-         {
-          name: "城市",
-          value: "description4",
-        },
-         {
-          name: "地址",
-          value: "description4",
-        },
-         {
           name: "呼叫状态",
           value: "description4",
         },
@@ -260,12 +212,8 @@ export default {
         currentPage: 1,
         pageSize: 10,
       },
-      selectedData:[],
-      drawerVisible: false
+      selectedData:[]
     };
-  },
-  components:{
-      rdDrawer
   },
   methods: {
     onSearch() {},
@@ -290,6 +238,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.branch-school {
+.primary-line {
+    .main-wrapper {
+        padding: 0 15px;
+    }
+    .search-form-box {
+        // border-bottom: 1px solid #E4E7ED;
+    }
 }
 </style>
