@@ -3,15 +3,21 @@
  */
 <template>
   <div class="search-form-box">
-    <div :class="{'search-box-wrapper': !showAll, 'search-box-wrapper2': showAll}">
-      <el-form id="searchBox" :model="formData" ref="formRef" :inline="true">
+    <div
+      :class="{
+        'search-box-wrapper': !showAll,
+        'search-box-wrapper2': showAll,
+      }"
+    >
+      <el-form :id="boxId" class="search-box" :model="formData" ref="formRef" :inline="true">
         <template v-for="(item, index) in formOptions">
           <template v-if="index < showItem">
             <el-form-item
               :key="newKeys[index]"
               :prop="item.prop"
               :label="item.label ? item.label + '：' : ''"
-              :rules="item.rules">
+              :rules="item.rules"
+            >
               <formItem v-model="formData[item.prop]" :itemOptions="item" />
             </el-form-item>
           </template>
@@ -20,23 +26,42 @@
 
       <!-- 提交按钮 -->
       <div class="btn-box">
-        <el-button v-if="btnItems.includes('search')" size="mini" type="primary" class="btn-search" @click="onSearch" v-prevent-re-click="1000">搜索</el-button>
-        <el-button v-if="btnItems.includes('reset')" size="mini" type="default" class="btn-reset" @click="onReset">重置</el-button>
-        <el-button v-if="formOptions.length > showNum " type="text" style="margin-left:10px;height:40px;" id="closeSearchBtn" @click="closeSearch">
-          {{word}}
-          <i :class="showAll ? 'el-icon-arrow-up ': 'el-icon-arrow-down'"></i>
+        <el-button
+          v-if="btnItems.includes('search')"
+          size="mini"
+          type="primary"
+          class="btn-search"
+          @click="onSearch"
+          v-prevent-re-click="1000"
+          >搜索</el-button
+        >
+        <el-button
+          v-if="btnItems.includes('reset')"
+          size="mini"
+          type="default"
+          class="btn-reset"
+          @click="onReset"
+          >重置</el-button
+        >
+        <el-button
+          v-if="formOptions.length > showNum"
+          type="text"
+          style="margin-left: 10px; height: 40px"
+          id="closeSearchBtn"
+          @click="closeSearch"
+        >
+          {{ word }}
+          <i :class="showAll ? 'el-icon-arrow-up ' : 'el-icon-arrow-down'"></i>
         </el-button>
       </div>
     </div>
-
-    
   </div>
 </template>
 
 <script>
 import formItem from "./formItem";
 // import tools from '@/utils/tools'
-import {createUniqueString} from "./tools";
+import { createUniqueString } from "./tools";
 
 export default {
   components: { formItem },
@@ -76,20 +101,20 @@ export default {
     },
     showNum: {
       type: Number,
-      default(){
-        return 7; //默认展示搜索
-      }
-    }
+      default() {
+        return 6; //默认展示搜索
+      },
+    },
   },
 
   data() {
     return {
-      showAll: true,//是否展开全部
+      showAll: true, //是否展开全部
       formData: {},
-      showItem: 7
+      showItem: 6,
+      boxId: 'searchBox_' + new Date().getTime()
     };
   },
-
 
   created() {
     this.addInitValue();
@@ -98,15 +123,21 @@ export default {
 
   mounted() {
     // 展开收起搜索
-    this.$nextTick(function() {
+    this.$nextTick(function () {
       this.closeSearch();
     });
-    if(this.formOptions.length < 6 ){
-      let datePikerArr = this.formOptions.filter(item => item.element== "el-date-picker");
-      if(datePikerArr.length){
-        document.querySelector('#searchBox').style.width = 262 * (this.formOptions.length - datePikerArr.length) + 412 * datePikerArr.length + 'px'; 
-      }else {
-        document.querySelector('#searchBox').style.width = 262 * this.formOptions.length + 'px'; 
+    if (this.formOptions.length < 6) {
+      let datePikerArr = this.formOptions.filter(
+        (item) => item.element == "el-date-picker"
+      );
+      if (datePikerArr.length) {
+        document.querySelector("#" + this.boxId).style.width =
+          262 * (this.formOptions.length - datePikerArr.length) +
+          412 * datePikerArr.length +
+          "px";
+      } else {
+        document.querySelector("#" + this.boxId).style.width =
+          262 * this.formOptions.length + "px";
       }
     }
   },
@@ -148,48 +179,60 @@ export default {
     // 收起搜索事件
     closeSearch() {
       this.showAll = !this.showAll;
-      if(this.showAll) {
+      if (this.showAll) {
         // 展开
         this.showItem = this.formOptions.length;
         setTimeout(() => {
-        let formItemDoms = document.querySelectorAll('#searchBox .el-form-item');
-        for(let i=0; i< formItemDoms.length; i++){
-          console.log(formItemDoms[i].contains(document.querySelector('#searchBox .el-date-editor')),888)
-          if(!this.formOptions[i].initWidth){
-             formItemDoms[i].style.width = `calc(${100/this.showNum}% - 22px)`
-          }else {
-            formItemDoms[i].style.maxWidth = '500px'
+          let formItemDoms = document.querySelectorAll(
+            "#"+ this.boxId +" .el-form-item"
+          );
+          for (let i = 0; i < formItemDoms.length; i++) {
+            if (!this.formOptions[i].initWidth) {
+              formItemDoms[i].style.width = `calc(${
+                100 / this.showNum
+              }% - 22px)`;
+            } else {
+              formItemDoms[i].style.maxWidth = "500px";
+            }
           }
-          
-        }
         }, 0);
-      }else {
+      } else {
         this.showItem = this.showNum;
+        // 展开
+        setTimeout(() => {
+          let formItemDoms = document.querySelectorAll(
+            "#"+ this.boxId +" .el-form-item"
+          );
+          for (let i = 0; i < formItemDoms.length; i++) {
+            if (this.formOptions[i].initWidth) {
+              formItemDoms[i].style.maxWidth = "500px";
+            }
+          }
+        }, 0);
       }
-    }
+    },
   },
 
   computed: {
     newKeys() {
       return this.formOptions.map((v) => {
-        return createUniqueString()
+        return createUniqueString();
       });
     },
-    word: function() {
+    word: function () {
       if (this.showAll == false) {
         //对文字进行处理
         return "展开";
       } else {
         return "收起";
       }
-    }
-  }
-
+    },
+  },
 };
 </script>
 
 <style lang='less' scoped>
-#searchBox {
+.search-box {
   // margin-bottom: 10px;
   overflow: hidden;
 }
@@ -202,25 +245,24 @@ export default {
     width: 100%;
     background-color: #fff;
     padding: 15px;
-     #searchBox {
+    .search-box {
       width: calc(100% - 180px);
-      
+
       display: flex;
       .el-form-item {
         flex: 1;
         max-width: 250px;
-          /deep/.el-form-item__content {
+        /deep/.el-form-item__content {
           width: 100%;
         }
       }
-      
     }
   }
   .search-box-wrapper2 {
     background-color: #fff;
     padding: 15px;
     width: 100%;
-    #searchBox {
+    .search-box  {
       .el-form-item {
         max-width: 250px;
         /deep/.el-form-item__content {
@@ -276,6 +318,4 @@ export default {
     }
   }
 }
-
-
 </style>
