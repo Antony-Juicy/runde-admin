@@ -50,6 +50,22 @@ const $common = {
         return leftd + "天" + lefth + "小时" + leftm + "分" + lefts + "秒";  //返回倒计时的字符串
     },
 
+    // 隐藏手机号中间四位
+    hidePhone(phone){
+        if(!phone){
+            return ""
+        }
+        let str = String(phone)
+        let len = str.length;
+        if (len >= 7) {
+            let reg = str.slice(-8, -4)
+            return str.replace(reg, "****")
+        } else if (len < 7 && len >= 6) {
+            //1234567
+            let reg = str.slice(-4, -2)
+            return str.replace(reg, "**")
+        }
+    }
 }
 
 export default $common

@@ -1,13 +1,13 @@
 <template>
   <div class="">
-      1234
+      provinceschool
   </div>
 </template>
 
 <script>
 
 export default {
-  name:"temp",
+  name:"province-school",
   data(){
     return {
     }

@@ -6,14 +6,13 @@
       @onSearch="onSearch"
     ></search-form>
     <el-divider></el-divider>
-    私海
+    公海
     <div class="btn-wrapper">
       <el-button type="success" size="small" @click="handleAdd">成单</el-button>
       <el-button type="warning" size="small" @click="handleAdd">释放</el-button>
       <el-button type="danger" size="small" @click="handleAdd">失效</el-button>
-      <el-button type="primary" size="small" @click="handleAdd">添加</el-button>
+      <el-button type="primary" size="small" @click="handleAdd">锁定</el-button>
       <el-button type="info" size="small" @click="handleAdd">AI呼叫</el-button>
-      <el-button size="small" @click="handleAdd">导入</el-button>
     </div>
     <rd-table
       :tableData="tableData"
@@ -25,9 +24,8 @@
       highlight-current-row
       @pageChange="pageChange"
       @select="handelSelect"
-      @currentChange="currentChange"
     >
-    <!-- 手机号 -->
+      <!-- 手机号 -->
       <template slot="phone" slot-scope="scope">
         {{$common.hidePhone(scope.row.phone)}}
       </template>
@@ -166,7 +164,7 @@ export default {
         {
           prop: "abc",
           element: "el-cascader",
-          placeholder: "课程",
+          placeholder: "项目",
         
           props:{ 
               checkStrictly: true,
@@ -188,19 +186,27 @@ export default {
         },
       ],
       tableData: [
-        { id: 1, name: "飞翔的荷兰人3", cutdown: 1608897351706, visit: 2,phone:'15692026183' },
-        { id: 2, name: "飞翔的荷兰人2",cutdown: new Date().getTime(),phone:'17092026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
+        { id: 1, name: "飞翔的荷兰人3", cutdown: 1608897351706, visit: 2,phone: '15692026183' },
+        { id: 2, cutdown: new Date().getTime() },
+        { id: 3 },
       ],
       tableKey: [
         {
           name: "姓名",
           value: "name",
         },
-         {
+        {
           name: "手机号",
           value: "phone",
           operate: true
+        },
+         {
+          name: "创建时间",
+          value: "menuName",
+        },
+         {
+          name: "分配时间",
+          value: "menuName",
         },
         {
           name: "回收倒计时",
@@ -230,10 +236,6 @@ export default {
         {
           name: "跟进状态",
           value: "description2",
-        },
-        {
-          name: "创建时间",
-          value: "description3",
         },
         {
           name: "呼叫状态",
@@ -287,9 +289,6 @@ export default {
         return item;
       });
     },
-    currentChange(val){
-      this.$emit('currentChange',val)
-    }
   },
 };
 </script>
@@ -310,15 +309,6 @@ export default {
     border-radius: 2px;
     color: #606266;
     cursor: pointer;
-  }
-  /deep/ {
-    .current-row {
-      td {
-        &:nth-child(2),&:nth-child(9),&:nth-child(10){
-          color: red;
-        }
-      }
-    }
   }
 }
 </style>

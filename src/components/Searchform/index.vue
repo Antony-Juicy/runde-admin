@@ -155,7 +155,12 @@ export default {
         let formItemDoms = document.querySelectorAll('#searchBox .el-form-item');
         for(let i=0; i< formItemDoms.length; i++){
           console.log(formItemDoms[i].contains(document.querySelector('#searchBox .el-date-editor')),888)
-          formItemDoms[i].style.width = `calc(${100/this.showNum}% - 22px)`
+          if(!this.formOptions[i].initWidth){
+             formItemDoms[i].style.width = `calc(${100/this.showNum}% - 22px)`
+          }else {
+            formItemDoms[i].style.maxWidth = '500px'
+          }
+          
         }
         }, 0);
       }else {

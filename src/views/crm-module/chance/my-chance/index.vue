@@ -38,69 +38,21 @@
     <div class="main mt-15">
       <!-- 左侧表格 -->
       <div class="main-left w-container">
-        <search-form
-          :formOptions="formOptions"
-          :showNum="6"
-          @onSearch="onSearch"
-        ></search-form>
-        <el-divider></el-divider>
-        <div class="btn-wrapper">
-          <el-button type="success" size="small" @click="handleAdd"
-            >成单</el-button
-          >
-          <el-button type="warning" size="small" @click="handleAdd"
-            >释放</el-button
-          >
-          <el-button type="danger" size="small" @click="handleAdd"
-            >失效</el-button
-          >
-          <el-button type="primary" size="small" @click="handleAdd"
-            >添加</el-button
-          >
-          <el-button type="info" size="small" @click="handleAdd"
-            >AI呼叫</el-button
-          >
-          <el-button size="small" @click="handleAdd">导入</el-button>
+        <div v-show="tabIndex == '0'">
+          <privateCustomers @currentChange="currentChange"/>
         </div>
-        <rd-table
-          :tableData="tableData"
-          :tableKey="tableKey"
-          :pageConfig="pageConfig"
-          :filterColumn="true"
-          :multiple="true"
-          fixedTwoRow
-          highlight-current-row
-          @pageChange="pageChange"
-          @select="handelSelect"
-        >
-          <!-- 倒计时 -->
-          <template slot="cutdown" slot-scope="scope">
-            <span style="color:red">{{newArr[scope.$index].newCutdown}}</span>
-          </template>
-          <!-- 回访 -->
-          <template slot="visit" slot-scope="scope">
-            <span class="visit-container" @click="drawerVisible = true">{{scope.row.visit || 0}}</span>
-          </template>
-          <template slot="edit" slot-scope="scope">
-            <el-button @click="handleEdit(scope.row)" type="text" size="small"
-              >编辑</el-button
-            >
-            <el-divider direction="vertical"></el-divider>
-            <el-button
-              @click="handleDelete(scope.row)"
-              type="text"
-              size="small"
-              style="color: #ec5b56"
-              >删除</el-button
-            >
-          </template>
-        </rd-table>
+        <div v-show="tabIndex == '1'">
+          <publicCustomers/>
+        </div>
+        <div v-show="tabIndex == '2'">
+          <lockUser/>
+        </div>
       </div>
       <!-- 右侧表单 -->
       <div class="main-right w-container">
         <div class="contact">
           <div class="contact-title">
-            <span>联系电话：</span><span>15692026183</span>
+            <span>联系电话：</span><span style="color: red;font-weight: bold">{{$common.hidePhone(currentPhone)}}</span>
           </div>
           <el-form
             ref="dataForm"
@@ -154,7 +106,7 @@
             <span>基本资料</span>&nbsp;&nbsp;&nbsp;<el-button
               type="warning"
               size="small"
-              @click="showDetail=true"
+              @click="handleDetail"
               >点击查看参与活动详情</el-button
             >
           </div>
@@ -285,15 +237,17 @@
         </div>
       </div>
     </div>
-    <!-- 回访抽屉 -->
-    <rd-drawer :dialogVisible="drawerVisible" :size="drawerSize" @handleClose="drawerVisible = false"></rd-drawer>
+    
   </div>
 </template>
 
 <script>
 import activityDetail from "./detail";
+import privateCustomers from "./privateCustomers";
+import publicCustomers from "./publicCustomers";
+import lockUser from "./lockUser";
 import fullDialog from '@/components/FullDialog';
-import rdDrawer from '@/components/RdDrawer';
+
 export default {
   name: "my-chance",
   data() {
@@ -319,197 +273,6 @@ export default {
           label: "在线外呼（总部）",
         },
       ],
-      // 搜索栏
-      formOptions: [
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "请输入学员姓名",
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "请输入学员手机",
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "请输入标签",
-        },
-        {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "请选择学历",
-          options: [
-            {
-              label: "博士",
-              value: 0,
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-        {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "请选择机会状态",
-          options: [
-            {
-              label: "博士",
-              value: 0,
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-        {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "请选择机会来源",
-          options: [
-            {
-              label: "博士",
-              value: 0,
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-        {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "请选择查询排序方法",
-          options: [
-            {
-              label: "博士",
-              value: 0,
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-        {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "请选择项目",
-          options: [
-            {
-              label: "博士",
-              value: 0,
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-        {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "请选择咨询科目",
-          options: [
-            {
-              label: "博士",
-              value: 0,
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-        {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "请选择咨询课程",
-          options: [
-            {
-              label: "博士",
-              value: 0,
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-        {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "请选择呼叫状态",
-          options: [
-            {
-              label: "博士",
-              value: 0,
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-      ],
-      tableData: [{ id: 1 ,name:"飞翔的荷兰人3",cutdown: 1608897351706, visit: 2}, { id: 2,cutdown: new Date().getTime() }, { id: 3 }],
-      tableKey: [
-        {
-          name: "姓名",
-          value: "name"
-        },
-        {
-          name: "手机号",
-          value: "menuName",
-        },
-        {
-          name: "回收倒计时",
-          value: "cutdown",
-          operate: true,
-          width: 155
-        },
-        {
-          name: "机会来源",
-          value: "menuUrl",
-        },
-        {
-          name: "回访",
-          value: "visit",
-          operate: true,
-          width: 60
-        },
-        {
-          name: "最近回访",
-          value: "menuOrder",
-          // width: 100
-        },
-        {
-          name: "下次回访",
-          value: "description1",
-        },
-        {
-          name: "跟进状态",
-          value: "description2",
-        },
-        {
-          name: "创建时间",
-          value: "description3",
-        },
-        {
-          name: "呼叫状态",
-          value: "description4",
-        },
-      ],
-      pageConfig: {
-        totalCount: 0,
-        currentPage: 1,
-        pageSize: 10,
-      },
       formLabelWidth: "80px",
       statusArr: [],
       basicInfo: {
@@ -526,58 +289,42 @@ export default {
           { required: true, message: "请输入", trigger: "blur" },
         ],
       },
-      selectedData:[],
-      newArr:[], //倒计时的数组
-      // 回访抽屉参数
-      drawerVisible: false,
-      drawerSize: '50%'
+      tabIndex: "0",
+      currentPhone: ""
     };
   },
   components:{
     activityDetail,
     fullDialog,
-    rdDrawer
+    privateCustomers,
+    publicCustomers,
+    lockUser
   },
-  mounted(){
-    this.getCutdown();
-    setInterval(() => {
-      this.getCutdown();
-    }, 1000);
-  },
+ 
   methods: {
     handleClick(tab, event) {
-      console.log(tab, event);
+      console.log(tab.index, 'click');
+      this.tabIndex = tab.index;
     },
-    onSearch() {},
-    handleAdd() {},
-    pageChange(val) {
-      // this.pageConfig.currentPage = val.page;
-      // this.pageConfig.pageSize = val.limit;
-      // console.log(this.searchForm,'this.searchForm--')
-      // this.getTableData({
-      //   currentPage: (val && val.page) || 1,
-      //   pageSize: (val && val.limit) || 10,
-      //   loginUserId,
-      //   ...this.searchForm,
-      //   parentId: this.parentId
-      // });
-    },
+   
     fullDialogChange(val){
       this.showDetail = val;
     },
-    getCutdown(){
-      
-      this.newArr = this.tableData.map(item => {
-        if(item.cutdown){
-          item.newCutdown = this.$common.showtime(item.cutdown)
-        }
-        return item
-      })
-
+   
+    currentChange(val){
+      console.log(val,'vallll')
+      this.currentPhone = val.phone;
     },
-    handelSelect(val){
-      console.log(val,'valll')
-      this.selectedData = val;
+
+    handleDetail(){
+      if(!this.currentPhone){
+        this.$message({
+          message: '请选择具体的商机哦！温馨提示：点击列表行即可选中',
+          type: 'warning'
+        })
+        return;
+      }
+      this.showDetail=true
     }
   },
 };
@@ -617,21 +364,8 @@ export default {
     .main-left {
       width: calc(100% - 26% - 15px);
       margin-right: 15px;
-      .search-form-box {
-        margin: -15px -15px 0 -15px;
-      }
-      .btn-wrapper {
-        margin-bottom: 15px;
-      }
-      .visit-container {
-        display: inline-block;
-        padding: 5px;
-        border: 1px solid #DCDFE6;
-        line-height: 9px;
-        border-radius: 2px;
-        color: #606266;
-        cursor: pointer;
-      }
+      
+      
     }
     .main-right {
       width: 26%;

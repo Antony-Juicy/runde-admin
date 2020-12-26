@@ -1,13 +1,13 @@
 <template>
   <div class="">
-      1234
+      branchschool
   </div>
 </template>
 
 <script>
 
 export default {
-  name:"temp",
+  name:"chance-track",
   data(){
     return {
     }

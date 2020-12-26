@@ -45,9 +45,9 @@
       size="small"
       clearable
       :picker-options="pickerOptionsRange"
-      start-placeholder="开始日期"
+       :start-placeholder="itemOptions.startPlaceholder"
       range-separator="至"
-      end-placeholder="结束日期"
+      :end-placeholder="itemOptions.endPlaceholder"
       :default-time="['00:00:00', '23:59:59']"
       value-format="yyyy-MM-dd HH:mm:ss">
     </el-date-picker>
@@ -62,9 +62,9 @@
       size="small"
       clearable
       :picker-options="pickerOptionsRangeMonth"
-      start-placeholder="开始日期"
+      :start-placeholder="itemOptions.startPlaceholder"
       range-separator="至"
-      end-placeholder="结束日期"
+      :end-placeholder="itemOptions.endPlaceholder"
       value-format="yyyy-MM">
     </el-date-picker>
 
@@ -75,6 +75,9 @@
       v-bind="bindProps"
       v-on="bindEvents"
       :type="itemOptions.type"
+       :start-placeholder="itemOptions.startPlaceholder"
+      range-separator="至"
+      :end-placeholder="itemOptions.endPlaceholder"
       size="small"
       clearable
       placeholder="请选择日期">
@@ -86,6 +89,7 @@
       v-bind="bindProps"
       v-on="bindEvents"
       size="small"
+      :props="itemOptions.props"
       clearable>
     </el-cascader>
   </div>

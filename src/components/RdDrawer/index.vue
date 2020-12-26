@@ -103,11 +103,12 @@ export default {
     .el-drawer__header {
       padding: 20px 30px 0;
       margin-bottom: 10px;
-      span {
+      span,.el-drawer__close-btn {
         &:focus {
           outline: none;
         }
       }
+      
     }
     .el-drawer.rtl {
       top: 150px;
