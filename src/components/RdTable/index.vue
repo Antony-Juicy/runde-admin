@@ -219,13 +219,7 @@ export default {
   height: 260px;
   margin-top: 20px;
 }
-.twoRowContainer {
-  /deep/ {
-    .el-table__body td {
-       height: 55px;
-    }
-  }
-}
+
 /deep/ {
   .el-checkbox {
     display: block;
@@ -251,15 +245,7 @@ export default {
       td {
         color: #333333;
         font-weight: 400;
-        .cell {
-            text-overflow: -o-ellipsis-lastline;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            line-clamp: 2;
-            -webkit-box-orient: vertical;
-          }
+        
       }
     }
   }
@@ -268,6 +254,24 @@ export default {
   }
   .tooltip-wrapper {
     max-width: 400px;
+  }
+}
+
+// 设置固定高度，固定两行
+.twoRowContainer {
+  /deep/ {
+    .el-table__body td {
+       height: 55px;
+       .cell {
+            text-overflow: -o-ellipsis-lastline;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+          }
+    }
   }
 }
 </style>

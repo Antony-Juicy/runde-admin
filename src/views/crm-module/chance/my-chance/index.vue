@@ -4,6 +4,7 @@
       <fullDialog v-model="showDetail" title="查看活动详情" @change="fullDialogChange">
           <activityDetail/>
       </fullDialog>
+    <!-- 上部的总数 -->
     <div class="top-total w-container">
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="私海客户" name="first"></el-tab-pane>
@@ -35,6 +36,7 @@
       </div>
     </div>
     <div class="main mt-15">
+      <!-- 左侧表格 -->
       <div class="main-left w-container">
         <search-form
           :formOptions="formOptions"
@@ -65,14 +67,19 @@
           :tableKey="tableKey"
           :pageConfig="pageConfig"
           :filterColumn="true"
-          :fixedTwoRow="true"
           :multiple="true"
+          fixedTwoRow
           highlight-current-row
           @pageChange="pageChange"
           @select="handelSelect"
         >
+          <!-- 倒计时 -->
           <template slot="cutdown" slot-scope="scope">
             <span style="color:red">{{newArr[scope.$index].newCutdown}}</span>
+          </template>
+          <!-- 回访 -->
+          <template slot="visit" slot-scope="scope">
+            <span class="visit-container" @click="drawerVisible = true">{{scope.row.visit || 0}}</span>
           </template>
           <template slot="edit" slot-scope="scope">
             <el-button @click="handleEdit(scope.row)" type="text" size="small"
@@ -89,6 +96,7 @@
           </template>
         </rd-table>
       </div>
+      <!-- 右侧表单 -->
       <div class="main-right w-container">
         <div class="contact">
           <div class="contact-title">
@@ -277,12 +285,15 @@
         </div>
       </div>
     </div>
+    <!-- 回访抽屉 -->
+    <rd-drawer :dialogVisible="drawerVisible" :size="drawerSize" @handleClose="drawerVisible = false"></rd-drawer>
   </div>
 </template>
 
 <script>
 import activityDetail from "./detail";
-import fullDialog from '@/components/FullDialog'
+import fullDialog from '@/components/FullDialog';
+import rdDrawer from '@/components/RdDrawer';
 export default {
   name: "my-chance",
   data() {
@@ -446,12 +457,11 @@ export default {
           ],
         },
       ],
-      tableData: [{ id: 1 ,cutdown: 1608897351706}, { id: 2,cutdown: new Date('2020/12/24 12:00').getTime() }, { id: 3 }],
+      tableData: [{ id: 1 ,name:"飞翔的荷兰人3",cutdown: 1608897351706, visit: 2}, { id: 2,cutdown: new Date().getTime() }, { id: 3 }],
       tableKey: [
         {
           name: "姓名",
-          value: "id",
-          operate: true
+          value: "name"
         },
         {
           name: "手机号",
@@ -461,7 +471,7 @@ export default {
           name: "回收倒计时",
           value: "cutdown",
           operate: true,
-          width: 160
+          width: 155
         },
         {
           name: "机会来源",
@@ -469,7 +479,7 @@ export default {
         },
         {
           name: "回访",
-          value: "status",
+          value: "visit",
           operate: true,
           width: 60
         },
@@ -517,12 +527,16 @@ export default {
         ],
       },
       selectedData:[],
-      newArr:[]
+      newArr:[], //倒计时的数组
+      // 回访抽屉参数
+      drawerVisible: false,
+      drawerSize: '50%'
     };
   },
   components:{
     activityDetail,
-    fullDialog
+    fullDialog,
+    rdDrawer
   },
   mounted(){
     this.getCutdown();
@@ -608,6 +622,15 @@ export default {
       }
       .btn-wrapper {
         margin-bottom: 15px;
+      }
+      .visit-container {
+        display: inline-block;
+        padding: 5px;
+        border: 1px solid #DCDFE6;
+        line-height: 9px;
+        border-radius: 2px;
+        color: #606266;
+        cursor: pointer;
       }
     }
     .main-right {
