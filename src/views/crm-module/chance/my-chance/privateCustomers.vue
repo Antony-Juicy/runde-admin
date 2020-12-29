@@ -41,19 +41,6 @@
           scope.row.visit || 0
         }}</span>
       </template>
-      <template slot="edit" slot-scope="scope">
-        <el-button @click="handleEdit(scope.row)" type="text" size="small"
-          >编辑</el-button
-        >
-        <el-divider direction="vertical"></el-divider>
-        <el-button
-          @click="handleDelete(scope.row)"
-          type="text"
-          size="small"
-          style="color: #ec5b56"
-          >删除</el-button
-        >
-      </template>
     </rd-table>
     <!-- 回访抽屉 -->
     <rd-drawer

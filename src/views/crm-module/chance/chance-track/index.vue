@@ -1,5 +1,5 @@
 <template>
-  <div class="">
+  <div class="chance-track">
       branchschool
   </div>
 </template>
@@ -18,5 +18,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+.chance-track {
+  
+}
 </style>

@@ -26,6 +26,8 @@
       v-bind="bindProps"
       v-on="bindEvents"
       size="small"
+      :multiple="itemOptions.multiple"
+      :filterable="itemOptions.filterable"
       clearable>
       <el-option
         v-for="item in itemOptions.options"

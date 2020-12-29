@@ -216,7 +216,7 @@
                   /> </el-form-item
               ></el-col>
             </el-row>
-            <el-form-item label="咨询版型" prop="detail">
+            <el-form-item label="咨询班型" prop="detail">
                   <el-input
                     v-model.trim="basicInfo.detail"
                     autocomplete="off"
