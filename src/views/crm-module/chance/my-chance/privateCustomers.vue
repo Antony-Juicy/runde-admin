@@ -8,12 +8,20 @@
     <el-divider></el-divider>
     私海
     <div class="btn-wrapper">
-      <el-button type="success" size="small" @click="handleAdd">成单</el-button>
-      <el-button type="warning" size="small" @click="handleAdd">释放</el-button>
-      <el-button type="danger" size="small" @click="handleAdd">失效</el-button>
+      <el-button type="success" size="small" @click="handleOrder"
+        >成单</el-button
+      >
+      <el-button type="warning" size="small" @click="handleRelease"
+        >释放</el-button
+      >
+      <el-button type="danger" size="small" @click="handleInvalid"
+        >失效</el-button
+      >
       <el-button type="primary" size="small" @click="handleAdd">添加</el-button>
-      <el-button type="info" size="small" @click="handleAdd">AI呼叫</el-button>
-      <el-button size="small" @click="handleAdd">导入</el-button>
+      <el-button type="info" size="small" @click="handleAICall"
+        >AI呼叫</el-button
+      >
+      <el-button size="small" @click="handleImport">导入</el-button>
     </div>
     <rd-table
       :tableData="tableData"
@@ -27,9 +35,9 @@
       @select="handelSelect"
       @currentChange="currentChange"
     >
-    <!-- 手机号 -->
+      <!-- 手机号 -->
       <template slot="phone" slot-scope="scope">
-        {{$common.hidePhone(scope.row.phone)}}
+        {{ $common.hidePhone(scope.row.phone) }}
       </template>
       <!-- 倒计时 -->
       <template slot="cutdown" slot-scope="scope">
@@ -48,6 +56,57 @@
       :size="drawerSize"
       @handleClose="drawerVisible = false"
     ></rd-drawer>
+
+    <!-- 成单弹窗 -->
+    <rd-dialog
+      :title="'成单学员信息确认'"
+      :dialogVisible="dialogVisible"
+      @handleClose="handleClose('dataForm')"
+      @submitForm="submitForm('dataForm')"
+    >
+      <el-form
+        ref="dataForm"
+        :model="basicInfo"
+        :rules="rules"
+        :label-width="formLabelWidth"
+      >
+        <el-form-item
+          label="分组"
+          prop="parentId"
+          :label-width="formLabelWidth"
+        >
+          <el-select v-model="basicInfo.parentId" placeholder="请选择分组">
+            <el-option
+              v-for="item in permissionGroup2"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          label="姓名"
+          prop="roleName"
+          :label-width="formLabelWidth"
+        >
+          <el-input
+            v-model.trim="basicInfo.roleName"
+            autocomplete="off"
+            placeholder="请输入角色名称"
+          />
+        </el-form-item>
+        <el-form-item label="备注" prop="remark" :label-width="formLabelWidth">
+          <el-input
+            v-model="basicInfo.remark"
+            autocomplete="off"
+            placeholder="请输入备注"
+            type="textarea"
+            :rows="3"
+          />
+        </el-form-item>
+      </el-form>
+    </rd-dialog>
   </div>
 </template>
 
@@ -75,7 +134,7 @@ export default {
           element: "el-input",
           placeholder: "活动名",
         },
-         {
+        {
           prop: "menuName",
           element: "el-select",
           placeholder: "学历",
@@ -154,40 +213,50 @@ export default {
           prop: "abc",
           element: "el-cascader",
           placeholder: "课程",
-        
-          props:{ 
-              checkStrictly: true,
-               lazy: true,
-                lazyLoad (node, resolve) {
-            const { level } = node;
-            setTimeout(() => {
-              const nodes = Array.from({ length: level + 1 })
-                .map(item => ({
+
+          props: {
+            checkStrictly: true,
+            lazy: true,
+            lazyLoad(node, resolve) {
+              const { level } = node;
+              setTimeout(() => {
+                const nodes = Array.from({ length: level + 1 }).map((item) => ({
                   value: ++id,
                   label: `选项${id}`,
-                  leaf: level >= 2
+                  leaf: level >= 2,
                 }));
-              // 通过调用resolve将子节点数据返回，通知组件数据加载完成
-              resolve(nodes);
-            }, 1000);
-          }
-           }
+                // 通过调用resolve将子节点数据返回，通知组件数据加载完成
+                resolve(nodes);
+              }, 1000);
+            },
+          },
         },
       ],
       tableData: [
-        { id: 1, name: "飞翔的荷兰人3", cutdown: 1608897351706, visit: 2,phone:'15692026183' },
-        { id: 2, name: "飞翔的荷兰人2",cutdown: new Date().getTime(),phone:'17092026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
+        {
+          id: 1,
+          name: "飞翔的荷兰人3",
+          cutdown: 1608897351706,
+          visit: 2,
+          phone: "15692026183",
+        },
+        {
+          id: 2,
+          name: "飞翔的荷兰人2",
+          cutdown: new Date().getTime(),
+          phone: "17092026183",
+        },
+        { id: 3, name: "飞翔的荷兰人1", phone: "18892026183" },
       ],
       tableKey: [
         {
           name: "姓名",
           value: "name",
         },
-         {
+        {
           name: "手机号",
           value: "phone",
-          operate: true
+          operate: true,
         },
         {
           name: "回收倒计时",
@@ -236,10 +305,34 @@ export default {
       // 回访抽屉参数
       drawerVisible: false,
       drawerSize: "50%",
+      // 弹窗
+      dialogVisible: true,
+      formLabelWidth: "100px",
+      basicInfo: {
+        // roleCode: "",
+        roleName: "",
+        status: "",
+        remark: "",
+        updateReason: "",
+        parentId: "",
+      },
+      rules: {
+        // roleCode: [{ required: true, message: "请获取编码", trigger: "blur" }],
+        updateReason: [
+          { required: true, message: "请输入修改事由", trigger: "blur" },
+        ],
+        roleName: [
+          { required: true, message: "请输入名称", trigger: "blur" },
+          { max: 25, message: "长度不多于25个字符", trigger: "blur" },
+        ],
+        status: [{ required: true, message: "请选择状态", trigger: "blur" }],
+        parentId: [{ required: true, message: "请选择分组", trigger: "blur" }],
+      },
+      permissionGroup2: [],
     };
   },
   components: {
-    rdDrawer
+    rdDrawer,
   },
   mounted() {
     this.getCutdown();
@@ -249,7 +342,6 @@ export default {
   },
   methods: {
     onSearch() {},
-    handleAdd() {},
     pageChange(val) {
       // this.pageConfig.currentPage = val.page;
       // this.pageConfig.pageSize = val.limit;
@@ -274,9 +366,56 @@ export default {
         return item;
       });
     },
-    currentChange(val){
-      this.$emit('currentChange',val)
-    }
+    currentChange(val) {
+      this.$emit("currentChange", val);
+    },
+    // 弹窗关闭
+    handleClose(formName) {
+      this.dialogVisible = false;
+      this.$refs[formName].resetFields();
+    },
+    // 弹窗提交
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          console.log(this.basicInfo, "提交");
+          // 新增
+          this.$fetch("role_save", {
+            ...this.basicInfo,
+            loginUserId,
+          }).then((res) => {
+            this.$message({
+              message: "提交成功",
+              type: "success",
+            });
+            this.handleClose("dataForm");
+            this.handleTabClick(this.tabPermission);
+            console.log(
+              this.tabPermission,
+              this.basicInfo.parentId,
+              "this.tabPermission--"
+            );
+            if (this.basicInfo.parentId == "") {
+              this.getGroupData();
+            }
+          });
+        }
+      });
+    },
+    // 成单
+    handleOrder() {
+      this.dialogVisible = true;
+    },
+    // 释放
+    handleRelease() {},
+    // 失效
+    handleInvalid() {},
+    // 添加
+    handleAdd() {},
+    // AI呼叫
+    handleAICall() {},
+    // 导入
+    handleImport() {},
   },
 };
 </script>
@@ -301,7 +440,9 @@ export default {
   /deep/ {
     .current-row {
       td {
-        &:nth-child(2),&:nth-child(9),&:nth-child(10){
+        &:nth-child(2),
+        &:nth-child(9),
+        &:nth-child(10) {
           color: red;
         }
       }

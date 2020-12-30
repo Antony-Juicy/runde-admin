@@ -22,6 +22,7 @@
         :tableKey="tableKey"
         :pageConfig="pageConfig"
         :multiple="true"
+        :filterColumn="true"
         fixedTwoRow
         highlight-current-row
         @pageChange="pageChange"
@@ -41,6 +42,51 @@
           >
         </template>
       </rd-table>
+      <rd-dialog
+      :title="'123'"
+      :dialogVisible="dialogVisible"
+      @handleClose="handleClose('dataForm')"
+      @submitForm="submitForm('dataForm')"
+    >
+      <el-form
+        ref="dataForm"
+        :model="basicInfo"
+        :rules="rules"
+        :label-width="formLabelWidth"
+      >
+       <el-form-item label="分组" prop="parentId" :label-width="formLabelWidth">
+          <el-select v-model="basicInfo.parentId" placeholder="请选择分组">
+            <el-option
+              v-for="item in permissionGroup2"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          label="名称"
+          prop="roleName"
+          :label-width="formLabelWidth"
+        >
+          <el-input
+            v-model.trim = "basicInfo.roleName"
+            autocomplete="off"
+            placeholder="请输入角色名称"
+          />
+        </el-form-item>
+        <el-form-item label="备注" prop="remark" :label-width="formLabelWidth">
+          <el-input
+            v-model="basicInfo.remark"
+            autocomplete="off"
+            placeholder="请输入备注"
+            type="textarea"
+            :rows="3"
+          />
+        </el-form-item>
+      </el-form>
+    </rd-dialog>
     </div>
   </div>
 </template>
@@ -226,7 +272,32 @@ export default {
         currentPage: 1,
         pageSize: 10,
       },
-      selectedData:[]
+      selectedData:[],
+
+      // 弹窗
+      dialogVisible: false,
+       formLabelWidth: "100px",
+       basicInfo: {
+        // roleCode: "",
+        roleName: "",
+        status: "",
+        remark: "",
+        updateReason: "",
+        parentId:""
+      },
+      rules: {
+        // roleCode: [{ required: true, message: "请获取编码", trigger: "blur" }],
+        updateReason: [
+          { required: true, message: "请输入修改事由", trigger: "blur" },
+        ],
+        roleName: [
+          { required: true, message: "请输入名称", trigger: "blur" },
+           {  max: 25, message: '长度不多于25个字符', trigger: 'blur' }
+        ],
+        status: [{ required: true, message: "请选择状态", trigger: "blur" }],
+        parentId: [{ required: true, message: "请选择分组", trigger: "blur" }],
+      },
+      permissionGroup2:[]
     };
   },
   methods: {
@@ -246,7 +317,36 @@ export default {
     handelSelect(val) {
       console.log(val, "valll");
       this.selectedData = val;
-    }
+    },
+     // 弹窗关闭
+    handleClose(formName) {
+      this.dialogVisible = false;
+      this.$refs[formName].resetFields();
+    },
+    // 弹窗提交
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          console.log(this.basicInfo, "提交");
+           // 新增
+            this.$fetch("role_save", {
+              ...this.basicInfo,
+              loginUserId,
+            }).then((res) => {
+              this.$message({
+                message: "提交成功",
+                type: "success",
+              });
+              this.handleClose("dataForm");
+              this.handleTabClick(this.tabPermission);
+              console.log(this.tabPermission,this.basicInfo.parentId,'this.tabPermission--')
+              if(this.basicInfo.parentId == "") {
+                this.getGroupData();
+              }
+            });
+        }
+      });
+    },
   },
 };
 </script>

@@ -121,8 +121,8 @@ export default {
         {
           prop: 'updateAt',
           element: 'el-date-picker',
-          initValue: '',
-          placeholder: '请选择失效时间',
+          startPlaceholder: "失效时间(开始)",
+          endPlaceholder: "失效时间(结束)"
         }
       ],
       tableData: [],

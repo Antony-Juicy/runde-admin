@@ -48,7 +48,8 @@ export default {
         { prop: 'eduBackground', element: 'el-select', initValue: '', placeholder: '学历' },
         { prop: 'invalidStatus', element: 'el-select', initValue: '', placeholder: '机会状态' },
         { prop: 'phone', element: 'el-select', initValue: '', placeholder: '归属人' },
-        { prop: 'createAt', element: 'el-date-picker', initValue: '', placeholder: '请选择创建时间' },
+        { prop: 'createAt', element: 'el-date-picker', initValue: '', startPlaceholder: "创建时间(开始)",
+          endPlaceholder: "创建时间(结束)"},
       ],
       tableData: [],
       tableKey: [

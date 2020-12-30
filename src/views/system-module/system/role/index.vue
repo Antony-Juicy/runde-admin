@@ -58,31 +58,6 @@
         :rules="rules"
         :label-width="formLabelWidth"
       >
-        <!-- <el-form-item
-          label="编码"
-          prop="roleCode"
-          :label-width="formLabelWidth"
-          v-if="dialogStatus"
-        >
-          <el-row>
-            <el-col :span="16">
-              <el-input
-                v-model="basicInfo.roleCode"
-                autocomplete="off"
-                placeholder="请点击获取编码"
-                disabled
-            /></el-col>
-            <el-col :span="8"
-              ><el-button
-                type="primary"
-                size="small"
-                style="margin-left: 5px"
-                @click="getCode"
-                >获取编码</el-button
-              ></el-col
-            >
-          </el-row>
-        </el-form-item> -->
         <el-form-item label="分组" prop="parentId" :label-width="formLabelWidth">
           <el-select v-model="basicInfo.parentId" placeholder="请选择分组">
             <el-option
