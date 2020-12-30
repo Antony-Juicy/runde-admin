@@ -64,55 +64,16 @@
       @handleClose="handleClose('dataForm')"
       @submitForm="submitForm('dataForm')"
     >
-      <el-form
-        ref="dataForm"
-        :model="basicInfo"
-        :rules="rules"
-        :label-width="formLabelWidth"
-      >
-        <el-form-item
-          label="分组"
-          prop="parentId"
-          :label-width="formLabelWidth"
-        >
-          <el-select v-model="basicInfo.parentId" placeholder="请选择分组">
-            <el-option
-              v-for="item in permissionGroup2"
-              :key="item.id"
-              :label="item.roleName"
-              :value="item.id"
-            >
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          label="姓名"
-          prop="roleName"
-          :label-width="formLabelWidth"
-        >
-          <el-input
-            v-model.trim="basicInfo.roleName"
-            autocomplete="off"
-            placeholder="请输入角色名称"
-          />
-        </el-form-item>
-        <el-form-item label="备注" prop="remark" :label-width="formLabelWidth">
-          <el-input
-            v-model="basicInfo.remark"
-            autocomplete="off"
-            placeholder="请输入备注"
-            type="textarea"
-            :rows="3"
-          />
-        </el-form-item>
-      </el-form>
+      <RdForm :formOptions="formOptions2" :rules="rules" ref="dataForm"/>
     </rd-dialog>
+    
   </div>
 </template>
 
 <script>
 let id = 0;
 import rdDrawer from "@/components/RdDrawer";
+import RdForm from "@/components/RdForm";
 export default {
   name: "temp",
   data() {
@@ -306,7 +267,8 @@ export default {
       drawerVisible: false,
       drawerSize: "50%",
       // 弹窗
-      dialogVisible: true,
+      dialogVisible: false,
+      dialogVisible2: false,
       formLabelWidth: "100px",
       basicInfo: {
         // roleCode: "",
@@ -322,17 +284,100 @@ export default {
           { required: true, message: "请输入修改事由", trigger: "blur" },
         ],
         roleName: [
-          { required: true, message: "请输入名称", trigger: "blur" },
-          { max: 25, message: "长度不多于25个字符", trigger: "blur" },
+          { required: true, message: "请输入名称", trigger: "blur" }
         ],
         status: [{ required: true, message: "请选择状态", trigger: "blur" }],
         parentId: [{ required: true, message: "请选择分组", trigger: "blur" }],
       },
-      permissionGroup2: [],
+      formOptions2: [
+         {
+          prop: "roleName",
+          element: "el-select",
+          placeholder: "请选择校区",
+          label: "选择校区",
+          initValue: "0",
+          options: [
+            {
+              label: "博士",
+              value: "0",
+            },
+            {
+              label: "硕士",
+              value: 1,
+            },
+          ],
+          disabled: true
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "请输入姓名",
+          label: "姓名",
+           initValue:0,
+          disabled: true
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "请输入手机号",
+          label: "手机号",
+           initValue:0,
+          disabled: true
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "销售来源",
+          label: "销售来源",
+           initValue:0,
+          disabled: true,
+          options: [
+            {
+              label: "博士",
+              value: 0,
+            },
+            {
+              label: "硕士",
+              value: 1,
+            },
+          ],
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "跟进老师",
+          label: "跟进老师",
+          options: [
+            {
+              label: "博士",
+              value: 0,
+            },
+            {
+              label: "硕士",
+              value: 1,
+            },
+          ],
+        },
+         {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "请输入地址",
+          label: "地址",
+        },
+        {
+          prop: "menuName3",
+          element: "el-input",
+          placeholder: "请输入备注",
+          label: "备注",
+          type:"textarea",
+          rows: 2
+        }
+      ],
     };
   },
   components: {
     rdDrawer,
+    RdForm
   },
   mounted() {
     this.getCutdown();
@@ -372,13 +417,12 @@ export default {
     // 弹窗关闭
     handleClose(formName) {
       this.dialogVisible = false;
-      this.$refs[formName].resetFields();
     },
     // 弹窗提交
     submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          console.log(this.basicInfo, "提交");
+      this.$refs[formName].validate((valid, formData) => {
+        if(valid){
+          console.log(formData, "提交");
           // 新增
           this.$fetch("role_save", {
             ...this.basicInfo,
@@ -400,6 +444,7 @@ export default {
             }
           });
         }
+          
       });
     },
     // 成单
