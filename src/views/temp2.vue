@@ -42,57 +42,22 @@
           >
         </template>
       </rd-table>
+
       <rd-dialog
-      :title="'123'"
-      :dialogVisible="dialogVisible"
-      @handleClose="handleClose('dataForm')"
-      @submitForm="submitForm('dataForm')"
-    >
-      <el-form
-        ref="dataForm"
-        :model="basicInfo"
-        :rules="rules"
-        :label-width="formLabelWidth"
+        :title="'添加机会'"
+        :dialogVisible="addVisible"
+        @handleClose="addVisible = false"
+        @submitForm="submitAddForm('dataForm3')"
       >
-       <el-form-item label="分组" prop="parentId" :label-width="formLabelWidth">
-          <el-select v-model="basicInfo.parentId" placeholder="请选择分组">
-            <el-option
-              v-for="item in permissionGroup2"
-              :key="item.id"
-              :label="item.roleName"
-              :value="item.id"
-            >
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          label="名称"
-          prop="roleName"
-          :label-width="formLabelWidth"
-        >
-          <el-input
-            v-model.trim = "basicInfo.roleName"
-            autocomplete="off"
-            placeholder="请输入角色名称"
-          />
-        </el-form-item>
-        <el-form-item label="备注" prop="remark" :label-width="formLabelWidth">
-          <el-input
-            v-model="basicInfo.remark"
-            autocomplete="off"
-            placeholder="请输入备注"
-            type="textarea"
-            :rows="3"
-          />
-        </el-form-item>
-      </el-form>
-    </rd-dialog>
+        <RdForm :formOptions="addFormOptions" :rules="addRules" ref="dataForm3"/>
+      </rd-dialog>
     </div>
   </div>
 </template>
 
 <script>
 let id = 0;
+import RdForm from "@/components/RdForm";
 export default {
   name: "temp2",
   data() {
@@ -297,8 +262,94 @@ export default {
         status: [{ required: true, message: "请选择状态", trigger: "blur" }],
         parentId: [{ required: true, message: "请选择分组", trigger: "blur" }],
       },
-      permissionGroup2:[]
+      permissionGroup2:[],
+      // -----------------
+      addVisible: false,
+      addFormOptions:[
+         {
+          prop: "roleName",
+          element: "el-select",
+          placeholder: "请选择校区",
+          label: "选择校区",
+          options: [
+            {
+              label: "博士",
+              value: "0",
+            },
+            {
+              label: "硕士",
+              value: 1,
+            },
+          ],
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "请输入姓名",
+          label: "姓名"
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "请输入手机号",
+          label: "手机号"
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "销售来源",
+          label: "销售来源",
+          options: [
+            {
+              label: "博士",
+              value: 0,
+            },
+            {
+              label: "硕士",
+              value: 1,
+            },
+          ],
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "跟进老师",
+          label: "跟进老师",
+          options: [
+            {
+              label: "博士",
+              value: 0,
+            },
+            {
+              label: "硕士",
+              value: 1,
+            },
+          ],
+        },
+         {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "请输入地址",
+          label: "地址",
+        },
+        {
+          prop: "menuName3",
+          element: "el-input",
+          placeholder: "请输入备注",
+          label: "备注",
+          type:"textarea",
+          rows: 2
+        }
+      ],
+      addRules:{
+        updateReason: [
+          { required: true, message: "请输入修改事由", trigger: "blur" },
+        ]
+      }
     };
+  },
+  components:{
+    RdForm
   },
   methods: {
     onSearch() {},
@@ -345,6 +396,15 @@ export default {
               }
             });
         }
+      });
+    },
+
+     submitAddForm(formName){
+      this.$refs[formName].validate((valid, formData) => {
+        if(valid){
+          console.log(formData, "提交");
+        }
+          
       });
     },
   },

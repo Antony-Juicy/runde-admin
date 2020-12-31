@@ -7,6 +7,7 @@
         :model="formData"
         :label-width="formLabelWidth"
         :rules="rules"
+        :inline="inline"
       >
         <template v-for="(item, index) in formOptions">
             <el-form-item
@@ -69,6 +70,10 @@ export default {
     rules:{
       type: Object,
       default: {}
+    },
+    inline:{
+      type: Boolean ,
+      default: false
     }
   },
 
@@ -126,6 +131,17 @@ export default {
 <style lang='scss' scoped>
 .rd-form-box {
   padding-right: 20px;
+  /deep/ {
+    .el-form--inline {
+      .el-form-item {
+          width: 40%;
+          .el-form-item__content {
+            width: 400px;
+          }
+        }
+    }
+    
+  }
 }
 
 </style>

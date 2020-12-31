@@ -13,11 +13,26 @@
 ├─views 页面目录
     ├─crm-module CRM模块
     |    ├─chance 机会管理
+    |        ├─my-chance 我的机会
+    |        ├─branch-school 分校/战队公海
+    |        ├─province-school 省校/网校公海
+    |        ├─order-list 成单列表
+    |        ├─chance-track 机会轨迹
+    |        ├─call-records 通话记录
+    |        ├─invalidation-change 失效机会
+    |        ├─chance-list 机会列表
+    |        ├─registrant-list 注册人列表
+    |        ├─chance-config 机会配置管理
+    |        ├─importphone-query 导入手机查询
+    |        ├─callrecords-count 通话记录统计
     ├─system-module 系统模块
-        ├─system 系统管理
-            ├─addressbook 通讯录管理
-            ├─menus 菜单管理
-            ├─role 角色管理
+    |    ├─system 系统管理
+    |        ├─addressbook 通讯录管理
+    |        ├─menus 菜单管理
+    |        ├─role 角色管理
+    ├─activity-module 活动模块
+    |    ├─marketing 营销管理
+    |        ├─activity-manage 活动管理
 ├─App.vue 入口页面
 ├─main.js 入口文件
 ├─permission.js 路由权限控制入口文件  

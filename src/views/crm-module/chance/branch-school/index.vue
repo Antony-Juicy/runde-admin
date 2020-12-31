@@ -10,7 +10,7 @@
         <el-button type="primary" size="small" @click="handleAdd"
           >领取</el-button
         >
-        <el-button type="warning" size="small" @click="handleAdd"
+        <el-button type="warning" size="small" @click="handleDistribute"
           >分配</el-button
         >
         <el-button type="info" size="small" @click="handleAdd"
@@ -39,15 +39,26 @@
     <!-- 回访抽屉 -->
     <rd-drawer
       :dialogVisible="drawerVisible"
-      :size="drawerSize"
       @handleClose="drawerVisible = false"
     ></rd-drawer>
+
+    <!-- 分配弹窗 -->
+    <rd-dialog
+        :title="'分配机会'"
+        :dialogVisible="distributeVisible"
+        :showFooter="false"
+        :width="'990px'"
+        @handleClose="distributeVisible = false"
+      >
+        <distribution/>
+      </rd-dialog>
   </div>
 </template>
 
 <script>
 let id = 0;
 import rdDrawer from "@/components/RdDrawer";
+import distribution from "./distribution";
 export default {
   name: "branch-school",
   data() {
@@ -261,13 +272,99 @@ export default {
         pageSize: 10,
       },
       selectedData:[],
-      drawerVisible: false
+      drawerVisible: false,
+      // 分配机会
+      distributeVisible: false,
+      distributeFormOptions:[
+         {
+          prop: "roleName",
+          element: "el-select",
+          placeholder: "请选择校区",
+          label: "选择校区",
+          options: [
+            {
+              label: "博士",
+              value: "0",
+            },
+            {
+              label: "硕士",
+              value: 1,
+            },
+          ],
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "请输入姓名",
+          label: "姓名"
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "请输入手机号",
+          label: "手机号"
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "销售来源",
+          label: "销售来源",
+          options: [
+            {
+              label: "博士",
+              value: 0,
+            },
+            {
+              label: "硕士",
+              value: 1,
+            },
+          ],
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "跟进老师",
+          label: "跟进老师",
+          options: [
+            {
+              label: "博士",
+              value: 0,
+            },
+            {
+              label: "硕士",
+              value: 1,
+            },
+          ],
+        },
+         {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "请输入地址",
+          label: "地址",
+        },
+        {
+          prop: "menuName3",
+          element: "el-input",
+          placeholder: "请输入备注",
+          label: "备注",
+          type:"textarea",
+          rows: 2
+        }
+      ],
+      distributeRules:{
+        updateReason: [
+          { required: true, message: "请输入修改事由", trigger: "blur" },
+        ]
+      }
+     
     };
   },
   components:{
-      rdDrawer
+      rdDrawer,
+      distribution
   },
   methods: {
+    handleAdd(){},
     onSearch() {},
     pageChange(val) {
       // this.pageConfig.currentPage = val.page;
@@ -284,6 +381,17 @@ export default {
     handelSelect(val) {
       console.log(val, "valll");
       this.selectedData = val;
+    },
+    submitDistributeForm(formName){
+      this.$refs[formName].validate((valid, formData) => {
+        if(valid){
+          console.log(formData, "提交");
+        }
+          
+      });
+    },
+    handleDistribute(){
+      this.distributeVisible = true;
     }
   },
 };

@@ -7,7 +7,7 @@
     ></search-form>
     <div class="main-wrapper">
       <div class="btn-wrapper">
-        <el-button type="warning" size="small" @click="handleAdd"
+        <el-button type="warning" size="small" @click="handleDistribute"
           >分配</el-button
         >
         <el-button type="info" size="small" @click="handleAdd"
@@ -38,6 +38,27 @@
           >
         </template>
       </rd-table>
+
+      <!-- 分配弹窗 -->
+       <rd-dialog
+        :title="'分配机会'"
+        :dialogVisible="distributeVisible"
+        :showFooter="false"
+        :width="'400px'"
+        @handleClose="distributeVisible = false"
+      >
+        <el-select v-model="campusValue" placeholder="请选择">
+          <el-option
+            v-for="item in campusOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+        <div class="btn">
+          <el-button size="small" type="warning">分配</el-button>
+        </div>
+      </rd-dialog>
     </div>
   </div>
 </template>
@@ -212,7 +233,25 @@ export default {
         currentPage: 1,
         pageSize: 10,
       },
-      selectedData:[]
+      selectedData:[],
+      distributeVisible: false,
+      campusOptions: [{
+          value: '选项1',
+          label: '黄金糕'
+        }, {
+          value: '选项2',
+          label: '双皮奶'
+        }, {
+          value: '选项3',
+          label: '蚵仔煎'
+        }, {
+          value: '选项4',
+          label: '龙须面'
+        }, {
+          value: '选项5',
+          label: '北京烤鸭'
+        }],
+        campusValue: ''
     };
   },
   methods: {
@@ -232,6 +271,9 @@ export default {
     handelSelect(val) {
       console.log(val, "valll");
       this.selectedData = val;
+    },
+    handleDistribute(){
+      this.distributeVisible = true;
     }
   },
 };
@@ -244,6 +286,10 @@ export default {
     }
     .search-form-box {
         // border-bottom: 1px solid #E4E7ED;
+    }
+    .btn {
+      text-align: right;
+      margin-top: 20px;
     }
 }
 </style>

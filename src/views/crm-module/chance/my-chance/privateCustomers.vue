@@ -97,10 +97,35 @@
     >
       <RdForm :formOptions="importFormOptions" :rules="importRules" ref="dataForm4">
          <template slot="temp">
-            <span>55555</span>
+            <el-button size="small" type="primary">点击下载模板</el-button>
+        </template>
+        <template slot="file">
+            <span>文件</span>
+        </template>
+        <template slot="tips">
+            <span>导入模版中【学员姓名】【电话】【地址】不能为空.否则会导入失败！！！</span>
         </template>
       </RdForm>
     </rd-dialog>
+
+    <!-- ai呼叫 -->
+    <rd-dialog
+      :title="'AI批量外呼'"
+      :showFooter="false"
+      :dialogVisible="callVisible"
+      @handleClose="handleClose('dataForm5')"
+    >
+      <div class="call-container">
+        <h2>已选呼叫总数：1</h2>
+      <p class="tip">*提示：在呼叫开始之后请不要关闭窗口，如需进行其他操作请最小化窗口</p>
+      <div class="call-table">
+        <div class="call-title"><span>已呼客户</span><span>待呼客户</span></div>
+        <div class="call-content"><span>0</span><span>1</span></div>
+      </div>
+      <div class="btn"><el-button type="primary" size="small">开始呼叫</el-button></div>
+      </div>
+    </rd-dialog>
+
   </div>
 </template>
 
@@ -569,10 +594,25 @@ export default {
           element: "el-input",
           label: "导入模板",
           operate: true
+        },
+        {
+          prop: "file",
+          element: "el-input",
+          label: "文件",
+          operate: true
+        },
+        {
+          prop: "tips",
+          element: "el-input",
+          label: "特别提醒",
+          operate: true
         }
       ],
       importRules:{},
 
+      // ai呼叫弹窗
+      callVisible: false,
+      
 
     };
   },
@@ -625,6 +665,7 @@ export default {
       this.invalidVisible = false;
       this.addVisible = false;
       this.importVisible = false;
+      this.callVisible = false;
     },
     // 成单弹窗提交
     submitForm(formName) {
@@ -675,7 +716,9 @@ export default {
       });
     },
     // AI呼叫
-    handleAICall() {},
+    handleAICall() {
+      this.callVisible = true;
+    },
     // 导入
     handleImport() {
       this.importVisible = true;
@@ -709,6 +752,41 @@ export default {
     color: #606266;
     cursor: pointer;
   }
+  .call-container {
+    text-align: center;
+    .tip {
+      color: red;
+      font-size: 12px;
+    }
+    .call-table {
+      width: 400px;
+      display: inline-block;
+      margin-bottom: 15px;
+      .call-title,.call-content {
+        width: 100%;
+        display: flex;
+        line-height: 35px;
+        span {
+          flex: 1;
+          border: 1px solid #F0F0F0;
+          &:first-child {
+            border-right: none;
+          }
+        }
+      }
+      .call-title {
+        span {
+          border-bottom: none;
+          background: #FAFAFA;
+        }
+      }
+      
+    }
+    .btn {
+      text-align: right;
+      margin-right: 120px;
+    }
+  }
   /deep/ {
     .current-row {
       td {
@@ -718,6 +796,9 @@ export default {
           color: red;
         }
       }
+    }
+    .el-form-item:last-child{
+      color: red;
     }
   }
 }
