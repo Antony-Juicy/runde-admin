@@ -15,7 +15,12 @@
               :label="item.label ? item.label : ''"
               :rules="item.rules"
             >
-              <formItem v-model="formData[item.prop]" :itemOptions="item" />
+              <formItem v-model="formData[item.prop]" :itemOptions="item" v-if="!item.operate"/>
+              <div v-else>
+                 <slot
+                  :name="item.prop"
+                ></slot>
+              </div>
             </el-form-item>
         </template>
       </el-form>

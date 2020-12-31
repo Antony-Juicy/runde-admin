@@ -18,10 +18,10 @@
         >失效</el-button
       >
       <el-button type="primary" size="small" @click="handleAdd">添加</el-button>
-      <el-button type="info" size="small" @click="handleAICall"
+      <el-button size="small" type="info" @click="handleImport">导入</el-button>
+      <el-button size="small" @click="handleAICall"
         >AI呼叫</el-button
       >
-      <el-button size="small" @click="handleImport">导入</el-button>
     </div>
     <rd-table
       :tableData="tableData"
@@ -57,16 +57,50 @@
       @handleClose="drawerVisible = false"
     ></rd-drawer>
 
+
     <!-- 成单弹窗 -->
     <rd-dialog
       :title="'成单学员信息确认'"
-      :dialogVisible="dialogVisible"
+      :dialogVisible="orderVisible"
       @handleClose="handleClose('dataForm')"
       @submitForm="submitForm('dataForm')"
     >
-      <RdForm :formOptions="formOptions2" :rules="rules" ref="dataForm"/>
+      <RdForm :formOptions="orderFormOptions" :rules="orderRules" ref="dataForm"/>
     </rd-dialog>
     
+    <!-- 失效弹窗 -->
+    <rd-dialog
+      :title="'失效机会确认'"
+      :dialogVisible="invalidVisible"
+      @handleClose="handleClose('dataForm2')"
+      @submitForm="submitInvalidForm('dataForm2')"
+    >
+      <RdForm :formOptions="invalidFormOptions" :rules="invalidRules" ref="dataForm2"/>
+    </rd-dialog>
+
+    <!-- 添加机会弹窗 -->
+    <rd-dialog
+      :title="'添加机会'"
+      :dialogVisible="addVisible"
+      @handleClose="handleClose('dataForm3')"
+      @submitForm="submitAddForm('dataForm3')"
+    >
+      <RdForm :formOptions="addFormOptions" :rules="addRules" ref="dataForm3"/>
+    </rd-dialog>
+
+    <!-- 导入弹窗 -->
+    <rd-dialog
+      :title="'导入机会'"
+      :dialogVisible="importVisible"
+      @handleClose="handleClose('dataForm4')"
+      @submitForm="submitImportForm('dataForm4')"
+    >
+      <RdForm :formOptions="importFormOptions" :rules="importRules" ref="dataForm4">
+         <template slot="temp">
+            <span>55555</span>
+        </template>
+      </RdForm>
+    </rd-dialog>
   </div>
 </template>
 
@@ -266,19 +300,10 @@ export default {
       // 回访抽屉参数
       drawerVisible: false,
       drawerSize: "50%",
-      // 弹窗
-      dialogVisible: false,
-      dialogVisible2: false,
-      formLabelWidth: "100px",
-      basicInfo: {
-        // roleCode: "",
-        roleName: "",
-        status: "",
-        remark: "",
-        updateReason: "",
-        parentId: "",
-      },
-      rules: {
+
+      // 成单弹窗
+      orderVisible: false,
+      orderRules: {
         // roleCode: [{ required: true, message: "请获取编码", trigger: "blur" }],
         updateReason: [
           { required: true, message: "请输入修改事由", trigger: "blur" },
@@ -289,7 +314,7 @@ export default {
         status: [{ required: true, message: "请选择状态", trigger: "blur" }],
         parentId: [{ required: true, message: "请选择分组", trigger: "blur" }],
       },
-      formOptions2: [
+      orderFormOptions: [
          {
           prop: "roleName",
           element: "el-select",
@@ -373,6 +398,182 @@ export default {
           rows: 2
         }
       ],
+
+      // 失效弹窗
+      invalidVisible: false,
+      invalidFormOptions:[
+        {
+          prop: "reason",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "失效原因",
+          options: [
+            {
+              label: "博士",
+              value: "0",
+            },
+            {
+              label: "硕士",
+              value: 1,
+            },
+          ],
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "请输入",
+          label: "备注",
+          type:"textarea",
+          rows: 3
+        }
+      ],
+      invalidRules:{
+          reason: [
+          { required: true, message: "请选择失效原因", trigger: "blur" },
+        ],
+      },
+
+      // 添加弹窗
+      addVisible: false,
+      addFormOptions:[
+         {
+          prop: "roleName",
+          element: "el-select",
+          placeholder: "请选择校区",
+          label: "选择校区",
+          options: [
+            {
+              label: "博士",
+              value: "0",
+            },
+            {
+              label: "硕士",
+              value: 1,
+            },
+          ],
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "请输入姓名",
+          label: "姓名"
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "请输入手机号",
+          label: "手机号"
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "销售来源",
+          label: "销售来源",
+          options: [
+            {
+              label: "博士",
+              value: 0,
+            },
+            {
+              label: "硕士",
+              value: 1,
+            },
+          ],
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "跟进老师",
+          label: "跟进老师",
+          options: [
+            {
+              label: "博士",
+              value: 0,
+            },
+            {
+              label: "硕士",
+              value: 1,
+            },
+          ],
+        },
+         {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "请输入地址",
+          label: "地址",
+        },
+        {
+          prop: "menuName3",
+          element: "el-input",
+          placeholder: "请输入备注",
+          label: "备注",
+          type:"textarea",
+          rows: 2
+        }
+      ],
+      addRules:{},
+
+      // 导入弹窗
+       importVisible: false,
+      importFormOptions:[
+         {
+          prop: "roleName",
+          element: "el-select",
+          placeholder: "校区名(所属组织)",
+          label: "就近校区",
+          options: [
+            {
+              label: "博士",
+              value: "0",
+            },
+            {
+              label: "硕士",
+              value: 1,
+            },
+          ],
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "咨询项目一",
+          options: [
+            {
+              label: "博士",
+              value: 0,
+            },
+            {
+              label: "硕士",
+              value: 1,
+            },
+          ],
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "咨询科目一",
+          options: [
+            {
+              label: "博士",
+              value: 0,
+            },
+            {
+              label: "硕士",
+              value: 1,
+            },
+          ],
+        },
+         {
+          prop: "temp",
+          element: "el-input",
+          label: "导入模板",
+          operate: true
+        }
+      ],
+      importRules:{},
+
+
     };
   },
   components: {
@@ -414,53 +615,79 @@ export default {
     currentChange(val) {
       this.$emit("currentChange", val);
     },
-    // 弹窗关闭
-    handleClose(formName) {
-      this.dialogVisible = false;
+    // 成单弹窗打开
+    handleOrder() {
+      this.orderVisible = true;
     },
-    // 弹窗提交
+    // 成单弹窗关闭
+    handleClose(formName) {
+      this.orderVisible = false;
+      this.invalidVisible = false;
+      this.addVisible = false;
+      this.importVisible = false;
+    },
+    // 成单弹窗提交
     submitForm(formName) {
       this.$refs[formName].validate((valid, formData) => {
         if(valid){
           console.log(formData, "提交");
-          // 新增
-          this.$fetch("role_save", {
-            ...this.basicInfo,
-            loginUserId,
-          }).then((res) => {
-            this.$message({
-              message: "提交成功",
-              type: "success",
-            });
-            this.handleClose("dataForm");
-            this.handleTabClick(this.tabPermission);
-            console.log(
-              this.tabPermission,
-              this.basicInfo.parentId,
-              "this.tabPermission--"
-            );
-            if (this.basicInfo.parentId == "") {
-              this.getGroupData();
-            }
-          });
         }
           
       });
     },
-    // 成单
-    handleOrder() {
-      this.dialogVisible = true;
-    },
+    
     // 释放
-    handleRelease() {},
+    handleRelease() {
+      this.$confirm(`<strong>确定要将所选的机会释放到机会公海吗?</strong> <span style="color:red">释放之后有一次机会可以再领取回来，</span><span>你还要继续吗？</span>`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+        dangerouslyUseHTMLString: true
+      })
+        .then(async () => {
+         
+        })
+        .catch(() => {});
+    },
     // 失效
-    handleInvalid() {},
+    handleInvalid() {
+      this.invalidVisible = true;
+    },
+    // 失效弹窗提交
+    submitInvalidForm(formName){
+      this.$refs[formName].validate((valid, formData) => {
+        if(valid){
+          console.log(formData, "提交");
+        }
+          
+      });
+    },
     // 添加
-    handleAdd() {},
+    handleAdd() {
+      this.addVisible = true;
+    },
+    submitAddForm(formName){
+      this.$refs[formName].validate((valid, formData) => {
+        if(valid){
+          console.log(formData, "提交");
+        }
+          
+      });
+    },
     // AI呼叫
     handleAICall() {},
     // 导入
-    handleImport() {},
+    handleImport() {
+      this.importVisible = true;
+    },
+    submitImportForm(formName){
+      this.$refs[formName].validate((valid, formData) => {
+        if(valid){
+          console.log(formData, "提交");
+        }
+          
+      });
+    },
   },
 };
 </script>
