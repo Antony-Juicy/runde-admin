@@ -14,9 +14,9 @@ router.beforeEach(async(to, from, next) => {
   // start progress bar
   NProgress.start()
   // -----------
-  next()
-  NProgress.done()
-  return;
+  // next()
+  // NProgress.done()
+  // return;
    // -----------
 
   // set page title

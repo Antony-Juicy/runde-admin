@@ -122,6 +122,20 @@ export const constantRoutes = [
         name: 'live',
         component: () => import('@/views/weapp-module/live'),
         meta: { title: '欢迎页' }
+      },
+    ]
+  },
+  {
+    path: '/live-goods',
+    component: Layout,
+    redirect: '/live-goods',
+    hidden: true,
+    children: [
+      {
+        path: '/goods-list',
+        name: '/goods-list',
+        component: () => import('@/views/weapp-module/live-goods/goods-list'),
+        meta: { title: '商品列表' }
       }
     ]
   }
