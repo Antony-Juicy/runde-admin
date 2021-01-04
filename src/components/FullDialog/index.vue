@@ -39,7 +39,7 @@ export default {
 .full-dialog-container {
   width: 100%;
   // height: calc(100vh - 102px);
-  height: calc(100% - 102px);
+  min-height: calc(100% - 102px);
   position: absolute;
   background: #fff;
   z-index: 8;

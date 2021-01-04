@@ -35,6 +35,7 @@ export default {
       });
       val2.unshift('appRedirect')
       this.keepAliveCom = [...new Set(val2)]
+      console.log(this.keepAliveCom,'this.keepAliveCom-----',val2)
     }
   },
   data(){
