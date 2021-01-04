@@ -3,6 +3,7 @@
     <search-form :formOptions="formOptions" :showNum="7" @onSearch="onSearch"></search-form>
     <div class="w-container">
       <div class="btn-wrapper">
+        1123445
         <el-button type="primary" size="small" @click="handleAdd">添加商品</el-button>
       </div>
       <rd-table

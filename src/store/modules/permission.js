@@ -1,6 +1,7 @@
 import { asyncRoutes0, constantRoutes } from '@/router'
 import Fetch from '@/utils/fetch'
 import Layout from '@/layout'
+import Layout2 from '@/layout2'
 import axios from 'axios'
 import router from '@/router'
 /**
@@ -102,11 +103,8 @@ const actions = {
           if (item.children && item.children.length) {
             if (index == 1) {
               item.component = Layout;
-            } else {
-              
-              item.component = (resolve,reject) => {
-                return require([`@/views${item.meta.fullPath}`], resolve)
-              }
+            } else if(index == 2){
+              item.component = Layout2;
             }
             trans(item.children, index)
           } else {
