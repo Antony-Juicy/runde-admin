@@ -33,6 +33,11 @@
     ├─activity-module 活动模块
     |    ├─marketing 营销管理
     |        ├─activity-manage 活动管理
+    ├─weapp-module 小程序
+    |    ├─live 直播管理
+    |    ├─live-goods 商品管理
+    |    ├─live-details 数据明细
+    |    ├─live-config 设置
 ├─App.vue 入口页面
 ├─main.js 入口文件
 ├─permission.js 路由权限控制入口文件  
