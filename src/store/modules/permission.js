@@ -77,6 +77,73 @@ const mutations = {
   }
 }
 
+/**
+ * 生成扁平化机构路由(仅两级结构)
+ * @param {允许访问的路由Tree} accessRoutes
+ * 路由基本机构: 
+ * {
+ *   name: String,
+ *   path: String,
+ *   component: Component,
+ *   redirect: String,
+ *   children: [
+ *   ]
+ * }
+ */
+function generateFlatRoutes(accessRoutes) {
+  let flatRoutes = [];
+
+  for (let item of accessRoutes) {
+    let childrenFflatRoutes = [];
+    if (item.children && item.children.length > 0) {
+      childrenFflatRoutes = castToFlatRoute(item.children, "");
+    }
+
+    // 一级路由是布局路由,需要处理的只是其子路由数据
+    flatRoutes.push({
+      name: item.name,
+      path: item.path,
+      component: item.component,
+      redirect: item.redirect,
+      children: childrenFflatRoutes
+    });
+  }
+
+  return flatRoutes;
+}
+
+/**
+ * 将子路由转换为扁平化路由数组（仅一级）
+ * @param {待转换的子路由数组} routes
+ * @param {父级路由路径} parentPath
+ */
+function castToFlatRoute(routes, parentPath, flatRoutes = []) {
+  for (let item of routes) {
+    if (item.children && item.children.length > 0) {
+      if (item.redirect && item.redirect !== 'noRedirect') {
+        flatRoutes.push({
+          name: item.name,
+          // path: (parentPath + "/" + item.path).substring(1),
+          path: ("/" + item.path).substring(1),
+          redirect: item.redirect,
+          meta: item.meta
+        });
+      }
+      castToFlatRoute(item.children, parentPath + "/" + item.path, flatRoutes);
+    } else {
+      flatRoutes.push({
+        name: item.name,
+        // path: (parentPath + "/" + item.path).substring(1),
+        path: ("/" + item.path).substring(1),
+        component: item.component,
+        meta: item.meta
+      });
+    }
+  }
+
+  return flatRoutes;
+}
+
 const actions = {
   async generateRoutes({ commit }, { type }) {
     return new Promise(async (resolve) => {
@@ -125,10 +192,11 @@ const actions = {
       currentRoutes.push({ path: '*', redirect: '/404', hidden: true, children: [] })
       console.log(currentRoutes, 'currentRoutes----')
       // 定义的路由信息： asyncRoutes    后台返回的路由信息：routes
-      // const accessedRoutes = filterAsyncRoutes(currentRoutes, state.processedRoutes)
       const accessedRoutes = currentRoutes
+      let flatRoutes = generateFlatRoutes(accessedRoutes)
       commit('SET_ROUTES', accessedRoutes)
-      resolve(accessedRoutes)
+      console.log(flatRoutes,'flatRoutes--')
+      resolve(flatRoutes)
     })
   },
   async getRoutesInfo({ commit }) {
