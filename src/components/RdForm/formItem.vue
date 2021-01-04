@@ -33,12 +33,15 @@
       :multiple="itemOptions.multiple"
       :filterable="itemOptions.filterable"
       :disabled="itemOptions.disabled"
+      @focus="setMinWidth"
+      style="width:100%"
       clearable>
       <el-option
         v-for="item in itemOptions.options"
         :key="item.value"
         :label="item.label"
-        :value="item.value">
+        :value="item.value"
+        :style="{'min-width': minWidth + 2 + 'px'}">
       </el-option>
     </el-select>
 
@@ -122,7 +125,8 @@ export default {
   data () {
     return {
       pickerOptionsRange: pickerOptionsRange,
-      pickerOptionsRangeMonth: pickerOptionsRangeMonth
+      pickerOptionsRangeMonth: pickerOptionsRangeMonth,
+      minWidth:""
     }
   },
 
@@ -130,7 +134,11 @@ export default {
 
   mounted () {},
 
-  methods: {},
+  methods: {
+    setMinWidth (val) {
+        this.minWidth = val.srcElement.clientWidth
+    }
+  },
 
   computed: {
     // 双向绑定数据值

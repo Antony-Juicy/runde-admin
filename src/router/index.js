@@ -41,6 +41,66 @@ export const constantRoutes = [
     }]
   },
   {
+    path: '/my-chance',
+    component: Layout,
+    redirect: '/my-chance',
+    hidden: true,
+    children: [{
+      path: '/my-chance',
+      name: 'my-chance',
+      component: () => import('@/views/crm-module/chance/my-chance'),
+      meta: { title: '欢迎页' }
+    }]
+  },
+  {
+    path: '/branch-school',
+    component: Layout,
+    redirect: '/branch-school',
+    hidden: true,
+    children: [{
+      path: '/branch-school',
+      name: 'branch-school',
+      component: () => import('@/views/crm-module/chance/branch-school'),
+      meta: { title: '欢迎页' }
+    }]
+  },
+  {
+    path: '/province-school',
+    component: Layout,
+    redirect: '/province-school',
+    hidden: true,
+    children: [{
+      path: '/province-school',
+      name: 'province-school',
+      component: () => import('@/views/crm-module/chance/province-school'),
+      meta: { title: '欢迎页' }
+    }]
+  },
+  {
+    path: '/activity-manage',
+    component: Layout,
+    redirect: '/activity-manage',
+    hidden: true,
+    children: [{
+      path: '/activity-manage',
+      name: 'activity-manage',
+      component: () => import('@/views/activity-module/marketing/activity-manage'),
+      meta: { title: '欢迎页' }
+    }]
+  },
+  {
+    path: '/call-records',
+    component: Layout,
+    redirect: '/call-records',
+    hidden: true,
+    children: [{
+      path: '/call-records',
+      name: 'call-records',
+      component: () => import('@/views/crm-module/chance/call-records'),
+      meta: { title: '欢迎页' }
+    }]
+  },
+  {
     path: '/redirect', // 重定向路由
     // component: () => import('@/views/layout/components/Sidebar/redirect'), hidden: true
     component: Layout,

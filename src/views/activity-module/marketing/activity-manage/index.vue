@@ -146,40 +146,30 @@ export default {
       addVisible: false,
       addFormOptions:[
          {
-          prop: "roleName",
-          element: "el-select",
-          placeholder: "请选择校区",
-          label: "选择校区",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
+          prop: "name",
+          element: "el-input",
+          placeholder: "请输入活动名称",
+          label: "活动名称"
         },
         {
-            prop: "time",
+          prop: "time",
           element: "el-date-picker",
-          startPlaceholder: "进入公海时间(开始)",
-          endPlaceholder: "进入公海时间(结束)",
+          startPlaceholder: "活动时间(开始)",
+          endPlaceholder: "活动时间(结束)",
           initWidth: true,
-          label: "公海时间",
+          label: "活动时间",
         },
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "请输入姓名",
-          label: "姓名"
+          placeholder: "请输入字段一名称",
+          label: "字段一名称"
         },
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "请输入手机号",
-          label: "手机号"
+          placeholder: "请输入字段二名称",
+          label: "字段二名称"
         },
         {
           prop: "menuName",
