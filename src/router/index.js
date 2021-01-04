@@ -41,6 +41,17 @@ export const constantRoutes = [
     }]
   },
   {
+    path: '/redirect', // 重定向路由
+    // component: () => import('@/views/layout/components/Sidebar/redirect'), hidden: true
+    component: Layout,
+    hidden: true,
+    children: [{
+      path: '',
+      component: () => import('@/views/redirect')
+    }]
+  },
+  // --------静态路由本地用-----------
+  {
     path: '/my-chance',
     component: Layout,
     redirect: '/my-chance',
@@ -99,17 +110,7 @@ export const constantRoutes = [
       component: () => import('@/views/crm-module/chance/call-records'),
       meta: { title: '欢迎页' }
     }]
-  },
-  {
-    path: '/redirect', // 重定向路由
-    // component: () => import('@/views/layout/components/Sidebar/redirect'), hidden: true
-    component: Layout,
-    hidden: true,
-    children: [{
-      path: '',
-      component: () => import('@/views/redirect')
-    }]
-}
+  }
 ]
 
 const createRouter = () => new Router({
