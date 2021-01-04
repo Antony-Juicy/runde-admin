@@ -1,13 +1,12 @@
 <template>
   <div>
-    <!-- <app-main /> -->
     <router-view></router-view>
   </div>
 </template>
 
 <script>
 export default {
-  name:"temp",
+  name:"layout2",
   data(){
     return {
     }
