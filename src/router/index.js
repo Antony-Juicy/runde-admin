@@ -110,34 +110,6 @@ export const constantRoutes = [
       component: () => import('@/views/crm-module/chance/call-records'),
       meta: { title: '欢迎页' }
     }]
-  },
-  {
-    path: '/live',
-    component: Layout,
-    redirect: '/live',
-    hidden: true,
-    children: [
-      {
-        path: '/live',
-        name: 'live',
-        component: () => import('@/views/weapp-module/live'),
-        meta: { title: '欢迎页' }
-      },
-    ]
-  },
-  {
-    path: '/live-goods',
-    component: Layout,
-    redirect: '/live-goods',
-    hidden: true,
-    children: [
-      {
-        path: '/goods-list',
-        name: '/goods-list',
-        component: () => import('@/views/weapp-module/live-goods/goods-list'),
-        meta: { title: '商品列表' }
-      }
-    ]
   }
 ]
 
