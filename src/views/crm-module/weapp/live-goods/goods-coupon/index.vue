@@ -15,6 +15,30 @@
         @select="handleSelect"
         @pageChange="pageChange">
       </rd-table>
+      <rd-dialog
+        :title="couponStatus ? '添加优惠券' : '编辑优惠券'"
+        :dialogVisible="couponVisible"
+        :width="widthNew"
+        @handleClose="closeCoupon('dataForm')"
+        @submitForm="submitForm('dataForm')">
+        <el-form ref="dataForm" :model="couponForm" label-width="100px">
+          <el-form-item label="优惠券类型" prop="couponType">
+            <el-select v-model="couponForm.couponType" placeholder="请选择/立减优惠/折扣优惠">
+              <el-option label="立减优惠" value="0"></el-option>
+              <el-option label="折扣优惠" value="1"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="优惠券名称" prop="couponName">
+            <el-input v-model.trim="couponForm.couponName" autocomplete="off" placeholder="请输入优惠券名称" />
+          </el-form-item>
+          <el-form-item label="面额" prop="couponMz">
+            <el-input v-model.trim="couponForm.couponMz" autocomplete="off" placeholder="请输入面额" />
+          </el-form-item>
+          <el-form-item label="使用条件" prop="condition">
+            <el-input v-model.trim="couponForm.condition" autocomplete="off" placeholder="" />
+          </el-form-item>
+        </el-form>
+      </rd-dialog>
     </div>
   </div>
 </template>
@@ -48,6 +72,17 @@ export default {
         pageSize: 10,
       },
       loading: false,
+      
+      // 弹窗
+      widthNew: "600px",
+      couponVisible: false,
+      couponStatus: true,
+      couponForm: {
+        couponType: '',
+        couponName: '',
+        couponMz: '',
+        condition: ''
+      },
     }
   },
   methods: {
@@ -55,15 +90,26 @@ export default {
       this.searchForm = {...val};
       console.log(val,this.searchForm , 'val---')
     },
-    handleAdd() {
-      console.log(666)
-    },
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
     pageChange(val) {
       console.log(val,'pagechange')
     },
+    
+    // 弹窗
+    handleAdd() {
+      console.log(9999)
+      this.couponVisible = true;
+    },
+    closeCoupon(formName) {
+      this.couponVisible = false;
+      // this.$refs[formName].resetFields();
+    },
+    submitForm(formName) {
+      console.log(this.couponForm, 666);
+      this.closeCoupon("dataForm")
+    }
   }
 }
 </script>
