@@ -38,9 +38,14 @@
         </template>
       </rd-table>
 
-      <!-- 添加 -->
-      <fullDialog v-model="addVisible" title="创建直播" @change="addVisible = false">
-           <addLive/>
+      <!-- 添加直播 -->
+      <fullDialog v-model="addVisible" title="创建直播" @change="$refs.addLive.handleClose('dataForm3');addVisible = false">
+        <addLive ref="addLive" @close="addVisible = false"/>
+      </fullDialog>
+
+      <!-- 管理直播 -->
+      <fullDialog v-model="editVisible" title="创建直播" @change="$refs.editLive.handleClose('dataForm4');editVisible = false">
+        <editLive ref="editLive" @close="editVisible = false"/>
       </fullDialog>
     </div>
   </div>
@@ -49,6 +54,7 @@
 <script>
 import fullDialog from '@/components/FullDialog';
 import addLive from './addLive';
+import editLive from './editLive';
 export default {
   name: "live",
   data() {
@@ -160,12 +166,14 @@ export default {
         pageSize: 10,
       },
       // 添加弹窗
-      addVisible: false
+      addVisible: false,
+      editVisible: false
     };
   },
   components:{
     fullDialog,
-    addLive
+    addLive,
+    editLive
   },
   methods: {
     onSearch() {},
@@ -184,6 +192,9 @@ export default {
     handleAdd() {
       this.addVisible = true;
     },
+    handleEdit(){
+      this.editVisible = true;
+    }
   },
 };
 </script>

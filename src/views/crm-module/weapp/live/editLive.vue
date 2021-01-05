@@ -1,6 +1,7 @@
 <template>
   <div class="addLive">
-      <RdForm :formOptions="addFormOptions" :rules="addRules" ref="dataForm3">
+    edtilive
+      <RdForm :formOptions="addFormOptions" :rules="addRules" ref="dataForm4">
           <template slot="pic">
               {{img}}
             <Upload-oss
@@ -23,7 +24,7 @@
          <el-button type="primary" size="small" @click="handleAdd"
           >立即创建</el-button
           >
-          <el-button size="small" @click="handleClose('dataForm3')"
+          <el-button size="small" @click="handleClose('dataForm4')"
             >取消</el-button
           >
       </div>

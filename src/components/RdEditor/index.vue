@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <quill-editor ref="myTextEditor" v-model="content" :options="editorOption" style="height:600px;"></quill-editor>
+  <div style="margin-bottom: 58px;">
+    <quill-editor class="ql-editor-class" ref="myTextEditor" v-model="content" :options="editorOption" style="height:200px; "></quill-editor>
   </div>
 </template>
 
@@ -25,7 +25,7 @@ const toolbarOptions = [
   ['link', 'image'],
   ['clean'] // remove formatting button
 ]
-import 'quill/dist/quill.core.css'
+// import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import { quillEditor } from 'vue-quill-editor'
@@ -58,9 +58,17 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
-/deep/ .ql-snow .ql-picker-label {
-      display: flex;
-      align-items: center;
-}
+.ql-editor-class {
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        line-height: 1.42;
+        height: 100%;
+        outline: none;
+        padding: 0 !important;
+        tab-size: 4;
+        -moz-tab-size: 4;
+        text-align: left;
+        word-wrap: break-word;
+        width: 100vh;
+    }
 </style>

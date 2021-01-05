@@ -98,6 +98,11 @@ export default {
       });
     },
 
+    // 重置表单
+    resetFields(){
+      this.$refs.formRef.resetFields();
+    },
+
     // 添加初始值
     addInitValue() {
       const obj = {};
