@@ -1,8 +1,11 @@
 <template>
   <el-breadcrumb class="app-breadcrumb" separator="/">
     <transition-group name="breadcrumb">
-      <el-breadcrumb-item v-for="(item,index) in levelList" :key="item.path">
-        <span v-if="item.redirect==='noRedirect'||index==levelList.length-1">{{ item.meta.title }}</span>
+      <el-breadcrumb-item v-for="(item, index) in levelList" :key="item.path">
+        <span
+          v-if="item.redirect === 'noRedirect' || index == levelList.length - 1"
+          >{{ item.meta.title }}</span
+        >
         <span v-else class="no-redirect">{{ item.meta.title }}</span>
       </el-breadcrumb-item>
     </transition-group>
@@ -10,57 +13,65 @@
 </template>
 
 <script>
-import pathToRegexp from 'path-to-regexp'
-
+import pathToRegexp from "path-to-regexp";
+import { mapState } from "vuex";
+//递归实现,找到子级的所有父级节点，返回数组
+//@leafId  为你要查找的id，
+//@nodes   为原始Json数据
+//@path    供递归使用，不要赋值
+function findPathByLeafId(leafId, nodes, path) {
+  if (path === undefined) {
+    path = [];
+  }
+  for (var i = 0; i < nodes.length; i++) {
+    var tmpPath = path.concat();
+    tmpPath.push(nodes[i]);
+    if (leafId == nodes[i].id) {
+      return tmpPath;
+    }
+    if (nodes[i].children) {
+      var findResult = findPathByLeafId(leafId, nodes[i].children, tmpPath);
+      if (findResult) {
+        return findResult;
+      }
+    }
+  }
+}
 export default {
   data() {
     return {
-      levelList: null
-    }
+      levelList: null,
+    };
   },
   watch: {
     $route() {
-      this.getBreadcrumb()
-    }
+      this.getBreadcrumb();
+    },
   },
   created() {
-    this.getBreadcrumb()
+    this.getBreadcrumb();
+  },
+  computed: {
+    ...mapState({
+      permission_addRoutes: (state) => state.permission.addRoutes,
+    }),
   },
   methods: {
     getBreadcrumb() {
       // only show routes with meta.title
-      const matched = this.$route.matched.filter(item => item.meta && item.meta.title)
-      // const first = matched[0]
-
-      // if (!this.isDashboard(first)) {
-      //   matched = [{ path: '/dashboard', meta: { title: 'Dashboard' }}].concat(matched)
-      // }
-
-      this.levelList = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
+      const matched = this.$route.matched.filter(
+        (item) => item.meta && item.meta.title
+      );
+      const initLevelList = matched.filter(
+        (item) => item.meta && item.meta.title && item.meta.breadcrumb !== false
+      );
+      this.levelList = findPathByLeafId(
+        initLevelList[0].meta.id,
+        this.permission_addRoutes
+      );
     },
-    isDashboard(route) {
-      const name = route && route.name
-      if (!name) {
-        return false
-      }
-      return name.trim().toLocaleLowerCase() === 'Dashboard'.toLocaleLowerCase()
-    },
-    pathCompile(path) {
-      // To solve this problem https://github.com/PanJiaChen/vue-element-admin/issues/561
-      const { params } = this.$route
-      var toPath = pathToRegexp.compile(path)
-      return toPath(params)
-    },
-    handleLink(item) {
-      const { redirect, path } = item
-      if (redirect) {
-        this.$router.push(redirect)
-        return
-      }
-      this.$router.push(this.pathCompile(path))
-    }
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss" scoped>
