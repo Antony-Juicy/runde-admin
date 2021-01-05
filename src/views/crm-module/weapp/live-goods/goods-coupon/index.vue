@@ -37,6 +37,12 @@
           <el-form-item label="使用条件" prop="condition">
             <el-input v-model.trim="couponForm.condition" autocomplete="off" placeholder="" />
           </el-form-item>
+          <el-form-item label="状态" prop="couponType">
+            <el-select v-model="couponForm.couponsxjStatus" placeholder="请选择/上架/下架">
+              <el-option label="上架" value="0"></el-option>
+              <el-option label="下架" value="1"></el-option>
+            </el-select>
+          </el-form-item>
         </el-form>
       </rd-dialog>
     </div>
@@ -81,7 +87,8 @@ export default {
         couponType: '',
         couponName: '',
         couponMz: '',
-        condition: ''
+        condition: '',
+        couponsxjStatus: ''
       },
     }
   },
