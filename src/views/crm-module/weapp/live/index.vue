@@ -39,12 +39,14 @@
       </rd-table>
 
       <!-- 添加直播 -->
-      <fullDialog v-model="addVisible" title="创建直播" @change="$refs.addLive.handleClose('dataForm3');addVisible = false">
+      <!-- $refs.addLive.handleClose('dataForm3'); -->
+      <fullDialog v-model="addVisible" title="创建直播" @change="addVisible = false">
         <addLive ref="addLive" @close="addVisible = false"/>
       </fullDialog>
 
       <!-- 管理直播 -->
-      <fullDialog v-model="editVisible" title="创建直播" @change="$refs.editLive.handleClose('dataForm4');editVisible = false">
+      <!-- $refs.editLive.handleClose('dataForm4'); -->
+      <fullDialog v-model="editVisible" title="直播名称1" @change="editVisible = false">
         <editLive ref="editLive" @close="editVisible = false"/>
       </fullDialog>
     </div>
@@ -54,7 +56,7 @@
 <script>
 import fullDialog from '@/components/FullDialog';
 import addLive from './addLive';
-import editLive from './editLive';
+import editLive from './editLive/index.vue';
 export default {
   name: "live",
   data() {

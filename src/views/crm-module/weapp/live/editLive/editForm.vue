@@ -1,6 +1,5 @@
 <template>
   <div class="addLive">
-    edtilive
       <RdForm :formOptions="addFormOptions" :rules="addRules" ref="dataForm4">
           <template slot="pic">
               {{img}}
