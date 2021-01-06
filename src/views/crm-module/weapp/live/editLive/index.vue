@@ -11,10 +11,10 @@
                 <interaction/>
             </el-tab-pane>
             <el-tab-pane label="评论管理">
-                评论管理
+                <comment/>
             </el-tab-pane>
             <el-tab-pane label="回放管理">
-                回放管理
+                <playback/>
             </el-tab-pane>
             <el-tab-pane label="数据分析">
                 <analysis/>
@@ -28,6 +28,8 @@ import editForm from './editForm';
 import share from './share';
 import interaction from './interaction/index.vue';
 import analysis from './analysis';
+import comment from './comment';
+import playback from './playback';
 export default {
   name:"temp",
   data(){
@@ -38,7 +40,9 @@ export default {
       editForm,
       share,
       interaction,
-      analysis
+      analysis,
+      comment,
+      playback
   },
    methods: {
   }
