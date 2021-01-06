@@ -1,13 +1,13 @@
 <template>
-  <div class="share-config">
-      互动
+  <div class="comment">
+      comment
   </div>
 </template>
 
 <script>
 
 export default {
-  name:"temp",
+  name:"comment",
   data(){
     return {
     }
@@ -18,7 +18,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.share-config {
-
+.comment {
+    
 }
 </style>

@@ -7,11 +7,11 @@
         class="sidebar-logo-link"
         to="/"
       >
-        <img v-if="logo" src="@/assets/runde_logo.png" class="sidebar-logo" />
+        <img v-if="logo" src="@/assets/logo2.png" class="sidebar-logo" />
         <h1 v-else class="sidebar-title">{{ title }}</h1>
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
-        <img v-if="logo" src="@/assets/runde_logo.png" class="sidebar-logo" />
+        <img v-if="logo" src="@/assets/logo2.png" class="sidebar-logo" />
         <h1 class="sidebar-title">{{ title }}</h1>
       </router-link>
     </transition>
@@ -61,8 +61,8 @@ export default {
     width: 100%;
 
     & .sidebar-logo {
-      width: 136px;
-      height: 45px;
+      width: 125px;
+      // height: 45px;
       vertical-align: middle;
       margin-right: 12px;
     }
@@ -82,7 +82,7 @@ export default {
   &.collapse {
     .sidebar-logo {
       margin-right: 0px;
-      margin-left: 5px;
+      margin-left: 11px;
     }
   }
 }

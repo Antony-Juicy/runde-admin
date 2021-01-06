@@ -1,10 +1,24 @@
 <template>
   <div class="dialog-wrapper">
-    <el-dialog :width="width" :title="title" :close-on-click-modal="false" :visible.sync="visible" :before-close="beforeClose" :destroy-on-close="true">
+    <el-dialog
+      :width="width"
+      :title="title"
+      :close-on-click-modal="false"
+      :visible.sync="visible"
+      :before-close="beforeClose"
+      :destroy-on-close="true"
+      :append-to-body="appendToBody"
+    >
       <slot></slot>
       <div slot="footer" class="dialog-footer" v-if="showFooter">
         <el-button @click="resetFloatForm()" size="small">取消</el-button>
-        <el-button type="primary" @click="submitForm()" size="small" v-prevent-re-click="2000">保存</el-button>
+        <el-button
+          type="primary"
+          @click="submitForm()"
+          size="small"
+          v-prevent-re-click="2000"
+          >{{submitText}}</el-button
+        >
       </div>
     </el-dialog>
   </div>
@@ -12,47 +26,55 @@
 
 <script>
 export default {
-  name: 'RdDialog',
+  name: "RdDialog",
   props: {
     dialogVisible: {
       type: Boolean,
-      default: false
+      default: false,
     },
     title: {
       type: String,
-      default: ''
+      default: "",
     },
     showFooter: {
       type: Boolean,
-      default: true
+      default: true,
     },
     width: {
       type: String,
-      default: '640px'
+      default: "640px",
+    },
+    appendToBody: {
+      type: Boolean,
+      default: false,
+    },
+    submitText:{
+      type: String,
+      default: "保存"
     }
   },
-  data(){
+  data() {
     return {
-      visible: this.dialogVisible
-    }
+      visible: this.dialogVisible,
+    };
   },
   watch: {
-    dialogVisible(newVal){
+    dialogVisible(newVal) {
       this.visible = newVal;
-    }
+    },
   },
   methods: {
-    submitForm(){
-      this.$emit('submitForm')
+    submitForm() {
+      this.$emit("submitForm");
     },
-    resetFloatForm(){
-      this.$emit('handleClose',false)
+    resetFloatForm() {
+      this.$emit("handleClose", false);
     },
-    beforeClose(){
-      this.$emit('handleClose',false)
-    }
-  }
-}
+    beforeClose() {
+      this.$emit("handleClose", false);
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -60,7 +82,7 @@ export default {
   /deep/ {
     .el-dialog__header {
       padding: 23px;
-      border-bottom: 1px solid #F0F0F0;
+      border-bottom: 1px solid #f0f0f0;
       .el-dialog__title {
         font-size: 17px;
         font-weight: 600;
@@ -77,18 +99,18 @@ export default {
       box-sizing: border-box;
       &::-webkit-scrollbar {
         /*滚动条整体样式*/
-        width : 10px;  /*高宽分别对应横竖滚动条的尺寸*/
+        width: 10px; /*高宽分别对应横竖滚动条的尺寸*/
         height: 1px;
-        }
-        &::-webkit-scrollbar-thumb {
+      }
+      &::-webkit-scrollbar-thumb {
         /*滚动条里面小方块*/
         border-radius: 10px;
-        box-shadow   : inset 0 0 5px #d0d1d3;
-        background   : #d0d1d3;
-        }
+        box-shadow: inset 0 0 5px #d0d1d3;
+        background: #d0d1d3;
+      }
     }
     .el-dialog__footer {
-      border-top: 1px solid #F0F0F0;
+      border-top: 1px solid #f0f0f0;
     }
   }
 }

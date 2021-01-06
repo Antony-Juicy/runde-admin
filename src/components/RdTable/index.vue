@@ -15,7 +15,8 @@
       :ref="tableName"
       :class="{'twoRowContainer': fixedTwoRow}"
       :max-height="tbodyHeight"
-      border
+      :show-header="showHeader"
+      :border="border"
       :highlight-current-row="highlightCurrentRow"
       @current-change="handleCurrentChange"
       @selection-change="handleSelectionChange"
@@ -153,6 +154,16 @@ export default {
     tableName: {
       type: String,
       default: "myTable"
+    },
+    // 是否显示表头
+    showHeader: {
+      type: Boolean,
+      default: true
+    },
+    // 是否显示边框
+    border: {
+      type: Boolean,
+      default: true
     }
   },
   components: {
