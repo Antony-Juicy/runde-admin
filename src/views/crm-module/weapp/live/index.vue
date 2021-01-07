@@ -206,7 +206,7 @@ export default {
 .live-container {
   /deep/ {
     .el-form-item__content {
-      width: 400px;
+      width: 495px;
     }
   }
 }

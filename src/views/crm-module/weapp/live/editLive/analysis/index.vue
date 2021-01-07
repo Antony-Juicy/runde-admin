@@ -5,13 +5,13 @@
       <div class="first-row">
         <div class="item1">
           <el-card shadow="hover" :body-style="{ height: cardHeight }">
-            <p>421212</p>
+            <p class="num">421212</p>
             <p>访问量PV</p>
           </el-card>
         </div>
         <div class="item1">
           <el-card shadow="hover" :body-style="{ height: cardHeight }">
-            <p>421212</p>
+            <p class="num">421212</p>
             <p>独立访客UV</p>
           </el-card>
         </div>
@@ -19,32 +19,34 @@
       <div class="second-row">
         <div class="item2">
           <el-card shadow="hover" :body-style="{ height: cardHeight }">
-            <p>421212</p>
+            <p class="num">421212</p>
             <p>成交额</p>
           </el-card>
         </div>
         <div class="item2">
           <el-card shadow="hover" :body-style="{ height: cardHeight }">
-            <p>421212</p>
-            <p>成交额</p>
+            <p class="num">421212</p>
+            <p>订单量</p>
+            <p class="details">查看明细</p>
           </el-card>
         </div>
         <div class="item2">
           <el-card shadow="hover" :body-style="{ height: cardHeight }">
-            <p>421212</p>
-            <p>成交额</p>
+            <p class="num">421212</p>
+            <p>邀请量</p>
+            <p class="details">查看明细</p>
           </el-card>
         </div>
         <div class="item2">
           <el-card shadow="hover" :body-style="{ height: cardHeight }">
-            <p>421212</p>
-            <p>成交额</p>
+            <p class="num">421212</p>
+            <p>礼物及打赏额</p>
           </el-card>
         </div>
         <div class="item2">
           <el-card shadow="hover" :body-style="{ height: cardHeight }">
-            <p>421212</p>
-            <p>成交额</p>
+            <p class="num">421212</p>
+            <p>礼物送出量</p>
           </el-card>
         </div>
       </div>
@@ -296,6 +298,10 @@ export default {
   }
   .content {
     line-height: 1px;
+    .num {
+      font-size: 28px;
+      margin-bottom: 13px;
+    }
     .first-row {
       display: flex;
       justify-content: space-between;
@@ -303,6 +309,7 @@ export default {
         width: 49%;
         text-align: center;
         margin-bottom: 10px;
+        position: relative;
       }
       /deep/ {
         .el-card__body {
@@ -320,6 +327,7 @@ export default {
         width: 19%;
         text-align: center;
         margin-bottom: 10px;
+        position: relative;
       }
       /deep/ {
         .el-card__body {
@@ -339,6 +347,7 @@ export default {
         text-align: center;
         margin-bottom: 10px;
         cursor: pointer;
+        position: relative;
         /deep/ {
           .el-card__body {
             display: flex;
@@ -347,6 +356,14 @@ export default {
           }
         }
       }
+    }
+
+    .details {
+      position: absolute;
+      bottom: 5px;
+      font-size: 12px;
+      color: #777;
+      cursor: pointer;
     }
 
     .user-list {

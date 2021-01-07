@@ -18,7 +18,7 @@
             </div>
           </div>
           <div class="operate">
-              <el-switch
+              <!-- <el-switch
                 v-model="value1"
                 active-text="设为爆品"
                 :width="35">
@@ -30,7 +30,7 @@
                 active-color="#13ce66"
                 :width="35">
                 </el-switch>
-                <el-divider direction="vertical"></el-divider>
+                <el-divider direction="vertical"></el-divider> -->
                 <el-button type="danger" round size="mini">删除</el-button>
           </div>
       </div>
