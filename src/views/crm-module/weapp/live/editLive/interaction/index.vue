@@ -14,10 +14,10 @@
               <goodsList/>
           </el-tab-pane>
           <el-tab-pane label="优惠券明细" name="second">
-              <couponDetail/>
+              <coupon/>
           </el-tab-pane>
           <el-tab-pane label="答题卡明细" name="third">
-              <answerDetail/>
+              <answer/>
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -51,8 +51,8 @@
 
 <script>
 import goodsList from './goodsList'
-import couponDetail from './couponDetail'
-import answerDetail from './answerDetail'
+import coupon from './coupon'
+import answer from './answer'
 import addGoods from './addGoods'
 import sendCoupon from './sendCoupon'
 export default {
@@ -66,8 +66,8 @@ export default {
   },
   components: {
       goodsList,
-      couponDetail,
-      answerDetail,
+      coupon,
+      answer,
       addGoods,
       sendCoupon
   },
