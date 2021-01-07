@@ -76,17 +76,15 @@
               <el-input-number controls-position="right" v-model.trim ="shopForm.yunfei" autocomplete="off" :min="0" placeholder="" />
             </el-form-item>
             <el-form-item label="是否推荐" prop="recommend">
-              <el-switch v-model.trim ="shopForm.recommend" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+              <el-switch v-model.trim ="shopForm.recommend" active-color="#409EFF" inactive-color="#ff4949"></el-switch>
             </el-form-item>
             <el-form-item label="商品状态" prop="shopStatus">
-              <el-select v-model="shopForm.shopStatus" placeholder="请选择/上架/下架">
-                <el-option label="上架" value="0"></el-option>
-                <el-option label="下架" value="1"></el-option>
-              </el-select>
+              <el-radio v-model="shopForm.shopStatus" label="1">上架</el-radio>
+              <el-radio v-model="shopForm.shopStatus" label="2">下架</el-radio>
             </el-form-item>
           </el-form>
           <div class="btn-bottom">
-            <el-button type="primary" @click="next">下一步</el-button>
+            <el-button type="primary" @click="next">保存并下一步</el-button>
           </div>
         </div>
         <div class="step-two" v-show="active == 1">
