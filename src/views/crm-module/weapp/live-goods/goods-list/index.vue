@@ -10,18 +10,26 @@
         :tableKey="tableKey"
         :loading="loading"
         :fixedTwoRow="fixedTwoRow"
-        :multiple="true"
         :pageConfig="pageConfig"
         @select="handleSelect"
         @pageChange="pageChange">
+        <template slot="goodsImg" slot-scope="scope">
+          <img :src="scope.row.goodsImg || userLogoUrl" style="width:60px;height:60px;" alt="">
+        </template>
+        <template slot="edit" slot-scope="scope">
+          <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑</el-button>
+          <el-divider direction="vertical"></el-divider>
+          <el-button @click="openfullDialogGroup(scope.row)" type="text" size="small">关联规格组</el-button>
+          <el-divider direction="vertical"></el-divider>
+          <el-button @click="handleEdit(scope.row)" type="text" size="small">查看订单</el-button>
+          <el-divider direction="vertical"></el-divider>
+          <el-button @click="handleEdit(scope.row)" type="text" size="small">评价</el-button>
+          <el-divider direction="vertical"></el-divider>
+          <el-button @click="handleDelete(scope.row)" type="text" size="small" style="color: #ec5b56" >删除</el-button>
+        </template>
       </rd-table>
       <fullDialog v-model="showDetail" title="" @change="fullDialogChange">
-        <el-steps :active="active" :space="1000" finish-status="success">
-          <el-step title="1.商品基本信息"></el-step>
-          <el-step title="2.设置商品规格描述"></el-step>
-        </el-steps>
-
-        <div class="w-container mt-15" v-show="active == 0">
+        <div class="w-container">
           <el-form ref="dataForm" :model="shopForm" :rules="addRules" label-width="120px">
             <el-form-item label="项目类型" prop="projectType">
               <el-select v-model="shopForm.projectType" placeholder="请选择/立减优惠/折扣优惠">
@@ -30,18 +38,33 @@
               </el-select>
             </el-form-item>
             <el-form-item label="商品名称" prop="projectName">
-              <el-input v-model.trim="shopForm.shopName" autocomplete="off" placeholder="请输入优惠券名称" />
+              <el-input v-model.trim="shopForm.shopName" autocomplete="off" placeholder="请输入商品名称" />
             </el-form-item>
             <el-form-item label="商品标签" prop="shopTag">
               <el-select v-model.trim="shopForm.shopTag" multiple filterable allow-create default-first-option placeholder="请选择标签，也可自行添加标签">
                 <el-option v-for="item in shopOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
               </el-select>
             </el-form-item>
+            <el-form-item label="商品优惠券" prop="shopsCoupon">
+              <el-select v-model.trim="shopForm.shopTag" filterable multiple placeholder="请选择优惠券">
+                <el-option v-for="item in shopOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+              </el-select>
+            </el-form-item>
             <el-form-item label="虚拟购买数" prop="xnbuyCount">
-              <el-input-number controls-position="right" v-model.trim ="shopForm.xnbuyCount" autocomplete="off" :min="0" placeholder="" />
+              <el-input-number controls-position="right" v-model.trim ="shopForm.xnbuyCount" autocomplete="off" :min="0" style="width:100%;" placeholder="" />
             </el-form-item>
             <el-form-item label="实际购买数" prop="sjbuyCount">
-              <el-input-number controls-position="right" v-model.trim ="shopForm.sjbuyCount" autocomplete="off" :min="0" placeholder="" />
+              <el-input-number controls-position="right" v-model.trim ="shopForm.sjbuyCount" autocomplete="off" :min="0" style="width:100%;" placeholder="" />
+            </el-form-item>
+            <el-form-item label="快递运费" prop="yunfei">
+              <el-input-number controls-position="right" v-model.trim ="shopForm.yunfei" autocomplete="off" :min="0" style="width:100%;" placeholder="" />
+            </el-form-item>
+            <el-form-item label="是否推荐" prop="recommend">
+              <el-switch v-model.trim ="shopForm.recommend" active-color="#409EFF" inactive-color="#ff4949"></el-switch>
+            </el-form-item>
+            <el-form-item label="商品状态" prop="shopStatus">
+              <el-radio v-model="shopForm.shopStatus" label="1">上架</el-radio>
+              <el-radio v-model="shopForm.shopStatus" label="2">下架</el-radio>
             </el-form-item>
             <el-form-item label="商品缩略图(4:3)" prop="shopImg" class="icon-wrapper">
               <Upload-oss
@@ -72,28 +95,37 @@
             <el-form-item label="课程详情" prop="classDetail">
               <RdEditor/>
             </el-form-item>
-            <el-form-item label="快递运费" prop="yunfei">
-              <el-input-number controls-position="right" v-model.trim ="shopForm.yunfei" autocomplete="off" :min="0" placeholder="" />
-            </el-form-item>
-            <el-form-item label="是否推荐" prop="recommend">
-              <el-switch v-model.trim ="shopForm.recommend" active-color="#409EFF" inactive-color="#ff4949"></el-switch>
-            </el-form-item>
-            <el-form-item label="商品状态" prop="shopStatus">
-              <el-radio v-model="shopForm.shopStatus" label="1">上架</el-radio>
-              <el-radio v-model="shopForm.shopStatus" label="2">下架</el-radio>
-            </el-form-item>
           </el-form>
           <div class="btn-bottom">
-            <el-button type="primary" @click="next">保存并下一步</el-button>
+            <el-button type="primary" @click="fullDialogChange(false)">返回</el-button>
+            <el-button type="primary" @click="submitForm">立即创建/保存</el-button>
           </div>
         </div>
-        <div class="step-two" v-show="active == 1">
-          描述描述描述描述描述描述描述描述描述
-          <div class="btn-bottom">
-            <el-button type="primary" @click="prev">上一步</el-button>
-            <el-button type="primary" @click="submitForm">保存</el-button>
-          </div>
+      </fullDialog>
+      <fullDialog v-model="showGroup" title="标题标题标题标题" @change="fullDialogGroup">
+        <el-button type="primary" size="small" @click="openAddGroup">选择规格组</el-button>
+        <div class="w-container">
+
         </div>
+        <rd-dialog
+          title="选择规格组"
+          :dialogVisible="showAddGroup"
+          :width="widthGroup"
+          append-to-body
+          @handleClose="closeAddGroup('dataForm')"
+          @submitForm="submitGroupForm('dataForm')">
+          <search-form :formOptions="optionsGroup" @onSearch="onGroupSearch"></search-form>
+          <rd-table
+            :tableData="tableGroupData"
+            :tableKey="tableGroupKey"
+            :loading="loading"
+            :fixedTwoRow="fixedTwoRow"
+            :multiple="true"
+            :pageConfig="pageGroupConfig"
+            @select="handleGroupSelect"
+            @pageChange="pageGroupChange">
+          </rd-table>
+        </rd-dialog>
       </fullDialog>
     </div>
   </div>
@@ -120,18 +152,30 @@ export default {
         { prop: 'goodsname', element: 'el-input', placeholder: '请选择商品名称' },
         { prop: 'status', element: 'el-select', placeholder: '请选择状态' },
       ],
-      tableData: [],
+      tableData: [
+        {
+          goodsId: 12306,
+          projectType: '执业药师',
+          goodsImg: '',
+          goodsName: '2022年最强最全的执业药师课程',
+          goodsPrice: 1999,
+          allSales: 500,
+          status: '上架',
+          createTime: '2022-01-01 00:00:00'
+        }
+      ],
       tableKey: [
         { name: '商品id',value: 'goodsId' },
         { name: '项目类型',value: 'projectType' },
-        { name: '商品缩略图',value: 'goodsImg' },
+        { name: '商品缩略图',value: 'goodsImg',operate: true,width: 100 },
         { name: '商品名称',value: 'goodsName' },
         { name: '商品价格',value: 'goodsPrice' },
         { name: '总销售量',value: 'allSales' },
         { name: '状态',value: 'status' },
         { name: '创建时间',value: 'createTime' },
-        { name: '操作',value: 'edit',operate: true,width: 120 }
+        { name: '操作',value: 'edit',operate: true,width: 280 }
       ],
+      userLogoUrl: require('@/assets/userlogo.png'),
       emptyText: '暂无数据',
       fixedTwoRow: true,
       pageConfig: {
@@ -141,13 +185,13 @@ export default {
       },
       loading: false,
       
-      // 弹窗
+      // 新增弹窗
       showDetail: false,
-      active: 0,
       uploadOssElem: true,
       shopForm: {
         projectType: '',
         shopName: '',
+        shopsCoupon: '',
         shopTag: '',
         xnbuyCount: '',
         sjbuyCount: '',
@@ -174,7 +218,34 @@ export default {
         projectType: [
           { required: true, message: "请选择类型", trigger: "blur" },
         ]
-      }
+      },
+
+      // 关联规格组弹窗
+      showGroup: false,
+      showAddGroup: false,
+      widthGroup: "800px",
+      searchGroupForm: {},
+      optionsGroup: [
+        { prop: 'groupName', element: 'el-input', placeholder: '请输入规格组名称' },
+        { prop: 'groupRemark', element: 'el-input', placeholder: '请输入备注内容' },
+      ],
+      tableGroupData: [
+        {
+          groupName: "中药",
+          groupCount: 4,
+          groupRemark: '备注备注金牌通过班',
+        }
+      ],
+      tableGroupKey: [
+        { name: '规格组',value: 'groupName' },
+        { name: '规格数量',value: 'groupCount' },
+        { name: '备注',value: 'groupRemark' },
+      ],
+      pageGroupConfig: {
+        totalCount: 20,
+        pageNum: 1,
+        pageSize: 10,
+      },
     }
   },
   methods: {
@@ -185,6 +256,12 @@ export default {
     handleAdd() {
       console.log(666)
     },
+    handleEdit() {
+      console.log(886)
+    },
+    handleDelete() {
+      console.log(996)
+    },
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
@@ -192,7 +269,7 @@ export default {
       console.log(val,'pagechange')
     },
 
-    // 全屏弹窗
+    // 新增弹窗
     openfullDialogChange() {
       this.showDetail = true;
     },
@@ -207,19 +284,40 @@ export default {
         this[dataElem] = true;
       });
     },
-    prev() {
-      --this.active
-    },
-    next() {
-      if (this.active++ > 1) {
-        this.active = 0;
-      }
-    },
     submitForm(formName) {
       console.log( 666);
-      this.active = 0;
       this.showDetail = false;
-    }
+    },
+
+    // 关联规格组弹窗
+    openfullDialogGroup() {
+      this.showGroup = true;
+    },
+    fullDialogGroup(val) {
+      this.showGroup = val;
+    },
+
+    // 选择规格组弹窗
+    onGroupSearch(val) {
+      this.searchGroupForm = {...val};
+      console.log(val,this.searchGroupForm , 'val---')
+    },
+    openAddGroup() {
+      this.showAddGroup = true
+    },
+    closeAddGroup() {
+      this.showAddGroup = false
+    },
+    submitGroupForm(formName) {
+      console.log( 666);
+      this.showAddGroup = false;
+    },
+    handleGroupSelect(rows) {
+      console.log(rows, "rows---");
+    },
+    pageGroupChange(val) {
+      console.log(val,'pagechange')
+    },
   }
 }
 </script>
@@ -230,10 +328,17 @@ export default {
     .el-form-item__content {
       width: 400px;
     }
+    .el-divider--vertical {
+      margin: 0 4px;
+    }
+    .img180 {
+      width: 100px;
+      height: 100px;
+    }
   }
 }
 .btn-bottom {
   width: 50%;
-  margin: 0 45%;
+  margin-left: 7.5%;
 }
 </style>

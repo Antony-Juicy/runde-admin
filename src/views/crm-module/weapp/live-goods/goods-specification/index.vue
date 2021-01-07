@@ -46,6 +46,18 @@
             <el-form-item label="开通的科目id" prop="enquireSubjectNameOneID">
               <el-input v-model.trim="specificationForm.enquireSubjectNameOneID" autocomplete="off" placeholder="请输入科目id" />
             </el-form-item>
+            <el-form-item
+              v-for="(domain, index) in specificationForm.domains"
+              :label="'配套内容' + index"
+              :key="domain.key"
+              :prop="'domains.' + index + '.value'"
+            >
+              <el-input v-model="domain.value" placeholder="内容名称" style="width: 40%;"></el-input>
+              <!-- <el-input v-model="domain.num" placeholder="数量" style="width: 35%;"></el-input> -->
+              <el-input-number controls-position="right" v-model ="domain.num" autocomplete="off" :min="0" placeholder="数量" />
+              <el-button type="danger" size="small" @click.prevent="removeDomain(domain)">删除</el-button>
+              <el-button type="primary" size="small" @click="addDomain">新增</el-button>
+            </el-form-item>
           </el-form>
         </rd-dialog>
       </div>
@@ -91,7 +103,7 @@ export default {
       loading: false,
 
       // 弹窗
-      widthNew: "600px",
+      widthNew: "800px",
       specificationVisible: false,
       specificationStatus: true,
       specificationForm: {
@@ -101,7 +113,11 @@ export default {
         priceH: '',
         inventory: '',
         enquireClassOneID: '',
-        enquireSubjectNameOneID: ''
+        enquireSubjectNameOneID: '',
+        domains: [{
+          value: '',
+          num: ''
+        }],
       }
     }
   },
@@ -126,11 +142,25 @@ export default {
     }, 
     closeSpecification(formName) {
       this.specificationVisible = false;
-      // this.$refs[formName].resetFields();
+      this.specificationForm.domains[0].num = 0 // 手动把数量清零
+      this.$refs[formName].resetFields();
     },
     submitForm(formName) {
       console.log(this.specificationForm, 666);
       this.closeSpecification("dataForm")
+    },
+    removeDomain(item) {
+      var index = this.specificationForm.domains.indexOf(item)
+      if (index !== -1) {
+        this.specificationForm.domains.splice(index, 1)
+      }
+    },
+    addDomain() {
+      this.specificationForm.domains.push({
+        value: '',
+        num: '',
+        // key: Date.now()
+      });
     }
   }
 }
