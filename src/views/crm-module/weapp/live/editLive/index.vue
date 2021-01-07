@@ -10,14 +10,14 @@
             <el-tab-pane label="互动设置">
                 <interaction/>
             </el-tab-pane>
+            <el-tab-pane label="数据分析">
+                <analysis/>
+            </el-tab-pane>
             <el-tab-pane label="评论管理">
                 <comment/>
             </el-tab-pane>
             <el-tab-pane label="回放管理">
                 <playback/>
-            </el-tab-pane>
-            <el-tab-pane label="数据分析">
-                <analysis/>
             </el-tab-pane>
         </el-tabs>
   </div>

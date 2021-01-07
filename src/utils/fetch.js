@@ -60,7 +60,7 @@ service.interceptors.response.use(
       Message({
         message: res.msg || 'Error',
         type: 'error',
-        duration: 10 * 1000
+        duration: 3 * 1000
       })
 
       // 4: Illegal token;
