@@ -1,19 +1,25 @@
 <template>
   <div class="table-wrapper">
     <div class="filter-bar" v-if="filterColumn">
-      <el-popover
-        placement="bottom"
-        width="150"
-        trigger="click">
-          <el-checkbox v-for="item in tableKey" :label="item.value" :key="item.value" v-model="item.show" @change="checkboxChange">{{item.name}}</el-checkbox>
-        <el-button slot="reference" size="small"><i class="el-icon-finished" style="font-size: 14px"></i></el-button>
+      <el-popover placement="bottom" width="150" trigger="click">
+        <el-checkbox
+          v-for="item in tableKey"
+          :label="item.value"
+          :key="item.value"
+          v-model="item.show"
+          @change="checkboxChange"
+          >{{ item.name }}</el-checkbox
+        >
+        <el-button slot="reference" size="small"
+          ><i class="el-icon-finished" style="font-size: 14px"></i
+        ></el-button>
       </el-popover>
     </div>
     <el-table
       :data="tableData"
       v-loading="loading"
       :ref="tableName"
-      :class="{'twoRowContainer': fixedTwoRow}"
+      :class="{ twoRowContainer: fixedTwoRow, noBorder: !border }"
       :max-height="tbodyHeight"
       :show-header="showHeader"
       :border="border"
@@ -23,8 +29,8 @@
       @sort-change="handelSortChange"
     >
       <div slot="empty">
-        <img src="@/assets/empty-image.png" alt="" class="img-empty">
-        <p>{{emptyText}}</p>
+        <img src="@/assets/empty-image.png" alt="" class="img-empty" />
+        <p>{{ emptyText }}</p>
       </div>
       <el-table-column v-if="multiple" type="selection" width="55">
       </el-table-column>
@@ -49,9 +55,13 @@
           :width="item.width"
         >
           <template slot-scope="scope">
-            <el-tooltip placement="top" popper-class="tooltip-wrapper" effect="light">
-              <div slot="content">{{scope.row[item.value]}}</div>
-              <div>{{scope.row[item.value]}}</div>
+            <el-tooltip
+              placement="top"
+              popper-class="tooltip-wrapper"
+              effect="light"
+            >
+              <div slot="content">{{ scope.row[item.value] }}</div>
+              <div>{{ scope.row[item.value] }}</div>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -81,6 +91,7 @@
         :total="pageConfig.totalCount"
         :page.sync="pageConfig.currentPage"
         :limit.sync="pageConfig.pageSize"
+        :pager-count="pagerCount"
         @pagination="pageChange"
       />
     </template>
@@ -89,7 +100,7 @@
 
 <script>
 import Pagination from "@/components/Pagination";
-const cityOptions = ['上海', '北京', '广州', '深圳'];
+const cityOptions = ["上海", "北京", "广州", "深圳"];
 export default {
   name: "RdTable",
   props: {
@@ -127,43 +138,48 @@ export default {
     },
     // 固定两行的高度，超出隐藏
     fixedTwoRow: {
-      type:Boolean,
-      default: false
+      type: Boolean,
+      default: false,
     },
     // 没有数据的时候显示的内容
     emptyText: {
       type: String,
-      default: '暂无数据'
+      default: "暂无数据",
     },
     // 是否显示筛选列按钮
     filterColumn: {
       type: Boolean,
-      default: false
+      default: false,
     },
     // 固定表头时，设置表体的高度
     tbodyHeight: {
       type: Number | String,
-      default: '100%'
+      default: "100%",
     },
     // 点击是否高亮
     highlightCurrentRow: {
       type: Boolean,
-      default: false
+      default: false,
     },
     // table的ref命名
     tableName: {
       type: String,
-      default: "myTable"
+      default: "myTable",
     },
     // 是否显示表头
     showHeader: {
       type: Boolean,
-      default: true
+      default: true,
     },
     // 是否显示边框
     border: {
       type: Boolean,
-      default: true
+      default: true,
+    },
+    // 最大页码按钮数
+     pagerCount:{
+      type: Number,
+      default: 7
     }
   },
   components: {
@@ -171,47 +187,46 @@ export default {
   },
   data() {
     return {
-       checkAll: false,
-        checkedCities: [],
-        cities: cityOptions,
-        isIndeterminate: true,
-        tableKeyData:[]
+      checkAll: false,
+      checkedCities: [],
+      cities: cityOptions,
+      isIndeterminate: true,
+      tableKeyData: [],
     };
   },
-  created(){
-    this.tableKey.forEach(item => {
+  created() {
+    this.tableKey.forEach((item) => {
       item.show = true;
-    })
+    });
     this.tableKeyData = this.tableKey;
   },
-  computed:{
-    checkColumn(){
-      return this.tableKeyData.filter(item => item.show)
-    }
+  computed: {
+    checkColumn() {
+      return this.tableKeyData.filter((item) => item.show);
+    },
   },
   methods: {
-    checkboxChange(val){
+    checkboxChange(val) {
       this.tableKeyData = JSON.parse(JSON.stringify(this.tableKey));
     },
     handleSelectionChange(rows) {
       this.$emit("select", rows);
     },
-    pageChange(val){
-      this.$emit("pageChange",val);
+    pageChange(val) {
+      this.$emit("pageChange", val);
     },
-    handelSortChange(data){
+    handelSortChange(data) {
       this.$emit("sortChange", data);
     },
-    handleCheckedCitiesChange(val){
-      console.log(val,'valll');
+    handleCheckedCitiesChange(val) {
+      console.log(val, "valll");
     },
-    handleCurrentChange(data){
-      this.$emit("currentChange",data);
+    handleCurrentChange(data) {
+      this.$emit("currentChange", data);
     },
-    toggleRowSelection(){
-      return this.$refs[this.tableName].toggleRowSelection
-    }
-
+    toggleRowSelection() {
+      return this.$refs[this.tableName].toggleRowSelection;
+    },
   },
 };
 </script>
@@ -245,7 +260,7 @@ export default {
     }
     .el-table__header {
       th {
-        background-color: #FAFAFA;
+        background-color: #fafafa;
         color: #333333;
         font-weight: 600;
         height: 43px;
@@ -256,12 +271,12 @@ export default {
       td {
         color: #333333;
         font-weight: 400;
-        
       }
     }
   }
-  .el-table td, .el-table th {
-        padding: 3px 0;
+  .el-table td,
+  .el-table th {
+    padding: 3px 0;
   }
   .tooltip-wrapper {
     max-width: 400px;
@@ -272,16 +287,30 @@ export default {
 .twoRowContainer {
   /deep/ {
     .el-table__body td {
-       height: 55px;
-       .cell {
-            text-overflow: -o-ellipsis-lastline;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            line-clamp: 2;
-            -webkit-box-orient: vertical;
-          }
+      height: 55px;
+      .cell {
+        text-overflow: -o-ellipsis-lastline;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+    }
+  }
+}
+
+// 没有边框
+.noBorder {
+  &::before {
+    display: none;
+  }
+  /deep/ {
+    .el-table__body td,
+    .el-table__header th {
+      border: none;
+      background-color: #fff;
     }
   }
 }

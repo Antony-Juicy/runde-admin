@@ -153,14 +153,14 @@ export default {
                 justify-content: space-around;
             }
         }
-        /deep/ {
-            .el-table td {
-                border: none;
-            }
-            .el-table::before {
-                display: none;
-            }
-        }
+        // /deep/ {
+        //     .el-table td {
+        //         border: none;
+        //     }
+        //     .el-table::before {
+        //         display: none;
+        //     }
+        // }
     }
 }
 </style>

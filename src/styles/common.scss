@@ -94,3 +94,12 @@
       background   : #d0d1d3;
     }
 }
+
+.el-drawer__header {
+  span,.el-drawer__close-btn {
+    &:focus {
+      outline: none;
+    }
+  }
+  
+}

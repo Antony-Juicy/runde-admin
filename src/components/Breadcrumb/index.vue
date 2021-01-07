@@ -4,9 +4,9 @@
       <el-breadcrumb-item v-for="(item, index) in levelList" :key="item.path">
         <span
           v-if="item.redirect === 'noRedirect' || index == levelList.length - 1"
-          >{{ item.meta.title }}</span
+          >{{ item&&item.meta&&item.meta.title }}</span
         >
-        <span v-else class="no-redirect">{{ item.meta.title }}</span>
+        <span v-else class="no-redirect">{{ item&&item.meta&&item.meta.title }}</span>
       </el-breadcrumb-item>
     </transition-group>
   </el-breadcrumb>
@@ -60,13 +60,13 @@ export default {
     getBreadcrumb() {
       // only show routes with meta.title
       const matched = this.$route.matched.filter(
-        (item) => item.meta && item.meta.title
+        (item) => item&&item.meta && item.meta.title
       );
       const initLevelList = matched.filter(
-        (item) => item.meta && item.meta.title && item.meta.breadcrumb !== false
+        (item) => item&&item.meta && item.meta.title && item.meta.breadcrumb !== false
       );
       this.levelList = findPathByLeafId(
-        initLevelList[0].meta.id,
+        initLevelList[0]&&initLevelList[0].meta&&initLevelList[0].meta.id,
         this.permission_addRoutes
       );
     },
