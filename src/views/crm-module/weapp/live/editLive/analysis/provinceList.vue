@@ -1,17 +1,22 @@
 <template>
-  <div class="answer-detail">
-    <PieChart/>
+  <div class="province-list">
       <search-form
         :formOptions="formOptions"
         @onSearch="onSearch"
       ></search-form>
       <div class="w-container">
+        <div class="btn-wrapper">
+        <el-button type="warning" size="small" @click="handleAdd"
+          >导出数据</el-button
+        >
+      </div>
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
         :pageConfig="pageConfig"
         :pager-count="5"
         :tbodyHeight="600"
+        fixedTwoRow
         @pageChange="pageChange"
         @sortChange="handelSortChange"
       >
@@ -24,26 +29,16 @@
 </template>
 
 <script>
-import PieChart from './PieChart'
+
 export default {
-  name:"answer-detail",
+  name:"province-list",
   data(){
     return {
       formOptions: [
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "请输入昵称",
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "请输入用户手机号",
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "请选择",
+          placeholder: "请输入省校名称",
         }
       ],
       tableData: [
@@ -59,18 +54,36 @@ export default {
         { id: 10,name: "飞翔的荷兰人1", phone:'18892026183'  }
       ],
       tableKey: [
+        {
+          name: "排名",
+          value: "index",
+          operate: true,
+          width: 80
+        },
          {
-          name: "微信昵称",
+          name: "省校",
           value: "phone"
         },
         {
-          name: "手机号",
-          value: "phone"
+          name: "订单量",
+          value: "cutdown",
+          sortable: 'custom'
         },
         {
-          name: "选择选项",
-          value: "phone"
+          name: "已成交数",
+          value: "menuUrl",
+          sortable: 'custom'
         },
+        {
+          name: "实际邀请人数",
+          value: "visit",
+          sortable: 'custom'
+        },
+        {
+          name: "成交金额",
+          value: "menuOrder",
+          sortable: 'custom'
+        }
       ],
       pageConfig: {
         totalCount: 100,
@@ -78,9 +91,6 @@ export default {
         pageSize: 10,
       },
     }
-  },
-  components:{
-    PieChart
   },
    methods: {
      handleAdd(){},
@@ -105,10 +115,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.answer-detail {
-     padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 20px;
-    border-top: 1px solid #eee;
+.province-list {
+    padding-left: 20px;
 }
 </style>

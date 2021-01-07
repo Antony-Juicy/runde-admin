@@ -97,6 +97,12 @@ export default {
           callback(valid, this.formData);
       });
     },
+    // 搜索
+    onSearch() {
+      this.validate(() => {
+        this.$emit("onSearch", this.formData);
+      });
+    },
 
     // 重置表单
     resetFields(){

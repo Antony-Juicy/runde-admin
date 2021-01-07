@@ -1,24 +1,23 @@
 <template>
   <div class="coupon-detail">
-      <div class="tips">
-        温馨提醒：设置的优惠券在直播当天用户都能领取，过了当天24：00：00之后则不能再领取红包
-      </div>
-      <div class="content">
-        <rd-table
+      <search-form
+        :formOptions="formOptions"
+        @onSearch="onSearch"
+      ></search-form>
+      <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
         :pageConfig="pageConfig"
+        :pager-count="5"
+        :tbodyHeight="600"
         fixedTwoRow
-        highlight-current-row
         @pageChange="pageChange"
+        @sortChange="handelSortChange"
       >
-        <template slot="edit" slot-scope="scope">
-          <el-button @click="handleEdit(scope.row)" type="text" size="small"
-            >领取明细</el-button
-          >
+        <template slot="index" slot-scope="scope">
+          {{scope.$index}}
         </template>
       </rd-table>
-      </div>
   </div>
 </template>
 
@@ -28,48 +27,66 @@ export default {
   name:"coupon-detail",
   data(){
     return {
+      formOptions: [
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "请输入昵称",
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "请输入用户手机号",
+        },
+           {
+          prop: "time",
+          element: "el-date-picker",
+          startPlaceholder: "领取时间(开始)",
+          endPlaceholder: "领取时间(结束)",
+          initWidth: true,
+        },
+      ],
       tableData: [
-        { id: 1, name: "飞翔的荷兰人3", cutdown: 1608897351706, visit: 2,phone:'15692026183' },
+       { id: 1, name: "飞翔的荷兰人3", cutdown: 1608897351706, visit: 2,phone:'15692026183' },
         { id: 2, name: "飞翔的荷兰人2",cutdown: new Date().getTime(),phone:'17092026183'  },
         { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
+        { id: 4,name: "飞翔的荷兰人1", phone:'18892026183'  },
+        { id: 5,name: "飞翔的荷兰人1", phone:'18892026183'  },
+        { id: 6,name: "飞翔的荷兰人1", phone:'18892026183'  },
+        { id: 7,name: "飞翔的荷兰人1", phone:'18892026183'  },
+        { id: 8,name: "飞翔的荷兰人1", phone:'18892026183'  },
+        { id: 9,name: "飞翔的荷兰人1", phone:'18892026183'  },
+        { id: 10,name: "飞翔的荷兰人1", phone:'18892026183'  }
       ],
       tableKey: [
         {
-          name: "优惠券名称",
-          value: "name",
+          name: "微信昵称",
+          value: "index"
         },
          {
-          name: "优惠券类型",
+          name: "手机号",
           value: "phone"
         },
         {
-          name: "派发数量",
-          value: "cutdown"
+          name: "领取时间",
+          value: "cutdown",
         },
         {
-          name: "派发时间",
-          value: "menuUrl",
-        },
-        {
-          name: "领取时长",
-          value: "visit"
-        },
-        {
-          name: "操作",
-          value: "edit",
-          operate: true,
-          width: 120
+          name: "使用时间",
+          value: "menuUrl"
         }
       ],
       pageConfig: {
         totalCount: 100,
         currentPage: 1,
         pageSize: 10,
-      }
+      },
     }
   },
    methods: {
-     pageChange(val) {
+     handleAdd(){},
+      onSearch() {},
+      pageChange(val) {
       // this.pageConfig.currentPage = val.page;
       // this.pageConfig.pageSize = val.limit;
       // console.log(this.searchForm,'this.searchForm--')
@@ -80,6 +97,9 @@ export default {
       //   ...this.searchForm,
       //   parentId: this.parentId
       // });
+    },
+    handelSortChange(val){
+      console.log(val,'valll')
     }
   }
 }
@@ -87,11 +107,8 @@ export default {
 
 <style lang="scss" scoped>
 .coupon-detail {
-  .tips {
-    color: red;
-    font-size: 12px;
-    margin-bottom: 10px;
-    margin-top: 10px;
-  }
+    padding-left: 20px;
+    padding-right: 20px;
+    border-top: 1px solid #eee;
 }
 </style>

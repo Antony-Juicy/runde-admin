@@ -49,6 +49,7 @@
       <fullDialog v-model="editVisible" title="直播名称1" @change="editVisible = false">
         <editLive ref="editLive" @close="editVisible = false"/>
       </fullDialog>
+
     </div>
   </div>
 </template>
@@ -205,7 +206,7 @@ export default {
 .live-container {
   /deep/ {
     .el-form-item__content {
-      width: 400px;
+      width: 495px;
     }
   }
 }

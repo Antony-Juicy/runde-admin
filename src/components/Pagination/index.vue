@@ -7,6 +7,7 @@
       :layout="layout"
       :page-sizes="pageSizes"
       :total="total"
+      :pager-count="pagerCount"
       v-bind="$attrs"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
@@ -53,6 +54,10 @@ export default {
     hidden: {
       type: Boolean,
       default: false
+    },
+    pagerCount:{
+      type: Number,
+      default: 7
     }
   },
   computed: {

@@ -27,7 +27,7 @@
 import editForm from './editForm';
 import share from './share';
 import interaction from './interaction/index.vue';
-import analysis from './analysis';
+import analysis from './analysis/index.vue';
 import comment from './comment';
 import playback from './playback';
 export default {

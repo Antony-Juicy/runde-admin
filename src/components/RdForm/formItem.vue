@@ -14,6 +14,23 @@
       size="small">
     </el-input>
 
+
+    <template v-if="isRadio">
+      <template  v-for="item in itemOptions.options">
+        <el-radio
+          :key="item.value"
+          :label="item.value"
+          v-model.trim="currentVal"
+            v-bind="bindProps"
+            v-on="bindEvents"
+          :disabled="itemOptions.disabled">
+          {{item.label}}
+        </el-radio>
+        <span class="radio-tips" :key="item.label" v-if="item.tips">({{item.tips}})</span>
+      </template>
+      
+    </template>
+    
     <el-input-number
       v-if="isInputNumber"
       v-model.trim="currentVal"
@@ -203,6 +220,9 @@ export default {
     // el-cascader 级联选择器
     isCascader () {
       return this.itemOptions.element === 'el-cascader'
+    },
+    isRadio(){
+       return this.itemOptions.element === 'el-radio'
     }
   },
 
@@ -289,6 +309,12 @@ export default {
 // input padding
 .el-input__inner {
   padding: 0 5px;
+}
+
+.radio-tips {
+  font-size: 12px;
+  color: #777;
+  margin-left: -6px;
 }
 </style>
 
