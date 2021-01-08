@@ -23,9 +23,10 @@
         @submitForm="submitForm('dataForm')">
         <el-form ref="dataForm" :model="couponForm" label-width="100px">
           <el-form-item label="优惠券类型" prop="couponType">
-            <el-select v-model="couponForm.couponType" placeholder="请选择/立减优惠/折扣优惠">
-              <el-option label="立减优惠" value="0"></el-option>
-              <el-option label="折扣优惠" value="1"></el-option>
+            <el-select v-model="couponForm.couponType" placeholder="请选择/立减优惠/折扣优惠/满减优惠">
+              <el-option label="立减优惠" value="1"></el-option>
+              <el-option label="折扣优惠" value="2"></el-option>
+              <el-option label="满减优惠" value="3"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="优惠券名称" prop="couponName">
@@ -34,8 +35,25 @@
           <el-form-item label="面额" prop="couponMz">
             <el-input v-model.trim="couponForm.couponMz" autocomplete="off" placeholder="请输入面额" />
           </el-form-item>
-          <el-form-item label="使用条件" prop="condition">
-            <el-input v-model.trim="couponForm.condition" autocomplete="off" placeholder="" />
+          <el-form-item label="使用条件" prop="condition" v-if="couponForm.couponType == 1">
+            <el-input v-model.trim="couponForm.condition" autocomplete="off" placeholder="" style="width:49%;">
+              <template slot="append">元</template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="使用条件" prop="condition" v-if="couponForm.couponType == 2">
+            <el-input v-model.trim="couponForm.condition" autocomplete="off" placeholder="" style="width:49%;">
+              <template slot="append">折</template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="使用条件" prop="condition" v-if="couponForm.couponType == 3">
+            <el-input v-model.trim="couponForm.condition" autocomplete="off" placeholder="" style="width:49%;">
+              <template slot="prepend">满</template>
+              <template slot="append">元</template>
+            </el-input>
+            <el-input v-model.trim="couponForm.condition" autocomplete="off" placeholder="" style="width:50%;">
+              <template slot="prepend">减</template>
+              <template slot="append">元</template>
+            </el-input>
           </el-form-item>
           <el-form-item label="状态" prop="couponType">
             <el-select v-model="couponForm.couponsxjStatus" placeholder="请选择/上架/下架">

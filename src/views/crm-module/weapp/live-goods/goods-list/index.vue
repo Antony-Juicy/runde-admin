@@ -105,7 +105,21 @@
       <fullDialog v-model="showGroup" title="标题标题标题标题" @change="fullDialogGroup">
         <el-button type="primary" size="small" @click="openAddGroup">选择规格组</el-button>
         <div class="w-container">
-
+          <div v-for="item in 2" :key="item" style="margin-bottom:10px;">
+            <div style="padding: 0 20px;height: 40px; border: 1px solid #EBEEF5; line-height:40px;background-color: rgb(242, 242, 242);">
+              标题栏
+              <span style="float:right;padding-right:20px;">
+                共1个规格
+                <el-button @click="handleDelete()" type="text" size="small" style="margin-left:20px; color: #ec5b56" >删除</el-button>
+              </span>
+            </div>
+            <rd-table
+              :tableData="tableData"
+              :tableKey="tableKey"
+              :loading="loading"
+              :fixedTwoRow="fixedTwoRow">
+            </rd-table>
+          </div>
         </div>
         <rd-dialog
           title="选择规格组"
