@@ -24,7 +24,11 @@
             >管理</el-button
           >
           <el-divider direction="vertical"></el-divider>
-          <el-button @click="handleEdit(scope.row)" type="text" size="small" style="color: #ffa500"
+          <el-button
+            @click="handleLink(scope.row)"
+            type="text"
+            size="small"
+            style="color: #ffa500"
             >链接</el-button
           >
           <el-divider direction="vertical"></el-divider>
@@ -40,24 +44,43 @@
 
       <!-- 添加直播 -->
       <!-- $refs.addLive.handleClose('dataForm3'); -->
-      <fullDialog v-model="addVisible" title="创建直播" @change="addVisible = false">
-        <addLive ref="addLive" @close="addVisible = false"/>
+      <fullDialog
+        v-model="addVisible"
+        title="创建直播"
+        @change="addVisible = false"
+      >
+        <addLive ref="addLive" @close="addVisible = false" />
       </fullDialog>
 
       <!-- 管理直播 -->
       <!-- $refs.editLive.handleClose('dataForm4'); -->
-      <fullDialog v-model="editVisible" title="直播名称1" @change="editVisible = false">
-        <editLive ref="editLive" @close="editVisible = false"/>
+      <fullDialog
+        v-model="editVisible"
+        title="直播名称1"
+        @change="editVisible = false"
+      >
+        <editLive ref="editLive" @close="editVisible = false" />
       </fullDialog>
 
+      <!-- 链接 -->
+      <rd-dialog
+        :title="'直播间名称：' + '直播名称1'"
+        :dialogVisible="linkVisible"
+        :showFooter="false"
+        :width="'900px'"
+        @handleClose="linkVisible = false"
+      >
+        <manageLink/>
+      </rd-dialog>
     </div>
   </div>
 </template>
 
 <script>
-import fullDialog from '@/components/FullDialog';
-import addLive from './addLive';
-import editLive from './editLive/index.vue';
+import fullDialog from "@/components/FullDialog";
+import addLive from "./addLive";
+import manageLink from "./manageLink";
+import editLive from "./editLive/index.vue";
 export default {
   name: "live",
   data() {
@@ -127,7 +150,7 @@ export default {
         },
         {
           name: "项目类型",
-          value: "cutdown"
+          value: "cutdown",
         },
         {
           name: "直播名称",
@@ -135,11 +158,11 @@ export default {
         },
         {
           name: "收费类型",
-          value: "visit"
+          value: "visit",
         },
         {
           name: "直播状态",
-          value: "menuOrder"
+          value: "menuOrder",
         },
         {
           name: "显示状态",
@@ -160,7 +183,8 @@ export default {
         {
           name: "操作",
           value: "edit",
-          operate: true
+          operate: true,
+          width: 160
         },
       ],
       pageConfig: {
@@ -170,13 +194,17 @@ export default {
       },
       // 添加弹窗
       addVisible: false,
-      editVisible: false
+      // 编辑弹窗
+      editVisible: false,
+      // 链接弹窗
+      linkVisible: false
     };
   },
-  components:{
+  components: {
     fullDialog,
     addLive,
-    editLive
+    editLive,
+    manageLink
   },
   methods: {
     onSearch() {},
@@ -195,9 +223,13 @@ export default {
     handleAdd() {
       this.addVisible = true;
     },
-    handleEdit(){
+    handleEdit() {
       this.editVisible = true;
-    }
+    },
+    handleLink() {
+      this.linkVisible = true;
+    },
+    handleDelete() {},
   },
 };
 </script>
