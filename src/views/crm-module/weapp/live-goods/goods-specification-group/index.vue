@@ -45,7 +45,9 @@
       <!-- 添加规则组 -->
       <!-- 管理规格 -->
       <fullDialog v-model="showGroup" title="标题标题标题标题" @change="closeConfig">
-        <el-button type="primary" size="small" @click="openAddConfig">添加规格</el-button>
+        <div class="btn-wrapper">
+          <el-button type="primary" size="small" @click="openAddConfig">添加规格</el-button>
+        </div>
         <rd-table
           :tableData="tableSpecificationData"
           :tableKey="tableSpecificationKey"
@@ -139,7 +141,7 @@ export default {
         { name: '规格数',value: 'num' },
         { name: '状态',value: 'status' },
         { name: '备注',value: 'remake' },
-        { name: '操作',value: 'edit',operate: true }
+        { name: '操作',value: 'edit',operate: true,width: 130 }
       ],
       emptyText: '暂无数据',
       fixedTwoRow: true,
@@ -284,5 +286,8 @@ export default {
 <style lang="scss" scoped>
 .specification-group-container {
 
+  .btn-wrapper {
+    margin-bottom: 8px;
+  }
 }
 </style>
