@@ -35,17 +35,17 @@
           <el-form-item label="面额" prop="couponMz">
             <el-input v-model.trim="couponForm.couponMz" autocomplete="off" placeholder="请输入面额" />
           </el-form-item>
-          <el-form-item label="使用条件" prop="condition" v-if="couponForm.couponType == 1">
-            <el-input v-model.trim="couponForm.condition" autocomplete="off" placeholder="" style="width:49%;">
+          <el-form-item label="立减面额" prop="condition" v-if="couponForm.couponType == 1">
+            <el-input v-model.trim="couponForm.condition" autocomplete="off" placeholder="">
               <template slot="append">元</template>
             </el-input>
           </el-form-item>
-          <el-form-item label="使用条件" prop="condition" v-if="couponForm.couponType == 2">
-            <el-input v-model.trim="couponForm.condition" autocomplete="off" placeholder="" style="width:49%;">
+          <el-form-item label="折扣面额" prop="condition" v-if="couponForm.couponType == 2">
+            <el-input v-model.trim="couponForm.condition" autocomplete="off" placeholder="">
               <template slot="append">折</template>
             </el-input>
           </el-form-item>
-          <el-form-item label="使用条件" prop="condition" v-if="couponForm.couponType == 3">
+          <el-form-item label="满减面额" prop="condition" v-if="couponForm.couponType == 3">
             <el-input v-model.trim="couponForm.condition" autocomplete="off" placeholder="" style="width:49%;">
               <template slot="prepend">满</template>
               <template slot="append">元</template>
