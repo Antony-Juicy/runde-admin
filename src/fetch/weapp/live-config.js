@@ -12,4 +12,5 @@ export default {
   projectType_update: { url:'/live/console/type/update', method: 'post' },
   projectType_list: { url: '/live/console/type/page_list', method: 'post' },
   projectType_add: { url: '/live/console/type/add', method: 'post' },
+  projectType_normalList: { url: '/live/console/type/normal_list', method: 'post' },
 }
