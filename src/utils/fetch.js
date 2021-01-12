@@ -29,7 +29,7 @@ const getParam = () => {
 service.interceptors.request.use(
   config => {
     if (config.data && config.data.append) {
-      config.data.append('token', "rd_superadmin")
+      config.data.append('token', getToken())
       let _param = getParam()
       for (const i in _param) {
         config.data.append(i, _param[i])
@@ -37,7 +37,7 @@ service.interceptors.request.use(
     } else {
       config.data = qs.stringify({
         ...config.data,
-        token: "rd_superadmin",
+        token: getToken(),
         ...getParam()
       })
     }
@@ -165,8 +165,8 @@ const $fetch = async (apiName, params, config) => {
   }
 
   if(getToken()){
-    // newConfig.headers["Authorization"] = getToken();
-    newConfig.headers["Authorization"] = 'rd_superadmin';
+    newConfig.headers["Authorization"] = getToken();
+    // newConfig.headers["Authorization"] = 'rd_superadmin';
   }
 
   if (params) {
