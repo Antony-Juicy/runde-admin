@@ -49,7 +49,7 @@
         title="创建直播"
         @change="addVisible = false"
       >
-        <addLive ref="addLive" @close="addVisible = false" v-if="showAdd"/>
+        <addLive ref="addLive" @close="addVisible = false;" v-if="addVisible"/>
       </fullDialog>
 
       <!-- 管理直播 -->
@@ -222,14 +222,11 @@ export default {
       // });
     },
     handleAdd() {
-      this.showAdd = false;
-      this.$nextTick(()=>{
-        this.showAdd = true;
          this.addVisible = true;
          this.$nextTick(()=>{
             this.$refs.addLive.initGetConfig = true;
          })
-      })
+
      
     },
     handleEdit() {

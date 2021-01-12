@@ -44,13 +44,6 @@ export default {
       this.getAliyunOssConfig();
     }
   },
-  watch:{
-    initGetConfig(newVal){
-      if(newVal){
-        this.getAliyunOssConfig();
-      }
-    }
-  },
   methods: {
     async getAliyunOssConfig() {
         let src = await uploadOss(this.$refs.uploaderInput, this.isMult, this.objConfig)
