@@ -49,18 +49,18 @@
         title="创建直播"
         @change="addVisible = false"
       >
-        <addLive ref="addLive" @close="addVisible = false" />
+        <addLive ref="addLive" @close="addVisible = false" v-if="showAdd"/>
       </fullDialog>
 
       <!-- 管理直播 -->
       <!-- $refs.editLive.handleClose('dataForm4'); -->
-      <fullDialog
+      <!-- <fullDialog
         v-model="editVisible"
         title="直播名称1"
         @change="editVisible = false"
       >
         <editLive ref="editLive" @close="editVisible = false" />
-      </fullDialog>
+      </fullDialog> -->
 
       <!-- 链接 -->
       <rd-dialog
@@ -197,7 +197,8 @@ export default {
       // 编辑弹窗
       editVisible: false,
       // 链接弹窗
-      linkVisible: false
+      linkVisible: false,
+      showAdd: true
     };
   },
   components: {
@@ -221,7 +222,15 @@ export default {
       // });
     },
     handleAdd() {
-      this.addVisible = true;
+      this.showAdd = false;
+      this.$nextTick(()=>{
+        this.showAdd = true;
+         this.addVisible = true;
+         this.$nextTick(()=>{
+            this.$refs.addLive.initGetConfig = true;
+         })
+      })
+     
     },
     handleEdit() {
       this.editVisible = true;

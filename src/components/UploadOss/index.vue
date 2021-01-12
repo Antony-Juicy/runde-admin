@@ -23,6 +23,10 @@ export default {
     objConfig: {
       type: Object,
       default: ()=>{}
+    },
+    initGetConfig:{
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -36,7 +40,16 @@ export default {
       }
   },
   mounted() {
-    this.getAliyunOssConfig();
+    if(this.initGetConfig){
+      this.getAliyunOssConfig();
+    }
+  },
+  watch:{
+    initGetConfig(newVal){
+      if(newVal){
+        this.getAliyunOssConfig();
+      }
+    }
   },
   methods: {
     async getAliyunOssConfig() {

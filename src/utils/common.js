@@ -65,7 +65,15 @@ const $common = {
             let reg = str.slice(-4, -2)
             return str.replace(reg, "**")
         }
-    }
+    },
+
+    // 重新加载组件
+    reloadElem(dataElem) {
+        this[dataElem] = false;
+        this.$nextTick(() => {
+          this[dataElem] = true;
+        });
+      },
 }
 
 export default $common

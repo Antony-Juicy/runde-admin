@@ -3,8 +3,8 @@
     <RdForm
       :formOptions="addFormOptions"
       :rules="addRules"
+      :formLabelWidth="'150px'"
       ref="dataForm3"
-      @onSearch="onSearch"
     >
       <template slot="pic">
         {{ img }}
@@ -12,6 +12,7 @@
           v-if="uploadOssElem"
           :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
           :src.sync="img"
+          :initGetConfig="initGetConfig"
           @srcChangeFun="
             (data) => {
               img = data;
@@ -24,9 +25,10 @@
         <el-radio v-model="bgImg" label="1">默认背景色</el-radio><br />
         <el-radio v-model="bgImg" label="2">自定义背景色</el-radio><br />
         <div class="pic-container">
-          <div class="pic-item">
+          <div class="pic-item" v-show="liveMode">
             <Upload-oss
               v-if="uploadOssElem"
+               :initGetConfig="initGetConfig"
               :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
               :src.sync="img"
               @srcChangeFun="
@@ -38,9 +40,10 @@
             />
             <p class="tips">请上传横屏背景16：9</p>
           </div>
-          <div class="pic-item">
+          <div class="pic-item" v-show="!liveMode">
             <Upload-oss
               v-if="uploadOssElem"
+              :initGetConfig="initGetConfig"
               :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
               :src.sync="img"
               @srcChangeFun="
@@ -112,17 +115,28 @@ export default {
           options: [
             {
               label: "横屏直播",
-              value: 0,
+              value: 'Landscape',
               tips:
                 "适用于商业，知识讲解，活动现场直播等场景，视频比例为16：9窗口",
             },
             {
               label: "竖屏直播",
-              value: 1,
+              value: 'Vertical',
               tips: "适用于直播带货，人物互动讲解等场景，视频比例为9：16窗口",
             },
           ],
-          initValue: 0,
+          initValue: 'Landscape',
+          events:{
+            change:(val)=>{
+              console.log(val,'radio',this.liveMode)
+              if(val == 'Landscape'){
+                this.liveMode = true 
+              }else if(val == 'Vertical'){
+                this.liveMode = false
+              }
+              
+            }
+          }
         },
         {
           prop: "time",
@@ -176,7 +190,7 @@ export default {
             {
               label: "隐藏",
               value: 1,
-            },
+            }
           ],
           initValue: 0
         },
@@ -187,7 +201,7 @@ export default {
           label: "收费模式",
           options: [
             {
-              label: "收费模式",
+              label: "公开",
               value: 0,
             }
           ],
@@ -199,6 +213,12 @@ export default {
           placeholder: "请输入助教密码",
           label: "助教密码",
         },
+         {
+          prop: "name",
+          element: "el-input",
+          placeholder: "请输入直播初始人数",
+          label: "直播初始人数",
+        }
       ],
       addRules: {
         updateReason: [
@@ -208,6 +228,8 @@ export default {
       uploadOssElem: true,
       img: "",
       bgImg: "1",
+      liveMode: true,
+      initGetConfig: false
     };
   },
   components: {
@@ -229,10 +251,11 @@ export default {
       this.$emit("close");
     },
     handleAdd() {
-      this.$refs.dataForm3.onSearch();
-    },
-    onSearch(val) {
-      console.log(val, "999");
+      this.$refs.dataForm3.validate((val,data)=>{
+        if(val) {
+          console.log(data,'data---')
+        }
+      });
     },
   },
 };
