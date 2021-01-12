@@ -8,8 +8,8 @@ export default {
 
   // 项目分类
   projectType_getList: { url: '/live/console/type/get', method: 'post' },
-  projectType_delete: { url: '/live/console/type/delete', method: 'delete' },
-  projectType_update: { url:'/live/console/type/update', method: 'put' },
+  projectType_delete: { url: '/live/console/type/delete', method: 'post' },
+  projectType_update: { url:'/live/console/type/update', method: 'post' },
   projectType_list: { url: '/live/console/type/page_list', method: 'post' },
   projectType_add: { url: '/live/console/type/add', method: 'post' },
 }
