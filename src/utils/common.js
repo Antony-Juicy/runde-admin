@@ -73,7 +73,12 @@ const $common = {
         this.$nextTick(() => {
           this[dataElem] = true;
         });
-      },
+    },
+
+    // 获取用户userId
+    getUserId(){
+        return JSON.parse(localStorage.getItem('userInfo')).userId;
+    }
 }
 
 export default $common

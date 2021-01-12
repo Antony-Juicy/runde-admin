@@ -237,6 +237,11 @@ export default {
     UploadOss,
     RdEditor,
   },
+  mounted(){
+    this.$fetch('projectType_normalList',{
+      loginUserId: this.$common.getUserId()
+    })
+  },
   methods: {
     // 上传组件
     reloadElem(dataElem) {
