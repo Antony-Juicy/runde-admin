@@ -1,8 +1,8 @@
 export default {
   // 礼物
   gift_getList: { url: '/live/console/live_gift/get', method: 'post' },
-  gift_delete: { url: '/live/console/live_gift/delete', method: 'delete' },
-  gift_update: { url:'/live/console/live_gift/update', method: 'put' },
+  gift_delete: { url: '/live/console/live_gift/delete', method: 'post' },
+  gift_update: { url:'/live/console/live_gift/update', method: 'post' },
   gift_list: { url: '/live/console/live_gift/page_list', method: 'post' },
   gift_add: { url: '/live/console/live_gift/add', method: 'post' },
 
