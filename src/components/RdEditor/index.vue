@@ -40,6 +40,11 @@ export default {
   components: {
     quillEditor,
   },
+  watch:{
+    quillContent(newVal){
+      this.content = newVal;
+    }
+  },
   methods: {
     onEditorChange({ editor, html, text }) {
       console.log('editor change!', editor, html, text);

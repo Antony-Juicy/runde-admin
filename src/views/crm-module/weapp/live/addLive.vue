@@ -47,7 +47,7 @@
       </template>
     </RdForm>
     <div class="btn-wrapper">
-      <el-button type="primary" size="small" @click="handleAdd"
+      <el-button type="primary" size="small" :loading="btnLoading" @click="handleAdd" v-prevent-re-click="2000"
         >立即创建</el-button
       >
       <el-button size="small" @click="handleClose('dataForm3')">取消</el-button>
@@ -59,6 +59,7 @@
 import RdForm from "@/components/RdForm";
 import UploadOss from "@/components/UploadOss";
 import RdEditor from "@/components/RdEditor";
+import { scrollTo } from '@/utils/scroll-to';
 export default {
   name: "addLive",
   data() {
@@ -230,7 +231,8 @@ export default {
       bgType: "1",
       liveMode: true,
       initGetConfig: false,
-      liveDetail:""
+      liveDetail:"",
+      btnLoading: false
     };
   },
   components: {
@@ -239,6 +241,7 @@ export default {
     RdEditor,
   },
   mounted() {
+    scrollTo(0,800);
     this.$fetch("projectType_normalList", {
       loginUserId: this.$common.getUserId(),
     }).then((res) => {
@@ -292,11 +295,20 @@ export default {
             data.liveEndTime = data.liveTime[1] 
             data.liveDetail = this.liveDetail
           console.log(data, "data---");
+          this.btnLoading = true;
           this.$fetch("live_add",{
             ...data,
             loginUserId: this.$common.getUserId()
           }).then(res =>{
-            console.log(res,'resss')
+            if(res.code == 200){
+              this.btnLoading = false;
+              this.$message.success("创建成功")
+                this.$emit("close")
+                this.$emit("refresh")
+            }
+          }).catch(err=>{
+            console.log(err)
+            this.btnLoading = false
           })
         }
       });

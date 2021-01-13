@@ -96,6 +96,9 @@ export default {
             this[dataElem] = true;
         });
         },
+        handleAdd(){
+          
+        }
   }
 }
 </script>

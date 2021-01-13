@@ -19,6 +19,12 @@
         highlight-current-row
         @pageChange="pageChange"
       >
+        <template slot="liveCover" slot-scope="scope">
+          <el-image
+            style="width: 100px; height: 100px"
+            :src="scope.row.liveCover"
+          ></el-image>
+        </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
             >管理</el-button
@@ -49,18 +55,17 @@
         title="创建直播"
         @change="addVisible = false"
       >
-        <addLive ref="addLive" @close="addVisible = false;" v-if="addVisible"/>
+        <addLive ref="addLive" @close="addVisible = false" @refresh="refresh" v-if="addVisible" />
       </fullDialog>
 
       <!-- 管理直播 -->
-      <!-- $refs.editLive.handleClose('dataForm4'); -->
-      <!-- <fullDialog
+      <fullDialog
         v-model="editVisible"
         title="直播名称1"
         @change="editVisible = false"
       >
-        <editLive ref="editLive" @close="editVisible = false" />
-      </fullDialog> -->
+        <editLive ref="editLive" :liveId="liveId" @close="editVisible = false" @refresh="refresh" v-if="editVisible"/>
+      </fullDialog>
 
       <!-- 链接 -->
       <rd-dialog
@@ -70,7 +75,7 @@
         :width="'900px'"
         @handleClose="linkVisible = false"
       >
-        <manageLink/>
+        <manageLink />
       </rd-dialog>
     </div>
   </div>
@@ -87,109 +92,148 @@ export default {
     return {
       formOptions: [
         {
-          prop: "menuName",
+          prop: "liveName",
           element: "el-input",
           placeholder: "请输入直播名称",
         },
         {
-          prop: "menuName",
+          prop: "liveId",
           element: "el-input",
           placeholder: "请输入直播id",
         },
         {
-          prop: "menuName",
+          prop: "typeId",
           element: "el-select",
           placeholder: "项目类型",
+          options: []
         },
         {
-          prop: "menuName",
+          prop: "liveChargeMode",
           element: "el-select",
           placeholder: "收费类型",
+          options:[
+            {
+              label:"公开",
+              value: "Open"
+            },
+             {
+              label:"付费",
+              value: "Charge"
+            },
+             {
+              label:"加密",
+              value: "Encryption"
+            }
+          ]
         },
         {
-          prop: "menuName",
+          prop: "liveMode",
           element: "el-select",
           placeholder: "直播模式",
+          options:[
+            {
+              label:"横屏",
+              value: "Landscape"
+            },
+             {
+              label:"竖屏",
+              value: "Vertical"
+            }
+          ]
         },
         {
-          prop: "menuName",
+          prop: "liveStatus",
           element: "el-select",
           placeholder: "直播状态",
+           options:[
+            {
+              label:"未开始",
+              value: "NotStart"
+            },
+             {
+              label:"直播中",
+              value: "Live"
+            },
+             {
+              label:"已结束",
+              value: "End"
+            }
+          ]
         },
         {
-          prop: "menuName",
+          prop: "liveShowStatus",
           element: "el-select",
           placeholder: "显示状态",
+           options:[
+            {
+              label:"上架",
+              value: "Show"
+            },
+             {
+              label:"隐藏",
+              value: "Hidden"
+            }
+          ]
         },
       ],
-      tableData: [
-        {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-        },
-        {
-          id: 2,
-          name: "飞翔的荷兰人2",
-          cutdown: new Date().getTime(),
-          phone: "17092026183",
-        },
-        { id: 3, name: "飞翔的荷兰人1", phone: "18892026183" },
-      ],
+      tableData: [],
       tableKey: [
         {
           name: "直播id",
-          value: "name",
-        },
-        {
-          name: "直播展示图",
-          value: "phone",
-          operate: true,
-        },
-        {
-          name: "项目类型",
-          value: "cutdown",
+          value: "liveId",
+          width: 80
         },
         {
           name: "直播名称",
-          value: "menuUrl",
+          value: "liveName",
         },
         {
+          name: "直播展示图",
+          value: "liveCover",
+          operate: true,
+          width: 120
+        },
+        {
+          name: "项目类型",
+          value: "typeName",
+        },
+        
+        {
           name: "收费类型",
-          value: "visit",
+          value: "liveChargeMode",
         },
         {
           name: "直播状态",
-          value: "menuOrder",
+          value: "liveStatus",
         },
         {
           name: "显示状态",
-          value: "description1",
+          value: "liveShowStatus",
         },
         {
           name: "开始时间",
-          value: "description2",
+          value: "liveStartTime",
+          width: 160,
         },
         {
           name: "直播模式",
-          value: "description3",
+          value: "liveMode"
         },
         {
           name: "浏览量",
-          value: "description3",
+          value: "liveRealNumber",
+          width: 80
         },
         {
           name: "操作",
           value: "edit",
           operate: true,
-          width: 160
+          width: 160,
         },
       ],
       pageConfig: {
         totalCount: 100,
-        currentPage: 1,
+        pageNum: 1,
         pageSize: 10,
       },
       // 添加弹窗
@@ -198,44 +242,102 @@ export default {
       editVisible: false,
       // 链接弹窗
       linkVisible: false,
-      showAdd: true
+      showAdd: true,
+      searchForm: {}, //搜索栏信息
+      liveId:""
     };
   },
   components: {
     fullDialog,
     addLive,
     editLive,
-    manageLink
+    manageLink,
+  },
+  mounted() {
+    this.getTableData();
   },
   methods: {
-    onSearch() {},
+    onSearch(data) {
+      this.searchForm = { ...data };
+      this.getTableData();
+    },
     pageChange(val) {
-      // this.pageConfig.currentPage = val.page;
-      // this.pageConfig.pageSize = val.limit;
-      // console.log(this.searchForm,'this.searchForm--')
-      // this.getTableData({
-      //   currentPage: (val && val.page) || 1,
-      //   pageSize: (val && val.limit) || 10,
-      //   loginUserId,
-      //   ...this.searchForm,
-      //   parentId: this.parentId
-      // });
+      this.pageConfig.pageNum = val.page;
+      this.pageConfig.pageSize = val.limit;
+      this.getTableData();
     },
     handleAdd() {
-         this.addVisible = true;
-         this.$nextTick(()=>{
-            this.$refs.addLive.initGetConfig = true;
-         })
-
-     
+      this.addVisible = true;
+      this.$nextTick(() => {
+        this.$refs.addLive.initGetConfig = true;
+      });
     },
-    handleEdit() {
+    handleEdit(data) {
       this.editVisible = true;
+      this.$nextTick(() => {
+        this.$refs.editLive.$refs.editForm.initGetConfig = true;
+      });
+      this.liveId = data.liveId;
     },
     handleLink() {
       this.linkVisible = true;
     },
     handleDelete() {},
+    getTableData(params={}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".el-table",
+      });
+      this.$fetch(
+        "live_list",
+        {
+          loginUserId: this.$common.getUserId(),
+          ...this.pageConfig,
+          ...this.searchForm,
+          ...params
+        }
+      ).then((res) => {
+        this.tableData = res.data.records.map((item) => {
+          item.liveMode = item.liveMode == "Vertical" ? "竖屏" : "横屏";
+          item.liveStatus = this.changeLiveStatus(item.liveStatus)
+          item.liveChargeMode = this.changeChargeMode(item.liveChargeMode)
+          item.liveShowStatus = this.changeShowStatus(item.liveShowStatus)
+          return item;
+        });
+        this.pageConfig.totalCount = res.data.totalCount;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
+      });
+    },
+    refresh(){
+      this.getTableData();
+    },
+    changeLiveStatus(val) {
+      if (val == "NotStart") {
+        return "未开始";
+      } else if (val == "Live") {
+        return "直播中";
+      } else if (val == "End") {
+        return "已结束";
+      }
+    },
+    changeChargeMode(val){
+      if (val == "Open") {
+        return "公开";
+      } else if (val == "Encryption") {
+        return "付费";
+      } else if (val == "Charge") {
+        return "加密";
+      }
+    },
+    changeShowStatus(val){
+      if (val == "Show") {
+        return "上架";
+      } else if (val == "Hidden") {
+        return "隐藏";
+      }
+    }
   },
 };
 </script>

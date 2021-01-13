@@ -1,8 +1,9 @@
 <template>
   <div class="edit-live">
+      
       <el-tabs :tab-position="'left'" >
             <el-tab-pane label="直播基本信息">
-                <editForm/>
+                <editForm :liveId="liveId" ref="editForm" @refresh="refresh"/>
             </el-tab-pane>
             <el-tab-pane label="分享设置">
                 <share/>
@@ -30,11 +31,17 @@ import interaction from './interaction/index.vue';
 import analysis from './analysis/index.vue';
 import comment from './comment';
 import playback from './playback';
+import { scrollTo } from '@/utils/scroll-to';
 export default {
   name:"temp",
   data(){
     return {
     }
+  },
+  props:{
+      liveId: {
+          type: Number
+      }
   },
   components:{
       editForm,
@@ -44,7 +51,13 @@ export default {
       comment,
       playback
   },
+  mounted(){
+    
+  },
    methods: {
+       refresh(){
+           this.$emit("refresh")
+       }
   }
 }
 </script>

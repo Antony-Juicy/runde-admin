@@ -1,9 +1,9 @@
 <template>
   <section class="app-main">
-    <transition name="fade-transform" mode="out-in">
+    <transition name="el-fade-in" mode="out-in">
       <Breadcrumb />
     </transition>
-    <transition name="fade-transform" mode="out-in">
+    <transition name="el-fade-in" mode="out-in">
       <keep-alive :exclude="keepAliveCom">
         <router-view :key="key"></router-view>
       </keep-alive>

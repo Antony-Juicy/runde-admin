@@ -143,6 +143,9 @@ export default {
     handelSelect(val) {
       console.log(val, "valll");
       this.selectedData = val;
+    },
+    handleAdd(){
+      
     }
   },
 };
