@@ -12,10 +12,13 @@
         :pageConfig="pageConfig"
         @select="handleSelect"
         @pageChange="pageChange">
+        <template slot="typeStatus" slot-scope="scope">
+          <span>{{ scope.row.typeStatus | typeStatusFilter }}</span>
+        </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑</el-button>
-          <!-- <el-divider direction="vertical"></el-divider> -->
-          <!-- <el-button @click="handleAuthority(scope.row)" type="text" size="small" style="color: #ec5b56">配置权限</el-button> -->
+          <el-divider direction="vertical"></el-divider>
+          <el-button @click="handleDelete(scope.row)" type="text" size="small" style="color: #ec5b56">删除</el-button>
         </template>
       </rd-table>
       <rd-dialog
@@ -66,8 +69,8 @@ export default {
       tableKey: [
         { name: 'id',value: 'typeId' },
         { name: '项目名称',value: 'typeName' },
-        { name: '排序',value: 'orderValue' },
-        { name: '状态',value: 'typeStatus' },
+        { name: '排序',value: 'orderValue',sortable: true },
+        { name: '状态',value: 'typeStatus',operate: true, },
         { name: '操作',value: 'edit',operate: true,width: 140 }
       ],
       emptyText: '暂无数据',
@@ -93,7 +96,7 @@ export default {
     }
   },
   mounted () {
-    // this.getTableData()
+    this.getTableData()
   },
   methods: {
     handleSelect(rows) {
@@ -112,7 +115,7 @@ export default {
         }
       ).then((res) => {
         this.tableData = res.data.records;
-        this.pageConfig.totalCount = res.data.total;
+        this.pageConfig.totalCount = res.data.totalCount;
         setTimeout(() => {
           loading.close();
         }, 200);
@@ -122,7 +125,7 @@ export default {
       console.log(val,'pagechange')
       this.currentPageInfo = val;
       this.getTableData({
-        currentPage: (val && val.page) || 1,
+        pageNum: (val && val.page) || 1,
         pageSize: (val && val.limit) || 10,
         loginUserId
       });
@@ -144,6 +147,32 @@ export default {
         ...row
       }
     },
+    // 删除
+    handleDelete(row) {
+      let info = row.typeName;
+      this.$confirm(`此操作将删除${info}分类, 是否继续?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(async () => {
+          const res = await this.$fetch("projectType_delete", {
+            typeId: row.typeId,
+            loginUserId,
+          }).then((res) => {
+            if (res) {
+              this.$message({
+                message: "删除成功",
+                type: "success",
+              });
+              setTimeout(() => {
+                this.getTableData();
+              }, 50);
+            }
+          });
+        })
+        .catch(() => {});
+    },
     closeProject(formName) {
       this.projectVisible = false;
       this.$refs[formName].resetFields();
@@ -161,6 +190,7 @@ export default {
                 message: "提交成功",
                 type: "success",
               });
+              this.getTableData();
               this.closeProject("dataForm");
             });
           } else {
@@ -173,13 +203,26 @@ export default {
                 message: "编辑成功",
                 type: "success",
               });
+              this.getTableData();
               this.closeProject("dataForm");
             });
           }
         }
       });
     }
-  }
+  },
+  filters: {
+    typeStatusFilter(status){
+      switch(status){
+        case "Normal":
+          return '正常';
+        case "Disable":
+          return '停用';
+        default:
+          return '';
+      }
+    }
+  },
 }
 </script>
 
