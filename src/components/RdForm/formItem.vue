@@ -70,7 +70,7 @@
       v-on="bindEvents"
       :type="itemOptions.type || 'datetimerange'"
       size="small"
-      clearable
+      :clearable="itemOptions.clearable"
       :picker-options="pickerOptionsRange"
        :start-placeholder="itemOptions.startPlaceholder"
       range-separator="至"

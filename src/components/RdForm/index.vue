@@ -147,7 +147,16 @@ export default {
       .el-form-item {
           width: 40%;
           .el-form-item__content {
-            width: 400px;
+            width: 300px;
+          }
+          .el-select-dropdown__empty {
+            width: 300px;
+          }
+          .el-date-editor .el-range-separator {
+            width: 9%;
+          }
+          .el-date-editor--datetimerange.el-input__inner {
+            width: 300px;
           }
         }
     }

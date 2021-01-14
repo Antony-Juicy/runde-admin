@@ -1,10 +1,7 @@
 <template>
   <div class="activity-manage">
-      <search-form
-        :formOptions="formOptions"
-        @onSearch="onSearch"
-        ></search-form>
-        <div class="w-container">
+    <search-form :formOptions="formOptions" @onSearch="onSearch"></search-form>
+    <div class="w-container">
       <div class="btn-wrapper">
         <el-button type="primary" size="small" @click="addVisible = true"
           >添加</el-button
@@ -32,30 +29,32 @@
         </template>
       </rd-table>
 
-      <!-- <rd-dialog
-        :title="'添加机会'"
-        :dialogVisible="addVisible"
-        @handleClose="addVisible = false"
-        @submitForm="submitAddForm('dataForm3')"
+      <fullDialog
+        v-model="addVisible"
+        title="添加活动"
+        @change="addVisible = false"
       >
-        <RdForm :formOptions="addFormOptions" :rules="addRules" ref="dataForm3"/>
-      </rd-dialog> -->
-       <fullDialog v-model="addVisible" title="添加菜单" @change="addVisible = false">
-           <RdForm :formOptions="addFormOptions" :inline="true" :rules="addRules" ref="dataForm3"/>
+        <AddAct
+          ref="AddAct"
+          @close="addVisible = false"
+          @refresh="refresh"
+          v-if="addVisible"
+        />
       </fullDialog>
     </div>
   </div>
 </template>
 
 <script>
-import fullDialog from '@/components/FullDialog';
+import fullDialog from "@/components/FullDialog";
 import RdForm from "@/components/RdForm";
+import AddAct from "./addAct.vue";
 export default {
-  name:"activity-manage",
-  data(){
+  name: "activity-manage",
+  data() {
     return {
-        formOptions: [
-              {
+      formOptions: [
+        {
           prop: "menuName",
           element: "el-input",
           placeholder: "活动名称",
@@ -79,25 +78,36 @@ export default {
           prop: "menuName",
           element: "el-select",
           placeholder: "项目类型",
-        }
+        },
       ],
       tableData: [
-        { id: 1, name: "飞翔的荷兰人3", cutdown: 1608897351706, visit: 2,phone:'15692026183' },
-        { id: 2, name: "飞翔的荷兰人2",cutdown: new Date().getTime(),phone:'17092026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
+        {
+          id: 1,
+          name: "飞翔的荷兰人3",
+          cutdown: 1608897351706,
+          visit: 2,
+          phone: "15692026183",
+        },
+        {
+          id: 2,
+          name: "飞翔的荷兰人2",
+          cutdown: new Date().getTime(),
+          phone: "17092026183",
+        },
+        { id: 3, name: "飞翔的荷兰人1", phone: "18892026183" },
       ],
       tableKey: [
         {
           name: "ID",
           value: "name",
         },
-         {
+        {
           name: "项目类型",
-          value: "phone"
+          value: "phone",
         },
         {
           name: "活动名称",
-          value: "cutdown"
+          value: "cutdown",
         },
         {
           name: "公众号名称",
@@ -105,11 +115,11 @@ export default {
         },
         {
           name: "邀请码类型",
-          value: "visit"
+          value: "visit",
         },
         {
           name: "活动时间",
-          value: "menuOrder"
+          value: "menuOrder",
         },
         {
           name: "是否强制关注",
@@ -126,17 +136,17 @@ export default {
         {
           name: "活动状态",
           value: "description4",
-        }, 
+        },
         {
           name: "活动描述",
           value: "description4",
         },
         {
-            name:"操作",
-            value:"edit",
-            operate: true,
-            width: 140
-        }
+          name: "操作",
+          value: "edit",
+          operate: true,
+          width: 140,
+        },
       ],
       pageConfig: {
         totalCount: 100,
@@ -144,107 +154,17 @@ export default {
         pageSize: 10,
       },
       addVisible: false,
-      addFormOptions:[
-         {
-          prop: "name",
-          element: "el-input",
-          placeholder: "请输入活动名称",
-          label: "活动名称"
-        },
-        {
-          prop: "time",
-          element: "el-date-picker",
-          startPlaceholder: "活动时间(开始)",
-          endPlaceholder: "活动时间(结束)",
-          initWidth: true,
-          label: "活动时间",
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "请输入字段一名称",
-          label: "字段一名称"
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "请输入字段二名称",
-          label: "字段二名称"
-        },
-        {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "销售来源",
-          label: "销售来源",
-          options: [
-            {
-              label: "博士",
-              value: 0,
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-        {
-            prop: "time",
-          element: "el-date-picker",
-          startPlaceholder: "进入公海时间(开始)",
-          endPlaceholder: "进入公海时间(结束)",
-          initWidth: true,
-          label: "公海时间",
-        },
-        {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "跟进老师",
-          label: "跟进老师",
-          options: [
-            {
-              label: "博士",
-              value: 0,
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-         {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "请输入地址",
-          label: "地址",
-        },
-        {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入备注",
-          label: "备注",
-          type:"textarea",
-          rows: 2
-        }
-      ],
-      addRules:{
-        updateReason: [
-          { required: true, message: "请输入修改事由", trigger: "blur" },
-        ]
-      }
-    }
+    };
   },
-  components:{
-      fullDialog,
-      RdForm
+  components: {
+    fullDialog,
+    RdForm,
+    AddAct,
   },
-   methods: {
-       onSearch(){
-
-       },
-       handleAdd(){
-
-       },
-        pageChange(val) {
+  methods: {
+    onSearch() {},
+    handleAdd() {},
+    pageChange(val) {
       // this.pageConfig.currentPage = val.page;
       // this.pageConfig.pageSize = val.limit;
       // console.log(this.searchForm,'this.searchForm--')
@@ -256,12 +176,14 @@ export default {
       //   parentId: this.parentId
       // });
     },
-  }
-}
+    refresh(){
+
+    }
+  },
+};
 </script>
 
 <style lang="scss" scoped>
 .activity-manage {
-
 }
 </style>

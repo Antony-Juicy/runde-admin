@@ -48,7 +48,6 @@
       </rd-table>
 
       <!-- 添加直播 -->
-      <!-- $refs.addLive.handleClose('dataForm3'); -->
       <fullDialog
         v-model="addVisible"
         title="创建直播"
@@ -60,7 +59,7 @@
       <!-- 管理直播 -->
       <fullDialog
         v-model="editVisible"
-        :title="liveName"
+        :title="'直播间名称：' + liveName"
         @change="editVisible = false"
       >
         <editLive ref="editLive" :liveId="liveId" @close="editVisible = false" @refresh="refresh" v-if="editVisible"/>
@@ -68,7 +67,7 @@
 
       <!-- 链接 -->
       <rd-dialog
-        :title="'直播间名称：' + '直播名称1'"
+        :title="'直播间名称：' + liveName"
         :dialogVisible="linkVisible"
         :showFooter="false"
         :width="'900px'"
