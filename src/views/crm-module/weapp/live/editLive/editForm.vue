@@ -43,19 +43,22 @@
         />
       </template>
       <template slot="liveDetail">
-        <RdEditor placeholder="编辑直播简介" :quillContent="quillContent" @change="changeEditor" />
+        <RdEditor
+          placeholder="编辑直播简介"
+          :quillContent="quillContent"
+          @change="changeEditor"
+        />
       </template>
     </RdForm>
     <div class="btn-wrapper">
       <el-button
         type="primary"
-        size="small"
         :loading="btnLoading"
         @click="handleAdd"
         v-prevent-re-click="2000"
         >保存</el-button
       >
-      <el-button size="small" @click="handleClose('dataForm3')">取消</el-button>
+      <!-- <el-button size="small" @click="handleClose('dataForm3')">取消</el-button> -->
     </div>
   </div>
 </template>
@@ -183,7 +186,7 @@ export default {
         },
         {
           prop: "liveInitialNumber",
-          element: "el-input",
+          element: "el-input-number",
           placeholder: "请输入直播初始人数",
           label: "直播初始人数",
         },
@@ -238,7 +241,7 @@ export default {
       initGetConfig: false,
       liveDetail: "",
       btnLoading: false,
-      quillContent:"uuuu"
+      quillContent: "uuuu",
     };
   },
   components: {
@@ -311,7 +314,7 @@ export default {
           this.$fetch("live_update", {
             ...data,
             loginUserId: this.$common.getUserId(),
-            liveId: this.liveId
+            liveId: this.liveId,
           })
             .then((res) => {
               if (res.code == 200) {
@@ -344,18 +347,18 @@ export default {
           if (item.prop == "liveTime") {
             item.initValue = [res.data.liveStartTime, res.data.liveEndTime];
           }
-          if(item.prop == "liveBackgroundImage"){
-            if(res.data.liveBackgroundImage == "default"){
-              this.bgType = "1"
-            }else {
-              this.bgType = "2"
+          if (item.prop == "liveBackgroundImage") {
+            if (res.data.liveBackgroundImage == "default") {
+              this.bgType = "1";
+            } else {
+              this.bgType = "2";
               this.bgImg = res.data.liveBackgroundImage;
             }
           }
-          if(item.prop == "liveCover") {
+          if (item.prop == "liveCover") {
             this.coverImg = res.data.liveCover;
           }
-          if(item.prop == "liveDetail"){
+          if (item.prop == "liveDetail") {
             this.quillContent = res.data.liveDetail;
           }
         });
@@ -369,12 +372,19 @@ export default {
 
 <style lang="scss" scoped>
 .addLive {
-  /deep/ .img180 {
-    width: 100px;
-    height: 100px;
+  /deep/ {
+    .img180 {
+      width: 100px;
+      height: 100px;
+    }
+    .el-input-number--small {
+      width: 100%;
+    }
   }
   .btn-wrapper {
-    margin-left: 400px;
+    // margin-left: 400px;
+    float: right;
+    margin-right: 50px;
   }
   .pic-container {
     display: flex;

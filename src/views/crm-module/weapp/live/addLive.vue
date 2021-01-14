@@ -43,11 +43,16 @@
         />
       </template>
       <template slot="liveDetail">
-        <RdEditor placeholder="编辑直播简介" @change="changeEditor"/>
+        <RdEditor placeholder="编辑直播简介" @change="changeEditor" />
       </template>
     </RdForm>
     <div class="btn-wrapper">
-      <el-button type="primary" size="small" :loading="btnLoading" @click="handleAdd" v-prevent-re-click="2000"
+      <el-button
+        type="primary"
+        size="small"
+        :loading="btnLoading"
+        @click="handleAdd"
+        v-prevent-re-click="2000"
         >立即创建</el-button
       >
       <el-button size="small" @click="handleClose('dataForm3')">取消</el-button>
@@ -59,7 +64,7 @@
 import RdForm from "@/components/RdForm";
 import UploadOss from "@/components/UploadOss";
 import RdEditor from "@/components/RdEditor";
-import { scrollTo } from '@/utils/scroll-to';
+import { scrollTo } from "@/utils/scroll-to";
 export default {
   name: "addLive",
   data() {
@@ -137,9 +142,9 @@ export default {
           element: "el-input",
           label: "封面图(21:9)",
           operate: true,
-          initValue:0
+          initValue: 0,
         },
-        
+
         {
           prop: "liveShowStatus",
           element: "el-radio",
@@ -148,14 +153,14 @@ export default {
           options: [
             {
               label: "上架",
-              value: 'Show',
+              value: "Show",
             },
             {
               label: "隐藏",
-              value: 'Hidden',
+              value: "Hidden",
             },
           ],
-          initValue: 'Show',
+          initValue: "Show",
         },
         {
           prop: "liveChargeMode",
@@ -165,10 +170,10 @@ export default {
           options: [
             {
               label: "公开",
-              value: 'Open',
+              value: "Open",
             },
           ],
-          initValue: 'Open'
+          initValue: "Open",
         },
         {
           prop: "assistantPassword",
@@ -178,7 +183,7 @@ export default {
         },
         {
           prop: "liveInitialNumber",
-          element: "el-input",
+          element: "el-input-number",
           placeholder: "请输入直播初始人数",
           label: "直播初始人数",
         },
@@ -227,12 +232,12 @@ export default {
       uploadOssElem: true,
       uploadOssElem2: true,
       bgImg: "",
-      coverImg:"",
+      coverImg: "",
       bgType: "1",
       liveMode: true,
       initGetConfig: false,
-      liveDetail:"",
-      btnLoading: false
+      liveDetail: "",
+      btnLoading: false,
     };
   },
   components: {
@@ -241,7 +246,7 @@ export default {
     RdEditor,
   },
   mounted() {
-    scrollTo(0,800);
+    scrollTo(0, 800);
     this.$fetch("projectType_normalList", {
       loginUserId: this.$common.getUserId(),
     }).then((res) => {
@@ -275,56 +280,63 @@ export default {
     handleAdd() {
       this.$refs.dataForm3.validate((val, data) => {
         if (val) {
-          if(this.bgType == "1"){
-            data.liveBackgroundImage = "default"
-          }else if(this.bgType == "2"){
-            if(this.bgImg == ""){
-              this.$message.error('请上传直播背景图')
+          if (this.bgType == "1") {
+            data.liveBackgroundImage = "default";
+          } else if (this.bgType == "2") {
+            if (this.bgImg == "") {
+              this.$message.error("请上传直播背景图");
               return;
-            }else {
-              data.liveBackgroundImage = this.bgImg
+            } else {
+              data.liveBackgroundImage = this.bgImg;
             }
           }
-           if(this.coverImg == ""){
-              this.$message.error('请上传封面图')
-              return;
-            }else {
-              data.liveCover = this.coverImg
-            }
-            data.liveStartTime = data.liveTime[0] 
-            data.liveEndTime = data.liveTime[1] 
-            data.liveDetail = this.liveDetail
+          if (this.coverImg == "") {
+            this.$message.error("请上传封面图");
+            return;
+          } else {
+            data.liveCover = this.coverImg;
+          }
+          data.liveStartTime = data.liveTime[0];
+          data.liveEndTime = data.liveTime[1];
+          data.liveDetail = this.liveDetail;
           console.log(data, "data---");
           this.btnLoading = true;
-          this.$fetch("live_add",{
+          this.$fetch("live_add", {
             ...data,
-            loginUserId: this.$common.getUserId()
-          }).then(res =>{
-            if(res.code == 200){
-              this.btnLoading = false;
-              this.$message.success("创建成功")
-                this.$emit("close")
-                this.$emit("refresh")
-            }
-          }).catch(err=>{
-            console.log(err)
-            this.btnLoading = false
+            loginUserId: this.$common.getUserId(),
           })
+            .then((res) => {
+              if (res.code == 200) {
+                this.btnLoading = false;
+                this.$message.success("创建成功");
+                this.$emit("close");
+                this.$emit("refresh");
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+              this.btnLoading = false;
+            });
         }
       });
     },
-    changeEditor(val){
+    changeEditor(val) {
       this.liveDetail = val;
-    }
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
 .addLive {
-  /deep/ .img180 {
-    width: 100px;
-    height: 100px;
+  /deep/ {
+    .img180 {
+      width: 100px;
+      height: 100px;
+    }
+    .el-input-number--small {
+      width: 100%;
+    }
   }
   .btn-wrapper {
     margin-left: 400px;

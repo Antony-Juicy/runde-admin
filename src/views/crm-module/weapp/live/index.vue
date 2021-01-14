@@ -16,7 +16,6 @@
         :tableKey="tableKey"
         :pageConfig="pageConfig"
         fixedTwoRow
-        highlight-current-row
         @pageChange="pageChange"
       >
         <template slot="liveCover" slot-scope="scope">
@@ -61,7 +60,7 @@
       <!-- 管理直播 -->
       <fullDialog
         v-model="editVisible"
-        title="直播名称1"
+        :title="liveName"
         @change="editVisible = false"
       >
         <editLive ref="editLive" :liveId="liveId" @close="editVisible = false" @refresh="refresh" v-if="editVisible"/>
@@ -244,7 +243,8 @@ export default {
       linkVisible: false,
       showAdd: true,
       searchForm: {}, //搜索栏信息
-      liveId:""
+      liveId:"",
+      liveName:""
     };
   },
   components: {
@@ -278,11 +278,36 @@ export default {
         this.$refs.editLive.$refs.editForm.initGetConfig = true;
       });
       this.liveId = data.liveId;
+      this.liveName = data.liveName;
     },
     handleLink() {
       this.linkVisible = true;
     },
-    handleDelete() {},
+    handleDelete(data) {
+      let info = "直播"
+      this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(async () => {
+          const res = await this.$fetch("live_delete", {
+            liveId: data.liveId,
+            loginUserId: this.$common.getUserId(),
+          }).then((res) => {
+            if (res) {
+              this.$message({
+                message: "删除成功",
+                type: "success",
+              });
+              setTimeout(() => {
+                this.getTableData();
+              }, 50);
+            }
+          });
+        })
+        .catch(() => {});
+    },
     getTableData(params={}) {
       const loading = this.$loading({
         lock: true,
@@ -348,6 +373,9 @@ export default {
     .el-form-item__content {
       width: 495px;
     }
+  }
+  .full-dialog-container .top-title{
+    padding-left: 50px;
   }
 }
 </style>

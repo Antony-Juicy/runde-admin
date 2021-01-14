@@ -57,17 +57,20 @@
       <div class="third-row">
         <div class="item3">
           <el-card shadow="hover" :body-style="{ height: '100px' }" @click.native="drawerVisible1 = true">
-            <p>省校榜</p>
+            <p class="item3-title">省校榜</p>
+            <p class="details">查看明细</p>
           </el-card>
         </div>
         <div class="item3">
           <el-card shadow="hover" :body-style="{ height: '100px' }" @click.native="drawerVisible2 = true">
-            <p>分校榜</p>
+            <p class="item3-title">分校榜</p>
+            <p class="details">查看明细</p>
           </el-card>
         </div>
         <div class="item3">
           <el-card shadow="hover" :body-style="{ height: '100px' }" @click.native="drawerVisible3 = true">
-            <p>个人榜</p>
+            <p class="item3-title">个人榜</p>
+            <p class="details">查看明细</p>
           </el-card>
         </div>
       </div>
@@ -348,6 +351,9 @@ export default {
         margin-bottom: 10px;
         cursor: pointer;
         position: relative;
+        .item3-title {
+          font-size: 20px;
+        }
         /deep/ {
           .el-card__body {
             display: flex;
