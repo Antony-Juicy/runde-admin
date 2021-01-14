@@ -1,23 +1,24 @@
 <template>
   <div class="edit-live">
-      <el-tabs :tab-position="'left'" >
-            <el-tab-pane label="直播基本信息">
-                <editForm/>
+      
+      <el-tabs :tab-position="'left'"  v-model="activeName">
+            <el-tab-pane label="直播基本信息" name="first">
+                <editForm :liveId="liveId" ref="editForm" @refresh="refresh"/>
             </el-tab-pane>
-            <el-tab-pane label="分享设置">
-                <share/>
+            <el-tab-pane label="分享设置" name="second">
+                <share :liveId="liveId"/>
             </el-tab-pane>
-            <el-tab-pane label="互动设置">
-                <interaction/>
+            <el-tab-pane label="互动设置" name="third">
+                <interaction :liveId="liveId"/>
             </el-tab-pane>
-            <el-tab-pane label="数据分析">
-                <analysis/>
+            <el-tab-pane label="数据分析" name="fourth">
+                <analysis :liveId="liveId"/>
             </el-tab-pane>
-            <el-tab-pane label="评论管理">
-                <comment/>
+            <el-tab-pane label="评论管理" name="fifth">
+                <comment :liveId="liveId"/>
             </el-tab-pane>
-            <el-tab-pane label="回放管理">
-                <playback/>
+            <el-tab-pane label="回放管理" name="sixth">
+                <playback :liveId="liveId"/>
             </el-tab-pane>
         </el-tabs>
   </div>
@@ -30,11 +31,18 @@ import interaction from './interaction/index.vue';
 import analysis from './analysis/index.vue';
 import comment from './comment';
 import playback from './playback';
+import { scrollTo } from '@/utils/scroll-to';
 export default {
   name:"temp",
   data(){
     return {
+        activeName:"fifth"
     }
+  },
+  props:{
+      liveId: {
+          type: Number
+      }
   },
   components:{
       editForm,
@@ -44,7 +52,13 @@ export default {
       comment,
       playback
   },
+  mounted(){
+    
+  },
    methods: {
+       refresh(){
+           this.$emit("refresh")
+       }
   }
 }
 </script>

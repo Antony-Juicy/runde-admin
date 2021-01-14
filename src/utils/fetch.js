@@ -92,7 +92,7 @@ service.interceptors.response.use(
       Message({
         message: '您没有权限访问', // error.message,
         type: 'error',
-        duration: 5 * 1000
+        duration: 3 * 1000
       })
     }else if (status === 402) {
       let msg = '您的登录已过期，请重新登录。'
@@ -122,7 +122,7 @@ service.interceptors.response.use(
       Message({
         message: '网络繁忙，请稍后重试', // error.message,
         type: 'error',
-        duration: 5 * 1000
+        duration: 3 * 1000
       })
     }
     console.log('err:' + error) // for debug
