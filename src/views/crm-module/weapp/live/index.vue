@@ -48,7 +48,6 @@
       </rd-table>
 
       <!-- 添加直播 -->
-      <!-- $refs.addLive.handleClose('dataForm3'); -->
       <fullDialog
         v-model="addVisible"
         title="创建直播"
