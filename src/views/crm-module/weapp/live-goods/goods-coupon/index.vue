@@ -36,7 +36,7 @@
             <el-input v-model.trim="couponForm.couponName" autocomplete="off" placeholder="请输入优惠券名称" />
           </el-form-item>
           <el-form-item label="优惠券类型" prop="couponType">
-            <el-select v-model="couponForm.couponType" placeholder="请选择/立减优惠/折扣优惠/满减优惠">
+            <el-select v-model="couponForm.couponType" :disabled="couponStatusVisible ? false : true" placeholder="请选择/立减优惠/折扣优惠/满减优惠">
               <el-option label="立减优惠" value="InstantDecrease"></el-option>
               <el-option label="折扣优惠" value="Discount"></el-option>
               <el-option label="满减优惠" value="FullDiscount"></el-option>
