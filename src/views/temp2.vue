@@ -420,6 +420,32 @@ export default {
           
       });
     },
+
+    handleDelete(row) {
+      let info = row.typeName;
+      this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(async () => {
+          const res = await this.$fetch("projectType_delete", {
+            typeId: row.typeId,
+            loginUserId,
+          }).then((res) => {
+            if (res) {
+              this.$message({
+                message: "删除成功",
+                type: "success",
+              });
+              setTimeout(() => {
+                this.getTableData();
+              }, 50);
+            }
+          });
+        })
+        .catch(() => {});
+    }
   },
 };
 </script>

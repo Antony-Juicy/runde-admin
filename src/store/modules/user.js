@@ -51,6 +51,7 @@ const actions = {
         commit('SET_NAME', data.username)  //用户名
         commit('SET_USERID', data.userId)  //用户id
         localStorage.setItem('userInfo',JSON.stringify(data));
+        localStorage.setItem('loginUserId',data.userId);
         resolve()
       }).catch(error => {
         reject(error)

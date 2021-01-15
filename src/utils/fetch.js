@@ -2,14 +2,12 @@ import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
+import common from '@/utils/common'
 import { showLoading, hideLoading } from './loading'
 import apiConfig from "@/fetch/api.js"
 import qs from 'qs'
-import md5 from 'md5';
 // create an axios instance
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
-const appId = 'cc83f3dd7c45afce86f802903ad715b8';
-const appKey = '328adda459d6d4d4bf9a94eae2ebf307';
 
 // axios.defaults.withCredentials = true
 const service = axios.create({
@@ -30,6 +28,7 @@ service.interceptors.request.use(
   config => {
     if (config.data && config.data.append) {
       config.data.append('token', getToken())
+      config.data.append('loginUserId', common.getUserId())
       let _param = getParam()
       for (const i in _param) {
         config.data.append(i, _param[i])
@@ -38,6 +37,7 @@ service.interceptors.request.use(
       config.data = qs.stringify({
         ...config.data,
         token: getToken(),
+        loginUserId: common.getUserId(),
         ...getParam()
       })
     }
@@ -56,7 +56,7 @@ service.interceptors.response.use(
   response => {
     const res = response.data
     // if the custom code is not 1, it is judged as an error.
-    if (res.code !== 200) {
+    if (res.code !== 200 && res.code !== 1) {
       Message({
         message: res.msg || 'Error',
         type: 'error',
@@ -165,8 +165,8 @@ const $fetch = async (apiName, params, config) => {
   }
 
   if(getToken()){
-    newConfig.headers["Authorization"] = getToken();
-    // newConfig.headers["Authorization"] = 'rd_superadmin';
+    // newConfig.headers["Authorization"] = getToken();
+    newConfig.headers["Authorization"] = 'rd_superadmin';
   }
 
   if (params) {

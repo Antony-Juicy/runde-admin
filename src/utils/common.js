@@ -77,7 +77,7 @@ const $common = {
 
     // 获取用户userId
     getUserId(){
-        return JSON.parse(localStorage.getItem('userInfo')).userId;
+        return localStorage.getItem('loginUserId');
     }
 }
 
