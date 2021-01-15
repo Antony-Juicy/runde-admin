@@ -92,6 +92,7 @@ export default {
   },
   mounted(){
     this.getTableData();
+    this.getSelectList();
   },
   methods: {
     onSearch(val) {
@@ -136,6 +137,61 @@ export default {
         }, 200);
       });
     },
+    getSelectList(){
+      Promise.all([
+        this.$fetch("chance_staff_list"),
+        this.$fetch("chance_customer_list"),
+        this.$fetch("chance_source_list"),
+        this.$fetch("chance_edu_list"),
+        this.$fetch("chance_trail_list"),
+      ]).then(result => {
+        let staffOptions = JSON.parse(result[0].msg).map((item) => ({
+            label: item.staffName,
+            value: item.id,
+        }));
+        let customerOptinos = result[1].data.map((item) => ({
+            label: item.value,
+            value: item.key,
+          }));
+          let sourceOptions = result[2].data.map((item) => ({
+            label: item.value,
+            value: item.key,
+          }));
+           let eduOptions = result[3].data.map((item) => ({
+            label: item.value,
+            value: item.key,
+          }));
+           let trailOptions = result[4].data.map((item) => ({
+            label: item.value,
+            value: item.key,
+          }));
+        this.formOptions = [
+        { prop: 'name', element: 'el-select', initValue: '', placeholder: '停留模块' },
+        { prop: 'phone', element: 'el-select', initValue: '', placeholder: '机会类型' },
+        { prop: 'studentName', element: 'el-input', initValue: '', placeholder: '学员姓名' },
+        { prop: 'phone', element: 'el-input', initValue: '', placeholder: '学员手机' },
+        { prop: 'labelInfoName', element: 'el-input', initValue: '', placeholder: '活动名' },
+        { prop: 'campusName', element: 'el-input', initValue: '', placeholder: '校区名', },
+        { prop: 'marketName', element: 'el-select', initValue: '', placeholder: '跟进老师', options: staffOptions,filterable: true },
+        { prop: 'phone', element: 'el-input', initValue: '', placeholder: '省份' },
+        { prop: 'phone', element: 'el-input', initValue: '', placeholder: '城市' },
+        { prop: 'phone', element: 'el-input', initValue: '', placeholder: '地址' },
+        { prop: 'enquireProductNameOne', element: 'el-select', initValue: '', placeholder: '请选择资讯项目' },
+        { prop: 'enquireSubjectNameOne', element: 'el-select', initValue: '', placeholder: '请选择资讯科目' },
+        { prop: 'enquireCourseNameOne', element: 'el-select', initValue: '', placeholder: '请选择资讯课程' },
+        { prop: 'phone', element: 'el-select', initValue: '', placeholder: '客户分类',options: customerOptinos },
+        { prop: 'phone', element: 'el-select', initValue: '', placeholder: '销售来源',options: sourceOptions },
+        { prop: 'eduBackground', element: 'el-select', initValue: '', placeholder: '学历',options: eduOptions },
+        { prop: 'invalidStatus', element: 'el-select', initValue: '', placeholder: '机会状态',options: trailOptions },
+        { prop: 'phone', element: 'el-select', initValue: '', placeholder: '归属人' ,options: staffOptions,filterable: true},
+        { prop: 'createAt', element: 'el-date-picker', initValue: '', startPlaceholder: "创建时间(开始)",
+          endPlaceholder: "创建时间(结束)"},
+      ]
+      })
+      .catch((err) => {
+          console.log(err);
+        });
+    }
   }
 }
 </script>

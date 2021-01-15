@@ -28,4 +28,21 @@ export default {
     chance_config_productList: {url: '/crm/crmopportunityconfig/configProductList', method: 'post'},
     chance_config_delete: {url: '/crm/crmopportunityconfig/deleteCrmOpportunityConfig', method: 'post'},
 
+    // 机会来源
+    chance_source_list: {url: '/crm/crmopportunity/saleSourceList', method: 'post'},
+    // 获取跟进状态接口
+    chance_status_list: {url: '/crm/crmopportunity/statusList', method: 'post'},
+    //  获取机会状态接口  
+    chance_trail_list: {url: '/crm/crmopportunity/opportunityTrailStatusList', method: 'get'},
+    // 获取学历接口
+    chance_edu_list: {url: '/crm/crmopportunity/eduBackGroundList', method: 'post'},
+    // 归属销售
+    chance_staff_list: {url: '/crm/crmopportunity/staffList', method: 'post'},
+    // 客户分类
+    chance_customer_list: {url: '/crm/crmopportunity/customerLevelList', method: 'post'},
+    // 项目
+    chance_product_list: {url: '/crm/crmopportunity/productList', method: 'post'},
+    chance_subject_list: {url: '/crm/crmopportunity/subjectList', method: 'post'},
+    chance_course_list: {url: '/crm/crmopportunity/courseList', method: 'post'},
+
 }
