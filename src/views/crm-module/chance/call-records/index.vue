@@ -38,10 +38,10 @@
             </rd-table>
         </el-tab-pane>
         <el-tab-pane label="在线外呼（总部）" name="two">
-          <online-total></online-total>
+          <online-total :staffOptions="staffOptions" :campusOptions="campusOptions"></online-total>
         </el-tab-pane>
         <el-tab-pane label="在线外呼（分校）" name="three">
-          <online-branch></online-branch>
+          <online-branch :staffOptions="staffOptions" :campusOptions="campusOptions"></online-branch>
         </el-tab-pane>
         <el-tab-pane label="AI呼叫" name="four">
           <ai-call></ai-call>
@@ -104,12 +104,17 @@ export default {
       loading: false,
 
       //
-      activeName: 'two',
-      radio1: 0
+      activeName: 'one',
+      radio1: 0,
+
+      // 下拉
+      staffOptions:[],
+      campusOptions:[]
     }
   },
   mounted(){
     this.getTableData();
+    this.getSelectList();
   },
   methods: {
     onSearch(val) {
@@ -157,6 +162,33 @@ export default {
         }, 200);
       });
     },
+    getSelectList(){
+      Promise.all([
+        this.$fetch("chance_staff_list"),
+        this.$fetch("chance_config_campusList"),
+      ]).then(result => {
+        let staffOptions = JSON.parse(result[0].msg).map((item) => ({
+          label: item.staffName,
+          value: item.id,
+        }));
+         let campusOptions = result[1].data.data.map((item) => ({
+          label: item.campusName,
+          value: item.id,
+        }));
+        this.staffOptions = staffOptions;
+        this.campusOptions = campusOptions;
+        this.formOptions = [
+        { prop: 'staff_name', element: 'el-select', initValue: '', placeholder: '招生老师' ,filterable: true, options: staffOptions},
+        { prop: 'contact_name', element: 'el-input', initValue: '', placeholder: '通话人姓名' },
+        { prop: 'campus_name', element: 'el-select', initValue: '', placeholder: '校区名（所属组织）' ,filterable: true, options: campusOptions},
+        { prop: 'contact_phone', element: 'el-input', initValue: '', placeholder: '通话人号码' },
+        { prop: 'data_type', element: 'el-select', initValue: '', placeholder: '通话类型' },
+        { prop: 'createAt', element: 'el-date-picker', initValue: '', element: "el-date-picker",
+          startPlaceholder: "通话时间(开始)",
+          endPlaceholder: "通话时间(结束)", initWidth: true}
+      ]
+      })
+    }
   }
 }
 </script>

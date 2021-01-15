@@ -60,8 +60,29 @@ export default {
       radio1: 0,
     }
   },
+  props: {
+    staffOptions: {
+      type: Array,
+      default:()=>[]
+    },
+    campusOptions: {
+      type: Array,
+      default:()=>[]
+    }
+  },
   mounted(){
     this.getTableData();
+  },
+  watch:{
+    staffOptions(){
+      this.formOptions = [
+        { prop: 'AgentName', element: 'el-select', initValue: '', placeholder: '招生老师',filterable: true,options: this.staffOptions },
+        { prop: 'CalledNo', element: 'el-input', initValue: '', placeholder: '通话人号码' },
+        { prop: 'campus_name', element: 'el-select', initValue: '', placeholder: '校区名（所属组织）' ,filterable: true,options: this.campusOptions },
+        { prop: 'End', element: 'el-date-picker', initValue: '',  startPlaceholder: "通话时间(开始)",
+          endPlaceholder: "通话时间(结束)",initWidth: true }
+      ]
+    }
   },
   methods: {
     onSearch(val) {

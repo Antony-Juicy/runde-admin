@@ -466,6 +466,202 @@ export default {
         }, 200);
       });
     },
+
+    getSelectList() {
+      Promise.all([
+        this.$fetch("chance_source_list"),
+        this.$fetch("chance_edu_list"),
+        this.$fetch("chance_status_list"),
+        this.$fetch("chance_trail_list"),
+        this.$fetch("chance_staff_list"),
+        this.$fetch("chance_subject_list"),
+        this.$fetch("chance_config_campusList"),
+      ])
+        .then((result) => {
+          let sourceOptions = result[0].data.map((item) => ({
+            label: item.value,
+            value: item.key,
+          }));
+          let eduOptions = result[1].data.map((item) => ({
+            label: item.value,
+            value: item.key,
+          }));
+          let statusOptions = result[2].data.map((item) => ({
+            label: item.value,
+            value: item.key,
+          }));
+          let trailOptions = result[3].data.map((item) => ({
+            label: item.value,
+            value: item.key,
+          }));
+          let staffOptions = JSON.parse(result[4].msg).map((item) => ({
+            label: item.staffName,
+            value: item.id,
+          }));
+          // let subjectOptions = result[5].data.map((item) => ({
+          //   label: item.value,
+          //   value: item.key,
+          // }));
+               let campusOptions = result[6].data.data.map((item) => ({
+          label: item.campusName,
+          value: item.id,
+        }));
+          let subjectOptions = [];
+          console.log(staffOptions,'staffOptions-')
+          this.formOptions = [
+            {
+              prop: "studentName",
+              element: "el-input",
+              initValue: "",
+              placeholder: "请输入学员姓名",
+            },
+            {
+              prop: "phone",
+              element: "el-input",
+              initValue: "",
+              placeholder: "请输入学员手机",
+            },
+            {
+              prop: "saleSource",
+              element: "el-select",
+              initValue: "",
+              placeholder: "请选择机会来源",
+              options: sourceOptions,
+            },
+            {
+              prop: "eduBackground",
+              element: "el-select",
+              initValue: "",
+              placeholder: "请选择学历",
+              options: eduOptions,
+            },
+            {
+              prop: "status",
+              element: "el-select",
+              initValue: "",
+              placeholder: "请选择跟进状态",
+              options: statusOptions,
+            },
+            {
+              prop: "invalidStatus",
+              element: "el-select",
+              initValue: "",
+              placeholder: "请选择机会状态",
+              options: trailOptions
+            },
+            {
+              prop: "marketStaffId",
+              element: "el-select",
+              initValue: "",
+              placeholder: "归属销售",
+              options: staffOptions,
+              filterable: true
+            },
+            {
+              prop: "enquireProductIdOne",
+              element: "el-select",
+              initValue: "",
+              placeholder: "请选择咨询项目",
+            },
+            {
+              prop: "enquireSubjectIdOne",
+              element: "el-select",
+              initValue: "",
+              placeholder: "请先选择咨询项目",
+            },
+            {
+              prop: "enquireCourseIdOne",
+              element: "el-select",
+              initValue: "",
+              placeholder: "请先选择咨询科目",
+            },
+            {
+              prop: "ordeParams",
+              element: "el-select",
+              initValue: "",
+              placeholder: "选择查询排列方法",
+              options: [
+                {
+                  label: "选择查询排序方法",
+                  value: "选择查询排序方法"
+                }
+              ]
+            },
+            // 课程
+        {
+          prop: "abc",
+          element: "el-cascader",
+          placeholder: "请选择咨询项目/科目",
+          props: {
+            checkStrictly: true,
+            lazy: true,
+            lazyLoad:(node, resolve)=> {
+              console.log(node,'node')
+              const { level } = node;
+              // setTimeout(() => {
+              //   let nodes = [{
+              //     value: 1,
+              //     label: `选项${1}`,
+              //     leaf: level >= 2,
+              //   }]
+              //   // 通过调用resolve将子节点数据返回，通知组件数据加载完成
+              //   resolve(nodes);
+              // }, 1000);
+              if(level == 0){
+                this.$fetch("chance_product_list").then(res => {
+                  let data = JSON.parse(res.msg);
+                  let nodes = data.map(item =>({
+                    value: item.id,
+                    label: item.productName,
+                    leaf: level >= 2,
+                  }));
+                  resolve(nodes);
+                })
+              }else if(level == 1){
+                 this.$fetch("chance_subject_list",{
+                   enquireProductIdOne: node.data.value
+                 }).then(res => {
+                   let nodes;
+                   if(res.msg == "没有相关数据"){
+                     nodes = [];
+                   }else {
+                     let data = JSON.parse(res.msg);
+                    nodes = data.map(item =>({
+                      value: item.id,
+                      label: item.productName,
+                      leaf: level >= 2,
+                    }));
+                   }
+                  resolve(nodes);
+                })
+              }else if(level == 2){
+                 this.$fetch("chance_course_list",{
+                   enquireProductIdOne: node.data.value
+                 }).then(res => {
+                   let nodes;
+                   if(res.msg == "没有相关数据"){
+                     nodes = [];
+                   }else {
+                     let data = JSON.parse(res.msg);
+                    nodes = data.map(item =>({
+                      value: item.id,
+                      label: item.productName,
+                      leaf: level >= 2,
+                    }));
+                   }
+                  resolve(nodes);
+                })
+              }
+            },
+          },
+          initWidth: true,
+        },
+          ];
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
 };
 </script>
