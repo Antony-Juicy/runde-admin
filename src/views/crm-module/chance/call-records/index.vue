@@ -38,10 +38,10 @@
             </rd-table>
         </el-tab-pane>
         <el-tab-pane label="在线外呼（总部）" name="two">
-          <online-incall></online-incall>
+          <online-total></online-total>
         </el-tab-pane>
         <el-tab-pane label="在线外呼（分校）" name="three">
-          <online-outcall></online-outcall>
+          <online-branch></online-branch>
         </el-tab-pane>
         <el-tab-pane label="AI呼叫" name="four">
           <ai-call></ai-call>
@@ -55,15 +55,15 @@
 </template>
 
 <script>
-import onlineIncall from './online-incall';
-import onlineOutcall from './online-outcall';
+import onlineTotal from './online-total';
+import onlineBranch from './online-branch';
 import aiCall from './ai-call';
 import akeyCall from './akey-call';
 export default {
   name:'call-records',
   components: {
-    onlineIncall,
-    onlineOutcall,
+    onlineTotal,
+    onlineBranch,
     aiCall,
     akeyCall
   },
