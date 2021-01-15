@@ -3,7 +3,7 @@
     <search-form :formOptions="formOptions" :showNum="7" @onSearch="onSearch"></search-form>
     <div class="w-container">
       <div class="btn-wrapper">
-        <el-button type="primary" size="small" @click="openfullDialogChange">添加商品</el-button>
+        <el-button type="primary" size="small" @click="handleAdd">添加商品</el-button>
       </div>
       <rd-table
         :tableData="tableData"
@@ -13,8 +13,11 @@
         :pageConfig="pageConfig"
         @select="handleSelect"
         @pageChange="pageChange">
-        <template slot="goodsImg" slot-scope="scope">
-          <img :src="scope.row.goodsImg || userLogoUrl" style="width:60px;height:60px;" alt="">
+        <template slot="goodsThumbnail" slot-scope="scope">
+          <img :src="scope.row.goodsThumbnail || userLogoUrl" style="width:60px;height:60px;" alt="">
+        </template>
+        <template slot="goodsStatus" slot-scope="scope">
+          <span>{{ scope.row.goodsStatus | goodsStatusFilter }}</span>
         </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑</el-button>
@@ -28,81 +31,82 @@
           <el-button @click="handleDelete(scope.row)" type="text" size="small" style="color: #ec5b56" >删除</el-button>
         </template>
       </rd-table>
-      <fullDialog v-model="showDetail" title="" @change="fullDialogChange">
+      <fullDialog v-model="goodsVisible" :title="goodsStatusVisible ? '添加商品' : '编辑商品'" @change="fullDialogChange">
         <div class="w-container">
-          <el-form ref="dataForm" :model="shopForm" :rules="addRules" label-width="120px">
-            <el-form-item label="项目类型" prop="projectType">
-              <el-select v-model="shopForm.projectType" placeholder="请选择/立减优惠/折扣优惠">
-                <el-option label="执业药师" value="0"></el-option>
-                <el-option label="健康管理师" value="1"></el-option>
+          <el-form ref="dataForm" :model="goodsForm" :rules="rules" label-width="120px">
+            <el-form-item label="商品名称" prop="goodsName">
+              <el-input v-model.trim="goodsForm.goodsName" autocomplete="off" placeholder="请输入商品名称" />
+            </el-form-item>
+            <el-form-item label="项目类型" prop="typeId">
+              <el-select v-model="goodsForm.typeId" :disabled="goodsStatusVisible ? false : true" placeholder="请选择">
+                <el-option v-for="item in typeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="商品名称" prop="projectName">
-              <el-input v-model.trim="shopForm.shopName" autocomplete="off" placeholder="请输入商品名称" />
-            </el-form-item>
-            <el-form-item label="商品标签" prop="shopTag">
-              <el-select v-model.trim="shopForm.shopTag" multiple filterable allow-create default-first-option placeholder="请选择标签，也可自行添加标签">
-                <el-option v-for="item in shopOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+            <el-form-item label="商品标签" prop="goodsLabels">
+              <el-select v-model.trim="goodsForm.goodsLabels" multiple filterable allow-create default-first-option placeholder="请选择标签，也可自行添加标签">
+                <el-option v-for="item in labelOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="商品优惠券" prop="shopsCoupon">
-              <el-select v-model.trim="shopForm.shopTag" filterable multiple placeholder="请选择优惠券">
-                <el-option v-for="item in shopOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+            <el-form-item label="商品优惠券" prop="couponIds">
+              <el-select v-model="goodsForm.couponIds" filterable multiple placeholder="请选择优惠券">
+                <el-option v-for="item in couponOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="虚拟购买数" prop="xnbuyCount">
-              <el-input-number controls-position="right" v-model.trim ="shopForm.xnbuyCount" autocomplete="off" :min="0" style="width:100%;" placeholder="" />
+            <el-form-item label="虚拟购买数" prop="initialBuyNumber">
+              <el-input-number controls-position="right" v-model.trim ="goodsForm.initialBuyNumber" autocomplete="off" :min="0" style="width:100%;" placeholder="请输入" />
             </el-form-item>
-            <el-form-item label="实际购买数" prop="sjbuyCount">
-              <el-input-number controls-position="right" v-model.trim ="shopForm.sjbuyCount" autocomplete="off" :min="0" style="width:100%;" placeholder="" />
+            <el-form-item label="实际购买数" prop="realBuyNumber">
+              <el-input-number controls-position="right" v-model.trim ="goodsForm.realBuyNumber" autocomplete="off" :min="0" :disabled="true" style="width:100%;" placeholder="" />
             </el-form-item>
-            <el-form-item label="快递运费" prop="yunfei">
-              <el-input-number controls-position="right" v-model.trim ="shopForm.yunfei" autocomplete="off" :min="0" style="width:100%;" placeholder="" />
+            <el-form-item label="快递运费" prop="freight">
+              <el-input-number controls-position="right" v-model.trim ="goodsForm.freight" autocomplete="off" :min="0" style="width:100%;" placeholder="请输入" />
             </el-form-item>
             <el-form-item label="是否推荐" prop="recommend">
-              <el-switch v-model.trim ="shopForm.recommend" active-color="#409EFF" inactive-color="#ff4949"></el-switch>
+              <el-switch v-model="goodsForm.recommend"></el-switch>
+              <!-- <el-radio v-model.trim="goodsForm.recommend" label="true">是</el-radio>
+              <el-radio v-model.trim="goodsForm.recommend" label="false">否</el-radio> -->
             </el-form-item>
-            <el-form-item label="商品状态" prop="shopStatus">
-              <el-radio v-model="shopForm.shopStatus" label="1">上架</el-radio>
-              <el-radio v-model="shopForm.shopStatus" label="2">下架</el-radio>
+            <el-form-item label="商品状态" prop="goodsStatus">
+              <el-radio v-model.trim="goodsForm.goodsStatus" label="Open">上架</el-radio>
+              <el-radio v-model.trim="goodsForm.goodsStatus" label="Close">下架</el-radio>
             </el-form-item>
-            <el-form-item label="商品缩略图(4:3)" prop="shopImg" class="icon-wrapper">
+            <el-form-item label="商品缩略图(4:3)" prop="goodsThumbnail" class="icon-wrapper">
               <Upload-oss
                 v-if="uploadOssElem"
                 :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
-                :src.sync="shopForm.shopImg"
+                :src.sync="goodsForm.goodsThumbnail"
                 @srcChangeFun="
                   (data) => {
-                    shopForm.shopImg = data;
+                    goodsForm.goodsThumbnail = data;
                     reloadElem('uploadOssElem');
                   }
                 "
               />
             </el-form-item>
-            <el-form-item label="商品展示图(16:9)" prop="shopImgBig" class="icon-wrapper">
+            <el-form-item label="商品展示图(16:9)" prop="goodsExhibitionImage" class="icon-wrapper">
               <Upload-oss
-                v-if="uploadOssElem"
+                v-if="uploadOssElem2"
                 :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
-                :src.sync="shopForm.shopImgBig"
+                :src.sync="goodsForm.goodsExhibitionImage"
                 @srcChangeFun="
                   (data) => {
-                    shopForm.shopImgBig = data;
-                    reloadElem('uploadOssElem');
+                    goodsForm.goodsExhibitionImage = data;
+                    reloadElem('uploadOssElem2');
                   }
                 "
               />
             </el-form-item>
-            <el-form-item label="课程详情" prop="classDetail">
-              <RdEditor/>
+            <el-form-item label="课程详情" prop="goodsDetail">
+              <RdEditor @change="changeEditor" />
             </el-form-item>
           </el-form>
           <div class="btn-bottom">
             <el-button type="primary" @click="fullDialogChange(false)">返回</el-button>
-            <el-button type="primary" @click="submitForm">立即创建/保存</el-button>
+            <el-button type="primary" :loading="btnLoading" @click="submitForm" >立即创建/保存</el-button>
           </div>
         </div>
       </fullDialog>
-      <fullDialog v-model="showGroup" title="标题标题标题标题" @change="fullDialogGroup">
+      <fullDialog v-model="showGroup" :title="showGroupTitle" @change="fullDialogGroup">
         <el-button type="primary" size="small" @click="openAddGroup">选择规格组</el-button>
         <div class="w-container">
           <div v-for="item in 2" :key="item" style="margin-bottom:10px;">
@@ -169,24 +173,26 @@ export default {
       tableData: [
         {
           goodsId: 12306,
-          projectType: '执业药师',
-          goodsImg: '',
+          typeName: '执业药师',
+          goodsThumbnail: '',
           goodsName: '2022年最强最全的执业药师课程',
-          goodsPrice: 1999,
-          allSales: 500,
-          status: '上架',
-          createTime: '2022-01-01 00:00:00'
+          goodsItemGroupCount: 2,
+          goodsPrices: 1999,
+          totalSalesCount: 500,
+          goodsStatus: '上架',
+          createAt: '2022-01-01 00:00:00'
         }
       ],
       tableKey: [
         { name: '商品id',value: 'goodsId' },
-        { name: '项目类型',value: 'projectType' },
-        { name: '商品缩略图',value: 'goodsImg',operate: true,width: 100 },
+        { name: '项目类型',value: 'typeName' },
+        { name: '商品缩略图',value: 'goodsThumbnail',operate: true,width: 100 },
         { name: '商品名称',value: 'goodsName' },
-        { name: '商品价格',value: 'goodsPrice' },
-        { name: '总销售量',value: 'allSales' },
-        { name: '状态',value: 'status' },
-        { name: '创建时间',value: 'createTime' },
+        { name: '规格组数',value: 'goodsItemGroupCount' },
+        { name: '商品价格',value: 'goodsPrices' },
+        { name: '总销售量',value: 'totalSalesCount' },
+        { name: '状态',value: 'goodsStatus',operate: true },
+        { name: '创建时间',value: 'createAt' },
         { name: '操作',value: 'edit',operate: true,width: 280 }
       ],
       userLogoUrl: require('@/assets/userlogo.png'),
@@ -198,44 +204,69 @@ export default {
         pageSize: 10,
       },
       loading: false,
+      btnLoading: false,
       
       // 新增弹窗
-      showDetail: false,
+      goodsVisible: false,
+      goodsStatusVisible: true,
       uploadOssElem: true,
-      shopForm: {
-        projectType: '',
-        shopName: '',
-        shopsCoupon: '',
-        shopTag: '',
-        xnbuyCount: '',
-        sjbuyCount: '',
-        shopImg: '',
-        shopImgBig: '',
-        classDetail: '',
-        yunfei: '',
-        recommend: true,
-        shopStatus: ''
+      uploadOssElem2: true,
+      goodsForm: {
+        typeId: '', // 项目类型
+        goodsName: '', // 商品名称
+        couponIds: [], // 优惠券
+        goodsLabels: [], // 商品标签
+        initialBuyNumber: '', // 虚拟购买数
+        realBuyNumber: 0, // 实际购买数
+        goodsThumbnail: '', // 缩略图
+        goodsExhibitionImage: '', // 展示图
+        goodsDetail: '', // 商品简介
+        freight: '', // 运费
+        recommend: false, // 是否推荐
+        goodsStatus: '' // 上下架
       },
-      shopOptions: [
-        {
-          value: 'HTML',
-          label: 'HTML'
-        }, {
-          value: 'CSS',
-          label: 'CSS'
-        }, {
-          value: 'JavaScript',
-          label: 'JavaScript'
-        }
-      ],
-      addRules: {
-        projectType: [
+      typeOptions: [], // 项目类型
+      couponOptions: [], // 商品优惠券
+      labelOptions: [
+        // {
+        //   value: 'HTML',
+        //   label: 'HTML'
+        // }, {
+        //   value: 'CSS',
+        //   label: 'CSS'
+        // }, {
+        //   value: 'JavaScript',
+        //   label: 'JavaScript'
+        // }
+      ], // 商品标签
+      rules: {
+        goodsName: [
+          { required: true, message: "请输入商品名称", trigger: "blur" },
+          {  max: 25, message: '长度不多于25个字符', trigger: 'blur' }
+        ],
+        typeId: [
           { required: true, message: "请选择类型", trigger: "blur" },
+        ],
+        freight: [
+          { required: true, message: "请输入运费", trigger: "blur" }
+        ],
+        recommend: [
+          { required: true, message: "请选择", trigger: "blur" }
+        ],
+        goodsStatus: [
+          { required: true, message: "请选择", trigger: "blur" }
+        ],
+        goodsThumbnail: [
+          { required: true, message: "请上传缩略图", trigger: "blur" }
+        ],
+        goodsExhibitionImage: [
+          { required: true, message: "请上传商品展示图", trigger: "blur" }
         ]
       },
 
       // 关联规格组弹窗
       showGroup: false,
+      showGroupTitle: '',
       showAddGroup: false,
       widthGroup: "800px",
       searchGroupForm: {},
@@ -262,35 +293,102 @@ export default {
       },
     }
   },
+  mounted () {
+    this.getTableData()
+  },
   methods: {
     onSearch(val) {
       this.searchForm = {...val};
       console.log(val,this.searchForm , 'val---')
     },
-    handleAdd() {
-      console.log(666)
-    },
-    handleEdit() {
-      console.log(886)
-    },
-    handleDelete() {
-      console.log(996)
-    },
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
+    // 获取商品列表数据
+    getTableData(params) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".el-table",
+      });
+      this.$fetch(
+        "goods_list",
+        params || {
+          loginUserId: this.$common.getUserId(),
+          ...this.pageConfig,
+          ...this.searchForm
+        }
+      ).then((res) => {
+        this.tableData = res.data.records;
+        this.pageConfig.totalCount = res.data.totalCount;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
+      });
+    },
+    // 分页查询
     pageChange(val) {
       console.log(val,'pagechange')
     },
 
-    // 新增弹窗
-    openfullDialogChange() {
-      this.showDetail = true;
+    // 新增商品
+    handleAdd() {
+      this.goodsVisible = true;
+      this.goodsStatusVisible = true;
+      for (const key in this.goodsForm) {
+        this.goodsForm[key] = "";
+      }
+      this.getTypeData();
+      this.getCouponData();
+    },
+    // 编辑商品
+    handleEdit(row) {
+      this.goodsVisible = true;
+      this.goodsStatusVisible = false;
+      this.getTypeData()
+      this.getCouponData();
+      this.$fetch(
+        "goods_getList",
+        {
+          loginUserId: this.$common.getUserId(),
+          goodsId: row.goodsId
+        }
+      ).then((res) => {
+        this.goodsForm = res.data
+        this.goodsForm.couponIds = res.data.coupons.map(item => item.couponId)
+      });
+    },
+    // 删除商品
+    handleDelete(row) {
+      console.log(996)
+      let info = row.goodsName;
+      this.$confirm(`此操作将删除${info}优惠券, 是否继续?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(async () => {
+          const res = await this.$fetch("goods_delete", {
+            goodsId: row.goodsId,
+            loginUserId: this.$common.getUserId(),
+          }).then((res) => {
+            if (res) {
+              this.$message({
+                message: "删除成功",
+                type: "success",
+              });
+              setTimeout(() => {
+                this.getTableData();
+              }, 50);
+            }
+          });
+        })
+        .catch(() => {});
     },
     fullDialogChange(val){
-      this.showDetail = val;
+      this.goodsVisible = val;
+      // this.$refs[formName].resetFields();
     },
-    // 上传组件
+    // 上传图片
     reloadElem(dataElem) {
       // 重新加载组件
       this[dataElem] = false;
@@ -298,14 +396,80 @@ export default {
         this[dataElem] = true;
       });
     },
-    submitForm(formName) {
-      console.log( 666);
-      this.showDetail = false;
+    changeEditor(val) {
+      this.goodsDetail = val;
     },
+    // 获取项目类型
+    getTypeData() {
+      this.$fetch(
+        "projectType_normalList",
+        {
+          loginUserId: this.$common.getUserId()
+        }
+      ).then((res) => {
+        this.typeOptions = res.data.map((item) => ({
+          label: item.typeName,
+          value: item.typeId,
+        }));
+      });
+    },
+    // 获取优惠券
+    getCouponData() {
+      this.$fetch(
+        "coupon_getGoods",
+        {
+          loginUserId: this.$common.getUserId()
+        }
+      ).then((res) => {
+        this.couponOptions = res.data.map((item) => ({
+          label: item.couponName,
+          value: item.couponId
+        }))
+      });
+    },
+    // 提交新增商品
+    submitForm() {
+      this.goodsForm.couponIds = JSON.stringify(this.goodsForm.couponIds)
+      this.goodsForm.goodsLabels = JSON.stringify(this.goodsForm.goodsLabels)
+      this.$refs.dataForm.validate((val, data) => {
+        if(val) {
+          if(this.goodsStatusVisible) {
+            // 新增
+            this.$fetch("goods_add", {
+              ...this.goodsForm,
+              loginUserId: this.$common.getUserId()
+            }).then((res) => {
+              this.$message({
+                message: "提交成功",
+                type: "success",
+              });
+              this.getTableData();
+              this.fullDialogChange();
+            });
+          } else {
+            // 编辑
+            this.$fetch("goods_update", {
+              ...this.goodsForm,
+              loginUserId: this.$common.getUserId()
+            }).then((res) => {
+              this.$message({
+                message: "编辑成功",
+                type: "success",
+              });
+              this.getTableData();
+              this.fullDialogChange();
+            });
+          }
+        }
+      });
+    },
+    
+
 
     // 关联规格组弹窗
-    openfullDialogGroup() {
+    openfullDialogGroup(row) {
       this.showGroup = true;
+      this.showGroupTitle = row.goodsName
     },
     fullDialogGroup(val) {
       this.showGroup = val;
@@ -332,7 +496,19 @@ export default {
     pageGroupChange(val) {
       console.log(val,'pagechange')
     },
-  }
+  },
+  filters: {
+    goodsStatusFilter(status){
+      switch(status){
+        case "Open":
+          return '上架';
+        case "Close":
+          return '下架';
+        default:
+          return '';
+      }
+    }
+  },
 }
 </script>
 
@@ -348,6 +524,9 @@ export default {
     .img180 {
       width: 100px;
       height: 100px;
+    }
+    .el-select-dropdown__empty {
+      width: 120px;
     }
   }
 }
