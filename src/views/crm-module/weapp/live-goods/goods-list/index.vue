@@ -168,7 +168,21 @@ export default {
         { prop: 'goodsId', element: 'el-input', placeholder: '请输入商品id/名称' },
         { prop: 'project', element: 'el-select', placeholder: '请输入项目' },
         { prop: 'goodsname', element: 'el-input', placeholder: '请选择商品名称' },
-        { prop: 'status', element: 'el-select', placeholder: '请选择状态' },
+        { 
+          prop: 'goodsStatus',
+          element: 'el-select',
+          placeholder: '请选择状态',
+          options: [
+            {
+              label: "上架",
+              value: "Open",
+            },
+            {
+              label: "下架",
+              value: "Close",
+            },
+          ],
+        },
       ],
       tableData: [
         {
@@ -299,6 +313,8 @@ export default {
   methods: {
     onSearch(val) {
       this.searchForm = {...val};
+      this.pageConfig.pageNum = 1;
+      this.getTableData();
       console.log(val,this.searchForm , 'val---')
     },
     handleSelect(rows) {
