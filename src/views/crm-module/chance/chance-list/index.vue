@@ -53,12 +53,12 @@ export default {
       ],
       tableData: [],
       tableKey: [
-        { name: '机会ID',value: 'id',operate: true,fixed: "left" },
-        { name: '姓名',value: 'studentName',operate: true,fixed: "left" },
-        { name: '手机号',value: 'phone' },
-        { name: '校区名',value: 'campusName' },
-        { name: '机会截止',value: 'recoveryTime' },
-        { name: '回访',value: 'feedbackCount' },
+        { name: '机会ID',value: 'id',fixed: "left" ,width: 80},
+        { name: '姓名',value: 'studentName',fixed: "left" },
+        { name: '手机号',value: 'phone',width:100 },
+        { name: '校区名',value: 'campusName',width:100 },
+        { name: '机会截止',value: 'recoveryTime',width:132 },
+        { name: '回访',value: 'feedbackCount',width:50 },
         { name: '微信',value: 'wechat' },
         { name: '性别',value: 'gender' },
         { name: '跟进老师',value: 'marketName' },
@@ -71,36 +71,71 @@ export default {
         { name: '机会来源',value: 'saleSource' },
         { name: '活动名称',value: 'labelInfoName' },
         { name: '备注',value: 'remark' },
-        { name: '最近回访内容',value: 'recentFeedbackContent',operate: true,width: 110 },
-        { name: '最近回访时间',value: 'recentFeedbackTime',operate: true,width: 110 },
-        { name: '下次回访时间',value: 'nextFeedBackTime',operate: true,width: 110 },
-        { name: '分配时间',value: 'allotTime' },
+        { name: '最近回访内容',value: 'recentFeedbackContent'},
+        { name: '最近回访时间',value: 'recentFeedbackTime',width:132 },
+        { name: '下次回访时间',value: 'nextFeedBackTime',width:132 },
+        { name: '分配时间',value: 'allotTime',width:132 },
         { name: '状态',value: 'invalidStatus' },
         { name: '跟进状态',value: 'status' },
-        { name: '创建时间',value: 'createAt' },
-        { name: '赛道',value: 'opportunityCampusNature',operate: true,fixed: "right" },
+        { name: '创建时间',value: 'createAt',width:132 },
+        { name: '赛道',value: 'opportunityCampusNature',fixed: "right" },
       ],
       emptyText: '暂无数据',
       fixedTwoRow: true,
       pageConfig: {
         totalCount: 100,
-        pageNum: 1,
-        pageSize: 10,
+        currentPage: 1,
+        showCount: 10,
       },
       loading: false,
     }
+  },
+  mounted(){
+    this.getTableData();
   },
   methods: {
     onSearch(val) {
       this.searchForm = {...val};
       console.log(val,this.searchForm , 'val---')
+      this.getTableData();
     },
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
-    pageChange(val) {
+     pageChange(val) {
       console.log(val,'pagechange')
-    }
+      this.pageConfig.currentPage = val.page;
+      this.pageConfig.showCount = val.limit;
+      this.getTableData();
+    },
+    getTableData(params = {}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".el-table",
+      });
+      this.$fetch("chance_list", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.data.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.recoveryTime = item.recoveryTime&&this.$common._formatDates(item.recoveryTime);
+          item.recentFeedbackTime = item.recentFeedbackTime&&this.$common._formatDates(item.recentFeedbackTime);
+          item.nextFeedBackTime = item.nextFeedBackTime&&this.$common._formatDates(item.nextFeedBackTime);
+          item.allotTime = item.allotTime&&this.$common._formatDates(item.allotTime);
+          item.phone = this.$common.hidePhone(item.phone)
+          if(item.enquireClassOne){
+            item.enquireClassOne = item.enquireClassOne.map(ele=>(ele.name)).join(",")
+          }
+          return item;
+        });
+        this.pageConfig.totalCount = res.data.count;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
+      });
+    },
   }
 }
 </script>

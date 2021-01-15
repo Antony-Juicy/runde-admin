@@ -301,8 +301,11 @@ export default {
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
-    pageChange(val) {
-      console.log(val, "pagechange");
+     pageChange(val) {
+      console.log(val,'pagechange')
+      this.pageConfig.currentPage = val.page;
+      this.pageConfig.showCount = val.limit;
+      this.getTableData();
     },
     // 删除
     handleDelete(data){

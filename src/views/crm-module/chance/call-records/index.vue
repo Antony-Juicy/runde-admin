@@ -2,7 +2,7 @@
   <div class="assignchange_container">
     <div class="w-container">
       <el-tabs v-model="activeName" @tab-click="handleClick" >
-        <el-tab-pane label="手机外呼" name="second">
+        <el-tab-pane label="手机外呼" name="one">
           <search-form :formOptions = "formOptions" :showNum="showNum" @onSearch = onSearch></search-form>
             <div class="btn-wrapper">
               <el-radio-group v-model="radio1" @change="handleTabClick">
@@ -55,7 +55,6 @@
 </template>
 
 <script>
-import searchForm from '@/components/Searchform';
 import onlineIncall from './online-incall';
 import onlineOutcall from './online-outcall';
 import aiCall from './ai-call';
@@ -63,7 +62,6 @@ import akeyCall from './akey-call';
 export default {
   name:'call-records',
   components: {
-    searchForm,
     onlineIncall,
     onlineOutcall,
     aiCall,
@@ -79,7 +77,9 @@ export default {
         { prop: 'campus_name', element: 'el-select', initValue: '', placeholder: '校区名（所属组织）' },
         { prop: 'contact_phone', element: 'el-input', initValue: '', placeholder: '通话人号码' },
         { prop: 'data_type', element: 'el-select', initValue: '', placeholder: '通话类型' },
-        { prop: 'createAt', element: 'el-date-picker', initValue: '', placeholder: '', initWidth: true}
+        { prop: 'createAt', element: 'el-date-picker', initValue: '', element: "el-date-picker",
+          startPlaceholder: "通话时间(开始)",
+          endPlaceholder: "通话时间(结束)", initWidth: true}
       ],
       tableData: [],
       tableKey: [
@@ -98,26 +98,33 @@ export default {
       fixedTwoRow: true,
       pageConfig: {
         totalCount: 100,
-        pageNum: 1,
-        pageSize: 10,
+        currentPage: 1,
+        showCount: 10,
       },
       loading: false,
 
       //
-      activeName: 'second',
-      radio1: 0,
+      activeName: 'two',
+      radio1: 0
     }
+  },
+  mounted(){
+    this.getTableData();
   },
   methods: {
     onSearch(val) {
       this.searchForm = {...val};
       console.log(val,this.searchForm , 'val---')
+       this.getTableData();
     },
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
     pageChange(val) {
       console.log(val,'pagechange')
+      this.pageConfig.currentPage = val.page;
+      this.pageConfig.showCount = val.limit;
+      this.getTableData();
     },
     
     handleClick(tab, event) {
@@ -128,7 +135,28 @@ export default {
       console.log(data,99966)
       // this.pageConfig.currentPage = 1;
       // this.getTableData();
-    }
+    },
+    getTableData(params = {}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".el-table",
+      });
+      this.$fetch("chance_call_phone", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.data.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          return item;
+        });
+        this.pageConfig.totalCount = res.data.count;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
+      });
+    },
   }
 }
 </script>

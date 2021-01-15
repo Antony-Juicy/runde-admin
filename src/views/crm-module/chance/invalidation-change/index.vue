@@ -4,7 +4,7 @@
     <div class="w-container">
       <div class="btn-wrapper">
         <el-button type="primary" size="small" @click="openDetect">质检</el-button>
-        <el-button size="small" @click="openDrawer">抽屉</el-button>
+        <!-- <el-button size="small" @click="openDrawer">抽屉1</el-button> -->
       </div>
       <rd-table
         :tableData="tableData"
@@ -57,12 +57,10 @@
 </template>
 
 <script>
-import searchForm from '@/components/Searchform';
 import rdDrawer from '@/components/RdDrawer';
 export default {
-  name:'invalidation-chance',
+  name:'invalidation-change',
   components: {
-    searchForm,
     rdDrawer
   },
   data () {
@@ -127,17 +125,17 @@ export default {
       ],
       tableData: [],
       tableKey: [
-        { name: '机会ID',value: 'id',operate: true,sortable: true },
+        { name: '机会ID',value: 'id',sortable: true ,width: 100},
         { name: '姓名',value: 'studentName' },
-        { name: '手机号码',value: 'phone' },
+        { name: '手机号码',value: 'phone',width: 100 },
         { name: '跟进次数',value: 'feedbackCount' },
-        { name: '创建时间',value: 'createAt' },
-        { name: '失效时间',value: 'updateAt' },
+        { name: '创建时间',value: 'createAt',width:132 },
+        { name: '失效时间',value: 'updateAt',width:132 },
         { name: '失效原因',value: 'invalidReason' },
         { name: '备注',value: 'remark' },
         { name: '机会状态',value: 'status' },
         { name: '归属销售',value: 'marketName' },
-        { name: '分校/战队',value: 'campusName' },
+        { name: '分校/战队',value: 'campusName',width:132 },
         { name: '质检状态',value: 'zjstatus' },
       ],
       emptyText: '暂无数据',
@@ -165,9 +163,13 @@ export default {
       drawerSize: '50%'
     }
   },
+  mounted(){
+    this.getTableData();
+  },
   methods: {
     onSearch(val) {
       this.searchForm = {...val};
+      this.getTableData();
       console.log(val,this.searchForm , 'val---')
     },
     handleSelect(rows) {
@@ -175,6 +177,9 @@ export default {
     },
     pageChange(val) {
       console.log(val,'pagechange')
+      this.pageConfig.currentPage = val.page;
+      this.pageConfig.showCount = val.limit;
+      this.getTableData();
     },
 
     // 质检
@@ -198,6 +203,31 @@ export default {
     closeDrawer(formName) {
       this.dialogVisible = false;
       // this.$refs[formName].resetFields();
+    },
+
+    getTableData(params = {}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".el-table",
+      });
+      this.$fetch("chance_invalid_list", {
+        invalidStatus:"Invalid",
+        // stayModule:"Lost",
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.data.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          item.phone = item.phone&&this.$common.hidePhone(item.phone);
+          return item;
+        });
+        this.pageConfig.totalCount = res.data.count;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
+      });
     },
   }
 }

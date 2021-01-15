@@ -309,8 +309,8 @@ export default {
       basicInfo: {
         // code: "11",
         menuName: "",
-        status: "",
-        menuType: "",
+        status: "1",
+        menuType: "1",
         description: "",
         menuUrl: "",
         menuBackUrl: "",
@@ -511,6 +511,8 @@ export default {
       for (const key in this.basicInfo) {
         this.basicInfo[key] = "";
       }
+      // this.basicInfo.status="1"
+      //   this.basicInfo.menuType= "1"
       this.dialogVisible = true;
       this.dialogStatus = true;
     },

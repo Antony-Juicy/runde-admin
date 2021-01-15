@@ -44,10 +44,10 @@ export default {
       ],
       tableData: [],
       tableKey: [
-        { name: '机会ID',value: 'id' },
+        { name: '机会ID',value: 'id',width: 80 },
         { name: '姓名',value: 'studentName' },
         { name: '手机号',value: 'phone' },
-        { name: '回访',value: 'feedbackCount' },
+        { name: '回访',value: 'feedbackCount',width: 50 },
         { name: '咨询项目',value: 'enquireProductNameOne' },
         { name: '咨询科目',value: 'enquireSubjectNameOne' },
         { name: '咨询班型',value: 'enquireClassOne' },
@@ -65,22 +65,55 @@ export default {
       fixedTwoRow: true,
       pageConfig: {
         totalCount: 100,
-        pageNum: 1,
-        pageSize: 10,
+        currentPage: 1,
+        showCount: 10,
       },
       loading: false,
     }
+  },
+  mounted(){
+    this.getTableData();
   },
   methods: {
     onSearch(val) {
       this.searchForm = {...val};
       console.log(val,this.searchForm , 'val---')
+      this.getTableData();
     },
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
     pageChange(val) {
       console.log(val,'pagechange')
+      this.pageConfig.currentPage = val.page;
+      this.pageConfig.showCount = val.limit;
+      this.getTableData();
+    },
+    getTableData(params = {}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".el-table",
+      });
+      this.$fetch("chance_registrant_list", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.data.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.recoveryTime = item.recoveryTime&&this.$common._formatDates(item.recoveryTime);
+          if(item.enquireClassOne){
+            item.enquireClassOne = item.enquireClassOne.map(item=>(item.name)).join(",")
+          }else {
+            item.enquireClassOne = ""
+          }
+          return item;
+        });
+        this.pageConfig.totalCount = res.data.count;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
+      });
     }
   }
 }

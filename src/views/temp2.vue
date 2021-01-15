@@ -188,7 +188,7 @@ export default {
        tableData: [
         { id: 1, name: "飞翔的荷兰人3", cutdown: 1608897351706, visit: 2,phone:'15692026183' },
         { id: 2, name: "飞翔的荷兰人2",cutdown: new Date().getTime(),phone:'17092026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
+        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183',width:132  },
         { id: 4,name: "飞翔的荷兰人1", phone:'18892026183'  },
         { id: 5,name: "飞翔的荷兰人1", phone:'18892026183'  },
         { id: 6,name: "飞翔的荷兰人1", phone:'18892026183'  },
@@ -358,25 +358,24 @@ export default {
         updateReason: [
           { required: true, message: "请输入修改事由", trigger: "blur" },
         ]
-      }
+      },
+      searchForm:{}
     };
   },
   components:{
     RdForm
   },
   methods: {
-    onSearch() {},
-    pageChange(val) {
-      // this.pageConfig.currentPage = val.page;
-      // this.pageConfig.pageSize = val.limit;
-      // console.log(this.searchForm,'this.searchForm--')
-      // this.getTableData({
-      //   currentPage: (val && val.page) || 1,
-      //   pageSize: (val && val.limit) || 10,
-      //   loginUserId,
-      //   ...this.searchForm,
-      //   parentId: this.parentId
-      // });
+     onSearch(val) {
+      this.searchForm = {...val};
+      console.log(val,this.searchForm , 'val---')
+      this.getTableData();
+    },
+     pageChange(val) {
+      console.log(val,'pagechange')
+      this.pageConfig.currentPage = val.page;
+      this.pageConfig.showCount = val.limit;
+      this.getTableData();
     },
     handelSelect(val) {
       console.log(val, "valll");
@@ -445,7 +444,28 @@ export default {
           });
         })
         .catch(() => {});
-    }
+    },
+    getTableData(params = {}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".el-table",
+      });
+      this.$fetch("chance_config_list", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.data.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          return item;
+        });
+        this.pageConfig.totalCount = res.data.pager.totalRows;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
+      });
+    },
   },
 };
 </script>
