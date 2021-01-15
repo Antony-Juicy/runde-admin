@@ -24,11 +24,7 @@
 </template>
 
 <script>
-import searchForm from '@/components/Searchform';
 export default {
-  components: {
-    searchForm
-  },
   data () {
     return {
       searchForm: {},
@@ -36,7 +32,8 @@ export default {
         { prop: 'AgentName', element: 'el-select', initValue: '', placeholder: '招生老师' },
         { prop: 'CalledNo', element: 'el-input', initValue: '', placeholder: '通话人号码' },
         { prop: 'campus_name', element: 'el-select', initValue: '', placeholder: '校区名（所属组织）' },
-        { prop: 'End', element: 'el-date-picker', initValue: '', placeholder: '', initWidth: true }
+        { prop: 'End', element: 'el-date-picker', initValue: '',  startPlaceholder: "通话时间(开始)",
+          endPlaceholder: "通话时间(结束)",initWidth: true }
       ],
       tableData: [],
       tableKey: [
@@ -54,8 +51,8 @@ export default {
       fixedTwoRow: true,
       pageConfig: {
         totalCount: 100,
-        pageNum: 1,
-        pageSize: 10,
+        currentPage: 1,
+        showCount: 10,
       },
       loading: false,
 
@@ -63,10 +60,35 @@ export default {
       radio1: 0,
     }
   },
+  props: {
+    staffOptions: {
+      type: Array,
+      default:()=>[]
+    },
+    campusOptions: {
+      type: Array,
+      default:()=>[]
+    }
+  },
+  mounted(){
+    this.getTableData();
+  },
+  watch:{
+    staffOptions(){
+      this.formOptions = [
+        { prop: 'AgentName', element: 'el-select', initValue: '', placeholder: '招生老师',filterable: true,options: this.staffOptions },
+        { prop: 'CalledNo', element: 'el-input', initValue: '', placeholder: '通话人号码' },
+        { prop: 'campus_name', element: 'el-select', initValue: '', placeholder: '校区名（所属组织）' ,filterable: true,options: this.campusOptions },
+        { prop: 'End', element: 'el-date-picker', initValue: '',  startPlaceholder: "通话时间(开始)",
+          endPlaceholder: "通话时间(结束)",initWidth: true }
+      ]
+    }
+  },
   methods: {
     onSearch(val) {
       this.searchForm = {...val};
       console.log(val,this.searchForm , 'val---')
+      this.getTableData();
     },
     handleSelect(rows) {
       console.log(rows, "rows---");
@@ -80,7 +102,28 @@ export default {
       console.log(data,99966)
       // this.pageConfig.currentPage = 1;
       // this.getTableData();
-    }
+    },
+    getTableData(params = {}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".el-table",
+      });
+      this.$fetch("chance_call_qimo", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.data.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          return item;
+        });
+        this.pageConfig.totalCount = res.data.count;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
+      });
+    },
   }
 }
 </script>

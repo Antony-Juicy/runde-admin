@@ -27,7 +27,8 @@ export default {
         { prop: 'staffName', element: 'el-select', initValue: '', placeholder: '招生老师' },
         { prop: 'fwdDstNum', element: 'el-input', initValue: '', placeholder: '通话人号码' },
         { prop: 'campusName', element: 'el-select', initValue: '', placeholder: '校区名（所属组织）' },
-        { prop: 'callEndTime', element: 'el-date-picker', initValue: '', placeholder: '', initWidth: true }
+        { prop: 'callEndTime', element: 'el-date-picker', initValue: '', startPlaceholder: "通话时间(开始)",
+          endPlaceholder: "通话时间(结束)", initWidth: true }
       ],
       tableData: [],
       tableKey: [

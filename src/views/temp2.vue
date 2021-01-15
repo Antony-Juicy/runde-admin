@@ -188,7 +188,7 @@ export default {
        tableData: [
         { id: 1, name: "飞翔的荷兰人3", cutdown: 1608897351706, visit: 2,phone:'15692026183' },
         { id: 2, name: "飞翔的荷兰人2",cutdown: new Date().getTime(),phone:'17092026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
+        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183',width:132  },
         { id: 4,name: "飞翔的荷兰人1", phone:'18892026183'  },
         { id: 5,name: "飞翔的荷兰人1", phone:'18892026183'  },
         { id: 6,name: "飞翔的荷兰人1", phone:'18892026183'  },
@@ -358,25 +358,24 @@ export default {
         updateReason: [
           { required: true, message: "请输入修改事由", trigger: "blur" },
         ]
-      }
+      },
+      searchForm:{}
     };
   },
   components:{
     RdForm
   },
   methods: {
-    onSearch() {},
-    pageChange(val) {
-      // this.pageConfig.currentPage = val.page;
-      // this.pageConfig.pageSize = val.limit;
-      // console.log(this.searchForm,'this.searchForm--')
-      // this.getTableData({
-      //   currentPage: (val && val.page) || 1,
-      //   pageSize: (val && val.limit) || 10,
-      //   loginUserId,
-      //   ...this.searchForm,
-      //   parentId: this.parentId
-      // });
+     onSearch(val) {
+      this.searchForm = {...val};
+      console.log(val,this.searchForm , 'val---')
+      this.getTableData();
+    },
+     pageChange(val) {
+      console.log(val,'pagechange')
+      this.pageConfig.currentPage = val.page;
+      this.pageConfig.showCount = val.limit;
+      this.getTableData();
     },
     handelSelect(val) {
       console.log(val, "valll");
@@ -445,7 +444,224 @@ export default {
           });
         })
         .catch(() => {});
-    }
+    },
+    getTableData(params = {}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".el-table",
+      });
+      this.$fetch("chance_config_list", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.data.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          return item;
+        });
+        this.pageConfig.totalCount = res.data.pager.totalRows;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
+      });
+    },
+
+    getSelectList() {
+      Promise.all([
+        this.$fetch("chance_source_list"),
+        this.$fetch("chance_edu_list"),
+        this.$fetch("chance_status_list"),
+        this.$fetch("chance_trail_list"),
+        this.$fetch("chance_staff_list"),
+        this.$fetch("chance_subject_list"),
+        this.$fetch("chance_config_campusList"),
+      ])
+        .then((result) => {
+          let sourceOptions = result[0].data.map((item) => ({
+            label: item.value,
+            value: item.key,
+          }));
+          let eduOptions = result[1].data.map((item) => ({
+            label: item.value,
+            value: item.key,
+          }));
+          let statusOptions = result[2].data.map((item) => ({
+            label: item.value,
+            value: item.key,
+          }));
+          let trailOptions = result[3].data.map((item) => ({
+            label: item.value,
+            value: item.key,
+          }));
+          let staffOptions = JSON.parse(result[4].msg).map((item) => ({
+            label: item.staffName,
+            value: item.id,
+          }));
+          // let subjectOptions = result[5].data.map((item) => ({
+          //   label: item.value,
+          //   value: item.key,
+          // }));
+               let campusOptions = result[6].data.data.map((item) => ({
+          label: item.campusName,
+          value: item.id,
+        }));
+          let subjectOptions = [];
+          console.log(staffOptions,'staffOptions-')
+          this.formOptions = [
+            {
+              prop: "studentName",
+              element: "el-input",
+              initValue: "",
+              placeholder: "请输入学员姓名",
+            },
+            {
+              prop: "phone",
+              element: "el-input",
+              initValue: "",
+              placeholder: "请输入学员手机",
+            },
+            {
+              prop: "saleSource",
+              element: "el-select",
+              initValue: "",
+              placeholder: "请选择机会来源",
+              options: sourceOptions,
+            },
+            {
+              prop: "eduBackground",
+              element: "el-select",
+              initValue: "",
+              placeholder: "请选择学历",
+              options: eduOptions,
+            },
+            {
+              prop: "status",
+              element: "el-select",
+              initValue: "",
+              placeholder: "请选择跟进状态",
+              options: statusOptions,
+            },
+            {
+              prop: "invalidStatus",
+              element: "el-select",
+              initValue: "",
+              placeholder: "请选择机会状态",
+              options: trailOptions
+            },
+            {
+              prop: "marketStaffId",
+              element: "el-select",
+              initValue: "",
+              placeholder: "归属销售",
+              options: staffOptions,
+              filterable: true
+            },
+            {
+              prop: "enquireProductIdOne",
+              element: "el-select",
+              initValue: "",
+              placeholder: "请选择咨询项目",
+            },
+            {
+              prop: "enquireSubjectIdOne",
+              element: "el-select",
+              initValue: "",
+              placeholder: "请先选择咨询项目",
+            },
+            {
+              prop: "enquireCourseIdOne",
+              element: "el-select",
+              initValue: "",
+              placeholder: "请先选择咨询科目",
+            },
+            {
+              prop: "ordeParams",
+              element: "el-select",
+              initValue: "",
+              placeholder: "选择查询排列方法",
+              options: [
+                {
+                  label: "选择查询排序方法",
+                  value: "选择查询排序方法"
+                }
+              ]
+            },
+            // 课程
+        {
+          prop: "abc",
+          element: "el-cascader",
+          placeholder: "请选择咨询项目/科目",
+          props: {
+            checkStrictly: true,
+            lazy: true,
+            lazyLoad:(node, resolve)=> {
+              console.log(node,'node')
+              const { level } = node;
+              // setTimeout(() => {
+              //   let nodes = [{
+              //     value: 1,
+              //     label: `选项${1}`,
+              //     leaf: level >= 2,
+              //   }]
+              //   // 通过调用resolve将子节点数据返回，通知组件数据加载完成
+              //   resolve(nodes);
+              // }, 1000);
+              if(level == 0){
+                this.$fetch("chance_product_list").then(res => {
+                  let data = JSON.parse(res.msg);
+                  let nodes = data.map(item =>({
+                    value: item.id,
+                    label: item.productName,
+                    leaf: level >= 2,
+                  }));
+                  resolve(nodes);
+                })
+              }else if(level == 1){
+                 this.$fetch("chance_subject_list",{
+                   enquireProductIdOne: node.data.value
+                 }).then(res => {
+                   let nodes;
+                   if(res.msg == "没有相关数据"){
+                     nodes = [];
+                   }else {
+                     let data = JSON.parse(res.msg);
+                    nodes = data.map(item =>({
+                      value: item.id,
+                      label: item.productName,
+                      leaf: level >= 2,
+                    }));
+                   }
+                  resolve(nodes);
+                })
+              }else if(level == 2){
+                 this.$fetch("chance_course_list",{
+                   enquireProductIdOne: node.data.value
+                 }).then(res => {
+                   let nodes;
+                   if(res.msg == "没有相关数据"){
+                     nodes = [];
+                   }else {
+                     let data = JSON.parse(res.msg);
+                    nodes = data.map(item =>({
+                      value: item.id,
+                      label: item.productName,
+                      leaf: level >= 2,
+                    }));
+                   }
+                  resolve(nodes);
+                })
+              }
+            },
+          },
+          initWidth: true,
+        },
+          ];
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
 };
 </script>
