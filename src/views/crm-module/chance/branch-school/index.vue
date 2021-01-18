@@ -30,7 +30,7 @@
       >
         <!-- 跟进次数 -->
         <template slot="visit" slot-scope="scope">
-            <span class="visit-container" @click="drawerVisible = true">{{
+            <span class="visit-container" @click="openDrawer(scope.row)">{{
             scope.row.visit || 0
             }}</span>
         </template>
@@ -39,6 +39,8 @@
     <!-- 回访抽屉 -->
     <rd-drawer
       :dialogVisible="drawerVisible"
+      :id="drawerId"
+      :phone="drawerPhone"
       @handleClose="drawerVisible = false"
     ></rd-drawer>
 
@@ -63,6 +65,8 @@ export default {
   name: "branch-school",
   data() {
     return {
+      drawerId:"",
+      drawerPhone:"",
       formOptions: [
         {
           prop: "menuName",
@@ -188,11 +192,11 @@ export default {
       tableKey: [
         {
           name: "机会ID",
-          value: "name",
+          value: "name1",
         },
         {
           name: "姓名",
-          value: "name",
+          value: "name2",
         },
          {
           name: "手机号",
@@ -205,15 +209,15 @@ export default {
         },
         {
           name: "咨询项目",
-          value: "menuUrl",
+          value: "menuUrl3",
         },
         {
           name: "咨询科目",
-          value: "visit"
+          value: "visit1"
         },
         {
           name: "咨询班型",
-          value: "menuOrder"
+          value: "menuOrder4"
         },
         {
           name: "跟进次数",
@@ -223,7 +227,7 @@ export default {
         },
         {
           name: "跟进状态",
-          value: "description2",
+          value: "description25",
         },
         {
           name: "跟进老师",
@@ -235,35 +239,35 @@ export default {
         },
          {
           name: "创建时间",
-          value: "description4",
+          value: "description47",
         },
          {
           name: "进入公海时间",
-          value: "description4",
+          value: "description48",
         },
          {
           name: "机会来源",
-          value: "description4",
+          value: "description49",
         },
          {
           name: "分校/战队",
-          value: "description4",
+          value: "description40",
         },
          {
           name: "省份",
-          value: "description4",
+          value: "description411",
         },
          {
           name: "城市",
-          value: "description4",
+          value: "description412",
         },
          {
           name: "地址",
-          value: "description4",
+          value: "description4123",
         },
          {
           name: "呼叫状态",
-          value: "description4",
+          value: "description44",
         },
       ],
       pageConfig: {
@@ -364,6 +368,11 @@ export default {
       distribution
   },
   methods: {
+    openDrawer(data){
+      this.drawerId = 389994;
+      this.drawerPhone = '11111111111';
+      this.drawerVisible = true;
+    },
     handleAdd(){},
     onSearch() {},
     pageChange(val) {

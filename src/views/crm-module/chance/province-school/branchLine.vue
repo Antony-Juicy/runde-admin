@@ -230,6 +230,7 @@ export default {
     };
   },
   methods: {
+    handleAdd(){},
     onSearch() {},
     pageChange(val) {
       // this.pageConfig.currentPage = val.page;
