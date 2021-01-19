@@ -10,25 +10,25 @@
       <div class="drawer-content">
         <el-tabs v-model="activeName" @tab-click="handleClick">
           <el-tab-pane label="沟通动态" name="second">
-            <communicationdynamics-table></communicationdynamics-table>
+            <communicationdynamics-table :id="id" :phone="phone"></communicationdynamics-table>
           </el-tab-pane>
           <el-tab-pane label="日志记录" name="first">
-            <diaryrecords-table></diaryrecords-table>
+            <diaryrecords-table :id="id" :phone="phone"></diaryrecords-table>
           </el-tab-pane>
           <el-tab-pane label="手机外呼" name="third">
-            <callout-table></callout-table>
+            <callout-table :id="id" :phone="phone"></callout-table>
           </el-tab-pane>
           <el-tab-pane label="总部外呼" name="fourth">
-            <qimocall-table></qimocall-table>
+            <qimocall-table :id="id" :phone="phone"></qimocall-table>
           </el-tab-pane>
           <el-tab-pane label="小号外呼" name="five">
-            <qimomincall-table></qimomincall-table>
+            <qimomincall-table :id="id" :phone="phone"></qimomincall-table>
           </el-tab-pane>
           <el-tab-pane label="分校外呼" name="six">
-            <branchcall-table></branchcall-table>
+            <branchcall-table :id="id" :phone="phone"></branchcall-table>
           </el-tab-pane>
           <el-tab-pane label="AI通话" name="seven">
-            <aicall-table></aicall-table>
+            <aicall-table :id="id" :phone="phone"></aicall-table>
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -58,6 +58,14 @@ export default {
     size: {
       type: String,
       default: '50%'
+    },
+    id: {
+      type: Number | String,
+      default: 0
+    },
+    phone: {
+      type:  Number | String,
+      default:""
     }
   },
   components: {

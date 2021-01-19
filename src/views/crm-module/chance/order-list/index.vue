@@ -248,25 +248,12 @@ export default {
         },
       ],
       tableData: [
-        {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-        },
-        {
-          id: 2,
-          name: "飞翔的荷兰人2",
-          cutdown: new Date().getTime(),
-          phone: "17092026183",
-        },
-        { id: 3, name: "飞翔的荷兰人1", phone: "18892026183" },
+       
       ],
       tableKey: [
         {
           name: "姓名",
-          value: "name",
+          value: "studentName",
         },
         {
           name: "手机号",
@@ -274,14 +261,8 @@ export default {
           operate: true,
         },
         {
-          name: "回收倒计时",
-          value: "cutdown",
-          operate: true,
-          width: 155,
-        },
-        {
-          name: "机会来源",
-          value: "menuUrl",
+          name: "成交时间",
+          value: "updateAt"
         },
         {
           name: "回访",
@@ -290,31 +271,38 @@ export default {
           width: 60,
         },
         {
-          name: "最近回访",
-          value: "menuOrder",
-          // width: 100
+          name: "报读项目",
+          value: "enquireProductNameOne"
         },
         {
-          name: "下次回访",
-          value: "description1",
+          name: "报读科目",
+          value: "enquireSubjectNameOne",
         },
         {
-          name: "跟进状态",
-          value: "description2",
+          name: "报读班型",
+          value: "enquireClassOne",
         },
         {
-          name: "创建时间",
-          value: "description3",
+          name: "机会状态",
+          value: "invalidStatus",
         },
         {
-          name: "呼叫状态",
-          value: "description4",
+          name: "注册人",
+          value: "createStaffName",
+        },
+        {
+          name: "归属销售",
+          value: "marketName",
+        },
+         {
+          name: "校区/部门",
+          value: "campusName",
         },
       ],
       pageConfig: {
         totalCount: 0,
         currentPage: 1,
-        pageSize: 10,
+        showCount: 10,
       },
       // 回访抽屉参数
       drawerVisible: false,
@@ -335,24 +323,24 @@ export default {
         ],
         detail: [{ required: true, message: "请输入", trigger: "blur" }],
       },
+      searchForm:{}
     };
   },
   mounted() {
     this.getSelectList();
+    this.getTableData();
   },
   methods: {
-    onSearch() {},
-    pageChange(val) {
-      // this.pageConfig.currentPage = val.page;
-      // this.pageConfig.pageSize = val.limit;
-      // console.log(this.searchForm,'this.searchForm--')
-      // this.getTableData({
-      //   currentPage: (val && val.page) || 1,
-      //   pageSize: (val && val.limit) || 10,
-      //   loginUserId,
-      //   ...this.searchForm,
-      //   parentId: this.parentId
-      // });
+    onSearch() {
+      this.searchForm = { ...val };
+      console.log(val, this.searchForm, "val---");
+      this.getTableData();
+    },
+     pageChange(val) {
+      console.log(val,'pagechange')
+      this.pageConfig.currentPage = val.page;
+      this.pageConfig.showCount = val.limit;
+      this.getTableData();
     },
     handelSelect(val) {
       console.log(val, "valll");
@@ -442,6 +430,28 @@ export default {
           initWidth: true,
         },
       ]
+      });
+    },
+    getTableData(params = {}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".el-table",
+      });
+      this.$fetch("chance_order_list", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+        dataQueryType: 'campusQuery'
+      }).then((res) => {
+        this.tableData = res.data.data.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          return item;
+        });
+        this.pageConfig.totalCount = res.data.count;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
       });
     },
   },

@@ -1,15 +1,22 @@
 <template>
-  <div class="callout-container">
+  <div class="callout-table">
     <rd-table
       :tableData="tableData"
       :tableKey="tableKey"
       :loading="loading"
       :fixedTwoRow="fixedTwoRow"
       :pageConfig="pageConfig"
-      :tbodyHeight="500"
+      :tbodyHeight="650"
+      :pager-count="5"
       @select="handleSelect"
       @pageChange="pageChange"
     >
+      <template slot="type" slot-scope="scope">
+       {{scope.row.type | CallTypeFilter}}
+     </template>
+      <template slot="data_type" slot-scope="scope">
+       {{scope.row.data_type | dataTypeFilter}}
+     </template>
     </rd-table>
   </div>
 </template>
@@ -20,8 +27,8 @@ export default {
     return {
       tableData: [],
       tableKey: [
-        { name: '类型',value: 'type' },
-        { name: '类别',value: 'data_type' },
+        { name: '类型',value: 'type',operate: true },
+        { name: '类别',value: 'data_type' ,operate: true },
         { name: '通话时长(单位秒)',value: 'duration' },
         { name: '员工姓名',value: 'staff_name' },
         { name: '校区名',value: 'campus_name' },
@@ -29,22 +36,84 @@ export default {
         { name: '结束时间',value: 'end_time' }
       ],
       emptyText: '暂无数据',
-      fixedTwoRow: false,
+      fixedTwoRow: true,
       pageConfig: {
         totalCount: 100,
-        pageNum: 1,
-        pageSize: 10,
+        currentPage: 1,
+        showCount: 10,
       },
       loading: false,
     }
+  },
+  props: {
+     id: {
+      type:Number | String,
+      default: 0
+    },
+    phone: {
+      type: Number | String,
+      default:""
+    }
+  },
+  filters:{
+    CallTypeFilter(val){
+      switch(val){
+        case 1:
+          return '呼出';
+        case 2:
+          return '呼入';
+        case 3:
+          return '呼出未接';
+        case 4:
+          return '呼入未接';
+      }
+    },
+     dataTypeFilter(val){
+      switch(val){
+        case 0:
+          return '系统电话';
+        case 1:
+          return '语音通话';
+        case 2:
+          return '视频通话';
+      }
+    }
+  },
+  mounted(){
+    console.log(this.id,this.phone,'---')
+    this.getTableData();
   },
   methods: {
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
     pageChange(val) {
-      console.log(val,'pagechange')
-    }
+      this.pageConfig.currentPage = val.page;
+      this.pageConfig.showCount = val.limit;
+      this.getTableData();
+    },
+    getTableData(params = {}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".callout-table .el-table",
+      });
+      this.$fetch("chance_feedback_sjwh", {
+        ...this.pageConfig,
+        ...params,
+        studentPhone: this.phone
+      }).then((res) => {
+        let data = JSON.parse(res.msg);
+        this.tableData = data.data.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.nextDate = this.$common._formatDates(item.nextDate);
+          return item;
+        });
+        this.pageConfig.totalCount = data.count;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
+      });
+    },
   }
 }
 </script>

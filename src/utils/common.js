@@ -20,10 +20,10 @@ const $common = {
     },
     // 年月日时分时间处理
     _formatDates(date) {
+        if(!date) {
+            return ''
+          }
         let time = new Date(date)
-        if(!time) {
-          return ''
-        }
         let year = time.getFullYear();
         let month = time.getMonth() + 1;
         let day = time.getDate();

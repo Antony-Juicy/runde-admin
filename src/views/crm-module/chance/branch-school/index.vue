@@ -30,7 +30,7 @@
       >
         <!-- 跟进次数 -->
         <template slot="visit" slot-scope="scope">
-            <span class="visit-container" @click="drawerVisible = true">{{
+            <span class="visit-container" @click="openDrawer(scope.row)">{{
             scope.row.visit || 0
             }}</span>
         </template>
@@ -39,6 +39,8 @@
     <!-- 回访抽屉 -->
     <rd-drawer
       :dialogVisible="drawerVisible"
+      :id="drawerId"
+      :phone="drawerPhone"
       @handleClose="drawerVisible = false"
     ></rd-drawer>
 
@@ -57,22 +59,55 @@
 
 <script>
 let id = 0;
+import Fetch from '@/utils/fetch'
 import rdDrawer from "@/components/RdDrawer";
 import distribution from "./distribution";
 export default {
   name: "branch-school",
   data() {
     return {
+      drawerId:"",
+      drawerPhone:"",
       formOptions: [
         {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "员工状态",
-        },
-        {
-          prop: "menuName",
-          element: "el-select",
+          prop: "marketStaffId",
+          element: "el-cascader",
           placeholder: "跟进老师",
+          props: {
+            lazy: true,
+            lazyLoad(node, resolve) {
+              const { level } = node;
+              if(level == 0){
+                const nodes = [
+                  {
+                    label:"正常",
+                    value: "Normal",
+                    leaf: level >= 1
+                  },
+                  {
+                    label:"离职",
+                    value: "Stop",
+                    leaf: level >= 1
+                  }
+                ];
+                resolve(nodes);
+              }else {
+                Fetch("chance_staff_list",{
+                  staffStatus: node.value
+                }).then(res => {
+                    let staffOptions = JSON.parse(res.msg).map((item) => ({
+                      label: item.staffName,
+                      value: item.id,
+                      leaf: level >= 1
+                    }));
+                     resolve(staffOptions);
+                })
+              }
+            },
+          },
+          initWidth: true,
+          showAllLevels: false,
+          filterable: true
         },
         {
           prop: "menuName",
@@ -188,32 +223,31 @@ export default {
       tableKey: [
         {
           name: "机会ID",
-          value: "name",
+          value: "id",
         },
         {
           name: "姓名",
-          value: "name",
+          value: "studentName",
         },
          {
           name: "手机号",
-          value: "phone",
-          operate: true
+          value: "phone"
         },
         {
           name: "学历",
-          value: "cutdown"
+          value: "eduBackground"
         },
         {
           name: "咨询项目",
-          value: "menuUrl",
+          value: "enquireProductNameOne",
         },
         {
           name: "咨询科目",
-          value: "visit"
+          value: "enquireSubjectNameOne"
         },
         {
           name: "咨询班型",
-          value: "menuOrder"
+          value: "enquireClassOne"
         },
         {
           name: "跟进次数",
@@ -223,53 +257,53 @@ export default {
         },
         {
           name: "跟进状态",
-          value: "description2",
+          value: "status",
         },
         {
           name: "跟进老师",
-          value: "description3",
+          value: "marketName",
         },
         {
           name: "跟进时间",
-          value: "description4",
+          value: "recentFeedbackTime",
         },
          {
           name: "创建时间",
-          value: "description4",
+          value: "createAt",
         },
          {
           name: "进入公海时间",
-          value: "description4",
+          value: "campusPoolTime",
         },
          {
           name: "机会来源",
-          value: "description4",
+          value: "saleSource",
         },
          {
           name: "分校/战队",
-          value: "description4",
+          value: "campusName",
         },
          {
           name: "省份",
-          value: "description4",
+          value: "phoneProvince",
         },
          {
           name: "城市",
-          value: "description4",
+          value: "phoneCity",
         },
          {
           name: "地址",
-          value: "description4",
+          value: "address",
         },
          {
           name: "呼叫状态",
-          value: "description4",
+          value: "callStatus",
         },
       ],
       pageConfig: {
         totalCount: 100,
         currentPage: 1,
-        pageSize: 10,
+        showCount: 10,
       },
       selectedData:[],
       drawerVisible: false,
@@ -355,28 +389,36 @@ export default {
         updateReason: [
           { required: true, message: "请输入修改事由", trigger: "blur" },
         ]
-      }
+      },
+      searchForm: {}
      
     };
+  },
+  mounted(){
+    this.getTableData();
+    this.getSelectList();
   },
   components:{
       rdDrawer,
       distribution
   },
   methods: {
+    openDrawer(data){
+      this.drawerId = 16369;
+      this.drawerPhone = '18009498386';
+      this.drawerVisible = true;
+    },
     handleAdd(){},
-    onSearch() {},
-    pageChange(val) {
-      // this.pageConfig.currentPage = val.page;
-      // this.pageConfig.pageSize = val.limit;
-      // console.log(this.searchForm,'this.searchForm--')
-      // this.getTableData({
-      //   currentPage: (val && val.page) || 1,
-      //   pageSize: (val && val.limit) || 10,
-      //   loginUserId,
-      //   ...this.searchForm,
-      //   parentId: this.parentId
-      // });
+    onSearch(val) {
+      this.searchForm = { ...val };
+      console.log(val, this.searchForm, "val---");
+      this.getTableData();
+    },
+     pageChange(val) {
+      console.log(val,'pagechange')
+      this.pageConfig.currentPage = val.page;
+      this.pageConfig.showCount = val.limit;
+      this.getTableData();
     },
     handelSelect(val) {
       console.log(val, "valll");
@@ -392,6 +434,221 @@ export default {
     },
     handleDistribute(){
       this.distributeVisible = true;
+    },
+     getTableData(params = {}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".el-table",
+      });
+      this.$fetch("chance_campus_list", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.data.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          item.phone = this.$common.hidePhone(item.phone);
+          item.enquireClassOne = item.enquireClassOne && item.enquireClassOne.map(item=>(item.name)).join(",");
+          return item;
+        });
+        this.pageConfig.totalCount = res.data.count;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
+      });
+    },
+    getSelectList(){
+      Promise.all([
+        this.$fetch("chance_source_list"),
+        this.$fetch("chance_edu_list"),
+        this.$fetch("chance_status_list"),
+        this.$fetch("chance_config_campusList"),
+        this.$fetch("chance_call_status"),
+      ])
+        .then((result) => {
+          let sourceOptions = result[0].data.map((item) => ({
+            label: item.value,
+            value: item.key,
+          }));
+          let eduOptions = result[1].data.map((item) => ({
+            label: item.value,
+            value: item.key,
+          }));
+          let statusOptions = result[2].data.map((item) => ({
+            label: item.value,
+            value: item.key,
+          }));
+          let campusOptions = result[3].data.data.map((item) => ({
+            label: item.campusName,
+            value: item.id,
+          }));
+          let callStatusOptions = result[4].data.map((item) => ({
+            label: item.value,
+            value: item.key,
+          }));
+          let numsOptions = []
+          for(let i=0; i< 8; i++){
+            numsOptions.push({
+              label: i,
+              value: i
+            })
+          }
+          this.formOptions = [
+        {
+          prop: "marketStaffId",
+          element: "el-cascader",
+          placeholder: "跟进老师",
+          props: {
+            lazy: true,
+            lazyLoad(node, resolve) {
+              const { level } = node;
+              if(level == 0){
+                const nodes = [
+                  {
+                    label:"正常",
+                    value: "Normal",
+                    leaf: level >= 1
+                  },
+                  {
+                    label:"离职",
+                    value: "Stop",
+                    leaf: level >= 1
+                  }
+                ];
+                resolve(nodes);
+              }else {
+                Fetch("chance_staff_list",{
+                  staffStatus: node.value
+                }).then(res => {
+                    let staffOptions = JSON.parse(res.msg).map((item) => ({
+                      label: item.staffName,
+                      value: item.id,
+                      leaf: level >= 1
+                    }));
+                     resolve(staffOptions);
+                })
+              }
+            },
+          },
+          initWidth: true,
+          showAllLevels: false,
+          filterable: true
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "机会状态",
+          options: statusOptions
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "姓名",
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "手机",
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "省份",
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "城市",
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "地址",
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "注册人",
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "学历",
+          options: eduOptions
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "来源",
+          options: sourceOptions
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "组织架构",
+          options: campusOptions,
+          filterable: true
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "呼叫状态",
+          options: callStatusOptions
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "跟进次数",
+          options: numsOptions
+        },
+        // 课程
+        {
+          prop: "abc",
+          element: "el-cascader",
+          placeholder: "课程",
+          props: {
+            checkStrictly: true,
+            lazy: true,
+            lazyLoad(node, resolve) {
+              const { level } = node;
+              setTimeout(() => {
+                const nodes = Array.from({ length: level + 1 }).map((item) => ({
+                  value: ++id,
+                  label: `选项${id}`,
+                  leaf: level >= 2,
+                }));
+                // 通过调用resolve将子节点数据返回，通知组件数据加载完成
+                resolve(nodes);
+              }, 1000);
+            },
+          },
+          initWidth: true,
+        },
+        // 时间
+        {
+          prop: "time",
+          element: "el-date-picker",
+          startPlaceholder: "最近跟进时间(开始)",
+          endPlaceholder: "最近跟进时间(结束)",
+          initWidth: true,
+        },
+        {
+          prop: "time",
+          element: "el-date-picker",
+          startPlaceholder: "创建时间(开始)",
+          endPlaceholder: "创建时间(结束)",
+          initWidth: true,
+        },
+        {
+          prop: "time",
+          element: "el-date-picker",
+          startPlaceholder: "进入公海时间(开始)",
+          endPlaceholder: "进入公海时间(结束)",
+          initWidth: true,
+        },
+      ]
+        })
     }
   },
 };

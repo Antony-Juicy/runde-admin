@@ -11,10 +11,12 @@
       </el-form-item>
     </el-form>
     <el-tabs v-model="activeName" @tab-click="handleClick">
-      <el-tab-pane label="用户管理" name="first"></el-tab-pane>
-      <el-tab-pane label="配置管理" name="second"></el-tab-pane>
-      <el-tab-pane label="角色管理" name="third"></el-tab-pane>
-      <el-tab-pane label="定时任务补偿" name="fourth"></el-tab-pane>
+      <el-tab-pane
+        :label="item.label"
+        :name="item.id + ''"
+        v-for="item in tabList"
+        :key="item.id"
+      ></el-tab-pane>
     </el-tabs>
     <div class="content-box">
       <el-card class="box-card">
@@ -22,37 +24,45 @@
           <span>机会 - 基本资料</span>
         </div>
         <div class="card-content">
-          <div class="info-item">
-            <div class="item-label">姓名：</div>
-            <div class="item-content">飞翔的荷兰人</div>
+          <div class="row1">
+            <div class="info-item">
+              <div class="item-label">姓名：</div>
+              <div class="item-content">{{ currentInfo.studentName }}</div>
+            </div>
+            <div class="info-item">
+              <div class="item-label">手机号码：</div>
+              <div class="item-content">{{ currentInfo.phone }}</div>
+            </div>
+            <div class="info-item">
+              <div class="item-label">注册人：</div>
+              <div class="item-content">{{ currentInfo.createStaffName }}</div>
+            </div>
+            <div class="info-item">
+              <div class="item-label">创建时间：</div>
+              <div class="item-content">
+                {{ $common._formatDates(currentInfo.createAt) }}
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="item-label">机会来源：</div>
+              <div class="item-content">{{ currentInfo.saleSource }}</div>
+            </div>
           </div>
-          <div class="info-item">
-            <div class="item-label">手机号码：</div>
-            <div class="item-content">15692026183</div>
-          </div>
-          <div class="info-item">
-            <div class="item-label">注册人：</div>
-            <div class="item-content">李文婷</div>
-          </div>
-          <div class="info-item">
-            <div class="item-label">创建时间：</div>
-            <div class="item-content">2020-12-18 10:35:03</div>
-          </div>
-          <div class="info-item">
-            <div class="item-label">机会来源：</div>
-            <div class="item-content">网络</div>
-          </div>
-          <div class="info-item">
-            <div class="item-label">机会状态：</div>
-            <div class="item-content">未跟进</div>
-          </div>
-          <div class="info-item">
-            <div class="item-label">活动名称：</div>
-            <div class="item-content">飞翔的荷兰人</div>
-          </div>
-          <div class="info-item">
-            <div class="item-label">赛道：</div>
-            <div class="item-content">线下</div>
+          <div class="row1">
+            <div class="info-item">
+              <div class="item-label">机会状态：</div>
+              <div class="item-content">{{ currentInfo.status }}</div>
+            </div>
+            <div class="info-item">
+              <div class="item-label">活动名称：</div>
+              <div class="item-content">{{ currentInfo.labelInfoName }}</div>
+            </div>
+            <div class="info-item">
+              <div class="item-label">赛道：</div>
+              <div class="item-content">
+                {{ currentInfo.opportunityCampusNature }}
+              </div>
+            </div>
           </div>
         </div>
       </el-card>
@@ -82,61 +92,89 @@ export default {
       formInline: {
         phone: "",
       },
-      activeName: "first",
-       tableData: [
-        { id: 1, name: "飞翔的荷兰人3", cutdown: 1608897351706, visit: 2,phone:'15692026183' },
-      ],
+      activeName: "",
+      tableData: [],
       tableKey: [
         {
           name: "记录编号",
-          value: "name",
+          value: "id",
         },
-         {
+        {
           name: "归属组织",
-          value: "phone",
-          operate: true
+          value: "campusName",
         },
         {
           name: "归属销售",
-          value: "cutdown",
-          operate: true,
-          width: 155,
+          value: "marketName",
         },
         {
           name: "跟进次数",
-          value: "menuUrl",
+          value: "feedbackNum",
         },
         {
           name: "状态说明",
-          value: "visit",
-          operate: true,
+          value: "statusShow",
         },
         {
           name: "机会停留模块",
-          value: "menuOrder"
+          value: "stayModule",
         },
         {
           name: "创建人",
-          value: "description1",
+          value: "createStaffName",
         },
         {
           name: "变动时间",
-          value: "description2",
-        }
+          value: "updateAt",
+        },
       ],
       pageConfig: {
         totalCount: 0,
         currentPage: 1,
         pageSize: 10,
-      }
+      },
+      tabList: [],
+      currentInfo: {},
     };
   },
   methods: {
     onSubmit() {
-      console.log("submit!");
+      // console.log(this.formInline.phone,"submit!");
+      if (!this.formInline.phone) {
+        this.$message.warning("手机号不能为空");
+        return;
+      }
+
+      this.$fetch("chance_track_byPhone", {
+        phone: this.formInline.phone,
+      }).then((res) => {
+        this.tabList = res.data.map((item) => ({
+          id: item.id,
+          label: `机会id：${item.id}`,
+        }));
+        this.activeName = this.tabList[0].id + "";
+        // // 获取当前id的信息
+        // 获取表格信息
+        this.getTableData({
+          opportunityId: this.tabList[0].id,
+        });
+      });
     },
     handleClick(tab, event) {
       console.log(tab, event);
+     
+      this.getTableData({
+        opportunityId: Number(tab._props.name),
+      });
+    },
+    getTableData(param) {
+       this.$fetch("chance_track_byId",param).then((result) => {
+          this.currentInfo = result.data.dataJson;
+        });
+      this.$fetch("chance_track_record", param).then((res) => {
+        let data = JSON.parse(res.msg);
+        this.tableData = data.data;
+      });
     },
   },
 };
@@ -154,21 +192,25 @@ export default {
     .card-content {
       width: 100%;
       font-size: 14px;
+      .row1 {
+        display: flex;
+      }
       .info-item {
         width: 19%;
-        display: inline-block;
+        display: flex;
         line-height: 40px;
-        .item-label{
+        .item-label {
           display: inline-block;
           width: 80px;
           text-align: right;
         }
         .item-content {
           display: inline-block;
-          border: 1px solid #EBEEF5;
+          border: 1px solid #ebeef5;
           padding-left: 5px;
           width: 150px;
           margin-bottom: 10px;
+          height: 42px;
         }
       }
     }

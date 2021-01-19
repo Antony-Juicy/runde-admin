@@ -1,7 +1,7 @@
 <template>
   <div class="primary-line">
     <search-form
-      :formOptions="formOptions"
+      :formOptions="newFormOptions"
       :showNum="7"
       @onSearch="onSearch"
     ></search-form>
@@ -69,7 +69,7 @@ export default {
   name: "temp2",
   data() {
     return {
-      formOptions: [
+      newFormOptions: [
         {
           prop: "menuName",
           element: "el-select",
@@ -172,66 +172,90 @@ export default {
         },
       ],
        tableData: [
-        { id: 1, name: "飞翔的荷兰人3", cutdown: 1608897351706, visit: 2,phone:'15692026183' },
-        { id: 2, name: "飞翔的荷兰人2",cutdown: new Date().getTime(),phone:'17092026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
       ],
       tableKey: [
           {
           name: "ID",
           value: "id",
+          width: 80
         },
         {
           name: "姓名",
-          value: "name",
+          value: "studentName",
         },
          {
-          name: "手机号",
-          value: "phone",
-          operate: true
+          name: "手机号码",
+          value: "phone"
         },
         {
-          name: "回收倒计时",
-          value: "cutdown",
-          operate: true,
-          width: 155,
+          name: "学历",
+          value: "eduBackground"
         },
         {
-          name: "机会来源",
-          value: "menuUrl",
+          name: "咨询项目",
+          value: "enquireProductNameOne",
         },
         {
-          name: "回访",
-          value: "visit",
-          operate: true,
-          width: 60,
+          name: "咨询科目",
+          value: "enquireSubjectNameOne"
         },
         {
-          name: "最近回访",
-          value: "menuOrder",
-          // width: 100
+          name: "咨询班型",
+          value: "enquireClassOne"
         },
         {
-          name: "下次回访",
-          value: "description1",
+          name: "跟进次数",
+          value: "feedbackCount",
         },
         {
           name: "跟进状态",
-          value: "description2",
+          value: "status",
+        },
+        {
+          name: "跟进老师",
+          value: "marketName",
+        },
+        {
+          name: "最近跟进",
+          value: "recentFeedbackTime",
         },
         {
           name: "创建时间",
-          value: "description3",
+          value: "createAt",
         },
         {
-          name: "呼叫状态",
-          value: "description4",
+          name: "进入公海时间",
+          value: "campusPoolTime",
+        },
+        {
+          name: "机会来源",
+          value: "saleSource",
+        },
+        {
+          name: "分校/战队",
+          value: "campusName",
+        },
+        {
+          name: "省份",
+          value: "phoneProvince",
+        },
+         {
+          name: "城市",
+          value: "phoneCity",
+        },
+         {
+          name: "地址",
+          value: "address",
+        },
+         {
+          name: "赛道",
+          value: "opportunityCampusNature",
         },
       ],
       pageConfig: {
         totalCount: 100,
-        currentPage: 1,
-        pageSize: 10,
+       currentPage: 1,
+        showCount: 10,
       },
       selectedData:[],
       distributeVisible: false,
@@ -251,22 +275,40 @@ export default {
           value: '选项5',
           label: '北京烤鸭'
         }],
-        campusValue: ''
+        campusValue: '',
+        searchForm: {}
     };
   },
+  props:{
+    formOptions: {
+      type: Array,
+      default:()=>[]
+    }
+  },
+  watch:{
+    formOptions(newVal){
+      console.log(newVal,'newww')
+      this.newFormOptions = newVal;
+    }
+  },
+   mounted() {
+    this.getTableData();
+    // this.getSelectList();
+  },
   methods: {
-    onSearch() {},
-    pageChange(val) {
-      // this.pageConfig.currentPage = val.page;
-      // this.pageConfig.pageSize = val.limit;
-      // console.log(this.searchForm,'this.searchForm--')
-      // this.getTableData({
-      //   currentPage: (val && val.page) || 1,
-      //   pageSize: (val && val.limit) || 10,
-      //   loginUserId,
-      //   ...this.searchForm,
-      //   parentId: this.parentId
-      // });
+    handleAdd(){
+
+    },
+    onSearch(val) {
+      this.searchForm = { ...val };
+      console.log(val, this.searchForm, "val---");
+      this.getTableData();
+    },
+     pageChange(val) {
+      console.log(val,'pagechange')
+      this.pageConfig.currentPage = val.page;
+      this.pageConfig.showCount = val.limit;
+      this.getTableData();
     },
     handelSelect(val) {
       console.log(val, "valll");
@@ -274,6 +316,183 @@ export default {
     },
     handleDistribute(){
       this.distributeVisible = true;
+    },
+    getTableData(params = {}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".el-table",
+      });
+      this.$fetch("chance_province_list", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.data.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          item.campusPoolTime = this.$common._formatDates(item.campusPoolTime);
+          item.phone = this.$common.hidePhone(item.phone);
+          item.enquireClassOne = item.enquireClassOne && item.enquireClassOne.map(item=>(item.name)).join(",");
+          return item;
+        });
+        this.pageConfig.totalCount = res.data.count;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
+      });
+    },
+    getSelectList(){
+      Promise.all([
+        this.$fetch("chance_staff_list"),
+        this.$fetch("chance_status_list"),
+        this.$fetch("chance_edu_list"),
+        this.$fetch("chance_source_list"),
+        this.$fetch("chance_config_campusList")
+      ])
+        .then((result) => {
+          console.log(result,'resu')
+           let staffOptions = JSON.parse(result[0].msg).map((item) => ({
+            label: item.staffName,
+            value: item.id,
+          }));
+           let trailOptions = result[1].data.map((item) => ({
+            label: item.value,
+            value: item.key,
+          }));
+          let eduOptions = result[2].data.map((item) => ({
+            label: item.value,
+            value: item.key,
+          }));
+           let sourceOptions = result[3].data.map((item) => ({
+            label: item.value,
+            value: item.key,
+          }));
+           let campusOptions = result[4].data.data.map((item) => ({
+          label: item.campusName,
+          value: item.id,
+        }));
+         let numsOptions = []
+        for(let i=0; i< 8; i++){
+          numsOptions.push({
+            label: i,
+            value: i
+          })
+        }
+       
+        this.formOptions = [
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "跟进老师",
+          filterable: true,
+          options: staffOptions
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "注册人",
+          filterable: true,
+          options: staffOptions
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "机会状态",
+          options: trailOptions
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "学员姓名"
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "手机",
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "省份",
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "城市",
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "学历",
+          options: eduOptions
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "机会来源",
+          options: sourceOptions
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "组织架构",
+          filterable: true,
+          options: campusOptions
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "跟进次数",
+          options: numsOptions
+        },
+        // 课程
+        {
+          prop: "abc",
+          element: "el-cascader",
+          placeholder: "课程",
+          props: {
+            checkStrictly: true,
+            lazy: true,
+            lazyLoad(node, resolve) {
+              const { level } = node;
+              setTimeout(() => {
+                const nodes = Array.from({ length: level + 1 }).map((item) => ({
+                  value: ++id,
+                  label: `选项${id}`,
+                  leaf: level >= 2,
+                }));
+                // 通过调用resolve将子节点数据返回，通知组件数据加载完成
+                resolve(nodes);
+              }, 1000);
+            },
+          },
+          initWidth: true,
+        },
+        // 时间
+        {
+          prop: "time",
+          element: "el-date-picker",
+          startPlaceholder: "最近跟进时间(开始)",
+          endPlaceholder: "最近跟进时间(结束)",
+          initWidth: true,
+        },
+        {
+          prop: "time",
+          element: "el-date-picker",
+          startPlaceholder: "创建时间(开始)",
+          endPlaceholder: "创建时间(结束)",
+          initWidth: true,
+        },
+        {
+          prop: "time",
+          element: "el-date-picker",
+          startPlaceholder: "进入公海时间(开始)",
+          endPlaceholder: "进入公海时间(结束)",
+          initWidth: true,
+        },
+      ]
+        })
+        
     }
   },
 };
