@@ -68,6 +68,7 @@ export default {
       this.$fetch("chance_feedback_commuity", {
         ...this.pageConfig,
         ...params,
+        opportunityId: this.id
       }).then((res) => {
         this.tableData = res.data.data.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);

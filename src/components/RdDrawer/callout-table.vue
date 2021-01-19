@@ -1,12 +1,13 @@
 <template>
-  <div class="callout-container">
+  <div class="callout-table">
     <rd-table
       :tableData="tableData"
       :tableKey="tableKey"
       :loading="loading"
       :fixedTwoRow="fixedTwoRow"
       :pageConfig="pageConfig"
-      :tbodyHeight="500"
+      :tbodyHeight="650"
+      :pager-count="5"
       @select="handleSelect"
       @pageChange="pageChange"
     >
@@ -29,22 +30,60 @@ export default {
         { name: '结束时间',value: 'end_time' }
       ],
       emptyText: '暂无数据',
-      fixedTwoRow: false,
+      fixedTwoRow: true,
       pageConfig: {
         totalCount: 100,
-        pageNum: 1,
-        pageSize: 10,
+        currentPage: 1,
+        showCount: 10,
       },
       loading: false,
     }
+  },
+  props: {
+     id: {
+      type:Number | String,
+      default: 0
+    },
+    phone: {
+      type: Number | String,
+      default:""
+    }
+  },
+  mounted(){
+    console.log(this.id,this.phone,'---')
+    this.getTableData();
   },
   methods: {
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
     pageChange(val) {
-      console.log(val,'pagechange')
-    }
+      this.pageConfig.currentPage = val.page;
+      this.pageConfig.showCount = val.limit;
+      this.getTableData();
+    },
+    getTableData(params = {}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".callout-table .el-table",
+      });
+      this.$fetch("chance_feedback_sjwh", {
+        ...this.pageConfig,
+        ...params,
+        studentPhone: this.phone
+      }).then((res) => {
+        let data = JSON.parse(res.msg);
+        this.tableData = data.data.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.nextDate = this.$common._formatDates(item.nextDate);
+          return item;
+        });
+        this.pageConfig.totalCount = data.count;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
+      });
+    },
   }
 }
 </script>
