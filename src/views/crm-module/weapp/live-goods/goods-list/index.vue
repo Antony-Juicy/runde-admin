@@ -173,9 +173,9 @@ export default {
       showNum: 6,
       searchForm: {},
       formOptions: [
-        { prop: 'goodsId', element: 'el-input', placeholder: '请输入商品id/名称' },
-        { prop: 'project', element: 'el-select', placeholder: '请输入项目' },
-        { prop: 'goodsname', element: 'el-input', placeholder: '请选择商品名称' },
+        { prop: 'goodsId', element: 'el-input', placeholder: '请输入商品id' },
+        { prop: 'typeId', element: 'el-select', placeholder: '请选择项目' },
+        { prop: 'goodsName', element: 'el-input', placeholder: '请输入商品名称' },
         { 
           prop: 'goodsStatus',
           element: 'el-select',
@@ -310,6 +310,7 @@ export default {
   },
   mounted () {
     this.getTableData()
+    this.getTypeData();
   },
   methods: {
     onSearch(val) {
@@ -345,6 +346,10 @@ export default {
     // 分页查询
     pageChange(val) {
       console.log(val,'pagechange')
+      this.getTableData({
+        pageNum: (val && val.page) || 1,
+        pageSize: (val && val.limit) || 10,
+      });
     },
 
     // 新增商品
@@ -354,7 +359,7 @@ export default {
       for (const key in this.goodsForm) {
         this.goodsForm[key] = "";
       }
-      this.getTypeData();
+      // this.getTypeData();
       this.getCouponData();
     },
     // 编辑商品
@@ -428,6 +433,7 @@ export default {
           label: item.typeName,
           value: item.typeId,
         }));
+        this.formOptions.splice(1,1,{ prop: 'typeId', element: 'el-select', placeholder: '选择项目', options: this.typeOptions })
       });
     },
     // 获取优惠券
