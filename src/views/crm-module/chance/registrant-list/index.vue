@@ -189,9 +189,10 @@ export default {
         this.$fetch("chance_edu_list"),
         this.$fetch("chance_status_list"),
         this.$fetch("chance_trail_list"),
-        this.$fetch("chance_staff_list"),
-        this.$fetch("chance_subject_list"),
-      ])
+        this.$fetch("chance_staff_list")
+      ].map((p) => {
+        return p.catch(error => error)
+    }))
         .then((result) => {
           let sourceOptions = result[0].data.map((item) => ({
             label: item.value,
@@ -213,12 +214,40 @@ export default {
             label: item.staffName,
             value: item.id,
           }));
-          // let subjectOptions = result[5].data.map((item) => ({
-          //   label: item.value,
-          //   value: item.key,
-          // }));
-          let subjectOptions = [];
-          console.log(staffOptions,'staffOptions-')
+         let orderOptions = [
+           {
+             label: "按照创建时间正序查询",
+             value: "按照创建时间正序查询"
+           },
+           {
+             label: "按照创建时间逆序查询",
+             value: "按照创建时间逆序查询"
+           },
+           {
+             label: "按照回收时间正序查询",
+             value: "按照回收时间正序查询"
+           },
+           {
+             label: "按照回收时间逆序查询",
+             value: "按照回收时间逆序查询"
+           },
+           {
+             label: "按照最近回访时间正序查询",
+             value: "按照最近回访时间正序查询"
+           },
+           {
+             label: "按照最近回访时间逆序查询",
+             value: "按照最近回访时间逆序查询"
+           },
+           {
+             label: "按照分配时间正序查询",
+             value: "按照分配时间正序查询"
+           },
+           {
+             label: "按照分配时间逆序查询",
+             value: "按照分配时间逆序查询"
+           },
+         ];
           this.formOptions = [
             {
               prop: "studentName",
@@ -291,12 +320,7 @@ export default {
               element: "el-select",
               initValue: "",
               placeholder: "选择查询排列方法",
-              options: [
-                {
-                  label: "选择查询排序方法",
-                  value: "选择查询排序方法"
-                }
-              ]
+              options: orderOptions
             },
             // 课程
         {

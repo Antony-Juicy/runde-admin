@@ -348,7 +348,9 @@ export default {
         this.$fetch("chance_edu_list"),
         this.$fetch("chance_source_list"),
         this.$fetch("chance_config_campusList")
-      ])
+      ].map((p) => {
+        return p.catch(error => error)
+    }))
         .then((result) => {
           console.log(result,'resu')
            let staffOptions = JSON.parse(result[0].msg).map((item) => ({

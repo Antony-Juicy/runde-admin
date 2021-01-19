@@ -361,7 +361,9 @@ export default {
       Promise.all([
         this.$fetch("chance_edu_list"),
         this.$fetch("chance_config_campusList"),
-      ]).then((result) => {
+      ].map((p) => {
+        return p.catch(error => error)
+    })).then((result) => {
         let eduOptions = result[0].data.map((item) => ({
           label: item.value,
           value: item.key,

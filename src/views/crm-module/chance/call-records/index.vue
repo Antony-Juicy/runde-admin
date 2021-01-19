@@ -166,7 +166,9 @@ export default {
       Promise.all([
         this.$fetch("chance_staff_list"),
         this.$fetch("chance_config_campusList"),
-      ]).then(result => {
+      ].map((p) => {
+        return p.catch(error => error)
+    })).then(result => {
         let staffOptions = JSON.parse(result[0].msg).map((item) => ({
           label: item.staffName,
           value: item.id,

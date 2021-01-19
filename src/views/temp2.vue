@@ -476,7 +476,9 @@ export default {
         this.$fetch("chance_staff_list"),
         this.$fetch("chance_config_campusList"),
         this.$fetch("chance_call_status"),
-      ])
+      ].map((p) => {
+        return p.catch(error => error)
+    }))
         .then((result) => {
           let sourceOptions = result[0].data.map((item) => ({
             label: item.value,

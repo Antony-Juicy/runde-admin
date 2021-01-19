@@ -12,6 +12,9 @@ export default {
     // 分校外呼
     chance_feedback_fxwh: {url: '/crm/crmopportunity/zhiboCallRecordListJson', method: 'post'},
 
+    // 我的机会
+    chance_my_list:  {url: '/crm/crmopportunity/myListJson', method: 'post'},
+
     // 分校/战队公海
     chance_campus_list: {url: '/crm/crmopportunity/listBranchCampusJson', method: 'post'},
 

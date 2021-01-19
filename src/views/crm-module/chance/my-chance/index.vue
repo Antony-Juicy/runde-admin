@@ -1,9 +1,13 @@
 <template>
   <div class="my-chance-container">
     <!-- 全屏弹窗 -->
-      <fullDialog v-model="showDetail" title="查看活动详情" @change="fullDialogChange">
-          <activityDetail/>
-      </fullDialog>
+    <fullDialog
+      v-model="showDetail"
+      title="查看活动详情"
+      @change="fullDialogChange"
+    >
+      <activityDetail />
+    </fullDialog>
     <!-- 上部的总数 -->
     <div class="top-total w-container">
       <el-tabs v-model="activeName" @tab-click="handleClick">
@@ -39,20 +43,23 @@
       <!-- 左侧表格 -->
       <div class="main-left w-container">
         <div v-show="tabIndex == '0'">
-          <privateCustomers @currentChange="currentChange"/>
+          <privateCustomers @currentChange="currentChange" :newFormOptions="formOptions"/>
         </div>
         <div v-show="tabIndex == '1'">
-          <publicCustomers/>
+          <publicCustomers />
         </div>
         <div v-show="tabIndex == '2'">
-          <lockUser/>
+          <lockUser />
         </div>
       </div>
       <!-- 右侧表单 -->
       <div class="main-right w-container">
         <div class="contact">
           <div class="contact-title">
-            <span>联系电话：</span><span style="color: red;font-weight: bold">{{$common.hidePhone(currentPhone)}}</span>
+            <span>联系电话：</span
+            ><span style="color: red; font-weight: bold">{{
+              $common.hidePhone(currentPhone)
+            }}</span>
           </div>
           <el-form
             ref="dataForm"
@@ -217,13 +224,13 @@
               ></el-col>
             </el-row>
             <el-form-item label="咨询班型" prop="detail">
-                  <el-input
-                    v-model.trim="basicInfo.detail"
-                    autocomplete="off"
-                    placeholder="请输入"
-                    size="small"
-                  /> </el-form-item
-              >
+              <el-input
+                v-model.trim="basicInfo.detail"
+                autocomplete="off"
+                placeholder="请输入"
+                size="small"
+              />
+            </el-form-item>
             <el-form-item>
               <el-button
                 type="primary"
@@ -237,7 +244,6 @@
         </div>
       </div>
     </div>
-    
   </div>
 </template>
 
@@ -246,7 +252,7 @@ import activityDetail from "./detail";
 import privateCustomers from "./privateCustomers";
 import publicCustomers from "./publicCustomers";
 import lockUser from "./lockUser";
-import fullDialog from '@/components/FullDialog';
+import fullDialog from "@/components/FullDialog";
 
 export default {
   name: "my-chance",
@@ -285,54 +291,187 @@ export default {
         nextTime: [
           { required: true, message: "请选择下次联系时间", trigger: "blur" },
         ],
-        detail: [
-          { required: true, message: "请输入", trigger: "blur" },
-        ],
+        detail: [{ required: true, message: "请输入", trigger: "blur" }],
       },
       tabIndex: "0",
-      currentPhone: ""
+      currentPhone: "",
+      formOptions: [],
     };
   },
-  components:{
+  components: {
     activityDetail,
     fullDialog,
     privateCustomers,
     publicCustomers,
-    lockUser
+    lockUser,
   },
- 
+  mounted() {
+    this.getSelectList();
+  },
   methods: {
     handleClick(tab, event) {
-      console.log(tab.index, 'click');
+      console.log(tab.index, "click");
       this.tabIndex = tab.index;
     },
-   
-    fullDialogChange(val){
+
+    fullDialogChange(val) {
       this.showDetail = val;
     },
-   
-    currentChange(val){
-      console.log(val,'vallll')
+
+    currentChange(val) {
+      console.log(val, "vallll");
       this.currentPhone = val.phone;
     },
 
-    handleDetail(){
-      if(!this.currentPhone){
+    handleDetail() {
+      if (!this.currentPhone) {
         this.$message({
-          message: '请选择具体的商机哦！温馨提示：点击列表行即可选中',
-          type: 'warning'
-        })
+          message: "请选择具体的商机哦！温馨提示：点击列表行即可选中",
+          type: "warning",
+        });
         return;
       }
-      this.showDetail=true
-    }
+      this.showDetail = true;
+    },
+
+    getSelectList() {
+      Promise.all([
+        this.$fetch("chance_source_list"),
+        this.$fetch("chance_edu_list"),
+        this.$fetch("chance_status_list"),
+        this.$fetch("chance_call_status"),
+      ].map((p) => {
+        return p.catch(error => error)
+    })).then((result) => {
+        let sourceOptions = result[0].data.map((item) => ({
+          label: item.value,
+          value: item.key,
+        }));
+        let eduOptions = result[1].data.map((item) => ({
+          label: item.value,
+          value: item.key,
+        }));
+        let statusOptions = result[2].data.map((item) => ({
+          label: item.value,
+          value: item.key,
+        }));
+        let callStatusOptions = result[3].data.map((item) => ({
+          label: item.value,
+          value: item.key,
+        }));
+        let orderOptions = [
+           {
+             label: "按照创建时间正序查询",
+             value: "按照创建时间正序查询"
+           },
+           {
+             label: "按照创建时间逆序查询",
+             value: "按照创建时间逆序查询"
+           },
+           {
+             label: "按照回收时间正序查询",
+             value: "按照回收时间正序查询"
+           },
+           {
+             label: "按照回收时间逆序查询",
+             value: "按照回收时间逆序查询"
+           },
+           {
+             label: "按照最近回访时间正序查询",
+             value: "按照最近回访时间正序查询"
+           },
+           {
+             label: "按照最近回访时间逆序查询",
+             value: "按照最近回访时间逆序查询"
+           },
+           {
+             label: "按照分配时间正序查询",
+             value: "按照分配时间正序查询"
+           },
+           {
+             label: "按照分配时间逆序查询",
+             value: "按照分配时间逆序查询"
+           },
+         ];
+        this.formOptions = [
+          {
+            prop: "menuName",
+            element: "el-input",
+            placeholder: "学员姓名",
+          },
+          {
+            prop: "menuName",
+            element: "el-input",
+            placeholder: "学员手机",
+          },
+          {
+            prop: "menuName",
+            element: "el-input",
+            placeholder: "活动名",
+          },
+          {
+            prop: "menuName",
+            element: "el-select",
+            placeholder: "学历",
+            options: eduOptions,
+          },
+          {
+            prop: "menuName",
+            element: "el-select",
+            placeholder: "机会状态",
+            options: statusOptions,
+          },
+          {
+            prop: "menuName",
+            element: "el-select",
+            placeholder: "机会来源",
+            options: sourceOptions,
+          },
+          {
+            prop: "menuName",
+            element: "el-select",
+            placeholder: "查询排序方法",
+            options: orderOptions
+          },
+          {
+            prop: "menuName",
+            element: "el-select",
+            placeholder: "呼叫状态",
+            options: callStatusOptions,
+          },
+          {
+            prop: "abc",
+            element: "el-cascader",
+            placeholder: "课程",
+
+            props: {
+              checkStrictly: true,
+              lazy: true,
+              lazyLoad(node, resolve) {
+                const { level } = node;
+                setTimeout(() => {
+                  const nodes = Array.from({ length: level + 1 }).map(
+                    (item) => ({
+                      value: ++id,
+                      label: `选项${id}`,
+                      leaf: level >= 2,
+                    })
+                  );
+                  // 通过调用resolve将子节点数据返回，通知组件数据加载完成
+                  resolve(nodes);
+                }, 1000);
+              },
+            },
+          },
+        ];
+      });
+    },
   },
 };
 </script>
 
 <style lang='scss' scoped>
 .my-chance-container {
-   
   .top-total {
     padding-top: 6px;
     .card-wrapper {
@@ -364,8 +503,6 @@ export default {
     .main-left {
       width: calc(100% - 26% - 15px);
       margin-right: 15px;
-      
-      
     }
     .main-right {
       width: 26%;

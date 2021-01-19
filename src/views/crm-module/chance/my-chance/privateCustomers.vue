@@ -41,12 +41,12 @@
       </template>
       <!-- 倒计时 -->
       <template slot="cutdown" slot-scope="scope">
-        <span style="color: red">{{ newArr[scope.$index].newCutdown }}</span>
+        <span style="color: red">{{ newArr[scope.$index]&&newArr[scope.$index].newCutdown }}</span>
       </template>
       <!-- 回访 -->
       <template slot="visit" slot-scope="scope">
         <span class="visit-container" @click="drawerVisible = true">{{
-          scope.row.visit || 0
+          scope.row.feedbackCount || 0
         }}</span>
       </template>
     </rd-table>
@@ -137,6 +137,7 @@ export default {
   name: "temp",
   data() {
     return {
+      searchForm: {},
       // 搜索栏
       formOptions: [
         {
@@ -271,12 +272,11 @@ export default {
       tableKey: [
         {
           name: "姓名",
-          value: "name",
+          value: "studentName",
         },
         {
           name: "手机号",
-          value: "phone",
-          operate: true,
+          value: "phone"
         },
         {
           name: "回收倒计时",
@@ -286,7 +286,7 @@ export default {
         },
         {
           name: "机会来源",
-          value: "menuUrl",
+          value: "saleSource",
         },
         {
           name: "回访",
@@ -296,30 +296,30 @@ export default {
         },
         {
           name: "最近回访",
-          value: "menuOrder",
+          value: "recentFeedbackTime",
           // width: 100
         },
         {
           name: "下次回访",
-          value: "description1",
+          value: "nextDate",
         },
         {
           name: "跟进状态",
-          value: "description2",
+          value: "status",
         },
         {
           name: "创建时间",
-          value: "description3",
+          value: "createAt",
         },
         {
           name: "呼叫状态",
-          value: "description4",
+          value: "callStatus",
         },
       ],
       pageConfig: {
-        totalCount: 0,
+        totalCount: 100,
         currentPage: 1,
-        pageSize: 10,
+        showCount: 10,
       },
       newArr: [], //倒计时的数组
       // 回访抽屉参数
@@ -620,25 +620,35 @@ export default {
     rdDrawer,
     RdForm
   },
+  props: {
+    newFormOptions: {
+      type: Array,
+      default: ()=>[]
+    }
+  },
   mounted() {
     this.getCutdown();
     setInterval(() => {
       this.getCutdown();
     }, 1000);
+    this.getTableData();
+  },
+  watch:{
+    newFormOptions(newVal){
+      this.formOptions = newVal;
+    }
   },
   methods: {
-    onSearch() {},
-    pageChange(val) {
-      // this.pageConfig.currentPage = val.page;
-      // this.pageConfig.pageSize = val.limit;
-      // console.log(this.searchForm,'this.searchForm--')
-      // this.getTableData({
-      //   currentPage: (val && val.page) || 1,
-      //   pageSize: (val && val.limit) || 10,
-      //   loginUserId,
-      //   ...this.searchForm,
-      //   parentId: this.parentId
-      // });
+     onSearch(val) {
+      this.searchForm = { ...val };
+      console.log(val, this.searchForm, "val---");
+      this.getTableData();
+    },
+     pageChange(val) {
+      console.log(val,'pagechange')
+      this.pageConfig.currentPage = val.page;
+      this.pageConfig.showCount = val.limit;
+      this.getTableData();
     },
     handelSelect(val) {
       console.log(val, "valll");
@@ -646,8 +656,8 @@ export default {
     },
     getCutdown() {
       this.newArr = this.tableData.map((item) => {
-        if (item.cutdown) {
-          item.newCutdown = this.$common.showtime(item.cutdown);
+        if (item.createAt) {
+          item.newCutdown = this.$common.showtime(item.createAt);
         }
         return item;
       });
@@ -729,6 +739,28 @@ export default {
           console.log(formData, "提交");
         }
           
+      });
+    },
+
+    getTableData(params = {}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".el-table",
+      });
+      this.$fetch("chance_my_list", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.data.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          return item;
+        });
+        this.pageConfig.totalCount = res.data.count;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
       });
     },
   },

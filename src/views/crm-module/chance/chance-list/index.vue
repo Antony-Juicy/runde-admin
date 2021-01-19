@@ -144,7 +144,9 @@ export default {
         this.$fetch("chance_source_list"),
         this.$fetch("chance_edu_list"),
         this.$fetch("chance_trail_list"),
-      ]).then(result => {
+      ].map((p) => {
+        return p.catch(error => error)
+    })).then(result => {
         let staffOptions = JSON.parse(result[0].msg).map((item) => ({
             label: item.staffName,
             value: item.id,
