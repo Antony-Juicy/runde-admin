@@ -26,7 +26,7 @@
           <el-divider direction="vertical"></el-divider>
           <el-button @click="handleEdit(scope.row)" type="text" size="small">查看订单</el-button>
           <el-divider direction="vertical"></el-divider>
-          <el-button @click="handleEdit(scope.row)" type="text" size="small">评价</el-button>
+          <el-button @click="handleComment(scope.row)" type="text" size="small">评价</el-button>
           <el-divider direction="vertical"></el-divider>
           <el-button @click="handleDelete(scope.row)" type="text" size="small" style="color: #ec5b56" >删除</el-button>
         </template>
@@ -106,8 +106,8 @@
           </div>
         </div>
       </fullDialog>
-      <fullDialog v-model="showGroup" :title="showGroupTitle" @change="fullDialogGroup">
-        <el-button type="primary" size="small" @click="openAddGroup">选择规格组</el-button>
+      <fullDialog v-model="showGroup" :title="showGroupTitle" @change="showGroup = false">
+        <!-- <el-button type="primary" size="small" @click="openAddGroup">选择规格组</el-button>
         <div class="w-container">
           <div v-for="item in 2" :key="item" style="margin-bottom:10px;">
             <div style="padding: 0 20px;height: 40px; border: 1px solid #EBEEF5; line-height:40px;background-color: rgb(242, 242, 242);">
@@ -143,7 +143,11 @@
             @select="handleGroupSelect"
             @pageChange="pageGroupChange">
           </rd-table>
-        </rd-dialog>
+        </rd-dialog> -->
+        <Rule-Group ref="rulegroup" :goodsId="goodsId"  @close="showGroup = false" @refresh="refresh" v-if="showGroup"></Rule-Group>
+      </fullDialog>
+      <fullDialog v-model="commentVisible" title="评论管理" @change="commentVisible = false">
+        <Comment-Page ref="comment" :goodsId="goodsId" @close="commentVisible = false" @refresh="refresh" v-if="commentVisible"></Comment-Page>
       </fullDialog>
     </div>
   </div>
@@ -153,12 +157,16 @@
 import fullDialog from '@/components/FullDialog';
 import UploadOss from "@/components/UploadOss";
 import RdEditor from "@/components/RdEditor";
+import RuleGroup from "./rule-group";
+import CommentPage from "./comment";
 export default {
   name:"goods-list",
   components: {
     fullDialog,
     UploadOss,
-    RdEditor
+    RdEditor,
+    RuleGroup,
+    CommentPage
   },
   data(){
     return {
@@ -184,19 +192,7 @@ export default {
           ],
         },
       ],
-      tableData: [
-        {
-          goodsId: 12306,
-          typeName: '执业药师',
-          goodsThumbnail: '',
-          goodsName: '2022年最强最全的执业药师课程',
-          goodsItemGroupCount: 2,
-          goodsPrices: 1999,
-          totalSalesCount: 500,
-          goodsStatus: '上架',
-          createAt: '2022-01-01 00:00:00'
-        }
-      ],
+      tableData: [],
       tableKey: [
         { name: '商品id',value: 'goodsId' },
         { name: '项目类型',value: 'typeName' },
@@ -219,6 +215,8 @@ export default {
       },
       loading: false,
       btnLoading: false,
+      goodsId: '', // 商品id-公用
+      goodsname: '', // 商品名称-公用
       
       // 新增弹窗
       goodsVisible: false,
@@ -281,30 +279,33 @@ export default {
       // 关联规格组弹窗
       showGroup: false,
       showGroupTitle: '',
-      showAddGroup: false,
-      widthGroup: "800px",
-      searchGroupForm: {},
-      optionsGroup: [
-        { prop: 'groupName', element: 'el-input', placeholder: '请输入规格组名称' },
-        { prop: 'groupRemark', element: 'el-input', placeholder: '请输入备注内容' },
-      ],
-      tableGroupData: [
-        {
-          groupName: "中药",
-          groupCount: 4,
-          groupRemark: '备注备注金牌通过班',
-        }
-      ],
-      tableGroupKey: [
-        { name: '规格组',value: 'groupName' },
-        { name: '规格数量',value: 'groupCount' },
-        { name: '备注',value: 'groupRemark' },
-      ],
-      pageGroupConfig: {
-        totalCount: 20,
-        pageNum: 1,
-        pageSize: 10,
-      },
+      // showAddGroup: false,
+      // widthGroup: "800px",
+      // searchGroupForm: {},
+      // optionsGroup: [
+      //   { prop: 'groupName', element: 'el-input', placeholder: '请输入规格组名称' },
+      //   { prop: 'groupRemark', element: 'el-input', placeholder: '请输入备注内容' },
+      // ],
+      // tableGroupData: [
+      //   {
+      //     groupName: "中药",
+      //     groupCount: 4,
+      //     groupRemark: '备注备注金牌通过班',
+      //   }
+      // ],
+      // tableGroupKey: [
+      //   { name: '规格组',value: 'groupName' },
+      //   { name: '规格数量',value: 'groupCount' },
+      //   { name: '备注',value: 'groupRemark' },
+      // ],
+      // pageGroupConfig: {
+      //   totalCount: 20,
+      //   pageNum: 1,
+      //   pageSize: 10,
+      // },
+
+      // 评论弹窗
+      commentVisible: false,
     }
   },
   mounted () {
@@ -485,32 +486,43 @@ export default {
     // 关联规格组弹窗
     openfullDialogGroup(row) {
       this.showGroup = true;
+      this.goodsId = row.goodsId;
       this.showGroupTitle = row.goodsName
     },
-    fullDialogGroup(val) {
-      this.showGroup = val;
-    },
+    // fullDialogGroup(val) {
+    //   this.showGroup = val;
+    // },
 
-    // 选择规格组弹窗
-    onGroupSearch(val) {
-      this.searchGroupForm = {...val};
-      console.log(val,this.searchGroupForm , 'val---')
+    // // 选择规格组弹窗
+    // onGroupSearch(val) {
+    //   this.searchGroupForm = {...val};
+    //   console.log(val,this.searchGroupForm , 'val---')
+    // },
+    // openAddGroup() {
+    //   this.showAddGroup = true
+    // },
+    // closeAddGroup() {
+    //   this.showAddGroup = false
+    // },
+    // submitGroupForm(formName) {
+    //   console.log( 666);
+    //   this.showAddGroup = false;
+    // },
+    // handleGroupSelect(rows) {
+    //   console.log(rows, "rows---");
+    // },
+    // pageGroupChange(val) {
+    //   console.log(val,'pagechange')
+    // },
+
+    // 评论
+    handleComment(row) {
+      this.commentVisible = true;
+      this.goodsId = row.goodsId;
+      this.goodsname = row.goodsname;
     },
-    openAddGroup() {
-      this.showAddGroup = true
-    },
-    closeAddGroup() {
-      this.showAddGroup = false
-    },
-    submitGroupForm(formName) {
-      console.log( 666);
-      this.showAddGroup = false;
-    },
-    handleGroupSelect(rows) {
-      console.log(rows, "rows---");
-    },
-    pageGroupChange(val) {
-      console.log(val,'pagechange')
+    refresh(){
+      this.getTableData();
     },
   },
   filters: {

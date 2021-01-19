@@ -29,7 +29,7 @@
       @sort-change="handelSortChange"
     >
       <div slot="empty">
-        <img src="@/assets/empty-image.png" alt="" class="img-empty" />
+        <img v-show="this.isImage" src="@/assets/empty-image.png" alt="" class="img-empty" />
         <p>{{ emptyText }}</p>
       </div>
       <el-table-column v-if="multiple" type="selection" width="55">
@@ -140,6 +140,11 @@ export default {
     fixedTwoRow: {
       type: Boolean,
       default: false,
+    },
+    // 表格无数据默认图
+    isImage: {
+      type: Boolean,
+      default: true
     },
     // 没有数据的时候显示的内容
     emptyText: {
