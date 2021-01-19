@@ -12,6 +12,9 @@ export default {
     // 分校外呼
     chance_feedback_fxwh: {url: '/crm/crmopportunity/zhiboCallRecordListJson', method: 'post'},
 
+    // 分校/战队公海
+    chance_campus_list: {url: '/crm/crmopportunity/listBranchCampusJson', method: 'post'},
+
     // 省校/网校公海
     chance_province_list: {url: '/crm/crmopportunity/listProvinceCampusJson', method: 'post'},
     // 成单列表
@@ -31,6 +34,7 @@ export default {
 
     // 失效机会
     chance_invalid_list: {url: '/crm/crmopportunity/listJson', method: 'post'},
+    chance_invalid_update: {url: '/crm/crmopportunity/updateInvalidOpp', method: 'post'},
 
     // 机会列表
     chance_list: {url: '/crm/crmopportunity/listJson', method: 'post'},
@@ -62,5 +66,7 @@ export default {
     chance_product_list: {url: '/crm/crmopportunity/productList', method: 'post'},
     chance_subject_list: {url: '/crm/crmopportunity/subjectList', method: 'post'},
     chance_course_list: {url: '/crm/crmopportunity/courseList', method: 'post'},
+    // 呼叫状态
+    chance_call_status:  {url: '/crm/crmopportunity/callStatusList', method: 'post'},
 
 }

@@ -22,41 +22,48 @@
         @select="handleSelect"
         @pageChange="pageChange"
       >
+        <template slot="checked" slot-scope="scope">
+          <!-- <el-tag :type="scope.row.checked?'success':'danger'">{{scope.row.checked?"已质检":"未质检"}}</el-tag> -->
+          <el-tag :type="scope.row.checked?'success':'danger'" @click="handleCheckDetail(scope.row)">{{scope.row.checked?"已质检":"未质检"}}</el-tag>
+        </template>
       </rd-table>
       <rd-dialog
         :title="detectStatus ? '质检' : '质检详情'"
         :dialogVisible="detectVisible"
         :width="widthNew"
+        :showFooter="detectStatus"
         @handleClose="closeDetect('dataForm')"
         @submitForm="submitForm('dataForm')"
       >
         <el-form ref="dataForm" :model="detectForm" label-width="100px">
-          <el-form-item label="机会失效">
-            <el-radio-group v-model="detectForm.resource">
-              <el-radio :label="0">是</el-radio>
-              <el-radio :label="1">否</el-radio>
+          <el-form-item label="机会失效" v-if="detectStatus" prop="invalidStatus">
+            <el-radio-group v-model="detectForm.invalidStatus">
+              <el-radio label="Invalid">是</el-radio>
+              <el-radio label="Potential">否</el-radio>
             </el-radio-group>
           </el-form-item>
+          <!-- v-if="detectForm.invalidStatus == 'Invalid'" -->
           <el-form-item
             label="失效原因"
-            v-if="detectForm.resource !== 1"
-            prop="region"
+            
+            prop="invalidReason"
           >
-            <el-select v-model="detectForm.region" placeholder="请选择失效原因">
-              <el-option label="无法核实" value="0"></el-option>
-              <el-option label="无法联系" value="1"></el-option>
-              <el-option label="否认咨询" value="2"></el-option>
-              <el-option label="已报名" value="3"></el-option>
-              <el-option label="公司内部人员" value="4"></el-option>
-              <el-option label="已从支线成交" value="5"></el-option>
+            <el-select v-model="detectForm.invalidReason" placeholder="请选择失效原因" :disabled="!detectStatus">
+              <el-option label="无法核实" value="UnableToVerify"></el-option>
+              <el-option label="无法联系" value="UnableToReached"></el-option>
+              <el-option label="否认咨询" value="DenyConsulting"></el-option>
+              <el-option label="已报名" value="AlreadySign"></el-option>
+              <el-option label="公司内部人员" value="CompanyInsider"></el-option>
+              <el-option label="已从支线成交" value="SignBranch"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="质检详情" prop="detail">
+          <el-form-item label="质检详情" prop="checkedDetail">
             <el-input
-              v-model.trim="detectForm.detail"
+              v-model.trim="detectForm.checkedDetail"
               autocomplete="off"
               type="textarea"
               placeholder="请输入详情"
+              :readonly="!detectStatus"
             />
           </el-form-item>
         </el-form>
@@ -150,7 +157,7 @@ export default {
         { name: "机会状态", value: "status" },
         { name: "归属销售", value: "marketName" },
         { name: "分校/战队", value: "campusName", width: 132 },
-        { name: "质检状态", value: "zjstatus" },
+        { name: "质检状态", value: "checked" ,operate: true},
       ],
       emptyText: "暂无数据",
       fixedTwoRow: true,
@@ -166,14 +173,15 @@ export default {
       detectVisible: false,
       detectStatus: true, // 状态：true 质检 false 质检详情
       detectForm: {
-        resource: 0,
-        region: "",
-        detail: "",
+        invalidStatus: "Invalid",
+        invalidReason: "",
+        checkedDetail: "",
       },
 
       // 回访抽屉参数
       dialogVisible: false,
       drawerSize: "50%",
+      selectedRows: []
     };
   },
   mounted() {
@@ -188,6 +196,7 @@ export default {
     },
     handleSelect(rows) {
       console.log(rows, "rows---");
+      this.selectedRows = rows;
     },
     pageChange(val) {
       console.log(val, "pagechange");
@@ -198,7 +207,20 @@ export default {
 
     // 质检
     openDetect() {
+       if(!this.selectedRows.length){
+        this.$message.warning("请选择机会")
+        return;
+      }else if(this.selectedRows.map(item => item.checked).includes(true)){
+        this.$message.warning("请勿重复质检")
+        return;
+      }
       this.detectVisible = true;
+       this.detectStatus = true;
+       this.detectForm= {
+        invalidStatus: "Invalid",
+        invalidReason: "",
+        checkedDetail: "",
+      }
     },
     closeDetect(formName) {
       this.detectVisible = false;
@@ -206,7 +228,18 @@ export default {
     },
     submitForm(formName) {
       console.log(this.detectForm, 666);
-      this.closeDetect("dataForm");
+     
+      this.$fetch("chance_invalid_update",{
+        ids: this.selectedRows.map(item => item.id).join(","),
+        ...this.detectForm
+      }).then(res => {
+        if(res.code == 200){
+          this.$message.success("操作成功")
+          this.closeDetect("dataForm");
+          this.getTableData();
+        }
+      })
+      
     },
 
     // 抽屉
@@ -324,6 +357,16 @@ export default {
         ];
       });
     },
+
+    handleCheckDetail(val){
+      if(!val.checked){
+        return;
+      }
+      this.detectVisible = true;
+      this.detectStatus = false;
+      this.detectForm = {...val,invalidStatus: val.invalidStatus_text,invalidReason:  val.invalidReason_text};
+      console.log(this.detectForm,'detectform')
+    }
   },
 };
 </script>

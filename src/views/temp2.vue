@@ -474,8 +474,8 @@ export default {
         this.$fetch("chance_status_list"),
         this.$fetch("chance_trail_list"),
         this.$fetch("chance_staff_list"),
-        this.$fetch("chance_subject_list"),
         this.$fetch("chance_config_campusList"),
+        this.$fetch("chance_call_status"),
       ])
         .then((result) => {
           let sourceOptions = result[0].data.map((item) => ({
@@ -498,14 +498,21 @@ export default {
             label: item.staffName,
             value: item.id,
           }));
-          // let subjectOptions = result[5].data.map((item) => ({
-          //   label: item.value,
-          //   value: item.key,
-          // }));
-               let campusOptions = result[6].data.data.map((item) => ({
-          label: item.campusName,
-          value: item.id,
-        }));
+          let campusOptions = result[5].data.data.map((item) => ({
+            label: item.campusName,
+            value: item.id,
+          }));
+           let callStatusOptions = result[6].data.map((item) => ({
+            label: item.value,
+            value: item.key,
+          }));
+           let numsOptions = []
+        for(let i=0; i< 8; i++){
+          numsOptions.push({
+            label: i,
+            value: i
+          })
+        }
           let subjectOptions = [];
           console.log(staffOptions,'staffOptions-')
           this.formOptions = [

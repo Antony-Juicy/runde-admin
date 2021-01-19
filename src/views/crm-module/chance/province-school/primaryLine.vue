@@ -371,9 +371,7 @@ export default {
           label: item.campusName,
           value: item.id,
         }));
-         let numsOptions = [
-          
-        ]
+         let numsOptions = []
         for(let i=0; i< 8; i++){
           numsOptions.push({
             label: i,

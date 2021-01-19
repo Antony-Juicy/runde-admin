@@ -92,6 +92,8 @@
       v-on="bindEvents"
       size="small"
       :props="itemOptions.props"
+      :show-all-levels="itemOptions.showAllLevels"
+      :filterable="itemOptions.filterable"
       clearable>
     </el-cascader>
   </div>
