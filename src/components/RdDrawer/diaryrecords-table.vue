@@ -1,12 +1,13 @@
 <template>
-  <div class="diaryrecords-container">
+  <div class="diaryrecords-table">
     <rd-table
       :tableData="tableData"
       :tableKey="tableKey"
       :loading="loading"
       :fixedTwoRow="fixedTwoRow"
       :pageConfig="pageConfig"
-      :tbodyHeight="500"
+      :tbodyHeight="650"
+      :pager-count="5"
       @select="handleSelect"
       @pageChange="pageChange"
     >
@@ -20,29 +21,66 @@ export default {
     return {
       tableData: [],
       tableKey: [
-        { name: '跟进人',value: 'marketName' },
-        { name: '跟进时间',value: 'createAt' },
-        { name: '跟进状态',value: 'feedbackStatus' },
-        { name: '跟进详情',value: 'content' },
-        { name: '下次跟进',value: 'nextDate' }
+        { name: '归属销售',value: 'marketName' },
+        { name: '操作类型',value: 'operateType' },
+        { name: '备注',value: 'remark' },
+        { name: '创建时间',value: 'createAt' },
+        { name: '更新时间',value: 'updateAt' }
       ],
       emptyText: '暂无数据',
-      fixedTwoRow: false,
+      fixedTwoRow: true,
       pageConfig: {
         totalCount: 100,
-        pageNum: 1,
-        pageSize: 10,
+        currentPage: 1,
+        showCount: 10,
       },
       loading: false,
     }
+  },
+  props: {
+     id: {
+      type:Number | String,
+      default: 0
+    },
+    phone: {
+      type: Number | String,
+      default:""
+    }
+  },
+  mounted(){
+    console.log(this.id,this.phone,'---')
+    this.getTableData();
   },
   methods: {
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
     pageChange(val) {
-      console.log(val,'pagechange')
-    }
+      this.pageConfig.currentPage = val.page;
+      this.pageConfig.showCount = val.limit;
+      this.getTableData();
+    },
+    getTableData(params = {}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".diaryrecords-table .el-table",
+      });
+      this.$fetch("chance_feedback_log", {
+        ...this.pageConfig,
+        ...params,
+        opportunityId: this.id
+      }).then((res) => {
+        this.tableData = res.data.data.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          return item;
+        });
+        this.pageConfig.totalCount = res.data.pager.totalRows;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
+      });
+    },
   }
 }
 </script>

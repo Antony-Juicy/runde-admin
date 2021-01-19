@@ -11,6 +11,12 @@
       @select="handleSelect"
       @pageChange="pageChange"
     >
+      <template slot="type" slot-scope="scope">
+       {{scope.row.type | CallTypeFilter}}
+     </template>
+      <template slot="data_type" slot-scope="scope">
+       {{scope.row.data_type | dataTypeFilter}}
+     </template>
     </rd-table>
   </div>
 </template>
@@ -21,8 +27,8 @@ export default {
     return {
       tableData: [],
       tableKey: [
-        { name: '类型',value: 'type' },
-        { name: '类别',value: 'data_type' },
+        { name: '类型',value: 'type',operate: true },
+        { name: '类别',value: 'data_type' ,operate: true },
         { name: '通话时长(单位秒)',value: 'duration' },
         { name: '员工姓名',value: 'staff_name' },
         { name: '校区名',value: 'campus_name' },
@@ -47,6 +53,30 @@ export default {
     phone: {
       type: Number | String,
       default:""
+    }
+  },
+  filters:{
+    CallTypeFilter(val){
+      switch(val){
+        case 1:
+          return '呼出';
+        case 2:
+          return '呼入';
+        case 3:
+          return '呼出未接';
+        case 4:
+          return '呼入未接';
+      }
+    },
+     dataTypeFilter(val){
+      switch(val){
+        case 0:
+          return '系统电话';
+        case 1:
+          return '语音通话';
+        case 2:
+          return '视频通话';
+      }
     }
   },
   mounted(){
