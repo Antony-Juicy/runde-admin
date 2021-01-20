@@ -751,10 +751,12 @@ export default {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
+        stayModule:"Private"
       }).then((res) => {
         this.tableData = res.data.data.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
           item.updateAt = this.$common._formatDates(item.updateAt);
+          item.phone = this.$common.hidePhone(item.phone);
           return item;
         });
         this.pageConfig.totalCount = res.data.count;

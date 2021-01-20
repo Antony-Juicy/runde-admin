@@ -655,10 +655,10 @@ export default {
                    if(res.msg == "没有相关数据"){
                      nodes = [];
                    }else {
-                     let data = JSON.parse(res.msg);
+                     let data = res.data;
                     nodes = data.map(item =>({
                       value: item.id,
-                      label: item.productName,
+                      label: item.subjectName,
                       leaf: level >= 2,
                     }));
                    }
@@ -666,16 +666,16 @@ export default {
                 })
               }else if(level == 2){
                  this.$fetch("chance_course_list",{
-                   enquireProductIdOne: node.data.value
+                   subjectIdOne: node.data.value
                  }).then(res => {
                    let nodes;
                    if(res.msg == "没有相关数据"){
                      nodes = [];
                    }else {
-                     let data = JSON.parse(res.msg);
+                     let data =JSON.parse(res.msg);
                     nodes = data.map(item =>({
                       value: item.id,
-                      label: item.productName,
+                      label: item.courseName,
                       leaf: level >= 2,
                     }));
                    }
