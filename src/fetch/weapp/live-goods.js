@@ -28,4 +28,17 @@ export default {
   goods_rule_update: { url:'/live/console/goods_item/update', method: 'post'},
   goods_rule_list: { url: '/live/console/goods_item/page_list', method: 'post'},
   goods_rule_add: { url: '/live/console/goods_item/add', method: 'post'},
+
+  // 商品规格组关联
+  goods_rule_group_list: { url: '/live/console/goods_group_related/list', method: 'post' },
+  goods_rule_group_add: { url: '/live/console/goods_group_related/add_related', method: 'post' },
+  goods_rule_group_delete: { url: '/live/console/goods_group_related/delete', method: 'post' },
+
+  // 评论
+  comment_getList: { url: '/live/console/goods_comment/get', method: 'post' },
+  comment_delete: { url: '/live/console/goods_comment/delete', method: 'post' },
+  comment_update: { url:'/live/console/goods_comment/update', method: 'post' },
+  comment_list: { url: '/live/console/goods_comment/page_list', method: 'post' },
+  comment_add: { url: '/live/console/goods_comment/add', method: 'post' },
+  comment_importExcel: { url: '/live/console/goods_comment/importComment', method: 'post' },
 }
