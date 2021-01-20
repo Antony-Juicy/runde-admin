@@ -46,6 +46,11 @@ export default {
       loading: false,
     }
   },
+  watch: {
+    dialogVisible(newVal){
+      this.visible = newVal;
+    }
+  },
   filters:{
     StateFilter(val){
       switch(val){
@@ -87,7 +92,6 @@ export default {
     }
   },
   mounted(){
-    console.log(this.id,this.phone,'---')
     this.getTableData();
   },
   methods: {

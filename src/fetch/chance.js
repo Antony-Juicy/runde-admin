@@ -14,6 +14,7 @@ export default {
 
     // 我的机会
     chance_my_list:  {url: '/crm/crmopportunity/myListJson', method: 'post'},
+    chance_saveData: {url: '/crm/crmopportunityfeedback/saveData', method: 'post'},
 
     // 分校/战队公海
     chance_campus_list: {url: '/crm/crmopportunity/listBranchCampusJson', method: 'post'},
@@ -68,7 +69,7 @@ export default {
     // 项目
     chance_product_list: {url: '/crm/crmopportunity/productList', method: 'post'},
     chance_subject_list: {url: '/crm/crmopportunity/subjectList', method: 'post'},
-    chance_course_list: {url: '/crm/crmopportunity/courseList', method: 'post'},
+    chance_course_list: {url: '/crm/crmopportunity/courseListOne', method: 'get'},
     // 呼叫状态
     chance_call_status:  {url: '/crm/crmopportunity/callStatusList', method: 'post'},
 

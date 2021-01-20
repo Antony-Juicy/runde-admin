@@ -30,6 +30,11 @@
         @pageChange="pageChange"
         @select="handelSelect"
       >
+      <template slot="visit" slot-scope="scope">
+            <span class="visit-container" @click.stop="openDrawer(scope.row)">{{
+              scope.row.feedbackCount || 0
+            }}</span>
+          </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
             >编辑</el-button
@@ -57,6 +62,14 @@
         </template>
         </RdForm>
       </rd-dialog>
+
+       <!-- 回访抽屉 -->
+    <rd-drawer
+      :dialogVisible="drawerVisible"
+      :id="drawerId"
+      :phone="drawerPhone"
+      @handleClose="drawerVisible = false"
+    ></rd-drawer>
     </div>
   </div>
 </template>
@@ -68,6 +81,9 @@ export default {
   name: "temp2",
   data() {
     return {
+      drawerId:"",
+      drawerPhone:"",
+
       formOptions: [
         {
           prop: "menuName",
@@ -366,6 +382,11 @@ export default {
     RdForm
   },
   methods: {
+     openDrawer(data){
+      this.drawerId = data.id;
+      this.drawerPhone = data.phone;
+      this.drawerVisible = true;
+    },
      onSearch(val) {
       this.searchForm = {...val};
       console.log(val,this.searchForm , 'val---')

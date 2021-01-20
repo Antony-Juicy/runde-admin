@@ -34,7 +34,7 @@ export default {
         currentPage: 1,
         showCount: 10,
       },
-      loading: false,
+      loading: false
     }
   },
   props: {
@@ -48,7 +48,6 @@ export default {
     }
   },
   mounted(){
-    console.log(this.id,this.phone,'---')
     this.getTableData();
   },
   methods: {

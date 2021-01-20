@@ -3,7 +3,7 @@
     <div class="left-wrapper">
       <search-form
         :formOptions="formOptions"
-        :showNum="6"
+        :showNum="5"
         @onSearch="onSearch"
       ></search-form>
       <div class="w-container">
@@ -12,11 +12,9 @@
           :tableKey="tableKey"
           :pageConfig="pageConfig"
           :filterColumn="true"
-          :multiple="true"
           fixedTwoRow
           highlight-current-row
           @pageChange="pageChange"
-          @select="handelSelect"
           @currentChange="currentChange"
         >
           <!-- 手机号 -->
@@ -25,14 +23,17 @@
           </template>
           <!-- 回访 -->
           <template slot="visit" slot-scope="scope">
-            <span class="visit-container" @click="drawerVisible = true">{{
-              scope.row.visit || 0
+            <span class="visit-container" @click.stop="openDrawer(scope.row)">{{
+              scope.row.feedbackCount || 0
             }}</span>
           </template>
         </rd-table>
         <!-- 回访抽屉 -->
         <rd-drawer
           :dialogVisible="drawerVisible"
+          :id="drawerId"
+          :phone="drawerPhone"
+          title="信息"
           :size="drawerSize"
           @handleClose="drawerVisible = false"
         ></rd-drawer>
@@ -47,124 +48,57 @@
         :model="basicInfo"
         :rules="rules"
         :label-width="formLabelWidth"
+        label-suffix=":"
       >
         <el-form-item label="机会来源" prop="nextTime">
-          <el-input
-            v-model.trim="basicInfo.nextTime"
-            autocomplete="off"
-            placeholder="请输入"
-            size="small"
-          />
+          {{ selectedData.saleSource }}
         </el-form-item>
         <el-form-item label="活动名称" prop="detail">
-          <el-input
-            v-model.trim="basicInfo.detail"
-            autocomplete="off"
-            placeholder="请输入"
-            size="small"
-          />
+          {{ selectedData.labelInfoName }}
         </el-form-item>
         <el-row :gutter="5">
           <el-col :span="12">
             <el-form-item label="注册人" prop="detail">
-              <el-input
-                v-model.trim="basicInfo.detail"
-                autocomplete="off"
-                placeholder="请输入"
-                size="small"
-              />
+              {{ selectedData.createStaffName }}
             </el-form-item>
           </el-col>
           <el-col :span="12"
             ><el-form-item label="赛道" prop="detail">
-              <el-input
-                v-model.trim="basicInfo.detail"
-                autocomplete="off"
-                placeholder="请输入"
-                size="small"
-              /> </el-form-item
-          ></el-col>
+              {{ selectedData.studentName }}
+            </el-form-item></el-col
+          >
         </el-row>
         <el-row :gutter="5">
           <el-col :span="12">
             <el-form-item label="学员姓名" prop="detail">
-              <el-input
-                v-model.trim="basicInfo.detail"
-                autocomplete="off"
-                placeholder="请输入"
-                size="small"
-              />
+              {{ selectedData.studentName }}
             </el-form-item>
           </el-col>
           <el-col :span="12"
-            ><el-form-item label="性别" prop="detail">
-              <el-input
-                v-model.trim="basicInfo.detail"
-                autocomplete="off"
-                placeholder="请输入"
-                size="small"
-              /> </el-form-item
-          ></el-col>
+            >
+            <el-form-item label="学历" prop="detail">
+              {{ selectedData.eduBackground }}
+            </el-form-item>
+            </el-col
+          >
         </el-row>
         <el-row :gutter="5">
-          <el-col :span="12">
-            <el-form-item label="学历" prop="detail">
-              <el-input
-                v-model.trim="basicInfo.detail"
-                autocomplete="off"
-                placeholder="请输入"
-                size="small"
-              />
-            </el-form-item>
-          </el-col>
           <el-col :span="12"
             ><el-form-item label="咨询项目" prop="detail">
-              <el-input
-                v-model.trim="basicInfo.detail"
-                autocomplete="off"
-                placeholder="请输入"
-                size="small"
-              /> </el-form-item
-          ></el-col>
-        </el-row>
-        <el-row :gutter="5">
+              {{ selectedData.enquireProductNameOne }}
+            </el-form-item></el-col
+          >
           <el-col :span="12">
             <el-form-item label="咨询科目" prop="detail">
-              <el-input
-                v-model.trim="basicInfo.detail"
-                autocomplete="off"
-                placeholder="请输入"
-                size="small"
-              />
+              {{ selectedData.enquireSubjectNameOne }}
             </el-form-item>
           </el-col>
-          <el-col :span="12"
-            ><el-form-item label="咨询课程" prop="detail">
-              <el-input
-                v-model.trim="basicInfo.detail"
-                autocomplete="off"
-                placeholder="请输入"
-                size="small"
-              /> </el-form-item
-          ></el-col>
         </el-row>
         <el-form-item label="咨询班型" prop="detail">
-          <el-input
-            v-model.trim="basicInfo.detail"
-            autocomplete="off"
-            placeholder="请输入"
-            size="small"
-          />
-        </el-form-item>
-        <el-form-item>
-          <el-button
-            type="primary"
-            size="small"
-            @click="submitForm('dataForm2')"
-            class="fr"
-            >确定</el-button
-          >
-        </el-form-item>
+              {{
+                selectedData.enquireClassOne
+              }}
+            </el-form-item>
       </el-form>
     </div>
   </div>
@@ -181,75 +115,60 @@ export default {
     return {
       formOptions: [
         {
-          prop: "type",
+          prop: "dataQueryType",
           element: "el-select",
           placeholder: "查看类型",
           options: [
             {
               label: "我成单的",
-              value: 0,
+              value: 'myQuery',
             },
             {
               label: "我管理的（分校/战队）",
-              value: 1,
+              value: "campusQuery",
             },
           ],
-          initValue: 0,
         },
         {
-          prop: "menuName",
+          prop: "enquireProductIdOne",
           element: "el-select",
           placeholder: "项目",
         },
         {
-          prop: "menuName",
+          prop: "studentName",
           element: "el-input",
           placeholder: "学员姓名",
         },
         {
-          prop: "menuName",
+          prop: "phone",
           element: "el-input",
           placeholder: "学员手机",
         },
         {
-          prop: "menuName",
+          prop: "eduBackground",
           element: "el-select",
           placeholder: "学历",
         },
         {
-          prop: "menuName",
+          prop: "marketName",
           element: "el-input",
           placeholder: "归属销售",
         },
         {
-          prop: "menuName",
+          prop: "campusId",
           element: "el-select",
-          placeholder: "校区",
-          multiple: true,
-          filterable: true,
-          options: [
-            {
-              label: "我成单的",
-              value: 0,
-            },
-            {
-              label: "我管理的（分校/战队）",
-              value: 1,
-            },
-          ],
+          placeholder: "校区"
         },
         // 时间
         {
-          prop: "time",
+          prop: "updateAt",
           element: "el-date-picker",
           startPlaceholder: "成交日期(开始)",
           endPlaceholder: "成交日期(结束)",
           initWidth: true,
         },
       ],
-      tableData: [
-       
-      ],
+      tableData: [],
       tableKey: [
         {
           name: "姓名",
@@ -262,7 +181,7 @@ export default {
         },
         {
           name: "成交时间",
-          value: "updateAt"
+          value: "updateAt",
         },
         {
           name: "回访",
@@ -272,7 +191,7 @@ export default {
         },
         {
           name: "报读项目",
-          value: "enquireProductNameOne"
+          value: "enquireProductNameOne",
         },
         {
           name: "报读科目",
@@ -294,7 +213,7 @@ export default {
           name: "归属销售",
           value: "marketName",
         },
-         {
+        {
           name: "校区/部门",
           value: "campusName",
         },
@@ -309,7 +228,7 @@ export default {
       drawerSize: "50%",
 
       // 基本资料
-      formLabelWidth: "80px",
+      formLabelWidth: "85px",
       statusArr: [],
       basicInfo: {
         status: "",
@@ -317,13 +236,16 @@ export default {
         detail: "",
       },
       rules: {
-        status: [{ required: true, message: "请选择状态", trigger: "blur" }],
-        nextTime: [
-          { required: true, message: "请选择下次联系时间", trigger: "blur" },
-        ],
-        detail: [{ required: true, message: "请输入", trigger: "blur" }],
+        // status: [{ required: true, message: "请选择状态", trigger: "blur" }],
+        // nextTime: [
+        //   { required: true, message: "请选择下次联系时间", trigger: "blur" },
+        // ],
+        // detail: [{ required: true, message: "请输入", trigger: "blur" }],
       },
-      searchForm:{}
+      searchForm: {},
+      selectedData: {},
+      drawerId:"123",
+      drawerPhone:"",
     };
   },
   mounted() {
@@ -331,39 +253,32 @@ export default {
     this.getTableData();
   },
   methods: {
-    onSearch() {
+    onSearch(val) {
       this.searchForm = { ...val };
       console.log(val, this.searchForm, "val---");
       this.getTableData();
     },
-     pageChange(val) {
-      console.log(val,'pagechange')
+    pageChange(val) {
+      console.log(val, "pagechange");
       this.pageConfig.currentPage = val.page;
       this.pageConfig.showCount = val.limit;
       this.getTableData();
     },
-    handelSelect(val) {
-      console.log(val, "valll");
-      this.selectedData = val;
-    },
-    getCutdown() {
-      this.newArr = this.tableData.map((item) => {
-        if (item.cutdown) {
-          item.newCutdown = this.$common.showtime(item.cutdown);
-        }
-        return item;
-      });
-    },
     currentChange(val) {
       this.$emit("currentChange", val);
+      this.selectedData = val;
+      console.log(val, "valll");
     },
     getSelectList() {
-      Promise.all([
-        this.$fetch("chance_edu_list"),
-        this.$fetch("chance_config_campusList"),
-      ].map((p) => {
-        return p.catch(error => error)
-    })).then((result) => {
+      Promise.all(
+        [
+          this.$fetch("chance_edu_list"),
+          this.$fetch("chance_config_campusList"),
+          this.$fetch("chance_product_list"),
+        ].map((p) => {
+          return p.catch((error) => error);
+        })
+      ).then((result) => {
         let eduOptions = result[0].data.map((item) => ({
           label: item.value,
           value: item.key,
@@ -372,66 +287,70 @@ export default {
           label: item.campusName,
           value: item.id,
         }));
+        let productOptions = JSON.parse(result[2].msg).map((item) => ({
+          label: item.productName,
+          value: item.id,
+        }));
         this.formOptions = [
-        {
-          prop: "type",
-          element: "el-select",
-          placeholder: "查看类型",
-          options: [
-            {
-              label: "我成单的",
-              value: 0,
-            },
-            {
-              label: "我管理的（分校/战队）",
-              value: 1,
-            },
-          ],
-          initValue: 0,
-        },
-        {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "项目",
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "学员姓名",
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "学员手机",
-        },
-        {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "学历",
-          options: eduOptions
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "归属销售",
-        },
-        {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "校区",
-          multiple: true,
-          filterable: true,
-          options: campusOptions
-        },
-        // 时间
-        {
-          prop: "time",
-          element: "el-date-picker",
-          startPlaceholder: "成交日期(开始)",
-          endPlaceholder: "成交日期(结束)",
-          initWidth: true,
-        },
-      ]
+          {
+            prop: "dataQueryType",
+            element: "el-select",
+            placeholder: "查看类型",
+            options: [
+              {
+                label: "我成单的",
+                value: 'myQuery',
+              },
+              {
+                label: "我管理的（分校/战队）",
+                value: "campusQuery",
+              },
+            ],
+          },
+          {
+            prop: "enquireProductIdOne",
+            element: "el-select",
+            placeholder: "项目",
+            options: productOptions,
+          },
+          {
+            prop: "studentName",
+            element: "el-input",
+            placeholder: "学员姓名",
+          },
+          {
+            prop: "phone",
+            element: "el-input",
+            placeholder: "学员手机",
+          },
+          {
+            prop: "eduBackground",
+            element: "el-select",
+            placeholder: "学历",
+            options: eduOptions,
+          },
+          {
+            prop: "marketName",
+            element: "el-input",
+            placeholder: "归属销售",
+          },
+          {
+            prop: "campusId",
+            element: "el-select",
+            placeholder: "校区",
+            multiple: true,
+            filterable: true,
+            options: campusOptions,
+          },
+          // 时间
+          {
+            prop: "updateAt",
+            element: "el-date-picker",
+            startPlaceholder: "成交日期(开始)",
+            endPlaceholder: "成交日期(结束)",
+            initWidth: true,
+          },
+        ];
       });
     },
     getTableData(params = {}) {
@@ -443,11 +362,15 @@ export default {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
-        dataQueryType: 'campusQuery'
+        // stayModule:"Private"
+        // dataQueryType: 'campusQuery'
       }).then((res) => {
         this.tableData = res.data.data.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
           item.updateAt = this.$common._formatDates(item.updateAt);
+          item.enquireClassOne = item.enquireClassOne
+            .map((item) => item.name)
+            .join(",");
           return item;
         });
         this.pageConfig.totalCount = res.data.count;
@@ -455,6 +378,13 @@ export default {
           loading.close();
         }, 200);
       });
+    },
+     openDrawer(data){
+       console.log(data,'data---  ')
+      this.drawerId = data.id;
+      this.drawerPhone = data.phone;
+      console.log(this.drawerPhone,'99')
+      this.drawerVisible = true;
     },
   },
 };
@@ -482,8 +412,11 @@ export default {
     .current-row {
       td {
         &:nth-child(2),
+        &:nth-child(4),
         &:nth-child(9),
-        &:nth-child(10) {
+        &:nth-child(10),
+        &:nth-child(11),
+        &:nth-child(12) {
           color: red;
         }
       }

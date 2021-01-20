@@ -76,19 +76,18 @@
                 <el-option
                   v-for="item in statusArr"
                   :key="item.value"
-                  :label="item.name"
+                  :label="item.label"
                   :value="item.value"
                 >
                 </el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="下次联系" prop="nextTime">
-              <el-input
-                v-model.trim="basicInfo.nextTime"
-                autocomplete="off"
-                placeholder="请选择"
-                size="small"
-              />
+              <el-date-picker
+                v-model="basicInfo.nextTime"
+                type="datetime"
+                placeholder="选择日期时间">
+              </el-date-picker>
             </el-form-item>
             <el-form-item label="跟进详情" prop="detail">
               <el-input
@@ -119,13 +118,13 @@
           </div>
           <el-form
             ref="dataForm2"
-            :model="basicInfo"
+            :model="basicInfo2"
             :rules="rules"
             :label-width="formLabelWidth"
           >
             <el-form-item label="机会来源" prop="nextTime">
               <el-input
-                v-model.trim="basicInfo.nextTime"
+                v-model.trim="basicInfo2.nextTime"
                 autocomplete="off"
                 placeholder="请输入"
                 size="small"
@@ -133,7 +132,7 @@
             </el-form-item>
             <el-form-item label="活动名称" prop="detail">
               <el-input
-                v-model.trim="basicInfo.detail"
+                v-model.trim="basicInfo2.detail"
                 autocomplete="off"
                 placeholder="请输入"
                 size="small"
@@ -143,7 +142,7 @@
               <el-col :span="12">
                 <el-form-item label="注册人" prop="detail">
                   <el-input
-                    v-model.trim="basicInfo.detail"
+                    v-model.trim="basicInfo2.detail"
                     autocomplete="off"
                     placeholder="请输入"
                     size="small"
@@ -153,7 +152,7 @@
               <el-col :span="12"
                 ><el-form-item label="赛道" prop="detail">
                   <el-input
-                    v-model.trim="basicInfo.detail"
+                    v-model.trim="basicInfo2.detail"
                     autocomplete="off"
                     placeholder="请输入"
                     size="small"
@@ -164,7 +163,7 @@
               <el-col :span="12">
                 <el-form-item label="学员姓名" prop="detail">
                   <el-input
-                    v-model.trim="basicInfo.detail"
+                    v-model.trim="basicInfo2.detail"
                     autocomplete="off"
                     placeholder="请输入"
                     size="small"
@@ -174,7 +173,7 @@
               <el-col :span="12"
                 ><el-form-item label="性别" prop="detail">
                   <el-input
-                    v-model.trim="basicInfo.detail"
+                    v-model.trim="basicInfo2.detail"
                     autocomplete="off"
                     placeholder="请输入"
                     size="small"
@@ -185,7 +184,7 @@
               <el-col :span="12">
                 <el-form-item label="学历" prop="detail">
                   <el-input
-                    v-model.trim="basicInfo.detail"
+                    v-model.trim="basicInfo2.detail"
                     autocomplete="off"
                     placeholder="请输入"
                     size="small"
@@ -195,7 +194,7 @@
               <el-col :span="12"
                 ><el-form-item label="咨询项目" prop="detail">
                   <el-input
-                    v-model.trim="basicInfo.detail"
+                    v-model.trim="basicInfo2.detail"
                     autocomplete="off"
                     placeholder="请输入"
                     size="small"
@@ -206,7 +205,7 @@
               <el-col :span="12">
                 <el-form-item label="咨询科目" prop="detail">
                   <el-input
-                    v-model.trim="basicInfo.detail"
+                    v-model.trim="basicInfo2.detail"
                     autocomplete="off"
                     placeholder="请输入"
                     size="small"
@@ -216,7 +215,7 @@
               <el-col :span="12"
                 ><el-form-item label="咨询课程" prop="detail">
                   <el-input
-                    v-model.trim="basicInfo.detail"
+                    v-model.trim="basicInfo2.detail"
                     autocomplete="off"
                     placeholder="请输入"
                     size="small"
@@ -225,7 +224,7 @@
             </el-row>
             <el-form-item label="咨询班型" prop="detail">
               <el-input
-                v-model.trim="basicInfo.detail"
+                v-model.trim="basicInfo2.detail"
                 autocomplete="off"
                 placeholder="请输入"
                 size="small"
@@ -235,7 +234,7 @@
               <el-button
                 type="primary"
                 size="small"
-                @click="submitForm('dataForm2')"
+                @click="submitForm2('dataForm2')"
                 class="fr"
                 >确定</el-button
               >
@@ -258,6 +257,7 @@ export default {
   name: "my-chance",
   data() {
     return {
+      currentData:{},
       showDetail: false,
       activeName: "first",
       chanceValue: "0",
@@ -282,6 +282,11 @@ export default {
       formLabelWidth: "80px",
       statusArr: [],
       basicInfo: {
+        status: "",
+        nextTime: "",
+        detail: "",
+      },
+      basicInfo2: {
         status: "",
         nextTime: "",
         detail: "",
@@ -320,7 +325,24 @@ export default {
 
     currentChange(val) {
       console.log(val, "vallll");
+      this.currentData = val;
       this.currentPhone = val.phone;
+      this.basicInfo = {
+        status: val.status_text,
+        nextTime: "",
+        detail: ""
+      }
+    },
+
+    submitForm(formName){
+      this.$refs[formName].validate((valid) => {
+        if(valid){
+            console.log(this.basicInfo, "提交");
+            let param = {
+              
+            }
+        }
+      })
     },
 
     handleDetail() {
@@ -355,6 +377,7 @@ export default {
           label: item.value,
           value: item.key,
         }));
+        this.statusArr = statusOptions;
         let callStatusOptions = result[3].data.map((item) => ({
           label: item.value,
           value: item.key,
@@ -531,6 +554,9 @@ export default {
       .el-divider--horizontal {
         margin-top: 0;
         margin-bottom: 15px;
+      }
+      .el-date-editor.el-input {
+        width: 100%;
       }
     }
   }
