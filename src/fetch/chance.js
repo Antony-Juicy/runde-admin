@@ -15,6 +15,11 @@ export default {
     // 我的机会
     chance_my_list:  {url: '/crm/crmopportunity/myListJson', method: 'post'},
     chance_saveData: {url: '/crm/crmopportunityfeedback/saveData', method: 'post'},
+    chance_editData: {url: '/crm/crmopportunity/editMyOpportunityJsp', method: 'post'},
+    chance_my_info:  {url: '/crm/crmopportunity/getOpportunieyCallInfo', method: 'post'}, 
+    chance_my_release: {url: '/crm/crmopportunityfeedback/deleteRelease', method: 'post'}, //释放
+    chance_my_invalid: {url: '/crm/crmopportunity/finshInvalid', method: 'post'}, //失效
+    chance_my_add: {url: '/crm/crmopportunity/saveMyOpportunityAdd', method: 'post'}, //添加
 
     // 分校/战队公海
     chance_campus_list: {url: '/crm/crmopportunity/listBranchCampusJson', method: 'post'},
@@ -70,6 +75,7 @@ export default {
     chance_product_list: {url: '/crm/crmopportunity/productList', method: 'post'},
     chance_subject_list: {url: '/crm/crmopportunity/subjectList', method: 'post'},
     chance_course_list: {url: '/crm/crmopportunity/courseListOne', method: 'get'},
+    chance_class_list: {url: '/crm/crmopportunity/classTypeList', method: 'post'},
     // 呼叫状态
     chance_call_status:  {url: '/crm/crmopportunity/callStatusList', method: 'post'},
 

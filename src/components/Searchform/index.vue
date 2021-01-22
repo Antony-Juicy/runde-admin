@@ -126,16 +126,19 @@ export default {
     this.$nextTick(function () {
       this.closeSearch();
     });
-    if (this.formOptions.length < 6) {
+    if (this.formOptions.length <= 6) {
       let datePikerArr = this.formOptions.filter(
         (item) => item.element == "el-date-picker"
       );
       if (datePikerArr.length) {
+        console.log(111, 262 * (this.formOptions.length - datePikerArr.length) +
+          412 * datePikerArr.length)
         document.querySelector("#" + this.boxId).style.width =
           262 * (this.formOptions.length - datePikerArr.length) +
           412 * datePikerArr.length +
           "px";
       } else {
+        console.log(222)
         document.querySelector("#" + this.boxId).style.width =
           262 * this.formOptions.length + "px";
       }
@@ -251,7 +254,7 @@ export default {
       display: flex;
       .el-form-item {
         flex: 1;
-        max-width: 250px;
+        // max-width: 250px;
         /deep/.el-form-item__content {
           width: 100%;
         }

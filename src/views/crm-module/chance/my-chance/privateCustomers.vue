@@ -45,18 +45,23 @@
       </template>
       <!-- 回访 -->
       <template slot="visit" slot-scope="scope">
-        <span class="visit-container" @click="drawerVisible = true">{{
+        <span class="visit-container" @click.stop="openDrawer(scope.row)">{{
           scope.row.feedbackCount || 0
         }}</span>
       </template>
     </rd-table>
     <!-- 回访抽屉 -->
-    <rd-drawer
-      :dialogVisible="drawerVisible"
-      :size="drawerSize"
-      @handleClose="drawerVisible = false"
-    ></rd-drawer>
-
+    <template v-if="drawerVisible">
+      <rd-drawer
+        :dialogVisible="drawerVisible"
+        :size="drawerSize"
+        :id="drawerId"
+        :phone="drawerPhone"
+        :title="drawerTitle"
+        @handleClose="drawerVisible = false"
+      ></rd-drawer>
+    </template>
+  
 
     <!-- 成单弹窗 -->
     <rd-dialog
@@ -85,7 +90,11 @@
       @handleClose="handleClose('dataForm3')"
       @submitForm="submitAddForm('dataForm3')"
     >
-      <RdForm :formOptions="addFormOptions" :rules="addRules" ref="dataForm3"/>
+      <RdForm :formOptions="addFormOptions" :rules="addRules" ref="dataForm3" v-if="addVisible">
+        <template slot="product" >
+            123
+          </template>
+      </RdForm>
     </rd-dialog>
 
     <!-- 导入弹窗 -->
@@ -133,110 +142,63 @@
 let id = 0;
 import rdDrawer from "@/components/RdDrawer";
 import RdForm from "@/components/RdForm";
+import Fetch from '@/utils/fetch'
 export default {
   name: "temp",
   data() {
     return {
+       drawerId:"",
+      drawerPhone:"",
+      drawerTitle: "",
       searchForm: {},
       // 搜索栏
       formOptions: [
         {
-          prop: "menuName",
+          prop: "studentName",
           element: "el-input",
           placeholder: "学员姓名",
         },
         {
-          prop: "menuName",
+          prop: "phone",
           element: "el-input",
           placeholder: "学员手机",
         },
         {
-          prop: "menuName",
+          prop: "labelInfoName",
           element: "el-input",
           placeholder: "活动名",
         },
         {
-          prop: "menuName",
+          prop: "eduBackground",
           element: "el-select",
-          placeholder: "学历",
-          options: [
-            {
-              label: "博士",
-              value: 0,
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
+          placeholder: "学历"
         },
         {
-          prop: "menuName",
+          prop: "status",
           element: "el-select",
-          placeholder: "机会状态",
-          options: [
-            {
-              label: "博士",
-              value: 0,
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
+          placeholder: "机会状态"
         },
         {
-          prop: "menuName",
+          prop: "saleSource",
           element: "el-select",
-          placeholder: "机会来源",
-          options: [
-            {
-              label: "博士",
-              value: 0,
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
+          placeholder: "机会来源"
         },
         {
-          prop: "menuName",
+          prop: "ordeParams",
           element: "el-select",
-          placeholder: "查询排序方法",
-          options: [
-            {
-              label: "博士",
-              value: 0,
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
+          placeholder: "查询排序方法"
         },
         {
-          prop: "menuName",
+          prop: "callStatus",
           element: "el-select",
-          placeholder: "呼叫状态",
-          options: [
-            {
-              label: "博士",
-              value: 0,
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
+          placeholder: "呼叫状态"
         },
         {
-          prop: "abc",
+          prop: "product",
           element: "el-cascader",
           placeholder: "课程",
 
           props: {
-            checkStrictly: true,
             lazy: true,
             lazyLoad(node, resolve) {
               const { level } = node;
@@ -253,22 +215,7 @@ export default {
           },
         },
       ],
-      tableData: [
-        {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-        },
-        {
-          id: 2,
-          name: "飞翔的荷兰人2",
-          cutdown: new Date().getTime(),
-          phone: "17092026183",
-        },
-        { id: 3, name: "飞翔的荷兰人1", phone: "18892026183" },
-      ],
+      tableData: [],
       tableKey: [
         {
           name: "姓名",
@@ -276,7 +223,8 @@ export default {
         },
         {
           name: "手机号",
-          value: "phone"
+          value: "phone",
+           operate: true
         },
         {
           name: "回收倒计时",
@@ -462,79 +410,41 @@ export default {
       addVisible: false,
       addFormOptions:[
          {
-          prop: "roleName",
+          prop: "campusId",
           element: "el-select",
-          placeholder: "请选择校区",
-          label: "选择校区",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
+          placeholder: "校区名字（所属组织）",
+          label: "就近校区"
         },
         {
-          prop: "menuName",
+          prop: "studentName",
           element: "el-input",
           placeholder: "请输入姓名",
-          label: "姓名"
+          label: "学员姓名"
         },
         {
-          prop: "menuName",
+          prop: "phone",
           element: "el-input",
           placeholder: "请输入手机号",
           label: "手机号"
         },
         {
-          prop: "menuName",
+          prop: "eduBackground",
+          element: "el-select",
+          placeholder: "请选择学历",
+          label: "学历"
+        },
+        {
+          prop: "saleSource",
           element: "el-select",
           placeholder: "销售来源",
-          label: "销售来源",
-          options: [
-            {
-              label: "博士",
-              value: 0,
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-        {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "跟进老师",
-          label: "跟进老师",
-          options: [
-            {
-              label: "博士",
-              value: 0,
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
+          label: "销售来源"
         },
          {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "请输入地址",
-          label: "地址",
-        },
-        {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入备注",
-          label: "备注",
-          type:"textarea",
-          rows: 2
-        }
+          prop: "product",
+          element: "el-cascader",
+          placeholder: "请选择咨询项目",
+          label: "咨询项目"
+         }
       ],
       addRules:{},
 
@@ -636,11 +546,38 @@ export default {
   watch:{
     newFormOptions(newVal){
       this.formOptions = newVal;
+      console.log(newVal,'newVal--')
+      this.handelAddOptions(newVal);
     }
   },
   methods: {
+    handelAddOptions(newVal){
+      this.addFormOptions[3].options = newVal[3].options;
+      this.addFormOptions[4].options = newVal[5].options;
+      this.$fetch("chance_config_campusList").then(res => {
+        let campusOptions = res.data.data.map((item) => ({
+            label: item.campusName,
+            value: item.id,
+          }));
+          this.addFormOptions[0].options = campusOptions;
+          this.addFormOptions[0].filterable = true;
+      })
+      
+    },
+    openDrawer(data){
+      console.log(data,'operndrawer')
+      this.drawerId = data.id;
+      this.drawerPhone = data.phone;
+      this.drawerTitle = data.studentName || "";
+      this.drawerVisible = true;
+    },
      onSearch(val) {
-      this.searchForm = { ...val };
+      this.searchForm = { 
+        ...val,
+        enquireProductIdOne: val.product[0],
+        enquireSubjectIdOne: val.product[1],
+        enquireCourseIdOne: val.product[2]
+      };
       console.log(val, this.searchForm, "val---");
       this.getTableData();
     },
@@ -756,7 +693,8 @@ export default {
         this.tableData = res.data.data.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
           item.updateAt = this.$common._formatDates(item.updateAt);
-          item.phone = this.$common.hidePhone(item.phone);
+          item.recentFeedbackTime = this.$common._formatDates(item.recentFeedbackTime);
+          item.nextDate = this.$common._formatDates(item.nextDate);
           return item;
         });
         this.pageConfig.totalCount = res.data.count;
@@ -831,8 +769,11 @@ export default {
         }
       }
     }
-    .el-form-item:last-child{
-      color: red;
+    // .el-form-item:last-child{
+    //   color: red;
+    // }
+    .el-cascader {
+      width: 100%;
     }
   }
 }

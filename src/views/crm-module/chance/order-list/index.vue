@@ -29,14 +29,16 @@
           </template>
         </rd-table>
         <!-- 回访抽屉 -->
-        <rd-drawer
-          :dialogVisible="drawerVisible"
-          :id="drawerId"
-          :phone="drawerPhone"
-          title="信息"
-          :size="drawerSize"
-          @handleClose="drawerVisible = false"
-        ></rd-drawer>
+        <template v-if="drawerVisible">
+          <rd-drawer
+            :dialogVisible="drawerVisible"
+            :id="drawerId"
+            :phone="drawerPhone"
+            title="信息"
+            :size="drawerSize"
+            @handleClose="drawerVisible = false"
+          ></rd-drawer>
+        </template>
       </div>
     </div>
     <div class="right-wrapper w-container">

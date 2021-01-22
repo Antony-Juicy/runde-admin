@@ -35,9 +35,9 @@ service.interceptors.request.use(
       }
     } else {
       config.data = qs.stringify({
-        ...config.data,
         token: getToken(),
         loginUserId: common.getUserId(),
+        ...config.data,
         ...getParam()
       })
     }

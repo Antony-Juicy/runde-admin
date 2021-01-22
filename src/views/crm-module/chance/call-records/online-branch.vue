@@ -19,6 +19,12 @@
       @select="handleSelect"
       @pageChange="pageChange"
     >
+    <template slot="callType" slot-scope="scope">
+                {{scope.row.callType | CallTypeFilter}}
+              </template>
+               <template slot="status" slot-scope="scope">
+                {{scope.row.status | statusFilter}}
+              </template>
     </rd-table>
   </div>
 </template>
@@ -30,25 +36,25 @@ export default {
       searchForm: {},
       formOptions: [
         {
-          prop: "AgentName",
+          prop: "staffId",
           element: "el-select",
           initValue: "",
           placeholder: "招生老师",
         },
         {
-          prop: "CalledNo",
+          prop: "userNumber",
           element: "el-input",
           initValue: "",
           placeholder: "通话人号码",
         },
         {
-          prop: "campus_name",
+          prop: "campusId",
           element: "el-select",
           initValue: "",
           placeholder: "校区名（所属组织）",
         },
         {
-          prop: "End",
+          prop: "endTime",
           element: "el-date-picker",
           initValue: "",
           startPlaceholder: "通话时间(开始)",
@@ -58,13 +64,12 @@ export default {
       ],
       tableData: [],
       tableKey: [
-        { name: "通话类型", value: "callType" },
+        { name: "通话类型", value: "callType",operate: true },
         { name: "通话人号码", value: "userNumber" },
-        { name: "通话状态", value: "status" },
+        { name: "通话状态", value: "status",operate: true },
         {
           name: "通话时长(单位秒)",
           value: "dealingTime",
-          operate: true,
           sortable: true,
         },
         { name: "招生老师", value: "staffName" },
@@ -96,11 +101,37 @@ export default {
       default: () => [],
     },
   },
+  filters: {
+    CallTypeFilter(val){
+      switch(val){
+        case "1":
+          return '拨号呼入';
+        case "2":
+          return '后台外呼';
+        case "3":
+          return '拨号外呼';
+        case "4":
+          return '点击外呼';
+      }
+    },
+    statusFilter(val){
+      switch(val){
+        case "0":
+          return '呼叫成功';
+        case "13":
+          return '内部错误，座席号码非法';
+        case "41":
+          return '回呼坐席成功，呼叫客户未通';
+        case "44":
+          return '回呼座席未通';
+      }
+    },
+  },
   watch: {
     staffOptions() {
       this.formOptions = [
         {
-          prop: "AgentName",
+          prop: "staffId",
           element: "el-select",
           initValue: "",
           placeholder: "招生老师",
@@ -108,13 +139,13 @@ export default {
           filterable: true,
         },
         {
-          prop: "CalledNo",
+          prop: "userNumber",
           element: "el-input",
           initValue: "",
           placeholder: "通话人号码",
         },
         {
-          prop: "campus_name",
+          prop: "campusId",
           element: "el-select",
           initValue: "",
           placeholder: "校区名（所属组织）",
@@ -122,7 +153,7 @@ export default {
           filterable: true,
         },
         {
-          prop: "End",
+          prop: "endTime",
           element: "el-date-picker",
           initValue: "",
           startPlaceholder: "通话时间(开始)",
@@ -137,7 +168,10 @@ export default {
   },
   methods: {
     onSearch(val) {
-      this.searchForm = { ...val };
+      this.searchForm = { 
+        ...val ,
+         endTime: val.endTime?val.endTime.join(' ~ '):""
+      };
       console.log(val, this.searchForm, "val---");
       this.getTableData();
     },
@@ -154,8 +188,10 @@ export default {
     // 点击权限组的分类
     handleTabClick(data) {
       console.log(data, 99966);
-      // this.pageConfig.currentPage = 1;
-      // this.getTableData();
+      this.pageConfig.currentPage = 1;
+       this.getTableData({
+        callType: data=="0"?"": data
+      });
     },
     getTableData(params = {}) {
       const loading = this.$loading({
@@ -166,6 +202,7 @@ export default {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
+        token:'123'
       }).then((res) => {
         this.tableData = res.data.data.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);

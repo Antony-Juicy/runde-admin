@@ -68,6 +68,7 @@
       :dialogVisible="drawerVisible"
       :id="drawerId"
       :phone="drawerPhone"
+       :title="drawerTitle"
       @handleClose="drawerVisible = false"
     ></rd-drawer>
     </div>
@@ -77,12 +78,14 @@
 <script>
 let id = 0;
 import RdForm from "@/components/RdForm";
+import Fetch from '@/utils/fetch'
 export default {
   name: "temp2",
   data() {
     return {
       drawerId:"",
       drawerPhone:"",
+      drawerTitle:"",
 
       formOptions: [
         {
@@ -385,6 +388,7 @@ export default {
      openDrawer(data){
       this.drawerId = data.id;
       this.drawerPhone = data.phone;
+      this.drawerTitle = data.studentName || "";
       this.drawerVisible = true;
     },
      onSearch(val) {
@@ -628,17 +632,8 @@ export default {
             lazyLoad:(node, resolve)=> {
               console.log(node,'node')
               const { level } = node;
-              // setTimeout(() => {
-              //   let nodes = [{
-              //     value: 1,
-              //     label: `选项${1}`,
-              //     leaf: level >= 2,
-              //   }]
-              //   // 通过调用resolve将子节点数据返回，通知组件数据加载完成
-              //   resolve(nodes);
-              // }, 1000);
               if(level == 0){
-                this.$fetch("chance_product_list").then(res => {
+                Fetch("chance_product_list").then(res => {
                   let data = JSON.parse(res.msg);
                   let nodes = data.map(item =>({
                     value: item.id,
@@ -648,7 +643,7 @@ export default {
                   resolve(nodes);
                 })
               }else if(level == 1){
-                 this.$fetch("chance_subject_list",{
+                 Fetch("chance_subject_list",{
                    enquireProductIdOne: node.data.value
                  }).then(res => {
                    let nodes;
@@ -665,7 +660,7 @@ export default {
                   resolve(nodes);
                 })
               }else if(level == 2){
-                 this.$fetch("chance_course_list",{
+                 Fetch("chance_course_list",{
                    subjectIdOne: node.data.value
                  }).then(res => {
                    let nodes;
