@@ -1,22 +1,30 @@
 <template>
   <div class="distribution">
     <el-form :inline="true" :model="formInline" class="demo-form-inline">
-      <el-form-item label="审批人">
-        <el-input v-model="formInline.user" placeholder="审批人"></el-input>
+      <el-form-item label="">
+        <el-select v-model="formInline.campusId" placeholder="校区" filterable>
+          <el-option
+            :label="item.label"
+            :key="item.value"
+            :value="item.value"
+            v-for="item in campusArr"
+          ></el-option>
+        </el-select>
       </el-form-item>
-      <el-form-item label="活动区域">
-        <el-select v-model="formInline.region" placeholder="活动区域">
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+      <el-form-item label="">
+        <el-select v-model="formInline.id" placeholder="姓名" filterable>
+          <el-option
+            :label="item.label"
+            :key="item.value"
+            :value="item.value"
+            v-for="item in nameArr"
+          ></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" size="small" @click="onSubmit"
           >查询</el-button
         >
-        <!-- <el-button type="warning" size="small" @click="onSubmit"
-          >分配</el-button
-        > -->
       </el-form-item>
     </el-form>
     <rd-table
@@ -26,13 +34,11 @@
       highlight-current-row
       @pageChange="pageChange"
     >
-      <template slot="phone" slot-scope="scope">
-        {{$common.hidePhone(scope.row.phone)}}
+      <template slot="staffPhone" slot-scope="scope">
+        {{ $common.hidePhone(scope.row.staffPhone) }}
       </template>
       <template slot="edit" slot-scope="scope">
-        <el-button @click="handleEdit(scope.row)" type="text" 
-          >分配</el-button
-        >
+        <el-button @click="handleEdit(scope.row)" type="text">分配</el-button>
       </template>
     </rd-table>
   </div>
@@ -43,52 +49,52 @@ export default {
   name: "distribution",
   data() {
     return {
+      nameArr: [],
+      campusArr: [],
       formInline: {
-        user: "",
-        region: "",
+        campusId: "",
+        id: "",
       },
-        tableData: [
-        { id: 1, name: "飞翔的荷兰人3", cutdown: 1608897351706, visit: 2,phone:'15692026183' },
-        { id: 2, name: "飞翔的荷兰人2",cutdown: new Date().getTime(),phone:'17092026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
+      tableData: [
       ],
       tableKey: [
         {
           name: "ID",
           value: "name",
+          sortable: true
         },
-         {
+        {
           name: "姓名",
-          value: "name"
+          value: "staffName",
         },
         {
           name: "职位",
-          value: "cutdown"
+          value: "positionName",
         },
         {
           name: "手机号码",
-          value: "phone",
-          operate: true
+          value: "staffPhone",
+          operate: true,
         },
         {
           name: "性别",
-          value: "visit",
+          value: "gender",
           width: 60,
         },
         {
           name: "机会持有数量",
-          value: "menuOrder"
+          value: "opportunityNum",
         },
         {
           name: "状态",
-          value: "description1",
+          value: "status",
         },
         {
           name: "操作",
           value: "edit",
           operate: true,
-          width: 100
-        }
+          width: 100,
+        },
       ],
       pageConfig: {
         totalCount: 100,
@@ -97,11 +103,27 @@ export default {
       },
     };
   },
+  mounted() {
+    this.$fetch("chance_staff_list").then((res) => {
+      let staffOptions = JSON.parse(res.msg).map((item) => ({
+        label: item.staffName,
+        value: item.id,
+      }));
+      this.nameArr = staffOptions;
+    });
+    this.$fetch("chance_config_campusList").then((res) => {
+      let campusOptions = res.data.data.map((item) => ({
+        label: item.campusName,
+        value: item.id,
+      }));
+      this.campusArr = campusOptions;
+    });
+  },
   methods: {
     onSubmit() {
       console.log("submit!");
     },
-     pageChange(val) {
+    pageChange(val) {
       // this.pageConfig.currentPage = val.page;
       // this.pageConfig.pageSize = val.limit;
       // console.log(this.searchForm,'this.searchForm--')
@@ -112,7 +134,7 @@ export default {
       //   ...this.searchForm,
       //   parentId: this.parentId
       // });
-    }
+    },
   },
 };
 </script>

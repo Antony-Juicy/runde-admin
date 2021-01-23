@@ -6,7 +6,7 @@
       title="查看活动详情"
       @change="fullDialogChange"
     >
-      <activityDetail />
+      <activityDetail :detailPhone="detailPhone"/>
     </fullDialog>
     <!-- 上部的总数 -->
     <div class="top-total w-container">
@@ -81,7 +81,8 @@
           />
         </div>
         <div v-show="tabIndex == '1'">
-          <publicCustomers />
+          <publicCustomers @currentChange="currentChange"
+            :newFormOptions="formOptions"/>
         </div>
         <div v-show="tabIndex == '2'">
           <lockUser />
@@ -388,7 +389,8 @@ export default {
       tabIndex: "0",
       currentPhone: "",
       formOptions: [],
-      totalObj:{}
+      totalObj:{},
+      detailPhone:""
     };
   },
   components: {
@@ -402,6 +404,13 @@ export default {
     this.getSelectList();
     this.getProjcetList();
     this.chanceChange("全部");
+  },
+  watch:{
+    showDetail(val){
+      if(val){
+        this.detailPhone = this.currentPhone;
+      }
+    }
   },
   methods: {
 
@@ -463,7 +472,7 @@ export default {
         enquireProductIdOne,
         enquireSubjectIdOne,
         enquireCourseIdOne,
-        enquireClassOne: enquireClassOne.map(item => Number((item.val)))
+        enquireClassOne: enquireClassOne&&enquireClassOne.map(item => Number((item.val)))
       };
       
     },
@@ -690,14 +699,14 @@ export default {
             prop: "product",
             element: "el-cascader",
             placeholder: "项目/科目/课程",
-
             props: {
-              checkStrictly: true,
-              lazy: true,
-              lazyLoad(node, resolve) {
-                const { level } = node;
-                if(level == 0){
-                Fetch("chance_product_list").then(res => {
+            checkStrictly: true,
+            lazy: true,
+            lazyLoad:(node, resolve)=> {
+              console.log(node,'node')
+              const { level } = node;
+              if(level == 0){
+                this.$fetch("chance_product_list").then(res => {
                   let data = JSON.parse(res.msg);
                   let nodes = data.map(item =>({
                     value: item.id,
@@ -707,7 +716,7 @@ export default {
                   resolve(nodes);
                 })
               }else if(level == 1){
-                 Fetch("chance_subject_list",{
+                 this.$fetch("chance_subject_list",{
                    enquireProductIdOne: node.data.value
                  }).then(res => {
                    let nodes;
@@ -724,7 +733,7 @@ export default {
                   resolve(nodes);
                 })
               }else if(level == 2){
-                 Fetch("chance_course_list",{
+                 this.$fetch("chance_course_list",{
                    subjectIdOne: node.data.value
                  }).then(res => {
                    let nodes;
@@ -740,9 +749,12 @@ export default {
                    }
                   resolve(nodes);
                 })
+              }else {
+                resolve([])
               }
-              },
             },
+          },
+          initWidth: true,
           },
         ];
       });

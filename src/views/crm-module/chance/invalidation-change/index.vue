@@ -24,7 +24,11 @@
       >
         <template slot="checked" slot-scope="scope">
           <!-- <el-tag :type="scope.row.checked?'success':'danger'">{{scope.row.checked?"已质检":"未质检"}}</el-tag> -->
-          <el-tag :type="scope.row.checked?'success':'danger'" @click="handleCheckDetail(scope.row)">{{scope.row.checked?"已质检":"未质检"}}</el-tag>
+          <el-tag
+            :type="scope.row.checked ? 'success' : 'danger'"
+            @click="handleCheckDetail(scope.row)"
+            >{{ scope.row.checked ? "已质检" : "未质检" }}</el-tag
+          >
         </template>
       </rd-table>
       <rd-dialog
@@ -36,24 +40,31 @@
         @submitForm="submitForm('dataForm')"
       >
         <el-form ref="dataForm" :model="detectForm" label-width="100px">
-          <el-form-item label="机会失效" v-if="detectStatus" prop="invalidStatus">
+          <el-form-item
+            label="机会失效"
+            v-if="detectStatus"
+            prop="invalidStatus"
+          >
             <el-radio-group v-model="detectForm.invalidStatus">
               <el-radio label="Invalid">是</el-radio>
               <el-radio label="Potential">否</el-radio>
             </el-radio-group>
           </el-form-item>
           <!-- v-if="detectForm.invalidStatus == 'Invalid'" -->
-          <el-form-item
-            label="失效原因"
-            
-            prop="invalidReason"
-          >
-            <el-select v-model="detectForm.invalidReason" placeholder="请选择失效原因" :disabled="!detectStatus">
+          <el-form-item label="失效原因" prop="invalidReason">
+            <el-select
+              v-model="detectForm.invalidReason"
+              placeholder="请选择失效原因"
+              :disabled="!detectStatus"
+            >
               <el-option label="无法核实" value="UnableToVerify"></el-option>
               <el-option label="无法联系" value="UnableToReached"></el-option>
               <el-option label="否认咨询" value="DenyConsulting"></el-option>
               <el-option label="已报名" value="AlreadySign"></el-option>
-              <el-option label="公司内部人员" value="CompanyInsider"></el-option>
+              <el-option
+                label="公司内部人员"
+                value="CompanyInsider"
+              ></el-option>
               <el-option label="已从支线成交" value="SignBranch"></el-option>
             </el-select>
           </el-form-item>
@@ -157,7 +168,7 @@ export default {
         { name: "机会状态", value: "status" },
         { name: "归属销售", value: "marketName" },
         { name: "分校/战队", value: "campusName", width: 132 },
-        { name: "质检状态", value: "checked" ,operate: true},
+        { name: "质检状态", value: "checked", operate: true },
       ],
       emptyText: "暂无数据",
       fixedTwoRow: true,
@@ -181,7 +192,7 @@ export default {
       // 回访抽屉参数
       dialogVisible: false,
       drawerSize: "50%",
-      selectedRows: []
+      selectedRows: [],
     };
   },
   mounted() {
@@ -190,7 +201,10 @@ export default {
   },
   methods: {
     onSearch(val) {
-      this.searchForm = { ...val };
+      this.searchForm = { 
+        ...val ,
+        updateAt: val.updateAt?val.updateAt.join(' ~ '):""
+      };
       this.getTableData();
       console.log(val, this.searchForm, "val---");
     },
@@ -207,20 +221,20 @@ export default {
 
     // 质检
     openDetect() {
-       if(!this.selectedRows.length){
-        this.$message.warning("请选择机会")
+      if (!this.selectedRows.length) {
+        this.$message.warning("请选择机会");
         return;
-      }else if(this.selectedRows.map(item => item.checked).includes(true)){
-        this.$message.warning("请勿重复质检")
+      } else if (this.selectedRows.map((item) => item.checked).includes(true)) {
+        this.$message.warning("请勿重复质检");
         return;
       }
       this.detectVisible = true;
-       this.detectStatus = true;
-       this.detectForm= {
+      this.detectStatus = true;
+      this.detectForm = {
         invalidStatus: "Invalid",
         invalidReason: "",
         checkedDetail: "",
-      }
+      };
     },
     closeDetect(formName) {
       this.detectVisible = false;
@@ -228,18 +242,17 @@ export default {
     },
     submitForm(formName) {
       console.log(this.detectForm, 666);
-     
-      this.$fetch("chance_invalid_update",{
-        ids: this.selectedRows.map(item => item.id).join(","),
-        ...this.detectForm
-      }).then(res => {
-        if(res.code == 200){
-          this.$message.success("操作成功")
+
+      this.$fetch("chance_invalid_update", {
+        ids: this.selectedRows.map((item) => item.id).join(","),
+        ...this.detectForm,
+      }).then((res) => {
+        if (res.code == 200) {
+          this.$message.success("操作成功");
           this.closeDetect("dataForm");
           this.getTableData();
         }
-      })
-      
+      });
     },
 
     // 抽屉
@@ -277,13 +290,16 @@ export default {
       });
     },
     getSelectList() {
-      Promise.all([
-        this.$fetch("chance_edu_list"),
-        this.$fetch("chance_staff_list"),
-        this.$fetch("chance_config_campusList"),
-      ].map((p) => {
-        return p.catch(error => error)
-    })).then((result) => {
+      Promise.all(
+        [
+          this.$fetch("chance_edu_list"),
+          this.$fetch("chance_staff_list"),
+          this.$fetch("chance_config_campusList"),
+          this.$fetch("chance_product_list"),
+        ].map((p) => {
+          return p.catch((error) => error);
+        })
+      ).then((result) => {
         let eduOptions = result[0].data.map((item) => ({
           label: item.value,
           value: item.key,
@@ -296,6 +312,36 @@ export default {
           label: item.campusName,
           value: item.id,
         }));
+        let productOptions = JSON.parse(result[3].msg).map((item) => ({
+          value: item.id,
+          label: item.productName,
+        }));
+        let reasonOptions = [
+          {
+            label: "无法核实",
+            value: "UnableToVerify"
+          },
+          {
+            label: "无法联系",
+            value: "UnableToReached"
+          },
+          {
+            label: "否认咨询",
+            value: "DenyConsulting"
+          },
+          {
+            label: "已报名",
+            value: "AlreadySign"
+          },
+          {
+            label: "公司内部人员",
+            value: "CompanyInsider"
+          },
+          {
+            label: "已从支线成交",
+            value: "SignBranch"
+          },
+        ]
         this.formOptions = [
           {
             prop: "studentName",
@@ -314,25 +360,38 @@ export default {
             element: "el-select",
             initValue: "",
             placeholder: "请选择项目",
+            options: productOptions,
+            filterable: true,
           },
           {
             prop: "eduBackground",
             element: "el-select",
             initValue: "",
             placeholder: "请选择学历",
-            options: eduOptions
+            options: eduOptions,
           },
           {
             prop: "invalidReason",
             element: "el-select",
             initValue: "",
             placeholder: "请选择失效原因",
+            options: reasonOptions
           },
           {
             prop: "zjstatus",
             element: "el-select",
             initValue: "",
             placeholder: "请选择是否质检",
+            options: [
+              {
+                label: "是",
+                value: 1
+              },
+              {
+                label: "否",
+                value: 0
+              }
+            ]
           },
           {
             prop: "marketName",
@@ -340,15 +399,15 @@ export default {
             initValue: "",
             placeholder: "请选择归属销售",
             filterable: true,
-            options: staffOptions
+            options: staffOptions,
           },
           {
             prop: "campusName",
             element: "el-select",
             initValue: "",
             placeholder: "请选择组织架构",
-             filterable: true,
-            options: campusOptions
+            filterable: true,
+            options: campusOptions,
           },
           {
             prop: "updateAt",
@@ -360,15 +419,19 @@ export default {
       });
     },
 
-    handleCheckDetail(val){
-      if(!val.checked){
+    handleCheckDetail(val) {
+      if (!val.checked) {
         return;
       }
       this.detectVisible = true;
       this.detectStatus = false;
-      this.detectForm = {...val,invalidStatus: val.invalidStatus_text,invalidReason:  val.invalidReason_text};
-      console.log(this.detectForm,'detectform')
-    }
+      this.detectForm = {
+        ...val,
+        invalidStatus: val.invalidStatus_text,
+        invalidReason: val.invalidReason_text,
+      };
+      console.log(this.detectForm, "detectform");
+    },
   },
 };
 </script>

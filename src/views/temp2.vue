@@ -392,7 +392,25 @@ export default {
       this.drawerVisible = true;
     },
      onSearch(val) {
-      this.searchForm = {...val};
+       if(val.product&&val.product.length>0){
+        this.searchForm = {
+          ...val,
+          enquireProductIdOne: val.product[0],
+          enquireSubjectIdOne: val.product[1],
+          enquireCourseIdOne: val.product[2],
+          createAt: val.createAt?val.createAt.join(' ~ '):""
+        };
+      }else {
+        this.searchForm = {
+          ...val,
+          createAt: val.createAt?val.createAt.join(' ~ '):""
+        }
+      }
+
+      this.searchForm = {
+        ...val,
+        createAt: val.createAt?val.createAt.join(' ~ '):""
+      };
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
     },
@@ -625,7 +643,7 @@ export default {
         {
           prop: "abc",
           element: "el-cascader",
-          placeholder: "请选择咨询项目/科目",
+          placeholder: "请选择咨询项目/科目/课程",
           props: {
             checkStrictly: true,
             lazy: true,
@@ -676,6 +694,8 @@ export default {
                    }
                   resolve(nodes);
                 })
+              }else {
+                resolve([]);
               }
             },
           },

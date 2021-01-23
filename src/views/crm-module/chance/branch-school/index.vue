@@ -7,7 +7,7 @@
     ></search-form>
     <div class="w-container">
       <div class="btn-wrapper">
-        <el-button type="primary" size="small" @click="handleAdd"
+        <el-button type="primary" size="small" @click="handleReceive"
           >领取</el-button
         >
         <el-button type="warning" size="small" @click="handleDistribute"
@@ -29,8 +29,11 @@
         @select="handelSelect"
       >
         <!-- 跟进次数 -->
+        <template slot="phone" slot-scope="scope">
+           {{$common.hidePhone(scope.row.phone)}}
+        </template>
         <template slot="visit" slot-scope="scope">
-            <span class="visit-container" @click="openDrawer(scope.row)">{{
+            <span class="visit-container" @click.stop="openDrawer(scope.row)">{{
             scope.row.visit || 0
             }}</span>
         </template>
@@ -41,6 +44,7 @@
       :dialogVisible="drawerVisible"
       :id="drawerId"
       :phone="drawerPhone"
+      :title="drawerTitle"
       @handleClose="drawerVisible = false"
     ></rd-drawer>
 
@@ -66,6 +70,7 @@ export default {
   name: "branch-school",
   data() {
     return {
+      drawerTitle:"",
       drawerId:"",
       drawerPhone:"",
       formOptions: [
@@ -231,7 +236,8 @@ export default {
         },
          {
           name: "手机号",
-          value: "phone"
+          value: "phone",
+          operate: true
         },
         {
           name: "学历",
@@ -403,15 +409,49 @@ export default {
       distribution
   },
   methods: {
+    handleReceive(){
+      if(!this.selectedData.length){
+        this.$message.warning("请勾选要领取的机会！")
+        return;
+      }
+      this.$fetch("chance_campus_receive",{
+        ids: this.selectedData.map(item => (item.idStr)).join(",")
+      }).then(res => {
+        if(res.code == 200){
+          this.$message.success("操作成功")
+          this.getTableData();
+        }
+      })
+    },
     openDrawer(data){
-      this.drawerId = 16369;
-      this.drawerPhone = '18009498386';
+       this.drawerId = data.id;
+      this.drawerPhone = data.phone;
+      this.drawerTitle = data.studentName || "";
       this.drawerVisible = true;
     },
     handleAdd(){},
     onSearch(val) {
-      this.searchForm = { ...val };
-      console.log(val, this.searchForm, "val---");
+      if(val.product&&val.product.length>0){
+        this.searchForm = {
+          ...val,
+          enquireProductIdOne: val.product[0],
+          enquireSubjectIdOne: val.product[1],
+          enquireCourseIdOne: val.product[2],
+          createAt: val.createAt?val.createAt.join(' ~ '):"",
+          updateAt: val.updateAt?val.updateAt.join(' ~ '):"",
+          campusPoolTime: val.campusPoolTime?val.campusPoolTime.join(' ~ '):"",
+          marketStaffId: val.marketStaffId&&val.marketStaffId[1]
+        };
+      }else {
+        this.searchForm = {
+          ...val,
+          createAt: val.createAt?val.createAt.join(' ~ '):"",
+          updateAt: val.updateAt?val.updateAt.join(' ~ '):"",
+          campusPoolTime: val.campusPoolTime?val.campusPoolTime.join(' ~ '):"",
+           marketStaffId: val.marketStaffId&&val.marketStaffId[1]
+        }
+      }
+      
       this.getTableData();
     },
      pageChange(val) {
@@ -444,11 +484,13 @@ export default {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
+        token:"123"
       }).then((res) => {
         this.tableData = res.data.data.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
           item.updateAt = this.$common._formatDates(item.updateAt);
-          item.phone = this.$common.hidePhone(item.phone);
+          item.campusPoolTime = this.$common._formatDates(item.campusPoolTime);
+          // item.phone = this.$common.hidePhone(item.phone);
           item.enquireClassOne = item.enquireClassOne && item.enquireClassOne.map(item=>(item.name)).join(",");
           return item;
         });
@@ -519,17 +561,22 @@ export default {
                   }
                 ];
                 resolve(nodes);
-              }else {
-                Fetch("chance_staff_list",{
+              }else if(level == 1){
+                Fetch("chance_getStaffListByStatus",{
                   staffStatus: node.value
                 }).then(res => {
-                    let staffOptions = JSON.parse(res.msg).map((item) => ({
+                    let staffOptions = res.data.map((item) => ({
                       label: item.staffName,
                       value: item.id,
                       leaf: level >= 1
-                    }));
+                    }))
                      resolve(staffOptions);
-                })
+                }).catch(err => {
+                      console.log(err,'err--')
+                      resolve([]);
+                    });
+              }else {
+                resolve([]);
               }
             },
           },
@@ -538,112 +585,151 @@ export default {
           filterable: true
         },
         {
-          prop: "menuName",
+          prop: "status",
           element: "el-select",
           placeholder: "机会状态",
           options: statusOptions
         },
         {
-          prop: "menuName",
+          prop: "studentName",
           element: "el-input",
           placeholder: "姓名",
         },
         {
-          prop: "menuName",
+          prop: "phone",
           element: "el-input",
           placeholder: "手机",
         },
         {
-          prop: "menuName",
+          prop: "phoneProvince",
           element: "el-input",
           placeholder: "省份",
         },
         {
-          prop: "menuName",
+          prop: "phoneCity",
           element: "el-input",
           placeholder: "城市",
         },
         {
-          prop: "menuName",
+          prop: "address",
           element: "el-input",
           placeholder: "地址",
         },
         {
-          prop: "menuName",
+          prop: "createStaffName",
           element: "el-input",
           placeholder: "注册人",
         },
         {
-          prop: "menuName",
+          prop: "eduBackground",
           element: "el-select",
           placeholder: "学历",
           options: eduOptions
         },
         {
-          prop: "menuName",
+          prop: "saleSource",
           element: "el-select",
           placeholder: "来源",
           options: sourceOptions
         },
         {
-          prop: "menuName",
+          prop: "campusId",
           element: "el-select",
           placeholder: "组织架构",
           options: campusOptions,
           filterable: true
         },
         {
-          prop: "menuName",
+          prop: "callStatus",
           element: "el-select",
           placeholder: "呼叫状态",
           options: callStatusOptions
         },
         {
-          prop: "menuName",
+          prop: "feedbackCount",
           element: "el-select",
           placeholder: "跟进次数",
           options: numsOptions
         },
         // 课程
         {
-          prop: "abc",
+          prop: "product",
           element: "el-cascader",
-          placeholder: "课程",
+          placeholder: "咨询项目/科目/课程",
           props: {
             checkStrictly: true,
             lazy: true,
-            lazyLoad(node, resolve) {
+             lazyLoad:(node, resolve)=> {
+              console.log(node,'node')
               const { level } = node;
-              setTimeout(() => {
-                const nodes = Array.from({ length: level + 1 }).map((item) => ({
-                  value: ++id,
-                  label: `选项${id}`,
-                  leaf: level >= 2,
-                }));
-                // 通过调用resolve将子节点数据返回，通知组件数据加载完成
-                resolve(nodes);
-              }, 1000);
+              if(level == 0){
+                Fetch("chance_product_list").then(res => {
+                  let data = JSON.parse(res.msg);
+                  let nodes = data.map(item =>({
+                    value: item.id,
+                    label: item.productName,
+                    leaf: level >= 2,
+                  }));
+                  resolve(nodes);
+                })
+              }else if(level == 1){
+                 Fetch("chance_subject_list",{
+                   enquireProductIdOne: node.data.value
+                 }).then(res => {
+                   let nodes;
+                   if(res.msg == "没有相关数据"){
+                     nodes = [];
+                   }else {
+                     let data = res.data;
+                    nodes = data.map(item =>({
+                      value: item.id,
+                      label: item.subjectName,
+                      leaf: level >= 2,
+                    }));
+                   }
+                  resolve(nodes);
+                })
+              }else if(level == 2){
+                 Fetch("chance_course_list",{
+                   subjectIdOne: node.data.value
+                 }).then(res => {
+                   let nodes;
+                   if(res.msg == "没有相关数据"){
+                     nodes = [];
+                   }else {
+                     let data =JSON.parse(res.msg);
+                    nodes = data.map(item =>({
+                      value: item.id,
+                      label: item.courseName,
+                      leaf: level >= 2,
+                    }));
+                   }
+                  resolve(nodes);
+                })
+              }else {
+                resolve([]);
+              }
             },
           },
           initWidth: true,
         },
         // 时间
         {
-          prop: "time",
+          prop: "updateAt",
           element: "el-date-picker",
           startPlaceholder: "最近跟进时间(开始)",
           endPlaceholder: "最近跟进时间(结束)",
           initWidth: true,
         },
         {
-          prop: "time",
+          prop: "createAt",
           element: "el-date-picker",
           startPlaceholder: "创建时间(开始)",
           endPlaceholder: "创建时间(结束)",
           initWidth: true,
         },
         {
-          prop: "time",
+          prop: "campusPoolTime",
           element: "el-date-picker",
           startPlaceholder: "进入公海时间(开始)",
           endPlaceholder: "进入公海时间(结束)",

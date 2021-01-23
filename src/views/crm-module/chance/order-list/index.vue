@@ -256,7 +256,10 @@ export default {
   },
   methods: {
     onSearch(val) {
-      this.searchForm = { ...val };
+      this.searchForm = { 
+        ...val,
+        updateAt: val.updateAt?val.updateAt.join(' ~ '):""
+       };
       console.log(val, this.searchForm, "val---");
       this.getTableData();
     },
