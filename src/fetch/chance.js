@@ -65,6 +65,13 @@ export default {
     chance_config_add: {url: '/crm/crmopportunityconfig/save', method: 'post'},
     chance_config_productList: {url: '/crm/crmopportunityconfig/configProductList', method: 'post'},
     chance_config_delete: {url: '/crm/crmopportunityconfig/deleteCrmOpportunityConfig', method: 'post'},
+
+    // 导入手机查询
+    chance_import_list: {url: '/crm/crmopportunitylog/queryOrderInfoByPhoneListJson', method: 'post'},
+
+    // 通话记录统计
+    chance_records_count: {url: '/crm/crmopportunity/opportunityNumListJson', method: 'get'},
+
     // 组织架构
     chance_config_campusList: {url: '/crm/crmopportunityconfig/configCampusList', method: 'post'},
 

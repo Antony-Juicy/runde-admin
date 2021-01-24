@@ -70,10 +70,10 @@ export default {
       showNum: 4,
       searchForm: {},
       formOptions: [
-        { prop: 'staff_name', element: 'el-input', initValue: '', placeholder: '请输入操作人' },
+        { prop: 'staffName', element: 'el-input', initValue: '', placeholder: '请输入操作人' },
         { prop: '_id', element: 'el-input', initValue: '', placeholder: '请输入id' },
         { prop: 'remark', element: 'el-input', initValue: '', placeholder: '请输入备注' },
-        { prop: 'campus_name', element: 'el-select', initValue: '', placeholder: '请选择分校' },
+        { prop: 'campusId', element: 'el-select', initValue: '', placeholder: '请选择分校' ,filterable: true},
         { prop: 'createAt', element: 'el-date-picker', initValue: '', startPlaceholder: "创建时间(开始)",
           endPlaceholder: "创建时间(结束)" }
       ],
@@ -87,14 +87,13 @@ export default {
         { name: '创建时间',value: 'create_at' },
         { name: '操作人IP',value: 'staff_ip' },
         { name: '备注',value: 'remark' },
-        { name: '操作',value: 'edit',operate: true,width: 120 },
       ],
       emptyText: '暂无数据',
       fixedTwoRow: true,
       pageConfig: {
         totalCount: 100,
-        pageNum: 1,
-        pageSize: 10,
+        currentPage: 1,
+        showCount: 10,
       },
       loading: false,
 
@@ -114,16 +113,27 @@ export default {
       ]
     }
   },
+  mounted(){
+    this.getTableData();
+    this.getSelectList();
+  },
   methods: {
     onSearch(val) {
-      this.searchForm = {...val};
+      this.searchForm = {
+        ...val,
+        createAt: val.createAt?val.createAt.join(' ~ '):""
+      };
       console.log(val,this.searchForm , 'val---')
+      this.getTableData();
     },
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
     pageChange(val) {
       console.log(val,'pagechange')
+      this.pageConfig.currentPage = val.page;
+      this.pageConfig.showCount = val.limit;
+      this.getTableData();
     },
     // 导入手机号码弹窗
     openDialog() {
@@ -138,6 +148,43 @@ export default {
     },
     handleChange(file, fileList) {
       this.fileList = fileList.slice(-3);
+    },
+    getTableData(params = {}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".el-table",
+      });
+      this.$fetch("chance_import_list", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.data.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.create_at = item.create_at&&this.$common._formatDates(item.create_at);
+          item.recentFeedbackTime = item.recentFeedbackTime&&this.$common._formatDates(item.recentFeedbackTime);
+          item.nextFeedBackTime = item.nextFeedBackTime&&this.$common._formatDates(item.nextFeedBackTime);
+          item.allotTime = item.allotTime&&this.$common._formatDates(item.allotTime);
+          if(item.enquireClassOne){
+            item.enquireClassOne = item.enquireClassOne.map(ele=>(ele.name)).join(",")
+          }
+          return item;
+        });
+        this.pageConfig.totalCount = res.data.pager.totalRows;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
+      });
+    },
+    getSelectList(){
+      this.$fetch("chance_config_campusList").then(res => {
+         let campusOptions = res.data.data.map((item) => ({
+            label: item.campusName,
+            value: item.id,
+          }));
+          this.formOptions[3].options = campusOptions;
+          this.formOptions = [...this.formOptions];
+      })
     }
   }
 }
