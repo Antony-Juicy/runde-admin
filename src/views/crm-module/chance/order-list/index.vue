@@ -29,7 +29,6 @@
           </template>
         </rd-table>
         <!-- 回访抽屉 -->
-        <template v-if="drawerVisible">
           <rd-drawer
             :dialogVisible="drawerVisible"
             :id="drawerId"
@@ -38,7 +37,6 @@
             :size="drawerSize"
             @handleClose="drawerVisible = false"
           ></rd-drawer>
-        </template>
       </div>
     </div>
     <div class="right-wrapper w-container">
@@ -373,7 +371,7 @@ export default {
         this.tableData = res.data.data.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
           item.updateAt = this.$common._formatDates(item.updateAt);
-          item.enquireClassOne = item.enquireClassOne
+          item.enquireClassOne = item.enquireClassOne&&item.enquireClassOne
             .map((item) => item.name)
             .join(",");
           return item;

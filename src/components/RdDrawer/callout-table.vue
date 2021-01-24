@@ -55,6 +55,11 @@ export default {
       default:""
     }
   },
+  watch: {
+    id(){
+      this.getTableData();
+    }
+  },
   filters:{
     CallTypeFilter(val){
       switch(val){

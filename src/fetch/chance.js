@@ -20,18 +20,21 @@ export default {
     chance_my_release: {url: '/crm/crmopportunityfeedback/deleteRelease', method: 'post'}, //释放
     chance_my_invalid: {url: '/crm/crmopportunity/finshInvalid', method: 'post'}, //失效
     chance_my_add: {url: '/crm/crmopportunity/saveMyOpportunityAdd', method: 'post'}, //添加
-    chance_my_check: {url: '/crm/crmopportunity/checkStuInCampus', method: 'post'}, //成单
+    chance_my_check: {url: '/crm/crmopportunity/checkStuInCampus', method: 'post'}, //检查重复
     chance_my_lock: {url: '/crm/crmopportunitytrail/updateLock', method: 'post'}, //锁定
     chance_my_delaylock: {url: '/crm/crmopportunitytrail/updateDelayLock', method: 'post'}, //延长锁定
-
+    chance_my_transform: {url: '/crm/crmopportunity/transform', method: 'post'}, //成单
 
     // 分校/战队公海
     chance_campus_list: {url: '/crm/crmopportunity/listBranchCampusJson', method: 'post'},
     chance_getStaffListByStatus: {url: '/crm/crmopportunity/getStaffListByStatus', method: 'post'},
-    chance_campus_receive: {url: '/crm/crmopportunity/updateReceiveOpps', method: 'post'},
+    chance_campus_receive: {url: '/crm/crmopportunity/updateReceiveOpps', method: 'post'}, //领取
+    chance_distrube_list: {url: '/crm/crmopportunity/listMarketJson', method: 'post'}, //分配机会列表
+    chance_campus_distrubute: {url: '/crm/crmopportunity/updateAllotOppByProvince', method: 'get'},//分配
 
     // 省校/网校公海
     chance_province_list: {url: '/crm/crmopportunity/listProvinceCampusJson', method: 'post'},
+    chance_province_distribute: {url: '/crm/crmopportunity/updateAllotOppByProvince', method: 'get'},//分配
     // 成单列表
     chance_order_list: {url: '/crm/crmopportunity/myYCDListJson', method: 'post'},
 

@@ -2,7 +2,7 @@
   <div class="distribution">
     <el-form :inline="true" :model="formInline" class="demo-form-inline">
       <el-form-item label="">
-        <el-select v-model="formInline.campusId" placeholder="校区" filterable>
+        <el-select v-model="formInline.campusId" placeholder="校区" filterable size="small">
           <el-option
             :label="item.label"
             :key="item.value"
@@ -12,7 +12,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="">
-        <el-select v-model="formInline.id" placeholder="姓名" filterable>
+        <el-select v-model="formInline.id" placeholder="姓名" filterable size="small">
           <el-option
             :label="item.label"
             :key="item.value"
@@ -60,7 +60,7 @@ export default {
       tableKey: [
         {
           name: "ID",
-          value: "name",
+          value: "id",
           sortable: true
         },
         {
@@ -99,9 +99,16 @@ export default {
       pageConfig: {
         totalCount: 100,
         currentPage: 1,
-        pageSize: 10,
+        showCount: 10,
       },
+      
     };
+  },
+  props:{
+    opportunityIds: {
+      type:String,
+      default: 0
+    }
   },
   mounted() {
     this.$fetch("chance_staff_list").then((res) => {
@@ -118,22 +125,47 @@ export default {
       }));
       this.campusArr = campusOptions;
     });
+    
+    this.getTableData();
   },
   methods: {
+    handleEdit(data){
+      this.$fetch("chance_campus_distrubute",{
+        id: data.id,
+        opportunityIds: this.opportunityIds
+      }).then(res => {
+        if(res.code == 200){
+          this.$message.success("操作成功")
+          this.$emit("close");
+        }
+      })
+    },
     onSubmit() {
       console.log("submit!");
+      this.getTableData();
     },
-    pageChange(val) {
-      // this.pageConfig.currentPage = val.page;
-      // this.pageConfig.pageSize = val.limit;
-      // console.log(this.searchForm,'this.searchForm--')
-      // this.getTableData({
-      //   currentPage: (val && val.page) || 1,
-      //   pageSize: (val && val.limit) || 10,
-      //   loginUserId,
-      //   ...this.searchForm,
-      //   parentId: this.parentId
-      // });
+     pageChange(val) {
+      console.log(val,'pagechange')
+      this.pageConfig.currentPage = val.page;
+      this.pageConfig.showCount = val.limit;
+      this.getTableData();
+    },
+    getTableData(params = {}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".distribution .el-table",
+      });
+      this.$fetch("chance_distrube_list", {
+        ...this.pageConfig,
+        ...this.formInline,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.data;
+        this.pageConfig.totalCount = res.data.count;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
+      });
     },
   },
 };

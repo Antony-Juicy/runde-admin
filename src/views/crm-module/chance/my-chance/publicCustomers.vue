@@ -6,7 +6,6 @@
       @onSearch="onSearch"
     ></search-form>
     <el-divider></el-divider>
-    公海
     <div class="btn-wrapper">
       <el-button type="success" size="small" @click="handleOrder"
         >成单</el-button
@@ -384,9 +383,10 @@ export default {
         },
         {
           prop: "marketStaffId",
-          element: "el-input",
+          element: "el-select",
           placeholder: "跟进老师",
-          label: "跟进老师"
+          label: "跟进老师",
+          filterable: true
         },
         {
           prop: "address",
@@ -614,7 +614,12 @@ export default {
       selectedData:[],
 
       // 校区
-      campusArr:[]
+      campusArr:[],
+
+      // 员工
+      staffArr:[],
+
+      orderFlag: false
     };
   },
   components: {
@@ -685,6 +690,7 @@ export default {
         let campusOptions = res.data.data.map((item) => ({
           label: item.campusName,
           value: item.id,
+          nature: item.campusNature
         }));
         this.addFormOptions[0].options = campusOptions;
         this.addFormOptions[0].filterable = true;
@@ -755,23 +761,32 @@ export default {
         this.$message.warning("只能选择一个！")
         return;
       }
+
+      
+      if(this.orderFlag){
+        this.orderVisible = true;
+      }else{
       // 赋值
       const { idStr,campusName,campusId,studentName,phone,saleSource,marketStaffId ,marketName} = this.selectedData[0];
-      // this.$fetch("chance_staff_list").then(res => {
-      //   let staffOptions = JSON.parse(res.msg).map((item) => ({
-      //       label: item.staffName,
-      //       value: item.id,
-      //     }));
-      //     this.orderFormOptions[4].options = staffOptions;
-      //     this.orderFormOptions[4].filterable = true;
-      // })
-      this.orderFormOptions[0].initValue = campusId;
-      this.orderFormOptions[1].initValue = studentName;
-      this.orderFormOptions[2].initValue = phone;
-      this.orderFormOptions[3].initValue = saleSource;
-      this.orderFormOptions[4].initValue = marketName;
-      this.orderFormOptions[0].options = this.campusArr;
-      this.orderVisible = true;
+      this.$fetch("chance_staff_list").then(res => {
+        let staffOptions = JSON.parse(res.msg).map((item) => ({
+            label: item.staffName,
+            value: item.id,
+          }));
+          this.staffArr = staffOptions;
+          this.orderFormOptions[0].options = this.campusArr;
+          this.orderFormOptions[0].initValue = campusId;
+          this.orderFormOptions[1].initValue = studentName;
+          this.orderFormOptions[2].initValue = phone;
+          this.orderFormOptions[3].initValue = saleSource;
+          this.orderFormOptions[4].options = staffOptions;
+          this.orderFormOptions[4].initValue = marketStaffId;
+          this.orderVisible = true;
+      })
+      }
+
+      this.orderFlag = true;
+      
     },
     // 成单弹窗关闭
     handleClose(formName) {
@@ -788,8 +803,18 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid, formData) => {
         if (valid) {
-          console.log(formData, "提交");
-          this.$fetch("chance_my_check",formData).then(res => {
+          console.log(formData, "提交--");
+          let currentCampus = this.campusArr.find(item => (item.value == formData.campusId));
+          let currentMarket = this.staffArr.find(item => (item.value == formData.marketStaffId));
+          this.$fetch("chance_my_transform",{
+            ...formData,
+            opportunityId: this.selectedData[0].id,
+            Normal:'Normal',
+            campusName: currentCampus.label,
+            campusNature: currentCampus.nature,
+            marketName: currentMarket.label,
+            marketPosition:""
+          }).then(res => {
             if(res.code == 200){
               this.$message.success('保存成功')
               this.handleClose();

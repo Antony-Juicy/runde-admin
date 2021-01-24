@@ -51,6 +51,11 @@ export default {
       default:""
     }
   },
+  watch: {
+    id(){
+      this.getTableData();
+    }
+  },
   mounted(){
     this.getTableData();
   },

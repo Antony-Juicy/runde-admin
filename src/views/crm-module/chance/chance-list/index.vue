@@ -13,21 +13,43 @@
         @select="handleSelect"
         @pageChange="pageChange"
       >
+         <template slot="feedbackCount" slot-scope="scope">
+            <span class="visit-container" @click.stop="openDrawer(scope.row)">{{
+              scope.row.feedbackCount || 0
+            }}</span>
+          </template>
+          <!-- 手机号 -->
+          <template slot="phone" slot-scope="scope">
+            {{ $common.hidePhone(scope.row.phone) }}
+          </template>
       </rd-table>
     </div>
+
+    <!-- 回访抽屉 -->
+    <rd-drawer
+      :dialogVisible="drawerVisible"
+      :id="drawerId"
+      :phone="drawerPhone"
+       :title="drawerTitle"
+      @handleClose="drawerVisible = false"
+    ></rd-drawer>
   </div>
 </template>
 
 <script>
-import searchForm from '@/components/Searchform';
-import Fetch from '@/utils/fetch'
+import Fetch from '@/utils/fetch';
+import rdDrawer from "@/components/RdDrawer";
 export default {
   name:'chance-list',
   components: {
-    searchForm
+    rdDrawer
   },
   data () {
     return {
+      drawerVisible:false,
+      drawerId:"",
+      drawerPhone:"",
+      drawerTitle:"",
       showNum: 6,
       searchForm: {},
       formOptions: [
@@ -54,10 +76,10 @@ export default {
       tableKey: [
         { name: '机会ID',value: 'id',fixed: "left" ,width: 80},
         { name: '姓名',value: 'studentName',fixed: "left" },
-        { name: '手机号',value: 'phone',width:100 },
+        { name: '手机号',value: 'phone',width:100 ,operate: true},
         { name: '校区名',value: 'campusName',width:100 },
         { name: '机会截止',value: 'recoveryTime',width:132 },
-        { name: '回访',value: 'feedbackCount',width:50 },
+        { name: '回访',value: 'feedbackCount',width:50,operate: true },
         { name: '微信',value: 'wechat' },
         { name: '性别',value: 'gender' },
         { name: '跟进老师',value: 'marketName' },
@@ -94,6 +116,12 @@ export default {
     this.getSelectList();
   },
   methods: {
+    openDrawer(data){
+      this.drawerId = data.id;
+      this.drawerPhone = data.phone;
+      this.drawerTitle = data.studentName || "";
+      this.drawerVisible = true;
+    },
     onSearch(val) {
       if(val.product&&val.product.length>0){
         this.searchForm = {
@@ -136,7 +164,6 @@ export default {
           item.recentFeedbackTime = item.recentFeedbackTime&&this.$common._formatDates(item.recentFeedbackTime);
           item.nextFeedBackTime = item.nextFeedBackTime&&this.$common._formatDates(item.nextFeedBackTime);
           item.allotTime = item.allotTime&&this.$common._formatDates(item.allotTime);
-          item.phone = this.$common.hidePhone(item.phone)
           if(item.enquireClassOne){
             item.enquireClassOne = item.enquireClassOne.map(ele=>(ele.name)).join(",")
           }

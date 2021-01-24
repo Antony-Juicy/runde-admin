@@ -49,6 +49,9 @@ export default {
   watch: {
     dialogVisible(newVal){
       this.visible = newVal;
+    },
+     id(){
+      this.getTableData();
     }
   },
   filters:{

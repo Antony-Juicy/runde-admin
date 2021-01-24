@@ -30,6 +30,11 @@
         @pageChange="pageChange"
         @select="handelSelect"
       >
+      <!-- 手机号 -->
+          <template slot="phone" slot-scope="scope">
+            {{ $common.hidePhone(scope.row.phone) }}
+          </template>
+          <!-- 回访 -->
       <template slot="visit" slot-scope="scope">
             <span class="visit-container" @click.stop="openDrawer(scope.row)">{{
               scope.row.feedbackCount || 0
