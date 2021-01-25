@@ -55,6 +55,11 @@ export default {
       default:""
     }
   },
+  watch: {
+    id(){
+      this.getTableData();
+    }
+  },
   filters:{
     CallTypeFilter(val){
       switch(val){
@@ -80,7 +85,6 @@ export default {
     }
   },
   mounted(){
-    console.log(this.id,this.phone,'---')
     this.getTableData();
   },
   methods: {

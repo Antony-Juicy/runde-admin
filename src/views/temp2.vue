@@ -30,6 +30,16 @@
         @pageChange="pageChange"
         @select="handelSelect"
       >
+      <!-- 手机号 -->
+          <template slot="phone" slot-scope="scope">
+            {{ $common.hidePhone(scope.row.phone) }}
+          </template>
+          <!-- 回访 -->
+      <template slot="visit" slot-scope="scope">
+            <span class="visit-container" @click.stop="openDrawer(scope.row)">{{
+              scope.row.feedbackCount || 0
+            }}</span>
+          </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
             >编辑</el-button
@@ -57,6 +67,15 @@
         </template>
         </RdForm>
       </rd-dialog>
+
+       <!-- 回访抽屉 -->
+    <rd-drawer
+      :dialogVisible="drawerVisible"
+      :id="drawerId"
+      :phone="drawerPhone"
+       :title="drawerTitle"
+      @handleClose="drawerVisible = false"
+    ></rd-drawer>
     </div>
   </div>
 </template>
@@ -64,10 +83,15 @@
 <script>
 let id = 0;
 import RdForm from "@/components/RdForm";
+import Fetch from '@/utils/fetch'
 export default {
   name: "temp2",
   data() {
     return {
+      drawerId:"",
+      drawerPhone:"",
+      drawerTitle:"",
+
       formOptions: [
         {
           prop: "menuName",
@@ -366,8 +390,32 @@ export default {
     RdForm
   },
   methods: {
+     openDrawer(data){
+      this.drawerId = data.id;
+      this.drawerPhone = data.phone;
+      this.drawerTitle = data.studentName || "";
+      this.drawerVisible = true;
+    },
      onSearch(val) {
-      this.searchForm = {...val};
+       if(val.product&&val.product.length>0){
+        this.searchForm = {
+          ...val,
+          enquireProductIdOne: val.product[0],
+          enquireSubjectIdOne: val.product[1],
+          enquireCourseIdOne: val.product[2],
+          createAt: val.createAt?val.createAt.join(' ~ '):""
+        };
+      }else {
+        this.searchForm = {
+          ...val,
+          createAt: val.createAt?val.createAt.join(' ~ '):""
+        }
+      }
+
+      this.searchForm = {
+        ...val,
+        createAt: val.createAt?val.createAt.join(' ~ '):""
+      };
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
     },
@@ -476,7 +524,9 @@ export default {
         this.$fetch("chance_staff_list"),
         this.$fetch("chance_config_campusList"),
         this.$fetch("chance_call_status"),
-      ])
+      ].map((p) => {
+        return p.catch(error => error)
+    }))
         .then((result) => {
           let sourceOptions = result[0].data.map((item) => ({
             label: item.value,
@@ -598,24 +648,15 @@ export default {
         {
           prop: "abc",
           element: "el-cascader",
-          placeholder: "请选择咨询项目/科目",
+          placeholder: "请选择咨询项目/科目/课程",
           props: {
             checkStrictly: true,
             lazy: true,
             lazyLoad:(node, resolve)=> {
               console.log(node,'node')
               const { level } = node;
-              // setTimeout(() => {
-              //   let nodes = [{
-              //     value: 1,
-              //     label: `选项${1}`,
-              //     leaf: level >= 2,
-              //   }]
-              //   // 通过调用resolve将子节点数据返回，通知组件数据加载完成
-              //   resolve(nodes);
-              // }, 1000);
               if(level == 0){
-                this.$fetch("chance_product_list").then(res => {
+                Fetch("chance_product_list").then(res => {
                   let data = JSON.parse(res.msg);
                   let nodes = data.map(item =>({
                     value: item.id,
@@ -625,39 +666,41 @@ export default {
                   resolve(nodes);
                 })
               }else if(level == 1){
-                 this.$fetch("chance_subject_list",{
+                 Fetch("chance_subject_list",{
                    enquireProductIdOne: node.data.value
                  }).then(res => {
                    let nodes;
                    if(res.msg == "没有相关数据"){
                      nodes = [];
                    }else {
-                     let data = JSON.parse(res.msg);
+                     let data = res.data;
                     nodes = data.map(item =>({
                       value: item.id,
-                      label: item.productName,
+                      label: item.subjectName,
                       leaf: level >= 2,
                     }));
                    }
                   resolve(nodes);
                 })
               }else if(level == 2){
-                 this.$fetch("chance_course_list",{
-                   enquireProductIdOne: node.data.value
+                 Fetch("chance_course_list",{
+                   subjectIdOne: node.data.value
                  }).then(res => {
                    let nodes;
                    if(res.msg == "没有相关数据"){
                      nodes = [];
                    }else {
-                     let data = JSON.parse(res.msg);
+                     let data =JSON.parse(res.msg);
                     nodes = data.map(item =>({
                       value: item.id,
-                      label: item.productName,
+                      label: item.courseName,
                       leaf: level >= 2,
                     }));
                    }
                   resolve(nodes);
                 })
+              }else {
+                resolve([]);
               }
             },
           },

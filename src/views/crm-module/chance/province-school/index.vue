@@ -14,6 +14,7 @@
 <script>
 import primaryLine from './primaryLine'
 import branchLine from './branchLine'
+import Fetch from '@/utils/fetch'
 export default {
   name:"province-school",
   data(){
@@ -40,7 +41,9 @@ export default {
         this.$fetch("chance_edu_list"),
         this.$fetch("chance_source_list"),
         this.$fetch("chance_config_campusList")
-      ])
+      ].map((p) => {
+        return p.catch(error => error)
+    }))
         .then((result) => {
           console.log(result,'resu')
            let staffOptions = JSON.parse(result[0].msg).map((item) => ({
@@ -75,110 +78,149 @@ export default {
        
         this.formOptions = [
         {
-          prop: "menuName",
+          prop: "marketStaffId",
           element: "el-select",
           placeholder: "跟进老师",
           filterable: true,
           options: staffOptions
         },
         {
-          prop: "menuName",
+          prop: "createStaffId",
           element: "el-select",
           placeholder: "注册人",
           filterable: true,
           options: staffOptions
         },
         {
-          prop: "menuName",
+          prop: "status",
           element: "el-select",
           placeholder: "机会状态",
           options: trailOptions
         },
         {
-          prop: "menuName",
+          prop: "studentName",
           element: "el-input",
           placeholder: "学员姓名"
         },
         {
-          prop: "menuName",
+          prop: "phone",
           element: "el-input",
           placeholder: "手机",
         },
         {
-          prop: "menuName",
+          prop: "phoneProvince",
           element: "el-input",
           placeholder: "省份",
         },
         {
-          prop: "menuName",
+          prop: "phoneCity",
           element: "el-input",
           placeholder: "城市",
         },
         {
-          prop: "menuName",
+          prop: "eduBackground",
           element: "el-select",
           placeholder: "学历",
           options: eduOptions
         },
         {
-          prop: "menuName",
+          prop: "saleSource",
           element: "el-select",
           placeholder: "机会来源",
           options: sourceOptions
         },
         {
-          prop: "menuName",
+          prop: "campusId",
           element: "el-select",
           placeholder: "组织架构",
           filterable: true,
           options: campusOptions
         },
         {
-          prop: "menuName",
+          prop: "feedbackCount",
           element: "el-select",
           placeholder: "跟进次数",
           options: numsOptions
         },
         // 课程
         {
-          prop: "abc",
+          prop: "product",
           element: "el-cascader",
-          placeholder: "课程",
+          placeholder: "咨询项目/科目/课程",
           props: {
             checkStrictly: true,
             lazy: true,
-            lazyLoad(node, resolve) {
+             lazyLoad:(node, resolve)=> {
+              console.log(node,'node')
               const { level } = node;
-              setTimeout(() => {
-                const nodes = Array.from({ length: level + 1 }).map((item) => ({
-                  value: ++id,
-                  label: `选项${id}`,
-                  leaf: level >= 2,
-                }));
-                // 通过调用resolve将子节点数据返回，通知组件数据加载完成
-                resolve(nodes);
-              }, 1000);
+              if(level == 0){
+                Fetch("chance_product_list").then(res => {
+                  let data = JSON.parse(res.msg);
+                  let nodes = data.map(item =>({
+                    value: item.id,
+                    label: item.productName,
+                    leaf: level >= 2,
+                  }));
+                  resolve(nodes);
+                })
+              }else if(level == 1){
+                 Fetch("chance_subject_list",{
+                   enquireProductIdOne: node.data.value
+                 }).then(res => {
+                   let nodes;
+                   if(res.msg == "没有相关数据"){
+                     nodes = [];
+                   }else {
+                     let data = res.data;
+                    nodes = data.map(item =>({
+                      value: item.id,
+                      label: item.subjectName,
+                      leaf: level >= 2,
+                    }));
+                   }
+                  resolve(nodes);
+                })
+              }else if(level == 2){
+                 Fetch("chance_course_list",{
+                   subjectIdOne: node.data.value
+                 }).then(res => {
+                   let nodes;
+                   if(res.msg == "没有相关数据"){
+                     nodes = [];
+                   }else {
+                     let data =JSON.parse(res.msg);
+                    nodes = data.map(item =>({
+                      value: item.id,
+                      label: item.courseName,
+                      leaf: level >= 2,
+                    }));
+                   }
+                  resolve(nodes);
+                })
+              }else {
+                resolve([]);
+              }
             },
           },
           initWidth: true,
         },
         // 时间
         {
-          prop: "time",
+          prop: "updateAt",
           element: "el-date-picker",
           startPlaceholder: "最近跟进时间(开始)",
           endPlaceholder: "最近跟进时间(结束)",
           initWidth: true,
         },
         {
-          prop: "time",
+          prop: "createAt",
           element: "el-date-picker",
           startPlaceholder: "创建时间(开始)",
           endPlaceholder: "创建时间(结束)",
           initWidth: true,
         },
         {
-          prop: "time",
+          prop: "campusPoolTime",
           element: "el-date-picker",
           startPlaceholder: "进入公海时间(开始)",
           endPlaceholder: "进入公海时间(结束)",

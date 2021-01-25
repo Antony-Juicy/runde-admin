@@ -13,20 +13,43 @@
         @select="handleSelect"
         @pageChange="pageChange"
       >
+         <template slot="feedbackCount" slot-scope="scope">
+            <span class="visit-container" @click.stop="openDrawer(scope.row)">{{
+              scope.row.feedbackCount || 0
+            }}</span>
+          </template>
+          <!-- 手机号 -->
+          <template slot="phone" slot-scope="scope">
+            {{ $common.hidePhone(scope.row.phone) }}
+          </template>
       </rd-table>
     </div>
+
+    <!-- 回访抽屉 -->
+    <rd-drawer
+      :dialogVisible="drawerVisible"
+      :id="drawerId"
+      :phone="drawerPhone"
+       :title="drawerTitle"
+      @handleClose="drawerVisible = false"
+    ></rd-drawer>
   </div>
 </template>
 
 <script>
-import searchForm from '@/components/Searchform';
+import Fetch from '@/utils/fetch';
+import rdDrawer from "@/components/RdDrawer";
 export default {
   name:'chance-list',
   components: {
-    searchForm
+    rdDrawer
   },
   data () {
     return {
+      drawerVisible:false,
+      drawerId:"",
+      drawerPhone:"",
+      drawerTitle:"",
       showNum: 6,
       searchForm: {},
       formOptions: [
@@ -40,9 +63,7 @@ export default {
         { prop: 'phone', element: 'el-input', initValue: '', placeholder: '省份' },
         { prop: 'phone', element: 'el-input', initValue: '', placeholder: '城市' },
         { prop: 'phone', element: 'el-input', initValue: '', placeholder: '地址' },
-        { prop: 'enquireProductNameOne', element: 'el-select', initValue: '', placeholder: '请选择资讯项目' },
-        { prop: 'enquireSubjectNameOne', element: 'el-select', initValue: '', placeholder: '请选择资讯科目' },
-        { prop: 'enquireCourseNameOne', element: 'el-select', initValue: '', placeholder: '请选择资讯课程' },
+        { prop: 'product', element: 'el-select', initValue: '', placeholder: '咨询项目/科目/课程' },
         { prop: 'phone', element: 'el-select', initValue: '', placeholder: '客户分类' },
         { prop: 'phone', element: 'el-select', initValue: '', placeholder: '销售来源' },
         { prop: 'eduBackground', element: 'el-select', initValue: '', placeholder: '学历' },
@@ -55,10 +76,10 @@ export default {
       tableKey: [
         { name: '机会ID',value: 'id',fixed: "left" ,width: 80},
         { name: '姓名',value: 'studentName',fixed: "left" },
-        { name: '手机号',value: 'phone',width:100 },
+        { name: '手机号',value: 'phone',width:100 ,operate: true},
         { name: '校区名',value: 'campusName',width:100 },
         { name: '机会截止',value: 'recoveryTime',width:132 },
-        { name: '回访',value: 'feedbackCount',width:50 },
+        { name: '回访',value: 'feedbackCount',width:50,operate: true },
         { name: '微信',value: 'wechat' },
         { name: '性别',value: 'gender' },
         { name: '跟进老师',value: 'marketName' },
@@ -95,9 +116,27 @@ export default {
     this.getSelectList();
   },
   methods: {
+    openDrawer(data){
+      this.drawerId = data.id;
+      this.drawerPhone = data.phone;
+      this.drawerTitle = data.studentName || "";
+      this.drawerVisible = true;
+    },
     onSearch(val) {
-      this.searchForm = {...val};
-      console.log(val,this.searchForm , 'val---')
+      if(val.product&&val.product.length>0){
+        this.searchForm = {
+          ...val,
+          enquireProductIdOne: val.product[0],
+          enquireSubjectIdOne: val.product[1],
+          enquireCourseIdOne: val.product[2],
+          createAt: val.createAt?val.createAt.join(' ~ '):""
+        };
+      }else {
+        this.searchForm = {
+          ...val,
+          createAt: val.createAt?val.createAt.join(' ~ '):""
+        }
+      }
       this.getTableData();
     },
     handleSelect(rows) {
@@ -125,7 +164,6 @@ export default {
           item.recentFeedbackTime = item.recentFeedbackTime&&this.$common._formatDates(item.recentFeedbackTime);
           item.nextFeedBackTime = item.nextFeedBackTime&&this.$common._formatDates(item.nextFeedBackTime);
           item.allotTime = item.allotTime&&this.$common._formatDates(item.allotTime);
-          item.phone = this.$common.hidePhone(item.phone)
           if(item.enquireClassOne){
             item.enquireClassOne = item.enquireClassOne.map(ele=>(ele.name)).join(",")
           }
@@ -144,7 +182,9 @@ export default {
         this.$fetch("chance_source_list"),
         this.$fetch("chance_edu_list"),
         this.$fetch("chance_trail_list"),
-      ]).then(result => {
+      ].map((p) => {
+        return p.catch(error => error)
+    })).then(result => {
         let staffOptions = JSON.parse(result[0].msg).map((item) => ({
             label: item.staffName,
             value: item.id,
@@ -165,25 +205,124 @@ export default {
             label: item.value,
             value: item.key,
           }));
+          let moduleOptions = [
+            {
+              label: "我的机会-私海客户",
+              value: "Private"
+            },
+            {
+              label: "我的机会-公海客户",
+              value: "Public"
+            },
+            {
+              label: "机会公海（分校/战队）",
+              value: "Campus"
+            },
+            {
+              label: "机会公海（省校/部长）",
+              value: "Province"
+            },
+            {
+              label: "支线公海（省校/部长）",
+              value: "Company"
+            },
+            {
+              label: "失效机会",
+              value: "Lost"
+            },
+            {
+              label: "成交机会",
+              value: "Clinch"
+            },
+            {
+              label: "锁定机会",
+              value: "Locked"
+            }
+          ]
+          let chanceTypeOptions = [
+            {
+              label: '电商数据',
+              value: 'OnlineData'
+            },
+            {
+              label: '非电商数据',
+              value: 'NoOnlineData'
+            }
+          ]
         this.formOptions = [
-        { prop: 'name', element: 'el-select', initValue: '', placeholder: '停留模块' },
-        { prop: 'phone', element: 'el-select', initValue: '', placeholder: '机会类型' },
+        { prop: 'stayModule', element: 'el-select', initValue: '', placeholder: '停留模块',options: moduleOptions },
+        { prop: 'opportunityType', element: 'el-select', initValue: '', placeholder: '机会类型',options: chanceTypeOptions },
         { prop: 'studentName', element: 'el-input', initValue: '', placeholder: '学员姓名' },
         { prop: 'phone', element: 'el-input', initValue: '', placeholder: '学员手机' },
         { prop: 'labelInfoName', element: 'el-input', initValue: '', placeholder: '活动名' },
         { prop: 'campusName', element: 'el-input', initValue: '', placeholder: '校区名', },
-        { prop: 'marketName', element: 'el-select', initValue: '', placeholder: '跟进老师', options: staffOptions,filterable: true },
-        { prop: 'phone', element: 'el-input', initValue: '', placeholder: '省份' },
-        { prop: 'phone', element: 'el-input', initValue: '', placeholder: '城市' },
-        { prop: 'phone', element: 'el-input', initValue: '', placeholder: '地址' },
-        { prop: 'enquireProductNameOne', element: 'el-select', initValue: '', placeholder: '请选择资讯项目' },
-        { prop: 'enquireSubjectNameOne', element: 'el-select', initValue: '', placeholder: '请选择资讯科目' },
-        { prop: 'enquireCourseNameOne', element: 'el-select', initValue: '', placeholder: '请选择资讯课程' },
-        { prop: 'phone', element: 'el-select', initValue: '', placeholder: '客户分类',options: customerOptinos },
-        { prop: 'phone', element: 'el-select', initValue: '', placeholder: '销售来源',options: sourceOptions },
+        { prop: 'marketStaffId', element: 'el-select', initValue: '', placeholder: '跟进老师', options: staffOptions,filterable: true },
+        { prop: 'phoneProvince', element: 'el-input', initValue: '', placeholder: '省份' },
+        { prop: 'phoneCity', element: 'el-input', initValue: '', placeholder: '城市' },
+        { prop: 'address', element: 'el-input', initValue: '', placeholder: '地址' },
+         { prop: 'product', element: 'el-cascader', initValue: '', placeholder: '咨询项目/科目/课程',
+          props: {
+            checkStrictly: true,
+            lazy: true,
+            lazyLoad:(node, resolve)=> {
+              console.log(node,'node')
+              const { level } = node;
+              if(level == 0){
+                Fetch("chance_product_list").then(res => {
+                  let data = JSON.parse(res.msg);
+                  let nodes = data.map(item =>({
+                    value: item.id,
+                    label: item.productName,
+                    leaf: level >= 2,
+                  }));
+                  resolve(nodes);
+                })
+              }else if(level == 1){
+                 Fetch("chance_subject_list",{
+                   enquireProductIdOne: node.data.value
+                 }).then(res => {
+                   let nodes;
+                   if(res.msg == "没有相关数据"){
+                     nodes = [];
+                   }else {
+                     let data = res.data;
+                    nodes = data.map(item =>({
+                      value: item.id,
+                      label: item.subjectName,
+                      leaf: level >= 2,
+                    }));
+                   }
+                  resolve(nodes);
+                })
+              }else if(level == 2){
+                 Fetch("chance_course_list",{
+                   subjectIdOne: node.data.value
+                 }).then(res => {
+                   let nodes;
+                   if(res.msg == "没有相关数据"){
+                     nodes = [];
+                   }else {
+                     let data =JSON.parse(res.msg);
+                    nodes = data.map(item =>({
+                      value: item.id,
+                      label: item.courseName,
+                      leaf: level >= 2,
+                    }));
+                   }
+                  resolve(nodes);
+                })
+              }else {
+                resolve([]);
+              }
+            },
+          },
+          initWidth: true,
+         },
+        { prop: 'customerLevel', element: 'el-select', initValue: '', placeholder: '客户分类',options: customerOptinos },
+        { prop: 'saleSource', element: 'el-select', initValue: '', placeholder: '销售来源',options: sourceOptions },
         { prop: 'eduBackground', element: 'el-select', initValue: '', placeholder: '学历',options: eduOptions },
-        { prop: 'invalidStatus', element: 'el-select', initValue: '', placeholder: '机会状态',options: trailOptions },
-        { prop: 'phone', element: 'el-select', initValue: '', placeholder: '归属人' ,options: staffOptions,filterable: true},
+        { prop: 'status', element: 'el-select', initValue: '', placeholder: '机会状态',options: trailOptions },
+        { prop: 'createStaffId', element: 'el-select', initValue: '', placeholder: '归属人' ,options: staffOptions,filterable: true},
         { prop: 'createAt', element: 'el-date-picker', initValue: '', startPlaceholder: "创建时间(开始)",
           endPlaceholder: "创建时间(结束)"},
       ]

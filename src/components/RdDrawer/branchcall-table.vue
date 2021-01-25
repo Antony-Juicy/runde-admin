@@ -51,8 +51,12 @@ export default {
       default:""
     }
   },
+  watch: {
+    id(){
+      this.getTableData();
+    }
+  },
   mounted(){
-    console.log(this.id,this.phone,'---')
     this.getTableData();
   },
   methods: {

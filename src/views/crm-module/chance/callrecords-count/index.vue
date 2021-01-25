@@ -3,7 +3,7 @@
     <div class="w-container">
       <el-row :gutter="5">
         <el-col :span="4">
-          <el-select v-model="campusName" filterable placeholder="请选择部门">
+          <el-select v-model="campusId" filterable placeholder="请选择部门"  @change="selectCampus">
             <el-option
               v-for="item in campusNameOptions"
               :key="item.value"
@@ -13,7 +13,7 @@
           </el-select>
         </el-col>
         <el-col :span="4">
-          <el-select v-model="callType" filterable placeholder="请选择呼叫方式" @change="selectOne">
+          <el-select v-model="callSelect" filterable placeholder="请选择呼叫方式" @change="selectOne">
             <el-option
               v-for="item in callOptions"
               :key="item.value"
@@ -31,7 +31,7 @@
             <el-card shadow="hover">
               <div class="call-total">
                 <div class="call-title">机会持有总数(个)</div>
-                <div class="call-content">0</div>
+                <div class="call-content">{{totalObj.num}}</div>
               </div>
             </el-card>
           </el-col>
@@ -39,15 +39,15 @@
             <el-card shadow="hover">
               <div class="call-total">
                 <div class="call-title">今日有效呼叫数(个)</div>
-                <div class="call-content">0</div>
+                <div class="call-content">{{totalObj.yxhj}}</div>
               </div>
             </el-card>
           </el-col>
           <el-col :span="4">
             <el-card shadow="hover">
               <div class="call-total">
-                <div class="call-title">今日呼叫数(个)</div>
-                <div class="call-content">0</div>
+                <div class="call-title">今日呼叫总数(个)</div>
+                <div class="call-content">{{totalObj.hjzs}}</div>
               </div>
             </el-card>
           </el-col>
@@ -55,7 +55,7 @@
             <el-card shadow="hover">
               <div class="call-total">
                 <div class="call-title">未接通(个)</div>
-                <div class="call-content">0</div>
+                <div class="call-content">{{totalObj.wjt}}</div>
               </div>
             </el-card>
           </el-col>
@@ -63,7 +63,7 @@
             <el-card shadow="hover">
               <div class="call-total">
                 <div class="call-title">呼叫总时长(s)</div>
-                <div class="call-content">0</div>
+                <div class="call-content">{{totalObj.zsc}}</div>
               </div>
             </el-card>
           </el-col>
@@ -71,7 +71,7 @@
             <el-card shadow="hover">
               <div class="call-total">
                 <div class="call-title">平均时长(s)</div>
-                <div class="call-content">0</div>
+                <div class="call-content">{{totalObj.pjsc}}</div>
               </div>
             </el-card>
           </el-col>
@@ -80,7 +80,7 @@
     </div>
     <div class="mt-15 w-container">
       <search-form :formOptions = "formOptions" @onSearch = onSearch></search-form>
-      <el-button type="primary" size="small" @click="openfullDialogChange">详情弹窗</el-button>
+      <!-- <el-button type="primary" size="small" @click="openfullDialogChange">详情弹窗</el-button> -->
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
@@ -95,26 +95,6 @@
           <el-button @click="handleNumbel(scope.row)" type="default" size="small">{{scope.row.opportunityNum}}</el-button>
         </template>
       </rd-table>
-      <!-- <rd-dialog
-        :title="chanceStatus ? '的机会详情' : ''"
-        :dialogVisible="chanceVisible"
-        :width="widthNew"
-        @handleClose="closeChanceNum('dataForm')"
-        @submitForm="submitForm('dataForm')"> -->
-        <!-- <search-form :formOptions = "formChanceOptions" @onSearch = onSearch></search-form>
-        <el-button size="small" @click="openDrawer">抽屉</el-button>
-        <rd-table
-          :tableData="tableChanceData"
-          :tableKey="tableChanceKey"
-          :loading="loading"
-          :fixedTwoRow="fixedTwoRow"
-          :pageConfig="pageConfig"
-          :filterColumn="true"
-          :tbodyHeight="600"
-          @select="handleSelect"
-          @pageChange="pageChange">
-        </rd-table> -->
-      <!-- </rd-dialog> -->
       <fullDialog v-model="showDetail" title="查看活动详情" @change="fullDialogChange">
         <search-form :formOptions = "formChanceOptions" @onSearch = onSearch></search-form>
         <el-button size="small" @click="openDrawer">抽屉</el-button>
@@ -136,34 +116,33 @@
 </template>
 
 <script>
-import searchForm from '@/components/Searchform';
 import fullDialog from '@/components/FullDialog';
 import rdDrawer from '@/components/RdDrawer';
+import { getToken } from '@/utils/auth';
 export default {
   name:'callrecords-count',
   components: {
-    searchForm,
     fullDialog,
     rdDrawer
   },
   data () {
     return {
-      campusName: '',
+      campusId: '',
       campusNameOptions: [],
-      callType: '0',
+      callSelect: '全部',
       callOptions: [
-        { value: "0", label: "全部" },
-        { value: "1", label: "手机外呼" },
-        { value: "2", label: "在线外呼（总部）" },
-        { value: "3", label: "在线外呼（分校）" },
-        { value: "4", label: "一键回呼" }
+        { value: "全部", label: "全部" },
+        { value: "手机外呼", label: "手机外呼" },
+        { value: "在线外呼（总部", label: "在线外呼（总部）" },
+        { value: "在线外呼（分校）", label: "在线外呼（分校）" },
+        { value: "一键回呼", label: "一键回呼" }
       ],
       showNum: 4,
       searchForm: {},
       formOptions: [
-        { prop: 'campus_name', element: 'el-input', initValue: '', placeholder: '请输入姓名' },
-        { prop: 'campus_name', element: 'el-input', initValue: '', placeholder: '请输入职位' },
-        { prop: 'campus_name', element: 'el-input', initValue: '', placeholder: '请输入手机号码' },
+        { prop: 'staffName', element: 'el-input', initValue: '', placeholder: '请输入姓名' },
+        { prop: 'positionName', element: 'el-input', initValue: '', placeholder: '请输入职位' },
+        { prop: 'staffPhone', element: 'el-input', initValue: '', placeholder: '请输入手机号码' },
       ],
       tableData: [],
       tableKey: [
@@ -173,14 +152,14 @@ export default {
         { name: '分校',value: 'campusName' },
         { name: '手机号码',value: 'staffPhone' },
         { name: '机会持有数量',value: 'opportunityNum' },
-        { name: '状态',value: 'status',operate: true,width: 120 }
+        { name: '状态',value: 'status',width: 120 }
       ],
       emptyText: '暂无数据',
       fixedTwoRow: true,
       pageConfig: {
         totalCount: 100,
-        pageNum: 1,
-        pageSize: 10,
+        currentPage: 1,
+        showCount: 10,
       },
       loading: false,
 
@@ -233,38 +212,50 @@ export default {
       
       // 回访抽屉参数
       drawerVisible: false,
-      drawerSize: '50%'
+      drawerSize: '50%',
+
+      // 总数据
+      totalObj: {
+        num: 0,
+        yxhj: 0,
+        hjzs: 0,
+        wjt: 0,
+        zsc: 0,
+        pjsc: 0
+      }
     }
+  },
+  mounted(){
+    
+    this.getSelectList();
   },
   methods: {
     selectOne(value) {
       console.log(value, 888)
+      this.getTableData();
+    },
+    selectCampus(value){
+      console.log(value, 888)
+      this.getTableData();
     },
     onSearch(val) {
       this.searchForm = {...val};
       console.log(val,this.searchForm , 'val---')
+      this.getTableData();
     },
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
     pageChange(val) {
       console.log(val,'pagechange')
+      this.pageConfig.currentPage = val.page;
+      this.pageConfig.showCount = val.limit;
+      this.getTableData();
     },
     handleNumbel() {
       console.log(6666)
     },
 
-    // 机会拥有数量详情
-    // openChanceNum() {
-    //   this.chanceVisible = true;
-    // },
-    // closeChanceNum(formName) {
-    //   this.chanceVisible = false;
-    // },
-    // submitForm() {
-    //   console.log(666);
-    //   this.closeChanceNum("dataForm")
-    // },
     openfullDialogChange() {
       this.showDetail = true;
     },
@@ -281,6 +272,44 @@ export default {
       this.drawerVisible = false;
       // this.$refs[formName].resetFields();
     },
+    getTableData(params = {}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".el-table",
+      });
+      this.$fetch("chance_records_count", {
+        token: getToken(),
+        loginUserId: this.$common.getUserId(),
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+        campusId: this.campusId,
+        // campusId: 183,
+        callSelect: this.callSelect
+      }).then((res) => {
+        this.tableData = res.data.data.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          return item;
+        });
+        this.totalObj = res.data;
+        this.pageConfig.totalCount = res.data.count;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
+      });
+    },
+    getSelectList(){
+      this.$fetch("chance_config_campusList").then(res => {
+        let campusOptions = res.data.data.map((item) => ({
+            label: item.campusName,
+            value: item.id,
+          }));
+          this.campusNameOptions = campusOptions;
+          this.campusId = campusOptions[0].value;
+          this.getTableData();
+      })
+    }
   }
 }
 </script>

@@ -1,9 +1,13 @@
 <template>
   <div class="my-chance-container">
     <!-- 全屏弹窗 -->
-      <fullDialog v-model="showDetail" title="查看活动详情" @change="fullDialogChange">
-          <activityDetail/>
-      </fullDialog>
+    <fullDialog
+      v-model="showDetail"
+      title="查看活动详情"
+      @change="fullDialogChange"
+    >
+      <activityDetail :detailPhone="detailPhone"/>
+    </fullDialog>
     <!-- 上部的总数 -->
     <div class="top-total w-container">
       <el-tabs v-model="activeName" @tab-click="handleClick">
@@ -13,16 +17,48 @@
       </el-tabs>
       <div class="card-wrapper">
         <el-row :gutter="12">
-          <el-col :span="4" v-for="item in 5" :key="item">
+          <el-col :span="4">
             <el-card shadow="hover">
               <div class="call-total">
                 <div class="call-title">今日有效呼叫</div>
-                <div class="call-content">0</div>
+                <div class="call-content">{{totalObj.yxhj}}</div>
               </div>
             </el-card>
           </el-col>
           <el-col :span="4">
-            <el-select v-model="chanceValue" placeholder="请选择">
+            <el-card shadow="hover">
+              <div class="call-total">
+                <div class="call-title">今日呼叫总数</div>
+                <div class="call-content">{{totalObj.hjzs}}</div>
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :span="4">
+            <el-card shadow="hover">
+              <div class="call-total">
+                <div class="call-title">未接通</div>
+                <div class="call-content">{{totalObj.wjt}}</div>
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :span="4">
+            <el-card shadow="hover">
+              <div class="call-total">
+                <div class="call-title">总时长(s)</div>
+                <div class="call-content">{{totalObj.zsc}}</div>
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :span="4">
+            <el-card shadow="hover">
+              <div class="call-total">
+                <div class="call-title">平均时长(s)</div>
+                <div class="call-content">{{totalObj.pjsc}}</div>
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :span="4">
+            <el-select v-model="chanceValue" placeholder="请选择" @change="chanceChange">
               <el-option
                 v-for="item in chanceOptions"
                 :key="item.value"
@@ -39,20 +75,27 @@
       <!-- 左侧表格 -->
       <div class="main-left w-container">
         <div v-show="tabIndex == '0'">
-          <privateCustomers @currentChange="currentChange"/>
+          <privateCustomers
+            @currentChange="currentChange"
+            :newFormOptions="formOptions"
+          />
         </div>
         <div v-show="tabIndex == '1'">
-          <publicCustomers/>
+          <publicCustomers @currentChange="currentChange"
+            :newFormOptions="formOptions"/>
         </div>
         <div v-show="tabIndex == '2'">
-          <lockUser/>
+          <lockUser />
         </div>
       </div>
       <!-- 右侧表单 -->
       <div class="main-right w-container">
         <div class="contact">
           <div class="contact-title">
-            <span>联系电话：</span><span style="color: red;font-weight: bold">{{$common.hidePhone(currentPhone)}}</span>
+            <span>联系电话：</span
+            ><span style="color: red; font-weight: bold">{{
+              $common.hidePhone(currentPhone)
+            }}</span>
           </div>
           <el-form
             ref="dataForm"
@@ -69,19 +112,19 @@
                 <el-option
                   v-for="item in statusArr"
                   :key="item.value"
-                  :label="item.name"
+                  :label="item.label"
                   :value="item.value"
                 >
                 </el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="下次联系" prop="nextTime">
-              <el-input
-                v-model.trim="basicInfo.nextTime"
-                autocomplete="off"
-                placeholder="请选择"
-                size="small"
-              />
+              <el-date-picker
+                v-model="basicInfo.nextTime"
+                type="datetime"
+                placeholder="选择日期时间"
+              >
+              </el-date-picker>
             </el-form-item>
             <el-form-item label="跟进详情" prop="detail">
               <el-input
@@ -112,52 +155,52 @@
           </div>
           <el-form
             ref="dataForm2"
-            :model="basicInfo"
-            :rules="rules"
+            :model="basicInfo2"
+            :rules="rules2"
             :label-width="formLabelWidth"
           >
-            <el-form-item label="机会来源" prop="nextTime">
+            <el-form-item label="机会来源" prop="saleSource">
               <el-input
-                v-model.trim="basicInfo.nextTime"
+                v-model.trim="basicInfo2.saleSource"
                 autocomplete="off"
-                placeholder="请输入"
                 size="small"
+                readonly
               />
             </el-form-item>
-            <el-form-item label="活动名称" prop="detail">
+            <el-form-item label="活动名称" prop="labelInfoName">
               <el-input
-                v-model.trim="basicInfo.detail"
+                v-model.trim="basicInfo2.labelInfoName"
                 autocomplete="off"
-                placeholder="请输入"
                 size="small"
+                readonly
               />
             </el-form-item>
             <el-row :gutter="5">
               <el-col :span="12">
-                <el-form-item label="注册人" prop="detail">
+                <el-form-item label="注册人" prop="createStaffName">
                   <el-input
-                    v-model.trim="basicInfo.detail"
+                    v-model.trim="basicInfo2.createStaffName"
                     autocomplete="off"
-                    placeholder="请输入"
                     size="small"
+                    readonly
                   />
                 </el-form-item>
               </el-col>
               <el-col :span="12"
-                ><el-form-item label="赛道" prop="detail">
+                ><el-form-item label="赛道" prop="opportunityCampusNature">
                   <el-input
-                    v-model.trim="basicInfo.detail"
+                    v-model.trim="basicInfo2.opportunityCampusNature"
                     autocomplete="off"
-                    placeholder="请输入"
                     size="small"
+                    readonly
                   /> </el-form-item
               ></el-col>
             </el-row>
             <el-row :gutter="5">
               <el-col :span="12">
-                <el-form-item label="学员姓名" prop="detail">
+                <el-form-item label="学员姓名" prop="studentName">
                   <el-input
-                    v-model.trim="basicInfo.detail"
+                    v-model.trim="basicInfo2.studentName"
                     autocomplete="off"
                     placeholder="请输入"
                     size="small"
@@ -165,70 +208,103 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12"
-                ><el-form-item label="性别" prop="detail">
-                  <el-input
-                    v-model.trim="basicInfo.detail"
-                    autocomplete="off"
-                    placeholder="请输入"
-                    size="small"
-                  /> </el-form-item
+                ><el-form-item label="性别" prop="gender">
+                  <el-select v-model="basicInfo2.gender" placeholder="请选择">
+                    <el-option label="男" value="Male"> </el-option>
+                    <el-option label="女" value="Female"> </el-option>
+                    <el-option label="未知" value="Unknow"> </el-option>
+                  </el-select> </el-form-item
               ></el-col>
             </el-row>
             <el-row :gutter="5">
               <el-col :span="12">
-                <el-form-item label="学历" prop="detail">
-                  <el-input
-                    v-model.trim="basicInfo.detail"
-                    autocomplete="off"
-                    placeholder="请输入"
-                    size="small"
-                  />
+                <el-form-item label="学历" prop="eduBackground">
+                  <el-select
+                    v-model="basicInfo2.eduBackground"
+                    placeholder="请选择"
+                  >
+                    <el-option
+                      :label="item.label"
+                      :value="item.value"
+                      v-for="item in eduArr"
+                      :key="item.value"
+                    >
+                    </el-option>
+                  </el-select>
                 </el-form-item>
               </el-col>
               <el-col :span="12"
-                ><el-form-item label="咨询项目" prop="detail">
-                  <el-input
-                    v-model.trim="basicInfo.detail"
-                    autocomplete="off"
-                    placeholder="请输入"
-                    size="small"
-                  /> </el-form-item
+                ><el-form-item label="咨询项目" prop="enquireProductIdOne">
+                  <el-select
+                    v-model="basicInfo2.enquireProductIdOne"
+                    placeholder="请选择"
+                    @change="productChange"
+                  >
+                    <el-option
+                      :label="item.label"
+                      :value="item.value"
+                      v-for="item in productArr"
+                      :key="item.value"
+                    >
+                    </el-option>
+                  </el-select> </el-form-item
               ></el-col>
             </el-row>
             <el-row :gutter="5">
               <el-col :span="12">
-                <el-form-item label="咨询科目" prop="detail">
-                  <el-input
-                    v-model.trim="basicInfo.detail"
-                    autocomplete="off"
-                    placeholder="请输入"
-                    size="small"
-                  />
+                <el-form-item label="咨询科目" prop="enquireSubjectIdOne">
+                  <el-select
+                    v-model="basicInfo2.enquireSubjectIdOne"
+                    placeholder="请选择"
+                    @change="subjectChange"
+                  >
+                    <el-option
+                      :label="item.label"
+                      :value="item.value"
+                      v-for="item in subjectArr"
+                      :key="item.value"
+                    >
+                    </el-option>
+                  </el-select> 
                 </el-form-item>
               </el-col>
               <el-col :span="12"
-                ><el-form-item label="咨询课程" prop="detail">
-                  <el-input
-                    v-model.trim="basicInfo.detail"
-                    autocomplete="off"
-                    placeholder="请输入"
-                    size="small"
-                  /> </el-form-item
+                ><el-form-item label="咨询课程" prop="enquireCourseIdOne">
+                  <el-select
+                    v-model="basicInfo2.enquireCourseIdOne"
+                    placeholder="请选择"
+                  >
+                    <el-option
+                      :label="item.label"
+                      :value="item.value"
+                      v-for="item in courseArr"
+                      :key="item.value"
+                    >
+                    </el-option>
+                  </el-select> 
+                  </el-form-item
               ></el-col>
             </el-row>
-            <el-form-item label="咨询班型" prop="detail">
-                  <el-input
-                    v-model.trim="basicInfo.detail"
-                    autocomplete="off"
-                    placeholder="请输入"
-                    size="small"
-                  /> </el-form-item
-              >
+            <el-form-item label="咨询班型" prop="enquireClassOne">
+              <el-select
+                    v-model="basicInfo2.enquireClassOne"
+                    placeholder="请选择"
+                    multiple
+                  >
+                    <el-option
+                      :label="item.label"
+                      :value="item.value"
+                      v-for="item in classArr"
+                      :key="item.value"
+                    >
+                    </el-option>
+                  </el-select> 
+            </el-form-item>
             <el-form-item>
               <el-button
                 type="primary"
                 size="small"
-                @click="submitForm('dataForm2')"
+                @click="submitForm2('dataForm2')"
                 class="fr"
                 >确定</el-button
               >
@@ -237,7 +313,6 @@
         </div>
       </div>
     </div>
-    
   </div>
 </template>
 
@@ -246,36 +321,51 @@ import activityDetail from "./detail";
 import privateCustomers from "./privateCustomers";
 import publicCustomers from "./publicCustomers";
 import lockUser from "./lockUser";
-import fullDialog from '@/components/FullDialog';
-
+import fullDialog from "@/components/FullDialog";
+import Fetch from '@/utils/fetch'
 export default {
   name: "my-chance",
   data() {
     return {
+      currentData: {},
       showDetail: false,
       activeName: "first",
-      chanceValue: "0",
+      chanceValue: "全部",
       chanceOptions: [
         {
-          value: "0",
+          value: "全部",
           label: "全部",
         },
         {
-          value: "1",
+          value: "手机外呼",
           label: "手机外呼",
         },
         {
-          value: "2",
+          value: "在线外呼（总部）",
           label: "在线外呼（总部）",
         },
         {
-          value: "3",
-          label: "在线外呼（总部）",
+          value: "在线外呼（分校）",
+          label: "在线外呼（分校）",
+        },
+         {
+          value: "一键回呼",
+          label: "一键回呼",
         },
       ],
       formLabelWidth: "80px",
       statusArr: [],
+      eduArr: [],
+      productArr: [],
+      subjectArr:[],
+      courseArr:[],
+      classArr:[],
       basicInfo: {
+        status: "",
+        nextTime: "",
+        detail: "",
+      },
+      basicInfo2: {
         status: "",
         nextTime: "",
         detail: "",
@@ -285,46 +375,462 @@ export default {
         nextTime: [
           { required: true, message: "请选择下次联系时间", trigger: "blur" },
         ],
-        detail: [
-          { required: true, message: "请输入", trigger: "blur" },
+        detail: [{ required: true, message: "请输入", trigger: "blur" }],
+      },
+      rules2: {
+        eduBackground: [{ required: true, message: "请选择", trigger: "blur" }],
+        enquireProductIdOne: [
+          { required: true, message: "请选择", trigger: "blur" },
         ],
+        enquireSubjectIdOne: [{ required: true, message: "请选择", trigger: "blur" }],
+        enquireCourseIdOne: [{ required: true, message: "请选择", trigger: "blur" }],
+        enquireClassOne: [{ required: true, message: "请选择", trigger: "blur" }],
       },
       tabIndex: "0",
-      currentPhone: ""
+      currentPhone: "",
+      formOptions: [],
+      totalObj:{},
+      detailPhone:""
     };
   },
-  components:{
+  components: {
     activityDetail,
     fullDialog,
     privateCustomers,
     publicCustomers,
-    lockUser
+    lockUser,
   },
- 
+  mounted() {
+    this.getSelectList();
+    this.getProjcetList();
+    this.chanceChange("全部");
+  },
+  watch:{
+    showDetail(val){
+      if(val){
+        this.detailPhone = this.currentPhone;
+      }
+    }
+  },
   methods: {
+
+    chanceChange(val){
+      this.$fetch("chance_my_info",{
+        callType: val
+      }).then(res => {
+        if(res.code == 200){
+          this.totalObj = JSON.parse(res.msg);
+        }
+      })
+    },
     handleClick(tab, event) {
-      console.log(tab.index, 'click');
+      console.log(tab.index, "click");
       this.tabIndex = tab.index;
     },
-   
-    fullDialogChange(val){
+
+    fullDialogChange(val) {
       this.showDetail = val;
     },
-   
-    currentChange(val){
-      console.log(val,'vallll')
-      this.currentPhone = val.phone;
-    },
 
-    handleDetail(){
-      if(!this.currentPhone){
-        this.$message({
-          message: '请选择具体的商机哦！温馨提示：点击列表行即可选中',
-          type: 'warning'
-        })
+    currentChange(val) {
+      console.log(val, "vallll");
+      if(!val){
         return;
       }
-      this.showDetail=true
+      this.currentData = val;
+      this.currentPhone = val.phone;
+      this.basicInfo = {
+        status: val.status_text,
+        nextTime: "",
+        detail: "",
+      };
+      const {
+        saleSource,
+        labelInfoName,
+        createStaffName,
+        opportunityCampusNature,
+        studentName,
+        eduBackground_text,
+        gender_text,
+        enquireProductIdOne,
+        enquireSubjectIdOne,
+        enquireCourseIdOne,
+        enquireClassOne,
+      } = this.currentData;
+      this.getSubjectList(enquireProductIdOne);
+      this.getCourseList(enquireSubjectIdOne);
+      this.getClassList(enquireSubjectIdOne);
+    
+      this.basicInfo2 = {
+        saleSource,
+        labelInfoName,
+        createStaffName,
+        opportunityCampusNature,
+        gender: gender_text,
+        studentName,
+        eduBackground: eduBackground_text,
+        enquireProductIdOne,
+        enquireSubjectIdOne,
+        enquireCourseIdOne,
+        enquireClassOne: enquireClassOne&&enquireClassOne.map(item => Number((item.val)))
+      };
+      
+    },
+
+    submitForm(formName) {
+      if (!this.currentPhone) {
+        this.$message({
+          message: "请选择具体的商机哦！温馨提示：点击列表行即可选中",
+          type: "warning",
+        });
+        return;
+      }
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          console.log(this.basicInfo, "提交");
+          const {
+            idStr,
+            feedbackCount,
+            studentName,
+            marketName,
+            marketStaffId,
+          } = this.currentData;
+          const { detail, nextTime, status } = this.basicInfo;
+          let param = {
+            opportunityId: idStr,
+            feedbackCount,
+            studentName,
+            marketName,
+            marketStaffId,
+            dingdingUserId: 15853048553839257,
+            status,
+            nextDate: this.$common._formatDates(nextTime)+':00',
+            content: detail,
+          };
+          this.$fetch("chance_saveData", param).then((res) => {
+            if(res.code == 200 || res.code == 1){
+              this.$message.success("保存成功")
+            }
+          });
+        }
+      });
+    },
+
+    submitForm2(formName) {
+      if (!this.currentPhone) {
+        this.$message({
+          message: "请选择具体的商机哦！温馨提示：点击列表行即可选中",
+          type: "warning",
+        });
+        return;
+      }
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          console.log(this.basicInfo2, "提交--basicInfo2");
+          const {enquireClassOne,enquireProductIdOne,enquireSubjectIdOne,enquireCourseIdOne,eduBackground } = this.basicInfo2;
+          const {
+            idStr,
+            feedbackCount,
+            studentName,
+            marketName,
+            marketStaffId,
+            phone,
+            gender_text
+          } = this.currentData;
+          let newEnquireClassOne = [];
+          enquireClassOne.forEach(item => {
+            let obj = this.classArr.find(ele  => ele.value == item);
+            newEnquireClassOne.push({
+              name: obj.label,
+              val: obj.value
+            })
+          })
+          let productName = this.productArr.find(item => (item.value == enquireProductIdOne)).label;
+          let subjectName = this.subjectArr.find(item => (item.value == enquireSubjectIdOne)).label;
+          let courseName = this.courseArr.find(item => (item.value == enquireCourseIdOne)).label;
+          
+          this.$fetch("chance_editData",{
+            
+            id: idStr,
+            enquireProductIdOne,
+            enquireProductNameOne: productName,
+            enquireSubjectIdOne,
+            enquireSubjectNameOne: subjectName,
+            enquireClassOne: JSON.stringify(newEnquireClassOne),
+            enquireCourseIdOne,
+            enquireCourseNameOne: courseName,
+            phoneFlag: phone,
+            enquireProductIdOneFlag: enquireProductIdOne,
+            studentName,
+            gender:gender_text,
+            eduBackground,
+            productId: enquireProductIdOne,
+            undefined: enquireClassOne.join(",")
+          }).then(res => {
+            if(res.code == 200){
+              this.$message.success("保存成功")
+            }
+          })
+        }
+      });
+    },
+
+    handleDetail() {
+      if (!this.currentPhone) {
+        this.$message({
+          message: "请选择具体的商机哦！温馨提示：点击列表行即可选中",
+          type: "warning",
+        });
+        return;
+      }
+      this.showDetail = true;
+    },
+
+    getSelectList() {
+      Promise.all(
+        [
+          this.$fetch("chance_source_list"),
+          this.$fetch("chance_edu_list"),
+          this.$fetch("chance_status_list"),
+          this.$fetch("chance_call_status")
+        ].map((p) => {
+          return p.catch((error) => error);
+        })
+      ).then((result) => {
+        let sourceOptions = result[0].data.map((item) => ({
+          label: item.value,
+          value: item.key,
+        }));
+        let eduOptions = result[1].data.map((item) => ({
+          label: item.value,
+          value: item.key,
+        }));
+        this.eduArr = eduOptions;
+        let statusOptions = result[2].data.map((item) => ({
+          label: item.value,
+          value: item.key,
+        }));
+        this.statusArr = statusOptions;
+        let callStatusOptions = result[3].data.map((item) => ({
+          label: item.value,
+          value: item.key,
+        }));
+        let orderOptions = [
+          {
+            label: "按照创建时间正序查询",
+            value: "按照创建时间正序查询",
+          },
+          {
+            label: "按照创建时间逆序查询",
+            value: "按照创建时间逆序查询",
+          },
+          {
+            label: "按照回收时间正序查询",
+            value: "按照回收时间正序查询",
+          },
+          {
+            label: "按照回收时间逆序查询",
+            value: "按照回收时间逆序查询",
+          },
+          {
+            label: "按照最近回访时间正序查询",
+            value: "按照最近回访时间正序查询",
+          },
+          {
+            label: "按照最近回访时间逆序查询",
+            value: "按照最近回访时间逆序查询",
+          },
+          {
+            label: "按照分配时间正序查询",
+            value: "按照分配时间正序查询",
+          },
+          {
+            label: "按照分配时间逆序查询",
+            value: "按照分配时间逆序查询",
+          },
+        ];
+        this.formOptions = [
+          {
+            prop: "studentName",
+            element: "el-input",
+            placeholder: "学员姓名",
+          },
+          {
+            prop: "phone",
+            element: "el-input",
+            placeholder: "学员手机",
+          },
+          {
+            prop: "labelInfoName",
+            element: "el-input",
+            placeholder: "活动名",
+          },
+          {
+            prop: "eduBackground",
+            element: "el-select",
+            placeholder: "学历",
+            options: eduOptions,
+          },
+          {
+            prop: "status",
+            element: "el-select",
+            placeholder: "机会状态",
+            options: statusOptions,
+          },
+          {
+            prop: "saleSource",
+            element: "el-select",
+            placeholder: "机会来源",
+            options: sourceOptions,
+          },
+          {
+            prop: "ordeParams",
+            element: "el-select",
+            placeholder: "查询排序方法",
+            options: orderOptions,
+          },
+          {
+            prop: "callStatus",
+            element: "el-select",
+            placeholder: "呼叫状态",
+            options: callStatusOptions,
+          },
+          {
+            prop: "product",
+            element: "el-cascader",
+            placeholder: "项目/科目/课程",
+            props: {
+            checkStrictly: true,
+            lazy: true,
+            lazyLoad:(node, resolve)=> {
+              console.log(node,'node')
+              const { level } = node;
+              if(level == 0){
+                this.$fetch("chance_product_list").then(res => {
+                  let data = JSON.parse(res.msg);
+                  let nodes = data.map(item =>({
+                    value: item.id,
+                    label: item.productName,
+                    leaf: level >= 2,
+                  }));
+                  resolve(nodes);
+                })
+              }else if(level == 1){
+                 this.$fetch("chance_subject_list",{
+                   enquireProductIdOne: node.data.value
+                 }).then(res => {
+                   let nodes;
+                   if(res.msg == "没有相关数据"){
+                     nodes = [];
+                   }else {
+                     let data = res.data;
+                    nodes = data.map(item =>({
+                      value: item.id,
+                      label: item.subjectName,
+                      leaf: level >= 2,
+                    }));
+                   }
+                  resolve(nodes);
+                })
+              }else if(level == 2){
+                 this.$fetch("chance_course_list",{
+                   subjectIdOne: node.data.value
+                 }).then(res => {
+                   let nodes;
+                   if(res.msg == "没有相关数据"){
+                     nodes = [];
+                   }else {
+                     let data =JSON.parse(res.msg);
+                    nodes = data.map(item =>({
+                      value: item.id,
+                      label: item.courseName,
+                      leaf: level >= 2,
+                    }));
+                   }
+                  resolve(nodes);
+                })
+              }else {
+                resolve([])
+              }
+            },
+          },
+          initWidth: true,
+          },
+        ];
+      });
+    },
+
+    getProjcetList() {
+      this.$fetch("chance_product_list").then((res) => {
+        let data = JSON.parse(res.msg);
+        let nodes = data.map((item) => ({
+          value: item.id,
+          label: item.productName,
+        }));
+        this.productArr = nodes;  
+      });
+    },
+    getSubjectList(id){
+      this.$fetch("chance_subject_list",{
+                   productIdOne: id
+                 }).then((res) => {
+        let data = res.data;
+        let nodes = data.map((item) => ({
+          value: item.id,
+          label: item.subjectName,
+        }));
+        this.subjectArr = nodes;  
+      });
+    },
+    getCourseList(id){
+      this.$fetch("chance_course_list",{
+                   subjectIdOne: id
+                 }).then((res) => {
+        let data = JSON.parse(res.msg);
+        let nodes = data.map((item) => ({
+          value: item.id,
+          label: item.courseName,
+        }));
+        this.courseArr = nodes;  
+      });
+    },
+    getClassList(id){
+      //  this.classArr = [
+      //    {
+      //      label: "护士资格精品班网课",
+      //      value: "173"
+      //    },
+      //    {
+      //      label: "护士资格金牌通关班网课",
+      //      value: "176"
+      //    }
+      //  ]
+      this.$fetch("chance_class_list",{
+                   subjectIdOne: id
+                 }).then((res) => {
+        let data = JSON.parse(res.msg);
+        let nodes = data.map((item) => ({
+          value: item.id,
+          label: item.className,
+        }));
+        this.classArr = nodes;  
+      });
+    },
+    productChange(val){
+      if(!val){
+        return;
+      }
+      this.getSubjectList(val);
+      this.basicInfo2.enquireSubjectIdOne = null;
+    },
+    subjectChange(val){
+      if(!val){
+        return;
+      }
+      this.getCourseList(val);
+      this.getClassList(val);
+      this.basicInfo2.enquireCourseIdOne = null;
+      this.basicInfo2.enquireClassOne = null;
     }
   },
 };
@@ -332,7 +838,6 @@ export default {
 
 <style lang='scss' scoped>
 .my-chance-container {
-   
   .top-total {
     padding-top: 6px;
     .card-wrapper {
@@ -364,8 +869,6 @@ export default {
     .main-left {
       width: calc(100% - 26% - 15px);
       margin-right: 15px;
-      
-      
     }
     .main-right {
       width: 26%;
@@ -394,6 +897,9 @@ export default {
       .el-divider--horizontal {
         margin-top: 0;
         margin-bottom: 15px;
+      }
+      .el-date-editor.el-input {
+        width: 100%;
       }
     }
   }

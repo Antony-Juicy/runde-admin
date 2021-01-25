@@ -31,20 +31,25 @@
       >
         <el-form ref="dataForm" :model="phoneForm" label-width="150px">
           <el-form-item label="导入模版">
-            <el-button type="primary" size="small">点击下载模版</el-button>
+            <el-button type="primary" size="small" @click="downloadTemp">点击下载模版</el-button>
           </el-form-item>
           <el-form-item label="文件">
             <el-upload
-              class="upload-demo"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :on-change="handleChange"
-              :file-list="fileList">
-              <el-button size="small" type="primary">选择文件</el-button>
-            </el-upload>
+                class="upload-demo"
+                action="#"
+                :before-remove="beforeRemove"
+                :limit="1"
+                :on-exceed="handleExceed"
+                :on-change="handleChange"
+                :file-list="fileList"
+                :auto-upload="false"
+              >
+            <el-button size="small" type="primary">点击上传</el-button>
+          </el-upload>
           </el-form-item>
-          <el-form-item label="跟进详情" prop="detail">
+          <el-form-item label="备注" prop="remark">
             <el-input
-              v-model.trim="phoneForm.detail"
+              v-model.trim="phoneForm.remark"
               autocomplete="off"
               type="textarea"
               placeholder="请勿输入备注"
@@ -70,10 +75,10 @@ export default {
       showNum: 4,
       searchForm: {},
       formOptions: [
-        { prop: 'staff_name', element: 'el-input', initValue: '', placeholder: '请输入操作人' },
+        { prop: 'staffName', element: 'el-input', initValue: '', placeholder: '请输入操作人' },
         { prop: '_id', element: 'el-input', initValue: '', placeholder: '请输入id' },
         { prop: 'remark', element: 'el-input', initValue: '', placeholder: '请输入备注' },
-        { prop: 'campus_name', element: 'el-select', initValue: '', placeholder: '请选择分校' },
+        { prop: 'campusId', element: 'el-select', initValue: '', placeholder: '请选择分校' ,filterable: true},
         { prop: 'createAt', element: 'el-date-picker', initValue: '', startPlaceholder: "创建时间(开始)",
           endPlaceholder: "创建时间(结束)" }
       ],
@@ -87,43 +92,47 @@ export default {
         { name: '创建时间',value: 'create_at' },
         { name: '操作人IP',value: 'staff_ip' },
         { name: '备注',value: 'remark' },
-        { name: '操作',value: 'edit',operate: true,width: 120 },
       ],
       emptyText: '暂无数据',
       fixedTwoRow: true,
       pageConfig: {
         totalCount: 100,
-        pageNum: 1,
-        pageSize: 10,
+        currentPage: 1,
+        showCount: 10,
       },
       loading: false,
 
       // 导入手机弹窗参数
       dialogVisible: false,
       phoneForm: {
-        detail: ''
+        remark: ''
       },
       fileList: [
-        // {
-        //   name: 'food.jpeg',
-        //   url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-        // }, {
-        //   name: 'food2.jpeg',
-        //   url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-        // }
-      ]
+      ],
+      importFile:""
     }
+  },
+  mounted(){
+    this.getTableData();
+    this.getSelectList();
   },
   methods: {
     onSearch(val) {
-      this.searchForm = {...val};
+      this.searchForm = {
+        ...val,
+        createAt: val.createAt?val.createAt.join(' ~ '):""
+      };
       console.log(val,this.searchForm , 'val---')
+      this.getTableData();
     },
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
     pageChange(val) {
       console.log(val,'pagechange')
+      this.pageConfig.currentPage = val.page;
+      this.pageConfig.showCount = val.limit;
+      this.getTableData();
     },
     // 导入手机号码弹窗
     openDialog() {
@@ -134,10 +143,70 @@ export default {
       // this.$refs[formName].resetFields();
     },
     submitForm(formName) {
-      this.closeDialog("dataForm")
+       let obj = new FormData();
+          obj.append("file", this.importFile);
+          obj.append("remark", this.phoneForm.res);
+          this.$fetch("chance_import_phone", obj).then((res) => {
+            if(res.code == 200){
+              this.$message.success("操作成功")
+              this.closeDialog();
+              this.getTableData();
+            }
+          });
+    },
+    getTableData(params = {}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".el-table",
+      });
+      this.$fetch("chance_import_list", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.data.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.create_at = item.create_at&&this.$common._formatDates(item.create_at);
+          item.recentFeedbackTime = item.recentFeedbackTime&&this.$common._formatDates(item.recentFeedbackTime);
+          item.nextFeedBackTime = item.nextFeedBackTime&&this.$common._formatDates(item.nextFeedBackTime);
+          item.allotTime = item.allotTime&&this.$common._formatDates(item.allotTime);
+          if(item.enquireClassOne){
+            item.enquireClassOne = item.enquireClassOne.map(ele=>(ele.name)).join(",")
+          }
+          return item;
+        });
+        this.pageConfig.totalCount = res.data.pager.totalRows;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
+      });
+    },
+    getSelectList(){
+      this.$fetch("chance_config_campusList").then(res => {
+         let campusOptions = res.data.data.map((item) => ({
+            label: item.campusName,
+            value: item.id,
+          }));
+          this.formOptions[3].options = campusOptions;
+          this.formOptions = [...this.formOptions];
+      })
+    },
+    // 上传文件
+    handleExceed(files, fileList) {
+      this.$message.warning(
+        `当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${
+          files.length + fileList.length
+        } 个文件`
+      );
+    },
+    beforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${file.name}？`);
     },
     handleChange(file, fileList) {
-      this.fileList = fileList.slice(-3);
+      this.importFile = file.raw;
+    },
+    downloadTemp(){
+      window.location.href = "/temp/crmopportunitylog_import.xlsx"
     }
   }
 }

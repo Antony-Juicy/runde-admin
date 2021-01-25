@@ -22,6 +22,12 @@
               @select="handleSelect"
               @pageChange="pageChange"
             >
+              <template slot="type" slot-scope="scope">
+                {{scope.row.type | CallTypeFilter}}
+              </template>
+              <template slot="data_type" slot-scope="scope">
+                {{scope.row.data_type | dataTypeFilter}}
+              </template>
               <template slot="edit" slot-scope="scope">
                 <el-button @click="handleEdit(scope.row)" type="text" size="small"
                   >编辑</el-button
@@ -72,22 +78,22 @@ export default {
       showNum: 6,
       searchForm: {},
       formOptions: [
-        { prop: 'staff_name', element: 'el-select', initValue: '', placeholder: '招生老师' },
-        { prop: 'contact_name', element: 'el-input', initValue: '', placeholder: '通话人姓名' },
-        { prop: 'campus_name', element: 'el-select', initValue: '', placeholder: '校区名（所属组织）' },
-        { prop: 'contact_phone', element: 'el-input', initValue: '', placeholder: '通话人号码' },
-        { prop: 'data_type', element: 'el-select', initValue: '', placeholder: '通话类型' },
+        { prop: 'staffId', element: 'el-select', initValue: '', placeholder: '招生老师' },
+        { prop: 'contactName', element: 'el-input', initValue: '', placeholder: '通话人姓名' },
+        { prop: 'campusId', element: 'el-select', initValue: '', placeholder: '校区名（所属组织）' },
+        { prop: 'contactPhone', element: 'el-input', initValue: '', placeholder: '通话人号码' },
+        { prop: 'dataType', element: 'el-select', initValue: '', placeholder: '通话类型' },
         { prop: 'createAt', element: 'el-date-picker', initValue: '', element: "el-date-picker",
           startPlaceholder: "通话时间(开始)",
           endPlaceholder: "通话时间(结束)", initWidth: true}
       ],
       tableData: [],
       tableKey: [
-        { name: '通话类型',value: 'type' },
-        { name: '通话类型',value: 'data_type' },
+        { name: '通话类型',value: 'type',operate: true },
+        { name: '通话类别',value: 'data_type',operate: true },
         { name: '通话人名称',value: 'contact_name' },
         { name: '通话人号码',value: 'contact_phone' },
-        { name: '通话时长(单位秒)',value: 'duration', operate: true,sortable: true },
+        { name: '通话时长(单位秒)',value: 'duration',sortable: true },
         { name: '招生老师',value: 'staff_name' },
         { name: '校区名',value: 'campus_name' },
         { name: '接通时间',value: 'start_time' },
@@ -116,9 +122,36 @@ export default {
     this.getTableData();
     this.getSelectList();
   },
+  filters: {
+    CallTypeFilter(val){
+      switch(val){
+        case 1:
+          return '呼出';
+        case 2:
+          return '呼入';
+        case 3:
+          return '呼出未接';
+        case 4:
+          return '呼入未接';
+      }
+    },
+    dataTypeFilter(val){
+      switch(val){
+        case 0:
+          return '系统电话';
+        case 1:
+          return '语音通话';
+        case 2:
+          return '视频通话';
+      }
+    }
+  },
   methods: {
     onSearch(val) {
-      this.searchForm = {...val};
+      this.searchForm = {
+        ...val,
+        createAt: val.createAt?val.createAt.join(' ~ '):""
+      };
       console.log(val,this.searchForm , 'val---')
        this.getTableData();
     },
@@ -138,8 +171,10 @@ export default {
     // 点击权限组的分类
     handleTabClick(data){
       console.log(data,99966)
-      // this.pageConfig.currentPage = 1;
-      // this.getTableData();
+      this.pageConfig.currentPage = 1;
+      this.getTableData({
+        type: data=="0"?"": data
+      });
     },
     getTableData(params = {}) {
       const loading = this.$loading({
@@ -150,13 +185,14 @@ export default {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
+        // token:"123"
       }).then((res) => {
-        this.tableData = res.data.data.map((item) => {
+        this.tableData = res.data.dataJson.data.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
           item.updateAt = this.$common._formatDates(item.updateAt);
           return item;
         });
-        this.pageConfig.totalCount = res.data.count;
+        this.pageConfig.totalCount = res.data.dataJson.pager.totalRows;
         setTimeout(() => {
           loading.close();
         }, 200);
@@ -166,7 +202,9 @@ export default {
       Promise.all([
         this.$fetch("chance_staff_list"),
         this.$fetch("chance_config_campusList"),
-      ]).then(result => {
+      ].map((p) => {
+        return p.catch(error => error)
+    })).then(result => {
         let staffOptions = JSON.parse(result[0].msg).map((item) => ({
           label: item.staffName,
           value: item.id,
@@ -175,14 +213,28 @@ export default {
           label: item.campusName,
           value: item.id,
         }));
+        let dataTypeOptions = [
+          {
+            label: "系统电话",
+            value: 0
+          },
+          {
+            label: "语音通话",
+            value: 1
+          },
+          {
+            label: "视频通话",
+            value: 2
+          }
+        ]
         this.staffOptions = staffOptions;
         this.campusOptions = campusOptions;
         this.formOptions = [
-        { prop: 'staff_name', element: 'el-select', initValue: '', placeholder: '招生老师' ,filterable: true, options: staffOptions},
-        { prop: 'contact_name', element: 'el-input', initValue: '', placeholder: '通话人姓名' },
-        { prop: 'campus_name', element: 'el-select', initValue: '', placeholder: '校区名（所属组织）' ,filterable: true, options: campusOptions},
-        { prop: 'contact_phone', element: 'el-input', initValue: '', placeholder: '通话人号码' },
-        { prop: 'data_type', element: 'el-select', initValue: '', placeholder: '通话类型' },
+        { prop: 'staffId', element: 'el-select', initValue: '', placeholder: '招生老师' ,filterable: true, options: staffOptions},
+        { prop: 'contactName', element: 'el-input', initValue: '', placeholder: '通话人姓名' },
+        { prop: 'campusId', element: 'el-select', initValue: '', placeholder: '校区名（所属组织）' ,filterable: true, options: campusOptions},
+        { prop: 'contactPhone', element: 'el-input', initValue: '', placeholder: '通话人号码' },
+        { prop: 'dataType', element: 'el-select', initValue: '', placeholder: '通话类型',options: dataTypeOptions },
         { prop: 'createAt', element: 'el-date-picker', initValue: '', element: "el-date-picker",
           startPlaceholder: "通话时间(开始)",
           endPlaceholder: "通话时间(结束)", initWidth: true}
