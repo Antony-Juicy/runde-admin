@@ -345,9 +345,8 @@ export default {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
-        token:"123",
+        // token:"123",
         opportunityCampusNature: "OffLine",
-        // branchFlag:"branchFlag"
       }).then((res) => {
         this.tableData = res.data.data.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
