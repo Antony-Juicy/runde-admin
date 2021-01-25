@@ -31,20 +31,25 @@
       >
         <el-form ref="dataForm" :model="phoneForm" label-width="150px">
           <el-form-item label="导入模版">
-            <el-button type="primary" size="small">点击下载模版</el-button>
+            <el-button type="primary" size="small" @click="downloadTemp">点击下载模版</el-button>
           </el-form-item>
           <el-form-item label="文件">
             <el-upload
-              class="upload-demo"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :on-change="handleChange"
-              :file-list="fileList">
-              <el-button size="small" type="primary">选择文件</el-button>
-            </el-upload>
+                class="upload-demo"
+                action="#"
+                :before-remove="beforeRemove"
+                :limit="1"
+                :on-exceed="handleExceed"
+                :on-change="handleChange"
+                :file-list="fileList"
+                :auto-upload="false"
+              >
+            <el-button size="small" type="primary">点击上传</el-button>
+          </el-upload>
           </el-form-item>
-          <el-form-item label="跟进详情" prop="detail">
+          <el-form-item label="备注" prop="remark">
             <el-input
-              v-model.trim="phoneForm.detail"
+              v-model.trim="phoneForm.remark"
               autocomplete="off"
               type="textarea"
               placeholder="请勿输入备注"
@@ -100,17 +105,11 @@ export default {
       // 导入手机弹窗参数
       dialogVisible: false,
       phoneForm: {
-        detail: ''
+        remark: ''
       },
       fileList: [
-        // {
-        //   name: 'food.jpeg',
-        //   url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-        // }, {
-        //   name: 'food2.jpeg',
-        //   url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-        // }
-      ]
+      ],
+      importFile:""
     }
   },
   mounted(){
@@ -144,10 +143,16 @@ export default {
       // this.$refs[formName].resetFields();
     },
     submitForm(formName) {
-      this.closeDialog("dataForm")
-    },
-    handleChange(file, fileList) {
-      this.fileList = fileList.slice(-3);
+       let obj = new FormData();
+          obj.append("file", this.importFile);
+          obj.append("remark", this.phoneForm.res);
+          this.$fetch("chance_import_phone", obj).then((res) => {
+            if(res.code == 200){
+              this.$message.success("操作成功")
+              this.closeDialog();
+              this.getTableData();
+            }
+          });
     },
     getTableData(params = {}) {
       const loading = this.$loading({
@@ -185,6 +190,23 @@ export default {
           this.formOptions[3].options = campusOptions;
           this.formOptions = [...this.formOptions];
       })
+    },
+    // 上传文件
+    handleExceed(files, fileList) {
+      this.$message.warning(
+        `当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${
+          files.length + fileList.length
+        } 个文件`
+      );
+    },
+    beforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${file.name}？`);
+    },
+    handleChange(file, fileList) {
+      this.importFile = file.raw;
+    },
+    downloadTemp(){
+      window.location.href = "/temp/crmopportunitylog_import.xlsx"
     }
   }
 }

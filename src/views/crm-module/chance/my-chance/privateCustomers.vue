@@ -163,14 +163,63 @@
         :rules="importRules"
         ref="dataForm4"
       >
+        <template slot="campusId">
+          <el-select v-model="importCampusId" placeholder="请选择" filterable>
+            <el-option
+              v-for="item in campusArr"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </template>
+        <template slot="productOne">
+          <el-select
+            v-model="productOne"
+            placeholder="请选择"
+            filterable
+            @change="importProductChange"
+          >
+            <el-option
+              v-for="item in productArr"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </template>
+        <template slot="subjectOne">
+          <el-select v-model="subjectOne" placeholder="请选择">
+            <el-option
+              v-for="item in importSubjectArr"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </template>
         <template slot="temp">
-          <el-button size="small" type="primary">点击下载模板</el-button>
+          <el-button size="small" type="primary" @click="downloadTemp">点击下载模板</el-button>
         </template>
         <template slot="file">
-          <span>文件</span>
+          <el-upload
+            class="upload-demo"
+            action="#"
+            :before-remove="beforeRemove"
+            :limit="1"
+            :on-exceed="handleExceed"
+            :on-change="handleChange"
+            :file-list="fileList"
+            :auto-upload="false"
+          >
+            <el-button size="small" type="primary">点击上传</el-button>
+          </el-upload>
         </template>
         <template slot="tips">
-          <span
+          <span style="color: red"
             >导入模版中【学员姓名】【电话】【地址】不能为空.否则会导入失败！！！</span
           >
         </template>
@@ -213,6 +262,7 @@ export default {
   name: "temp",
   data() {
     return {
+      fileList: [],
       drawerId: "",
       drawerPhone: "",
       drawerTitle: "",
@@ -343,9 +393,7 @@ export default {
       // 成单弹窗
       orderVisible: false,
       orderRules: {
-        marketStaffId: [
-          { required: true, message: "请输入", trigger: "blur" },
-        ]
+        marketStaffId: [{ required: true, message: "请输入", trigger: "blur" }],
       },
       orderFormOptions: [
         {
@@ -353,7 +401,7 @@ export default {
           element: "el-select",
           placeholder: "校区",
           label: "校区",
-          disabled: true
+          disabled: true,
         },
         {
           prop: "studentName",
@@ -371,17 +419,17 @@ export default {
         },
         {
           prop: "saleSource",
-          element: "el-input",
+          element: "el-select",
           placeholder: "销售来源",
           label: "销售来源",
-          readonly: true
+          disabled: true,
         },
         {
           prop: "marketStaffId",
           element: "el-select",
           placeholder: "跟进老师",
           label: "跟进老师",
-          filterable: true
+          filterable: true,
         },
         {
           prop: "address",
@@ -447,9 +495,7 @@ export default {
         invalidReason: [
           { required: true, message: "请选择失效原因", trigger: "blur" },
         ],
-         remark: [
-          { required: true, message: "请输入备注", trigger: "blur" },
-        ],
+        remark: [{ required: true, message: "请输入备注", trigger: "blur" }],
       },
 
       // 添加弹窗
@@ -531,90 +577,81 @@ export default {
       classArr: [],
 
       // 导入弹窗
+      importSubjectArr: [],
       importVisible: false,
+      importCampusId: "",
+      productOne: "",
+      subjectOne: "",
       importFormOptions: [
         {
-          prop: "roleName",
+          prop: "campusId",
           element: "el-select",
           placeholder: "校区名(所属组织)",
           label: "就近校区",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
+          operate: true,
+          initValue: 0,
         },
         {
-          prop: "menuName",
+          prop: "productOne",
           element: "el-select",
           placeholder: "请选择",
           label: "咨询项目一",
-          options: [
-            {
-              label: "博士",
-              value: 0,
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
+          operate: true,
+          initValue: 0,
         },
         {
-          prop: "menuName",
+          prop: "subjectOne",
           element: "el-select",
           placeholder: "请选择",
           label: "咨询科目一",
-          options: [
-            {
-              label: "博士",
-              value: 0,
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
+          operate: true,
+          initValue: 0,
         },
         {
           prop: "temp",
           element: "el-input",
           label: "导入模板",
           operate: true,
+          initValue: 0,
         },
         {
           prop: "file",
           element: "el-input",
           label: "文件",
           operate: true,
+          initValue: 0,
         },
         {
           prop: "tips",
           element: "el-input",
           label: "特别提醒",
           operate: true,
+          initValue: 0,
         },
       ],
-      importRules: {},
+      importRules: {
+        campusId: [{ required: true, message: "请选择", trigger: "blur" }],
+        productOne: [{ required: true, message: "请选择", trigger: "blur" }],
+        subjectOne: [{ required: true, message: "请选择", trigger: "blur" }],
+        file: [{ required: true, message: "请选择", trigger: "blur" }],
+      },
+      importFile: "",
 
       // ai呼叫弹窗
       callVisible: false,
 
       // 勾选的数据
-      selectedData:[],
+      selectedData: [],
 
       // 校区
-      campusArr:[],
+      campusArr: [],
 
       // 员工
-      staffArr:[],
+      staffArr: [],
 
-      orderFlag: false
+      sourceArr: [],
+
+      orderFlag: false,
     };
   },
   components: {
@@ -642,6 +679,24 @@ export default {
     },
   },
   methods: {
+    importProductChange(val) {
+      this.$fetch("chance_subject_list", {
+        enquireProductIdOne: val,
+      }).then((res) => {
+        let nodes;
+        if (res.msg == "没有相关数据") {
+          nodes = [];
+        } else {
+          let data = res.data;
+          nodes = data.map((item) => ({
+            value: item.id,
+            label: item.subjectName,
+          }));
+        }
+        this.importSubjectArr = nodes;
+        this.subjectOne = "";
+      });
+    },
     productChange(val) {
       this.$fetch("chance_subject_list", {
         enquireProductIdOne: val,
@@ -685,13 +740,14 @@ export default {
         let campusOptions = res.data.data.map((item) => ({
           label: item.campusName,
           value: item.id,
-          nature: item.campusNature
+          nature: item.campusNature,
         }));
         this.addFormOptions[0].options = campusOptions;
         this.addFormOptions[0].filterable = true;
         this.campusArr = campusOptions;
+        this.sourceArr = newVal[5].options;
       });
-      
+
       this.$fetch("chance_product_list").then((res) => {
         let data = JSON.parse(res.msg);
         let productOptions = data.map((item) => ({
@@ -709,19 +765,19 @@ export default {
       this.drawerVisible = true;
     },
     onSearch(val) {
-      if(val.product&&val.product.length>0){
+      if (val.product && val.product.length > 0) {
         this.searchForm = {
           ...val,
           enquireProductIdOne: val.product[0],
           enquireSubjectIdOne: val.product[1],
           enquireCourseIdOne: val.product[2],
         };
-      }else {
+      } else {
         this.searchForm = {
-          ...val
-        }
+          ...val,
+        };
       }
-      
+
       console.log(val, this.searchForm, "val---");
       this.getTableData();
     },
@@ -748,23 +804,31 @@ export default {
     },
     // 成单弹窗打开
     handleOrder() {
-      
-      if(!this.selectedData.length){
-        this.$message.warning("请勾选要成单的机会！")
+      if (!this.selectedData.length) {
+        this.$message.warning("请勾选要成单的机会！");
         return;
-      }else if(this.selectedData.length>1){
-        this.$message.warning("只能选择一个！")
+      } else if (this.selectedData.length > 1) {
+        this.$message.warning("只能选择一个！");
         return;
       }
 
-      
-      if(this.orderFlag){
+      if (this.orderFlag) {
         this.orderVisible = true;
-      }else{
-      // 赋值
-      const { idStr,campusName,campusId,studentName,phone,saleSource,marketStaffId ,marketName} = this.selectedData[0];
-      this.$fetch("chance_staff_list").then(res => {
-        let staffOptions = JSON.parse(res.msg).map((item) => ({
+      } else {
+        // 赋值
+        const {
+          idStr,
+          campusName,
+          campusId,
+          studentName,
+          phone,
+          saleSource,
+          saleSource_text,
+          marketStaffId,
+          marketName,
+        } = this.selectedData[0];
+        this.$fetch("chance_staff_list").then((res) => {
+          let staffOptions = JSON.parse(res.msg).map((item) => ({
             label: item.staffName,
             value: item.id,
           }));
@@ -773,15 +837,15 @@ export default {
           this.orderFormOptions[0].initValue = campusId;
           this.orderFormOptions[1].initValue = studentName;
           this.orderFormOptions[2].initValue = phone;
-          this.orderFormOptions[3].initValue = saleSource;
+          this.orderFormOptions[3].options = this.sourceArr;
+          this.orderFormOptions[3].initValue = saleSource_text;
           this.orderFormOptions[4].options = staffOptions;
           this.orderFormOptions[4].initValue = marketStaffId;
           this.orderVisible = true;
-      })
+        });
       }
 
       this.orderFlag = true;
-      
     },
     // 成单弹窗关闭
     handleClose(formName) {
@@ -799,31 +863,35 @@ export default {
       this.$refs[formName].validate((valid, formData) => {
         if (valid) {
           console.log(formData, "提交--");
-          let currentCampus = this.campusArr.find(item => (item.value == formData.campusId));
-          let currentMarket = this.staffArr.find(item => (item.value == formData.marketStaffId));
-          this.$fetch("chance_my_transform",{
+          let currentCampus = this.campusArr.find(
+            (item) => item.value == formData.campusId
+          );
+          let currentMarket = this.staffArr.find(
+            (item) => item.value == formData.marketStaffId
+          );
+          this.$fetch("chance_my_transform", {
             ...formData,
-            opportunityId: this.selectedData[0].id,
-            Normal:'Normal',
+            opportunityId: this.selectedData[0].idStr,
+            Normal: "Normal",
             campusName: currentCampus.label,
             campusNature: currentCampus.nature,
             marketName: currentMarket.label,
-            marketPosition:""
-          }).then(res => {
-            if(res.code == 200){
-              this.$message.success('保存成功')
+            marketPosition: "",
+          }).then((res) => {
+            if (res.code == 200) {
+              this.$message.success("保存成功");
               this.handleClose();
               this.getTableData();
             }
-          })
+          });
         }
       });
     },
 
     // 释放
     handleRelease() {
-      if(!this.selectedData.length){
-        this.$message.warning("请勾选要释放的机会！")
+      if (!this.selectedData.length) {
+        this.$message.warning("请勾选要释放的机会！");
         return;
       }
       this.$confirm(
@@ -837,26 +905,28 @@ export default {
         }
       )
         .then(async () => {
-          this.$fetch("chance_my_release",{
-            id: this.selectedData.map(item => (item.idStr)).join(","),
-            stayModule: "Private"
-          }).then(res => {
-            if(res.code == 200){
-              this.$message.success('释放成功')
+          this.$fetch("chance_my_release", {
+            opportunityIds: this.selectedData
+              .map((item) => item.idStr)
+              .join(","),
+            stayModule: "Private",
+          }).then((res) => {
+            if (res.code == 200) {
+              this.$message.success("释放成功");
               this.handleClose();
               this.getTableData();
             }
-          })
+          });
         })
         .catch(() => {});
     },
     // 失效
     handleInvalid() {
-       if(!this.selectedData.length){
-        this.$message.warning("请勾选要失效的机会！")
+      if (!this.selectedData.length) {
+        this.$message.warning("请勾选要失效的机会！");
         return;
-      }else if(this.selectedData.length>1){
-        this.$message.warning("只能选择一个！")
+      } else if (this.selectedData.length > 1) {
+        this.$message.warning("只能选择一个！");
         return;
       }
       this.invalidVisible = true;
@@ -866,13 +936,17 @@ export default {
       this.$refs[formName].validate((valid, formData) => {
         if (valid) {
           console.log(formData, "提交");
-          this.$fetch("chance_my_invalid",formData).then(res=>{
-            if(res.code == 200){
-              this.$message.success('操作成功')
+          this.$fetch("chance_my_invalid", {
+            ...formData,
+            phone: this.selectedData[0].phone,
+            enquireProductIdOne: this.selectedData[0].enquireProductIdOne,
+          }).then((res) => {
+            if (res.code == 200) {
+              this.$message.success("操作成功");
               this.handleClose();
               this.getTableData();
             }
-          })
+          });
         }
       });
     },
@@ -911,7 +985,34 @@ export default {
     submitImportForm(formName) {
       this.$refs[formName].validate((valid, formData) => {
         if (valid) {
-          console.log(formData, "提交");
+          if(!this.importCampusId){
+            this.$message.warning("请选择校区");
+            return;
+          }
+          if(!this.productOne){
+            this.$message.warning("请选择项目");
+            return;
+          }
+          if(!this.subjectOne){
+            this.$message.warning("请选择科目");
+            return;
+          }
+          if(!this.importFile){
+            this.$message.warning("请上传文件");
+            return;
+          }
+          let obj = new FormData();
+          obj.append("file", this.importFile);
+          obj.append("campusId", this.importCampusId);
+          obj.append("enquireProductIdOne", this.productOne);
+          obj.append("enquireSubjectIdOne", this.subjectOne);
+          this.$fetch("chance_my_import", obj).then((res) => {
+            if(res.code == 200){
+              this.$message.success("操作成功")
+              this.handleClose();
+              this.getTableData();
+            }
+          });
         }
       });
     },
@@ -942,6 +1043,24 @@ export default {
         }, 200);
       });
     },
+
+    // 上传文件
+    handleExceed(files, fileList) {
+      this.$message.warning(
+        `当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${
+          files.length + fileList.length
+        } 个文件`
+      );
+    },
+    beforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${file.name}？`);
+    },
+    handleChange(file, fileList) {
+      this.importFile = file.raw;
+    },
+    downloadTemp(){
+      window.location.href = "/temp/opportunity_import.xlsx"
+    }
   },
 };
 </script>

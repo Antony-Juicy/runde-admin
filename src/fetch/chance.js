@@ -24,6 +24,7 @@ export default {
     chance_my_lock: {url: '/crm/crmopportunitytrail/updateLock', method: 'post'}, //锁定
     chance_my_delaylock: {url: '/crm/crmopportunitytrail/updateDelayLock', method: 'post'}, //延长锁定
     chance_my_transform: {url: '/crm/crmopportunity/transform', method: 'post'}, //成单
+    chance_my_import: {url: '/crm/crmopportunity/saveMyImport', method: 'post'}, //导入
 
     // 分校/战队公海
     chance_campus_list: {url: '/crm/crmopportunity/listBranchCampusJson', method: 'post'},
@@ -68,6 +69,7 @@ export default {
 
     // 导入手机查询
     chance_import_list: {url: '/crm/crmopportunitylog/queryOrderInfoByPhoneListJson', method: 'post'},
+    chance_import_phone: {url: '/crm/crmopportunitylog/queryOrderInfoByPhone', method: 'post'},
 
     // 通话记录统计
     chance_records_count: {url: '/crm/crmopportunity/opportunityNumListJson', method: 'get'},
