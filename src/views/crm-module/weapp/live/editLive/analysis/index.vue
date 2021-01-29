@@ -5,13 +5,13 @@
       <div class="first-row">
         <div class="item1">
           <el-card shadow="hover" :body-style="{ height: cardHeight }">
-            <p class="num">421212</p>
+            <p class="num">{{this.dataList.pv}}</p>
             <p>访问量PV</p>
           </el-card>
         </div>
         <div class="item1">
           <el-card shadow="hover" :body-style="{ height: cardHeight }">
-            <p class="num">421212</p>
+            <p class="num">{{this.dataList.uv}}</p>
             <p>独立访客UV</p>
           </el-card>
         </div>
@@ -19,33 +19,33 @@
       <div class="second-row">
         <div class="item2">
           <el-card shadow="hover" :body-style="{ height: cardHeight }">
-            <p class="num">421212</p>
+            <p class="num">{{this.dataList.turnover}}</p>
             <p>成交额</p>
           </el-card>
         </div>
         <div class="item2">
           <el-card shadow="hover" :body-style="{ height: cardHeight }">
-            <p class="num">421212</p>
+            <p class="num">{{this.dataList.orderCount}}</p>
             <p>订单量</p>
             <p class="details">查看明细</p>
           </el-card>
         </div>
         <div class="item2">
           <el-card shadow="hover" :body-style="{ height: cardHeight }">
-            <p class="num">421212</p>
+            <p class="num">{{this.dataList.invitationCount}}</p>
             <p>邀请量</p>
             <p class="details">查看明细</p>
           </el-card>
         </div>
         <div class="item2">
           <el-card shadow="hover" :body-style="{ height: cardHeight }">
-            <p class="num">421212</p>
+            <p class="num">{{this.dataList.rewardAmount}}</p>
             <p>礼物及打赏额</p>
           </el-card>
         </div>
         <div class="item2">
           <el-card shadow="hover" :body-style="{ height: cardHeight }">
-            <p class="num">421212</p>
+            <p class="num">{{this.dataList.giftGiveCount}}</p>
             <p>礼物送出量</p>
           </el-card>
         </div>
@@ -138,7 +138,7 @@
       :direction="'rtl'"
       :size="'50%'"
       append-to-body>
-      <provinceList/>
+      <provinceList :tableData="provinceSchoolList"/>
     </el-drawer>
 
     <el-drawer
@@ -147,7 +147,7 @@
       :direction="'rtl'"
       :size="'50%'"
       append-to-body>
-      <campustList/>
+      <campustList :tableData="branchSchoolList"/>
     </el-drawer>
 
     <el-drawer
@@ -156,7 +156,7 @@
       :direction="'rtl'"
       :size="'50%'"
       append-to-body>
-      <personalList/>
+      <personalList :tableData="personalList"/>
     </el-drawer>
   </div>
 </template>
@@ -244,6 +244,33 @@ export default {
         drawerVisible1: false,
         drawerVisible2: false,
         drawerVisible3: false,
+      dataList:'',
+      provinceSchoolList:'',
+      branchSchoolList:'',
+      personalList:'',
+      pageConfig: {
+        pageNum:1,
+        pageSize: 10,
+        provincialSchoolName:'',
+        sortBy:'1',
+        sortField:''
+      },
+      pageConfig1: {
+        pageNum:1,
+        pageSize: 10,
+        provincialSchoolName:'',
+        sortBy:'1',
+        sortField:''
+      },
+      pageConfig2: {
+        pageNum:1,
+        pageSize: 10,
+        provincialSchoolName:'',
+        sortBy:'1',
+        sortField:''
+      },
+      rewardList:'',
+      invitationList:''
     };
   },
   components:{
@@ -251,6 +278,55 @@ export default {
       provinceList,
       campustList,
       personalList
+  },
+  props: {
+    liveId: {
+      type: Number,
+    },
+  },
+  mounted() {
+      this.$fetch("live_statistics_detail", {
+        liveId: this.liveId,
+        loginUserId: this.$common.getUserId(),
+      }).then((res) => {
+        this.dataList = res.data
+      });
+
+      this.$fetch("live_provincial_school_list", {
+        liveId: this.liveId,
+        loginUserId: this.$common.getUserId(),
+      }).then((res) => {
+        console.log(res,'provinceSchoolList')
+        this.provinceSchoolList = res.records
+      });
+
+      this.$fetch("live_branch_school_list", {
+        liveId: this.liveId,
+        loginUserId: this.$common.getUserId(),
+      }).then((res) => {
+        console.log(res,'branchSchoolList')
+        this.branchSchoolList = res.records
+      });
+
+      this.$fetch("live_personal_list", {
+        liveId: this.liveId,
+        loginUserId: this.$common.getUserId(),
+      }).then((res) => {
+        console.log(res,'personalList')
+        this.personalList = res.records
+        this.tableData = res.records
+      });
+
+      this.$fetch("live_invitation_list", {
+        liveId: this.liveId,
+        loginUserId: this.$common.getUserId(),
+        pageNum:1,
+        pageSize:100
+      }).then((res) => {
+        console.log(res,'live_invitation_list')
+        this.invitationList = res.records
+        this.tableData2 = res.records
+      });
   },
   methods: {
       pageChange(val) {

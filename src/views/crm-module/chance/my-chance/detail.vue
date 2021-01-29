@@ -92,6 +92,17 @@ export default {
       },
     };
   },
+  props:{
+    detailPhone:{
+      type: String,
+      default:""
+    }
+  },
+  watch:{
+    detailPhone(val){
+      console.log(val,'detailphone')
+    }
+  },
   methods: {
     handleDetailClick(tab, event) {
       console.log(tab, event);

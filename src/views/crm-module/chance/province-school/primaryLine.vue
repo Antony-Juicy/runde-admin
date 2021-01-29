@@ -24,6 +24,9 @@
         @pageChange="pageChange"
         @select="handelSelect"
       >
+      <template slot="phone" slot-scope="scope">
+           {{$common.hidePhone(scope.row.phone)}}
+        </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
             >编辑</el-button
@@ -47,7 +50,8 @@
         :width="'400px'"
         @handleClose="distributeVisible = false"
       >
-        <el-select v-model="campusValue" placeholder="请选择">
+      <template v-if="distributeVisible">
+        <el-select v-model="campusValue" placeholder="请选择" filterable>
           <el-option
             v-for="item in campusOptions"
             :key="item.value"
@@ -55,8 +59,9 @@
             :value="item.value">
           </el-option>
         </el-select>
+        </template>
         <div class="btn">
-          <el-button size="small" type="warning">分配</el-button>
+          <el-button size="small" type="warning" @click="distributeSubmit">分配</el-button>
         </div>
       </rd-dialog>
     </div>
@@ -69,6 +74,7 @@ export default {
   name: "temp2",
   data() {
     return {
+      opportunityIds:"",
       newFormOptions: [
         {
           prop: "menuName",
@@ -130,22 +136,6 @@ export default {
           prop: "abc",
           element: "el-cascader",
           placeholder: "课程",
-          props: {
-            checkStrictly: true,
-            lazy: true,
-            lazyLoad(node, resolve) {
-              const { level } = node;
-              setTimeout(() => {
-                const nodes = Array.from({ length: level + 1 }).map((item) => ({
-                  value: ++id,
-                  label: `选项${id}`,
-                  leaf: level >= 2,
-                }));
-                // 通过调用resolve将子节点数据返回，通知组件数据加载完成
-                resolve(nodes);
-              }, 1000);
-            },
-          },
           initWidth: true,
         },
         // 时间
@@ -185,7 +175,8 @@ export default {
         },
          {
           name: "手机号码",
-          value: "phone"
+          value: "phone",
+          operate: true
         },
         {
           name: "学历",
@@ -259,22 +250,7 @@ export default {
       },
       selectedData:[],
       distributeVisible: false,
-      campusOptions: [{
-          value: '选项1',
-          label: '黄金糕'
-        }, {
-          value: '选项2',
-          label: '双皮奶'
-        }, {
-          value: '选项3',
-          label: '蚵仔煎'
-        }, {
-          value: '选项4',
-          label: '龙须面'
-        }, {
-          value: '选项5',
-          label: '北京烤鸭'
-        }],
+      campusOptions: [],
         campusValue: '',
         searchForm: {}
     };
@@ -289,19 +265,57 @@ export default {
     formOptions(newVal){
       console.log(newVal,'newww')
       this.newFormOptions = newVal;
+      this.campusOptions = this.newFormOptions[9].options;
     }
   },
    mounted() {
     this.getTableData();
-    // this.getSelectList();
   },
   methods: {
+    distributeSubmit(){
+      if(!this.campusValue){
+        this.$message.warning("请选择校区")
+        return;
+      }
+      let campusName = this.campusOptions.find(item => (item.value == this.campusValue)).label;
+      this.$fetch("chance_province_distribute",{
+        campusId: this.campusValue,
+        opportunityIds: this.opportunityIds,
+        campusName
+      }).then(res => {
+        if(res.code == 200){
+          this.$message.success("操作成功")
+          this.distributeVisible = false;
+        }
+      })
+    },
     handleAdd(){
 
     },
     onSearch(val) {
-      this.searchForm = { ...val };
-      console.log(val, this.searchForm, "val---");
+      if (val.product && val.product.length > 0) {
+        this.searchForm = {
+          ...val,
+          enquireProductIdOne: val.product[0],
+          enquireSubjectIdOne: val.product[1],
+          enquireCourseIdOne: val.product[2],
+          createAt: val.createAt ? val.createAt.join(" ~ ") : "",
+          updateAt: val.updateAt ? val.updateAt.join(" ~ ") : "",
+          campusPoolTime: val.campusPoolTime
+            ? val.campusPoolTime.join(" ~ ")
+            : "",
+        };
+      } else {
+        this.searchForm = {
+          ...val,
+          createAt: val.createAt ? val.createAt.join(" ~ ") : "",
+          updateAt: val.updateAt ? val.updateAt.join(" ~ ") : "",
+          campusPoolTime: val.campusPoolTime
+            ? val.campusPoolTime.join(" ~ ")
+            : "",
+        };
+      }
+
       this.getTableData();
     },
      pageChange(val) {
@@ -315,6 +329,11 @@ export default {
       this.selectedData = val;
     },
     handleDistribute(){
+      if (!this.selectedData.length) {
+        this.$message.warning("请勾选要分配的机会！");
+        return;
+      }
+      this.opportunityIds = this.selectedData.map(item=>(item.idStr)).join(",");
       this.distributeVisible = true;
     },
     getTableData(params = {}) {
@@ -326,12 +345,14 @@ export default {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
+        // token:"123",
+        opportunityCampusNature: "OffLine",
       }).then((res) => {
         this.tableData = res.data.data.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
           item.updateAt = this.$common._formatDates(item.updateAt);
+          item.recentFeedbackTime = this.$common._formatDates(item.recentFeedbackTime);
           item.campusPoolTime = this.$common._formatDates(item.campusPoolTime);
-          item.phone = this.$common.hidePhone(item.phone);
           item.enquireClassOne = item.enquireClassOne && item.enquireClassOne.map(item=>(item.name)).join(",");
           return item;
         });
@@ -341,161 +362,6 @@ export default {
         }, 200);
       });
     },
-    getSelectList(){
-      Promise.all([
-        this.$fetch("chance_staff_list"),
-        this.$fetch("chance_status_list"),
-        this.$fetch("chance_edu_list"),
-        this.$fetch("chance_source_list"),
-        this.$fetch("chance_config_campusList")
-      ].map((p) => {
-        return p.catch(error => error)
-    }))
-        .then((result) => {
-          console.log(result,'resu')
-           let staffOptions = JSON.parse(result[0].msg).map((item) => ({
-            label: item.staffName,
-            value: item.id,
-          }));
-           let trailOptions = result[1].data.map((item) => ({
-            label: item.value,
-            value: item.key,
-          }));
-          let eduOptions = result[2].data.map((item) => ({
-            label: item.value,
-            value: item.key,
-          }));
-           let sourceOptions = result[3].data.map((item) => ({
-            label: item.value,
-            value: item.key,
-          }));
-           let campusOptions = result[4].data.data.map((item) => ({
-          label: item.campusName,
-          value: item.id,
-        }));
-         let numsOptions = []
-        for(let i=0; i< 8; i++){
-          numsOptions.push({
-            label: i,
-            value: i
-          })
-        }
-       
-        this.formOptions = [
-        {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "跟进老师",
-          filterable: true,
-          options: staffOptions
-        },
-        {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "注册人",
-          filterable: true,
-          options: staffOptions
-        },
-        {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "机会状态",
-          options: trailOptions
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "学员姓名"
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "手机",
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "省份",
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "城市",
-        },
-        {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "学历",
-          options: eduOptions
-        },
-        {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "机会来源",
-          options: sourceOptions
-        },
-        {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "组织架构",
-          filterable: true,
-          options: campusOptions
-        },
-        {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "跟进次数",
-          options: numsOptions
-        },
-        // 课程
-        {
-          prop: "abc",
-          element: "el-cascader",
-          placeholder: "课程",
-          props: {
-            checkStrictly: true,
-            lazy: true,
-            lazyLoad(node, resolve) {
-              const { level } = node;
-              setTimeout(() => {
-                const nodes = Array.from({ length: level + 1 }).map((item) => ({
-                  value: ++id,
-                  label: `选项${id}`,
-                  leaf: level >= 2,
-                }));
-                // 通过调用resolve将子节点数据返回，通知组件数据加载完成
-                resolve(nodes);
-              }, 1000);
-            },
-          },
-          initWidth: true,
-        },
-        // 时间
-        {
-          prop: "time",
-          element: "el-date-picker",
-          startPlaceholder: "最近跟进时间(开始)",
-          endPlaceholder: "最近跟进时间(结束)",
-          initWidth: true,
-        },
-        {
-          prop: "time",
-          element: "el-date-picker",
-          startPlaceholder: "创建时间(开始)",
-          endPlaceholder: "创建时间(结束)",
-          initWidth: true,
-        },
-        {
-          prop: "time",
-          element: "el-date-picker",
-          startPlaceholder: "进入公海时间(开始)",
-          endPlaceholder: "进入公海时间(结束)",
-          initWidth: true,
-        },
-      ]
-        })
-        
-    }
   },
 };
 </script>

@@ -29,14 +29,14 @@
           </template>
         </rd-table>
         <!-- 回访抽屉 -->
-        <rd-drawer
-          :dialogVisible="drawerVisible"
-          :id="drawerId"
-          :phone="drawerPhone"
-          title="信息"
-          :size="drawerSize"
-          @handleClose="drawerVisible = false"
-        ></rd-drawer>
+          <rd-drawer
+            :dialogVisible="drawerVisible"
+            :id="drawerId"
+            :phone="drawerPhone"
+            title="信息"
+            :size="drawerSize"
+            @handleClose="drawerVisible = false"
+          ></rd-drawer>
       </div>
     </div>
     <div class="right-wrapper w-container">
@@ -244,7 +244,7 @@ export default {
       },
       searchForm: {},
       selectedData: {},
-      drawerId:"123",
+      drawerId:"",
       drawerPhone:"",
     };
   },
@@ -254,7 +254,10 @@ export default {
   },
   methods: {
     onSearch(val) {
-      this.searchForm = { ...val };
+      this.searchForm = { 
+        ...val,
+        updateAt: val.updateAt?val.updateAt.join(' ~ '):""
+       };
       console.log(val, this.searchForm, "val---");
       this.getTableData();
     },
@@ -368,7 +371,7 @@ export default {
         this.tableData = res.data.data.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
           item.updateAt = this.$common._formatDates(item.updateAt);
-          item.enquireClassOne = item.enquireClassOne
+          item.enquireClassOne = item.enquireClassOne&&item.enquireClassOne
             .map((item) => item.name)
             .join(",");
           return item;

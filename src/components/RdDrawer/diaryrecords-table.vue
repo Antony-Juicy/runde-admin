@@ -50,6 +50,11 @@ export default {
   mounted(){
     this.getTableData();
   },
+  watch: {
+    id(){
+      this.getTableData();
+    }
+  },
   methods: {
     handleSelect(rows) {
       console.log(rows, "rows---");
