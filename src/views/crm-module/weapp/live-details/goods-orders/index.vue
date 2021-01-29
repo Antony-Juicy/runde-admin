@@ -58,25 +58,6 @@ export default {
             }
           ],
         },
-        { 
-          prop: 'status',
-          element: 'el-select',
-          placeholder: '收费类型',
-          options: [
-            {
-              label: "公开",
-              value: "Open",
-            },
-            {
-              label: "付费",
-              value: "Encryption",
-            },
-            {
-              label: "加密",
-              value: "Charge",
-            }
-          ],
-        },
         { prop: 'ordersTime', element: 'el-date-picker', startPlaceholder: "下单开始时间", endPlaceholder: "下单结束时间" }
       ],
       tableData: [],
@@ -87,7 +68,7 @@ export default {
         { name: '姓名',value: 'consignee' },
         { name: '订单手机号',value: 'phone' },
         { name: '实付金额',value: 'paymentAmount' },
-        { name: '订单状态',value: 'orderStatus' },
+        { name: '订单状态',value: 'orderStatus',operate: true },
         { name: '下单时间',value: 'createAt' },
         { name: '邀请老师',value: 'teacherName' },
         { name: '操作',value: 'edit',operate: true,width: 120 }
@@ -108,10 +89,14 @@ export default {
   },
   methods: {
     onSearch(val) {
-      this.searchForm = {...val};
+      this.searchForm = {
+        ...val,
+        createDateStart: val.ordersTime[0],
+        createDateEnd: val.ordersTime[1]
+      };
       this.pageConfig.pageNum = 1;
       this.getTableData();
-      console.log(val,this.searchForm , 'val---')
+      console.log(this.searchForm , 'val---')
     },
     handleSelect(rows) {
       console.log(rows, "rows---");
