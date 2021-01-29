@@ -7,43 +7,26 @@
       label-width="130px"
       class="demo-ruleForm"
     >
-      <el-form-item label="选择优惠券" prop="coupon">
-        <el-select v-model="ruleForm.coupon" placeholder="请选择优惠券" size="small" @change="selectChange">
-          <el-option :label="item.name" :value="item.id" :key="item.id" v-for="item in couponList"></el-option>
+      <el-form-item label="选择优惠券" prop="couponId">
+        <el-select v-model="ruleForm.couponId" placeholder="请选择优惠券" size="small" @change="selectChange">
+          <el-option :label="item.couponName" :value="item.couponId" :key="item.couponId" v-for="item in couponList"></el-option>
         </el-select>
-        <div class="details" v-show="currentCoupon.createTime">
-            <p>创建时间：{{currentCoupon.createTime}}</p>
-            <p>优惠券类型：{{currentCoupon.type}}</p>
-            <p>面额：{{currentCoupon.money}}</p>
-            <p>使用条件：{{currentCoupon.condition}}</p>
+        <div class="details" v-show="currentCoupon.couponType">
+            <p>创建时间：{{currentCoupon.createAt}}</p>
+            <p>优惠券类型：{{currentCoupon.couponType | typeFilter}}</p>
+            <p>面额：{{currentCoupon.denomination}}</p>
+            <!-- <p>使用条件：{{currentCoupon.condition}}</p> -->
         </div>
       </el-form-item>
-      <el-form-item label="派发数量" prop="name">
-        <el-input-number v-model="ruleForm.name" size="small"></el-input-number>
+      <el-form-item label="派发数量" prop="distributeCount">
+        <el-input-number v-model="ruleForm.distributeCount" size="small" :min="1"></el-input-number>
       </el-form-item>
-      <el-form-item label="预定派发时间" required>
-        <el-col :span="11">
-          <el-form-item prop="date1">
-            <el-date-picker
-              type="date"
-              placeholder="选择日期"
-              v-model="ruleForm.date1"
-              style="width: 100%"
-              size="small"
-            ></el-date-picker>
-          </el-form-item>
-        </el-col>
-        <el-col class="line" :span="1">-</el-col>
-        <el-col :span="11">
-          <el-form-item prop="date2">
-            <el-time-picker
-              placeholder="选择时间"
-              v-model="ruleForm.date2"
-              style="width: 100%"
-              size="small"
-            ></el-time-picker>
-          </el-form-item>
-        </el-col>
+      <el-form-item label="预定派发时间" prop="distributeDate">
+        <el-date-picker
+            v-model="ruleForm.distributeDate"
+            type="datetime"
+            placeholder="选择日期时间">
+          </el-date-picker>
       </el-form-item>
       <el-form-item>
         <div style="text-align: right">
@@ -63,59 +46,64 @@ export default {
   data() {
     return {
          ruleForm: {
-          name: '',
-          coupon: '',
-          date1: '',
-          date2: ''
+          distributeCount: '',
+          couponId: '',
+          distributeDate:''
         },
         rules: {
-          name: [
-            { required: true, message: '请输入活动名称', trigger: 'blur' },
+          couponId: [
+            { required: true, message: '请选择优惠券', trigger: 'blur' },
           ],
-          coupon: [
-            { required: true, message: '请选择活动区域', trigger: 'change' }
+          distributeCount: [
+            { required: true, message: '请输入派发数量', trigger: 'blur' }
           ],
-          date1: [
-            { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
-          ],
-          date2: [
-            { type: 'date', required: true, message: '请选择时间', trigger: 'change' }
+          distributeDate: [
+            { required: true, message: '请选择日期', trigger: 'blur' }
           ]
         },
         couponList:[
-            {
-                id:1,
-                name:'优惠券一',
-                createTime: '2020.12.12 15:30',
-                type:'立减优惠券/折扣优惠券',
-                money:'5元/7.5折',
-                condition:'满100元'
-            },
-            {
-                id:2,
-                name:'优惠券二',
-                createTime: '2020.12.12 15:30',
-                type:'折扣优惠券',
-                money:'5元/7.5折',
-                condition:'满200元'
-            },
-            {
-                id:3,
-                name:'优惠券三',
-                createTime: '2021.12.12 15:30',
-                type:'立减优惠券/折扣优惠券',
-                money:'5元/7.5折',
-                condition:'满300元'
-            }
         ],
         currentCoupon: {}
     };
+  },
+  props: {
+    liveId: {
+      type: Number,
+    },
+  },
+  filters: {
+    typeFilter(val){
+      switch(val){
+        case "InstantDecrease":
+          return '立减优惠';
+        case "FullDiscount":
+          return '满减券';
+        case "Discount":
+          return '折扣优惠'
+      }
+    },
+  },
+  mounted(){
+    this.$fetch("live_get_coupon_list",{
+      liveId: this.liveId
+    }).then(res => {
+      this.couponList = res.data;
+    })
   },
   methods: {
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            alert('submit!');
+            console.log(this.ruleForm,'submit')
+            this.$fetch("live_coupon_add",{
+              ...this.ruleForm,
+              distributeDate: this.$common._formatDates2(this.ruleForm.distributeDate),
+              liveId: this.liveId
+            }).then(res => {
+              this.$message.success('操作成功')
+               this.$emit('close')
+               this.$emit('refresh')
+            })
           } else {
             console.log('error submit!!');
             return false;
@@ -128,7 +116,8 @@ export default {
       },
       selectChange(val){
           console.log(val,'valll')
-          this.currentCoupon = this.couponList.find(item => val == item.id)
+          this.currentCoupon = this.couponList.find(item => val == item.couponId)
+
       }
   },
 };

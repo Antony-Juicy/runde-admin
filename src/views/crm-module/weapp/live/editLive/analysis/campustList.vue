@@ -23,6 +23,12 @@
         <template slot="index" slot-scope="scope">
           {{scope.$index}}
         </template>
+        <template slot="orderCount" slot-scope="scope">
+            <span class="link" @click="gotoOrder(scope.row)">{{ scope.row.orderCount }}</span>
+        </template>
+        <template slot="invitationCount" slot-scope="scope">
+            <span class="link" @click="gotoInvite(scope.row)">{{ scope.row.invitationCount }}</span>
+        </template>
       </rd-table>
       </div>
   </div>
@@ -32,100 +38,145 @@
 
 export default {
   name:"campus-list",
-  props:{
-    tableData: {
-      type: Array,
-      default() {
-        return []
-      }
-    },
-  },
   data(){
     return {
       formOptions: [
         {
-          prop: "menuName",
+          prop: "provincialSchoolName",
           element: "el-input",
           placeholder: "请输入省校名称",
         },
-        {
-          prop: "menuName",
+         {
+          prop: "branchSchoolName",
           element: "el-input",
           placeholder: "请输入分校名称",
-        }
+        },
       ],
-      // tableData: [
-      //  { id: 1, name: "飞翔的荷兰人3", cutdown: 1608897351706, visit: 2,phone:'15692026183' },
-      //   { id: 2, name: "飞翔的荷兰人2",cutdown: new Date().getTime(),phone:'17092026183'  },
-      //   { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
-      //   { id: 4,name: "飞翔的荷兰人1", phone:'18892026183'  },
-      //   { id: 5,name: "飞翔的荷兰人1", phone:'18892026183'  },
-      //   { id: 6,name: "飞翔的荷兰人1", phone:'18892026183'  },
-      //   { id: 7,name: "飞翔的荷兰人1", phone:'18892026183'  },
-      //   { id: 8,name: "飞翔的荷兰人1", phone:'18892026183'  },
-      //   { id: 9,name: "飞翔的荷兰人1", phone:'18892026183'  },
-      //   { id: 10,name: "飞翔的荷兰人1", phone:'18892026183'  }
-      // ],
+      tableData: [
+        // {
+        //   "completeOrderCount": 0,
+        //   "invitationCount": 0,
+        //   "orderCount": 0,
+        //   "provincialSchoolId": 0,
+        //   "provincialSchoolName": "",
+        //   "ranking": 0,
+        //   "turnover": 0
+        // }
+      ],
       tableKey: [
         {
           name: "排名",
-          value: "index",
-          operate: true,
+          value: "ranking",
           width: 80
         },
-        {
+         {
           name: "组织",
-          value: "phone"
+          value: "provincialSchoolName"
         },
          {
           name: "校区",
-          value: "phone"
+          value: "branchSchoolName"
         },
         {
           name: "订单量",
-          value: "cutdown",
-          sortable: 'custom'
+          value: "orderCount",
+          sortable: 'custom',
+          operate: true
         },
         {
           name: "已成交数",
-          value: "menuUrl",
+          value: "completeOrderCount",
           sortable: 'custom'
         },
         {
           name: "实际邀请人数",
-          value: "visit",
-          sortable: 'custom'
+          value: "invitationCount",
+          sortable: 'custom',
+          operate: true
         },
         {
           name: "成交金额",
-          value: "menuOrder",
+          value: "turnover",
           sortable: 'custom'
         }
       ],
       pageConfig: {
         totalCount: 100,
-        currentPage: 1,
+        pageNum: 1,
         pageSize: 10,
       },
+      searchForm: {},
+       orderForm: {}
     }
+  },
+  props:{
+    liveId: {
+      type: Number
+    }
+  },
+  mounted() {
+    this.getTableData();
   },
    methods: {
      handleAdd(){},
-      onSearch() {},
-      pageChange(val) {
-      // this.pageConfig.currentPage = val.page;
-      // this.pageConfig.pageSize = val.limit;
-      // console.log(this.searchForm,'this.searchForm--')
-      // this.getTableData({
-      //   currentPage: (val && val.page) || 1,
-      //   pageSize: (val && val.limit) || 10,
-      //   loginUserId,
-      //   ...this.searchForm,
-      //   parentId: this.parentId
-      // });
+    onSearch(val) {
+      this.searchForm = {
+        ...val,
+      };
+      this.getTableData();
+    },
+    pageChange(val) {
+      console.log(val, "pagechange");
+      this.pageConfig.pageNum = val.page;
+      this.pageConfig.pageSize = val.limit;
+      this.getTableData();
     },
     handelSortChange(val){
       console.log(val,'valll')
+      let sortBy;
+      if(val.order == "descending"){
+        sortBy = 'DESC'
+      }else if(val.order == "ascending"){
+        sortBy = 'ASC'
+      }else {
+        sortBy = null
+      }
+      if(sortBy){
+        this.orderForm = {
+          sortBy,
+          sortField: val.prop
+        };
+      }else {
+        this.orderForm = {};
+      }
+      this.getTableData(this.orderForm);
+    },
+    getTableData(params = {}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".campus-list .el-table",
+      });
+      this.$fetch("live_branch_school_list", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+        liveId : this.liveId,
+        ...this.orderForm
+      }).then((res) => {
+        this.tableData = res.data.records;
+        this.pageConfig.totalCount = res.data.totalCount;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
+      });
+    },
+    gotoOrder(val){
+      this.$router.push('/crm-module/weapp/live-details/goods-orders')
+      this.$emit("close")
+    },
+    gotoInvite(val){
+      this.$router.push('/crm-module/weapp/live-details/goods-orders')
+      this.$emit("close")
     }
   }
 }
@@ -134,5 +185,10 @@ export default {
 <style lang="scss" scoped>
 .campus-list {
     padding-left: 20px;
+    .link {
+      color: #409EFF;
+      cursor: pointer;
+      text-decoration: underline;
+    }
 }
 </style>

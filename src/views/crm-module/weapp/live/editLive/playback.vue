@@ -15,10 +15,10 @@
           <el-button @click="handleEdit(scope.row)" type="text" size="small" style="color: #ffa500"
             >链接</el-button
           >
-          <el-divider direction="vertical"></el-divider>
+          <!-- <el-divider direction="vertical"></el-divider>
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
             >导出视频</el-button
-          >
+          > -->
           <el-divider direction="vertical"></el-divider>
           <el-button
             @click="handleDelete(scope.row)"

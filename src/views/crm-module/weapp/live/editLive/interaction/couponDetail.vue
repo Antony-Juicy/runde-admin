@@ -31,12 +31,12 @@ export default {
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "请输入昵称",
+          placeholder: "昵称",
         },
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "请输入用户手机号",
+          placeholder: "用户手机号",
         },
            {
           prop: "time",

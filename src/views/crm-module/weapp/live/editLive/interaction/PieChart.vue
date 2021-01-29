@@ -21,6 +21,9 @@ export default {
     height: {
       type: String,
       default: '300px'
+    },
+    answerId:{
+      type: Number
     }
   },
   data() {
@@ -29,9 +32,11 @@ export default {
     }
   },
   mounted() {
-    this.$nextTick(() => {
-      this.initChart()
-    })
+    console.log(this.answerId,'pie')
+    this.getData();
+    // this.$nextTick(() => {
+    //   this.initChart()
+    // })
   },
   beforeDestroy() {
     if (!this.chart) {
@@ -40,8 +45,23 @@ export default {
     this.chart.dispose()
     this.chart = null
   },
+  watch:{
+    answerId(){
+      this.getData();
+    }
+  },
   methods: {
-    initChart() {
+    getData(){
+      this.$fetch("live_get_options_statistics",{
+        liveAnswerSheetId: this.answerId
+      }).then(res => {
+        this.$emit("getOptions",res.data.options);
+        this.initChart(res.data)
+      })
+    },
+    initChart(data) {
+      console.log(data,'data---')
+      const {options,statistics} = data;
       this.chart = echarts.init(this.$el, 'macarons')
 
       this.chart.setOption({
@@ -52,7 +72,7 @@ export default {
         legend: {
           left: 'center',
           bottom: '10',
-          data: ['服饰', '食品', '数码', '健康', '箱包']
+          data: options
         },
         series: [
           {
@@ -61,13 +81,10 @@ export default {
             roseType: 'radius',
             radius: [15, 95],
             center: ['50%', '38%'],
-            data: [
-              { value: 320, name: '服饰' },
-              { value: 240, name: '食品' },
-              { value: 149, name: '数码' },
-              { value: 100, name: '健康' },
-              { value: 59, name: '箱包' }
-            ],
+            data: statistics.map(item => ({
+              name: item.option,
+              value: item.count
+            })),
             animationEasing: 'cubicInOut',
             animationDuration: 2600
           }

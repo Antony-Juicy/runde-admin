@@ -5,13 +5,13 @@
       <div class="first-row">
         <div class="item1">
           <el-card shadow="hover" :body-style="{ height: cardHeight }">
-            <p class="num">{{this.dataList.pv}}</p>
+            <p class="num">{{ this.dataList.pv }}</p>
             <p>访问量PV</p>
           </el-card>
         </div>
         <div class="item1">
           <el-card shadow="hover" :body-style="{ height: cardHeight }">
-            <p class="num">{{this.dataList.uv}}</p>
+            <p class="num">{{ this.dataList.uv }}</p>
             <p>独立访客UV</p>
           </el-card>
         </div>
@@ -19,33 +19,33 @@
       <div class="second-row">
         <div class="item2">
           <el-card shadow="hover" :body-style="{ height: cardHeight }">
-            <p class="num">{{this.dataList.turnover}}</p>
+            <p class="num">{{ this.dataList.turnover }}</p>
             <p>成交额</p>
           </el-card>
         </div>
         <div class="item2">
           <el-card shadow="hover" :body-style="{ height: cardHeight }">
-            <p class="num">{{this.dataList.orderCount}}</p>
+            <p class="num">{{ this.dataList.orderCount }}</p>
             <p>订单量</p>
             <p class="details">查看明细</p>
           </el-card>
         </div>
         <div class="item2">
           <el-card shadow="hover" :body-style="{ height: cardHeight }">
-            <p class="num">{{this.dataList.invitationCount}}</p>
+            <p class="num">{{ this.dataList.invitationCount }}</p>
             <p>邀请量</p>
             <p class="details">查看明细</p>
           </el-card>
         </div>
         <div class="item2">
           <el-card shadow="hover" :body-style="{ height: cardHeight }">
-            <p class="num">{{this.dataList.rewardAmount}}</p>
+            <p class="num">{{ this.dataList.rewardAmount }}</p>
             <p>礼物及打赏额</p>
           </el-card>
         </div>
         <div class="item2">
           <el-card shadow="hover" :body-style="{ height: cardHeight }">
-            <p class="num">{{this.dataList.giftGiveCount}}</p>
+            <p class="num">{{ this.dataList.giftGiveCount }}</p>
             <p>礼物送出量</p>
           </el-card>
         </div>
@@ -56,19 +56,31 @@
     <div class="content">
       <div class="third-row">
         <div class="item3">
-          <el-card shadow="hover" :body-style="{ height: '100px' }" @click.native="drawerVisible1 = true">
+          <el-card
+            shadow="hover"
+            :body-style="{ height: '100px' }"
+            @click.native="drawerVisible1 = true"
+          >
             <p class="item3-title">省校榜</p>
             <p class="details">查看明细</p>
           </el-card>
         </div>
         <div class="item3">
-          <el-card shadow="hover" :body-style="{ height: '100px' }" @click.native="drawerVisible2 = true">
+          <el-card
+            shadow="hover"
+            :body-style="{ height: '100px' }"
+            @click.native="drawerVisible2 = true"
+          >
             <p class="item3-title">分校榜</p>
             <p class="details">查看明细</p>
           </el-card>
         </div>
         <div class="item3">
-          <el-card shadow="hover" :body-style="{ height: '100px' }" @click.native="drawerVisible3 = true">
+          <el-card
+            shadow="hover"
+            :body-style="{ height: '100px' }"
+            @click.native="drawerVisible3 = true"
+          >
             <p class="item3-title">个人榜</p>
             <p class="details">查看明细</p>
           </el-card>
@@ -83,11 +95,14 @@
           <el-card class="box-card">
             <div slot="header" class="clearfix card-header">
               <span class="title-name">邀请榜（Top100）</span>
-              <el-button class="export-btn" style="float: right; padding: 3px 0" type="text"
+              <el-button
+                class="export-btn"
+                style="float: right; padding: 3px 0"
+                type="text"
                 >导出数据</el-button
               >
             </div>
-            <div class="text">
+            <div class="text invite">
               <rd-table
                 :tableData="tableData"
                 :tableKey="tableKey"
@@ -98,7 +113,7 @@
                 @pageChange="pageChange"
               >
                 <template slot="index" slot-scope="scope">
-                  {{scope.$index + 1}}
+                  {{ scope.$index + 1 }}
                 </template>
               </rd-table>
             </div>
@@ -108,11 +123,14 @@
           <el-card class="box-card">
             <div slot="header" class="clearfix card-header">
               <span class="title-name">打赏榜（Top100）</span>
-              <el-button class="export-btn" style="float: right; padding: 3px 0" type="text"
+              <el-button
+                class="export-btn"
+                style="float: right; padding: 3px 0"
+                type="text"
                 >导出数据</el-button
               >
             </div>
-            <div class="text">
+            <div class="text reward">
               <rd-table
                 :tableData="tableData2"
                 :tableKey="tableKey2"
@@ -123,7 +141,7 @@
                 @pageChange="pageChange2"
               >
                 <template slot="index" slot-scope="scope">
-                  {{scope.$index + 1}}
+                  {{ scope.$index + 1 }}
                 </template>
               </rd-table>
             </div>
@@ -137,8 +155,9 @@
       :visible.sync="drawerVisible1"
       :direction="'rtl'"
       :size="'50%'"
-      append-to-body>
-      <provinceList :tableData="provinceSchoolList"/>
+      append-to-body
+    >
+      <provinceList :liveId="liveId" @close="drawerVisible1 = false"/>
     </el-drawer>
 
     <el-drawer
@@ -146,8 +165,9 @@
       :visible.sync="drawerVisible2"
       :direction="'rtl'"
       :size="'50%'"
-      append-to-body>
-      <campustList :tableData="branchSchoolList"/>
+      append-to-body
+    >
+      <campustList :liveId="liveId"/>
     </el-drawer>
 
     <el-drawer
@@ -155,129 +175,88 @@
       :visible.sync="drawerVisible3"
       :direction="'rtl'"
       :size="'50%'"
-      append-to-body>
-      <personalList :tableData="personalList"/>
+      append-to-body
+    >
+      <personalList :liveId="liveId"/>
     </el-drawer>
   </div>
 </template>
 
 <script>
-import rdDrawer from '@/components/RdDrawer';
-import provinceList from './provinceList';
-import campustList from './campustList';
-import personalList from './personalList';
+import rdDrawer from "@/components/RdDrawer";
+import provinceList from "./provinceList";
+import campustList from "./campustList";
+import personalList from "./personalList";
 export default {
   name: "analysis",
   data() {
     return {
       cardHeight: "130px",
-        tableData: [
-        { id: 1, name: "飞翔的荷兰人3", cutdown: 1608897351706, visit: 2,phone:'15692026183' },
-        { id: 2, name: "飞翔的荷兰人2",cutdown: new Date().getTime(),phone:'17092026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
-      ],
+      tableData: [],
       tableKey: [
         {
           name: "排名",
-          value: "index",
-          operate: true,
-          width: 80
+          value: "ranking",
+          // operate: true,
+          width: 80,
         },
-         {
+        {
           name: "用户名",
-          value: "phone"
+          value: "nickName",
         },
         {
           name: "邀请数",
-          value: "visit",
-          width: 100
-        }
+          value: "invitationCount",
+          width: 100,
+        },
       ],
       pageConfig: {
         totalCount: 100,
-        currentPage: 1,
+        pageNum: 1,
         pageSize: 10,
       },
 
       tableData2: [
-        { id: 1, name: "飞翔的荷兰人3", cutdown: 1608897351706, visit: 2,phone:'15692026183' },
-        { id: 2, name: "飞翔的荷兰人2",cutdown: new Date().getTime(),phone:'17092026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
       ],
       tableKey2: [
         {
           name: "排名",
-          value: "index",
-          operate: true,
-          width: 80
+          value: "ranking",
+          // operate: true,
+          width: 80,
         },
-         {
+        {
           name: "用户名",
-          value: "phone"
+          value: "nickName",
         },
         {
           name: "礼物打赏榜",
-          value: "visit",
-          width: 100
-        }
+          value: "rewardPrice",
+          width: 100,
+        },
       ],
       pageConfig2: {
         totalCount: 100,
-        currentPage: 1,
+        pageNum: 1,
         pageSize: 10,
       },
 
-        drawerVisible1: false,
-        drawerVisible2: false,
-        drawerVisible3: false,
-      dataList:'',
-      provinceSchoolList:'',
-      branchSchoolList:'',
-      personalList:'',
-      pageConfig: {
-        pageNum:1,
-        pageSize: 10,
-        provincialSchoolName:'',
-        sortBy:'1',
-        sortField:''
-      },
-      pageConfig1: {
-        pageNum:1,
-        pageSize: 10,
-        provincialSchoolName:'',
-        sortBy:'1',
-        sortField:''
-      },
-      pageConfig2: {
-        pageNum:1,
-        pageSize: 10,
-        provincialSchoolName:'',
-        sortBy:'1',
-        sortField:''
-      },
-      rewardList:'',
-      invitationList:''
+      drawerVisible1: false,
+      drawerVisible2: false,
+      drawerVisible3: false,
+      dataList: "",
+      provinceSchoolList: "",
+      branchSchoolList: "",
+      personalList: "",
+      rewardList: "",
+      invitationList: [],
     };
   },
-  components:{
-      rdDrawer,
-      provinceList,
-      campustList,
-      personalList
+  components: {
+    rdDrawer,
+    provinceList,
+    campustList,
+    personalList,
   },
   props: {
     liveId: {
@@ -285,78 +264,89 @@ export default {
     },
   },
   mounted() {
-      this.$fetch("live_statistics_detail", {
-        liveId: this.liveId,
-        loginUserId: this.$common.getUserId(),
-      }).then((res) => {
-        this.dataList = res.data
-      });
+    // 汇总数据
+    this.$fetch("live_statistics_detail", {
+      liveId: this.liveId,
+    }).then((res) => {
+      this.dataList = res.data;
+    });
 
-      this.$fetch("live_provincial_school_list", {
-        liveId: this.liveId,
-        loginUserId: this.$common.getUserId(),
-      }).then((res) => {
-        console.log(res,'provinceSchoolList')
-        this.provinceSchoolList = res.records
-      });
+    // this.$fetch("live_provincial_school_list", {
+    //   liveId: this.liveId
+    // }).then((res) => {
+    //   console.log(res,'provinceSchoolList')
+    //   this.provinceSchoolList = res.records
+    // });
 
-      this.$fetch("live_branch_school_list", {
-        liveId: this.liveId,
-        loginUserId: this.$common.getUserId(),
-      }).then((res) => {
-        console.log(res,'branchSchoolList')
-        this.branchSchoolList = res.records
-      });
+    // this.$fetch("live_branch_school_list", {
+    //   liveId: this.liveId,
+    // }).then((res) => {
+    //   console.log(res,'branchSchoolList')
+    //   this.branchSchoolList = res.records
+    // });
 
-      this.$fetch("live_personal_list", {
-        liveId: this.liveId,
-        loginUserId: this.$common.getUserId(),
-      }).then((res) => {
-        console.log(res,'personalList')
-        this.personalList = res.records
-        this.tableData = res.records
-      });
+    // this.$fetch("live_personal_list", {
+    //   liveId: this.liveId,
+    // }).then((res) => {
+    //   console.log(res,'personalList')
+    //   this.personalList = res.records
+    //   this.tableData = res.records
+    // });
 
-      this.$fetch("live_invitation_list", {
-        liveId: this.liveId,
-        loginUserId: this.$common.getUserId(),
-        pageNum:1,
-        pageSize:100
-      }).then((res) => {
-        console.log(res,'live_invitation_list')
-        this.invitationList = res.records
-        this.tableData2 = res.records
-      });
+    // 邀请榜
+    this.getInvitationList();
+
+    // 打赏榜
+    this.getRewardList();
   },
   methods: {
-      pageChange(val) {
-      // this.pageConfig.currentPage = val.page;
-      // this.pageConfig.pageSize = val.limit;
-      // console.log(this.searchForm,'this.searchForm--')
-      // this.getTableData({
-      //   currentPage: (val && val.page) || 1,
-      //   pageSize: (val && val.limit) || 10,
-      //   loginUserId,
-      //   ...this.searchForm,
-      //   parentId: this.parentId
-      // });
+     pageChange(val) {
+      console.log(val,'pagechange')
+      this.pageConfig.pageNum = val.page;
+      this.pageConfig.pageSize = val.limit;
+      this.getInvitationList();
     },
-    pageChange2(val) {
-      // this.pageConfig.currentPage = val.page;
-      // this.pageConfig.pageSize = val.limit;
-      // console.log(this.searchForm,'this.searchForm--')
-      // this.getTableData({
-      //   currentPage: (val && val.page) || 1,
-      //   pageSize: (val && val.limit) || 10,
-      //   loginUserId,
-      //   ...this.searchForm,
-      //   parentId: this.parentId
-      // });
+    pageChange2(val) {},
+
+    showProvince() {
+      this.drawerVisible1 = true;
     },
 
-    showProvince(){
-        this.drawerVisible1 = true;
-    }
+    getInvitationList(params = {}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".invite .el-table",
+      });
+      this.$fetch("live_invitation_list", {
+        ...this.pageConfig,
+        ...params,
+        liveId: this.liveId,
+      }).then((res) => {
+        this.tableData = res.data.records;
+        this.pageConfig.totalCount = res.data.totalCount;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
+      });
+    },
+
+    getRewardList(params = {}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".reward .el-table",
+      });
+      this.$fetch("live_reward_list", {
+        ...this.pageConfig2,
+        ...params,
+        liveId: this.liveId,
+      }).then((res) => {
+        this.tableData2 = res.data.records;
+        this.pageConfig2.totalCount = res.data.totalCount;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
+      });
+    },
   },
 };
 </script>
@@ -491,12 +481,11 @@ export default {
         }
       }
     }
-
   }
   /deep/ {
-      .el-drawer__wrapper {
-          z-index: 9999!important;
-      }
+    .el-drawer__wrapper {
+      z-index: 9999 !important;
+    }
   }
 }
 </style>

@@ -332,6 +332,9 @@ export default {
         setTimeout(() => {
           loading.close();
         }, 200);
+      }).catch(err=>{
+        loading.close();
+        console.log(err)
       });
     },
     refresh(){

@@ -27,7 +27,6 @@ const getParam = () => {
 service.interceptors.request.use(
   config => {
     if (config.data && config.data.append) {
-      console.log(111)
       config.data.append('token', getToken())
       config.data.append('loginUserId', common.getUserId())
       let _param = getParam()
@@ -35,7 +34,6 @@ service.interceptors.request.use(
         config.data.append(i, _param[i])
       }
     } else {
-      console.log(222)
       config.data = qs.stringify({
         token: getToken(),
         loginUserId: common.getUserId(),

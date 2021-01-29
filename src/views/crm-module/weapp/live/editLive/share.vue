@@ -54,14 +54,14 @@ export default {
           element: "el-input",
           label: "分享海报(4:3)",
           operate: true,
-          initValue: 0,
+          initValue: 1,
         },
         {
           prop: "shareCover",
           element: "el-input",
           label: "分享封面",
           operate: true,
-          initValue: 0,
+          initValue: 2,
         },
         {
           prop: "shareTitle",
@@ -151,9 +151,11 @@ export default {
 
           // 直播时间，背景图， 封面图， 直播简介，需要单独处理
           if (item.prop == "sharePoster") {
+            item.initValue = 0;
             this.img = res.data.sharePoster;
           }
           if (item.prop == "shareCover") {
+            item.initValue = 0;
             this.img2 = res.data.shareCover;
           }
         });

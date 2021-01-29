@@ -1,5 +1,5 @@
 <template>
-  <div class="coupon-detail">
+  <div class="coupons">
     <div class="tips">
       温馨提醒：设置的优惠券在直播当天用户都能领取，过了当天24：00：00之后则不能再领取红包
     </div>
@@ -7,17 +7,20 @@
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
-        :pageConfig="pageConfig"
         fixedTwoRow
         highlight-current-row
-        @pageChange="pageChange"
       >
+        <template slot="couponType" slot-scope="scope">
+          {{scope.row.couponType | typeFilter}}
+        </template>
+        <template slot="distributeStatus" slot-scope="scope">
+          {{scope.row.distributeStatus == 'Normal' ?'正常':'已停止'}}
+        </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
             >领取明细</el-button
           ><el-divider direction="vertical"></el-divider>
           <el-button
-            @click="handleDelete(scope.row)"
             type="text"
             size="small"
             style="color: #ec5b56"
@@ -46,41 +49,29 @@ export default {
   data() {
     return {
       tableData: [
-        {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-        },
-        {
-          id: 2,
-          name: "飞翔的荷兰人2",
-          cutdown: new Date().getTime(),
-          phone: "17092026183",
-        },
-        { id: 3, name: "飞翔的荷兰人1", phone: "18892026183" },
       ],
       tableKey: [
         {
           name: "优惠券名称",
-          value: "name",
+          value: "couponName",
         },
         {
           name: "优惠券类型",
-          value: "phone",
+          value: "couponType",
+          operate: true
         },
         {
           name: "派发数量",
-          value: "cutdown",
+          value: "distributeCount",
         },
         {
           name: "派发时间",
-          value: "menuUrl",
+          value: "distributeDate",
         },
         {
           name: "状态",
-          value: "visit",
+          value: "distributeStatus",
+          operate: true
         },
         {
           name: "操作",
@@ -89,29 +80,57 @@ export default {
           width: 160,
         },
       ],
-      pageConfig: {
-        totalCount: 100,
-        currentPage: 1,
-        pageSize: 10,
-      },
       drawerVisible1: false
     };
   },
   components:{
     couponDetail
   },
+  mounted(){
+    this.getTableData();
+  },
+  props: {
+    liveId: {
+      type: Number,
+    },
+    refreshFlag2:{
+      type: Number
+    }
+  },
+  watch:{
+    refreshFlag2(newVal,oldVal){
+      if(newVal>oldVal){
+        this.getTableData();
+      }
+    }
+  },
+  filters: {
+    typeFilter(val){
+      switch(val){
+        case "InstantDecrease":
+          return '立减优惠';
+        case "FullDiscount":
+          return '满减券';
+        case "Discount":
+          return '折扣优惠'
+      }
+    },
+  },
   methods: {
-    pageChange(val) {
-      // this.pageConfig.currentPage = val.page;
-      // this.pageConfig.pageSize = val.limit;
-      // console.log(this.searchForm,'this.searchForm--')
-      // this.getTableData({
-      //   currentPage: (val && val.page) || 1,
-      //   pageSize: (val && val.limit) || 10,
-      //   loginUserId,
-      //   ...this.searchForm,
-      //   parentId: this.parentId
-      // });
+    getTableData(params = {}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".coupons .el-table",
+      });
+      this.$fetch("live_coupon_related_list", {
+        ...params,
+        liveId: this.liveId
+      }).then((res) => {
+        this.tableData = res.data;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
+      });
     },
     handleEdit(val){
       this.drawerVisible1 = true;
@@ -121,7 +140,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.coupon-detail {
+.coupons {
   .tips {
     color: red;
     font-size: 12px;
