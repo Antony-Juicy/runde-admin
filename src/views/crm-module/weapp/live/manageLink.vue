@@ -6,7 +6,7 @@
           v-model="teacherUrl"
           id="link"
           ref="link"
-          style="width: 480px"
+          style="width: 600px"
           :readonly="true"
         >
         </el-input>
@@ -26,7 +26,7 @@
           id="link2"
           ref="link2"
           v-model="assistantUrl"
-          style="width: 500px"
+          style="width: 600px"
           :readonly="true"
         >
         </el-input>
@@ -51,7 +51,7 @@
           @click="openLink"
           >打开链接</el-button
         >
-        <p class="tips pwd">助教密码：8888</p>
+        <p class="tips pwd">助教密码：{{pwd}}</p>
       </el-form-item>
       <el-form-item label="观看端">
         <div class="view">
@@ -76,7 +76,21 @@ export default {
     return {
       teacherUrl: "http://www.baidu.com1",
       assistantUrl: "http://www.baidu.com",
+      pwd: ""
     };
+  },
+  props: {
+    liveId: {
+      type: Number
+    }
+  },
+  mounted(){
+    this.getData();
+  },
+  watch:{
+    liveId(){
+      this.getData();
+    }
   },
   methods: {
     copyLink(btnName) {
@@ -92,6 +106,15 @@ export default {
     },
     openLink(){
         window.open(this.assistantUrl)
+    },
+    getData(){
+      this.$fetch("live_get_url",{
+        liveId: this.liveId
+      }).then(res => {
+        this.teacherUrl = res.data.pushUrl;
+        this.assistantUrl = "http://localhost:8080/#/player?anchorId=1347511295259316224&title=%E6%B5%8B%E8%AF%95%E7%9B%B4%E6%92%AD%E9%97%B4";
+        this.pwd = res.data.assistantPassword;
+      })
     }
   },
 };

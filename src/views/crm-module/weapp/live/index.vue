@@ -73,7 +73,7 @@
         :width="'900px'"
         @handleClose="linkVisible = false"
       >
-        <manageLink />
+        <manageLink :liveId="liveId"/>
       </rd-dialog>
     </div>
   </div>
@@ -279,8 +279,9 @@ export default {
       this.liveId = data.liveId;
       this.liveName = data.liveName;
     },
-    handleLink() {
+    handleLink(data) {
       this.linkVisible = true;
+      this.liveId = data.liveId;
     },
     handleDelete(data) {
       let info = "直播"
