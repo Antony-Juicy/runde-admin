@@ -11,7 +11,7 @@ import qs from 'qs'
 
 // axios.defaults.withCredentials = true
 const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API, 
+  baseURL: process.env.VUE_APP_BASE_API,
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 20000 // request timeout
 })
@@ -57,18 +57,17 @@ service.interceptors.response.use(
     const res = response.data
     // if the custom code is not 1, it is judged as an error.
     if (res.code !== 200 && res.code !== 1) {
-      Message({
-        message: res.msg || 'Error',
-        type: 'error',
-        duration: 3 * 1000
-      })
+
 
       // 4: Illegal token;
-      if (res.code === 401 || res.code === 4) {
-        let msg = '您已注销，可以取消以留在此页，或重新登录。'
-        if (res.code === -37 && msg) {
-          msg = res.msg
-        }
+      if (res.code == 401 || res.code === 4) {
+        Message({
+          message: '您没有权限访问', // error.message,
+          type: 'error',
+          duration: 3 * 1000
+        })
+      } else if (res.code == 402) {
+        let msg = '您的登录已过期，请重新登录。'
         // to re-login
         MessageBox.confirm(msg, '确认注销', {
           confirmButtonText: '重新登录',
@@ -79,6 +78,24 @@ service.interceptors.response.use(
             location.reload()
           })
         })
+      } else if (res.code == 403) {
+        let msg = '您的账号在异地登录，请重新登录。'
+        // to re-login
+        MessageBox.confirm(msg, '确认注销', {
+          confirmButtonText: '重新登录',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          store.dispatch('user/resetToken').then(() => {
+            location.reload()
+          })
+        })
+      } else {
+        Message({
+          message: res.msg || 'Error',
+          type: 'error',
+          duration: 3 * 1000
+        })
       }
       return Promise.reject(new Error(res.message || 'Error'))
     } else {
@@ -86,8 +103,8 @@ service.interceptors.response.use(
     }
   },
   error => {
-    if(!error.response){
-      console.log(error,'error')
+    if (!error.response) {
+      console.log(error, 'error')
       return;
     }
     let status = error.response.status;
@@ -98,19 +115,19 @@ service.interceptors.response.use(
         type: 'error',
         duration: 3 * 1000
       })
-    }else if (status === 402) {
+    } else if (status === 402) {
       let msg = '您的登录已过期，请重新登录。'
-        // to re-login
-        MessageBox.confirm(msg, '确认注销', {
-          confirmButtonText: '重新登录',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          store.dispatch('user/resetToken').then(() => {
-            location.reload()
-          })
+      // to re-login
+      MessageBox.confirm(msg, '确认注销', {
+        confirmButtonText: '重新登录',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        store.dispatch('user/resetToken').then(() => {
+          location.reload()
         })
-    }else if (status === 403) {
+      })
+    } else if (status === 403) {
       let msg = '您的账号在异地登录，请重新登录。'
       // to re-login
       MessageBox.confirm(msg, '确认注销', {
@@ -122,7 +139,7 @@ service.interceptors.response.use(
           location.reload()
         })
       })
-    }else {
+    } else {
       Message({
         message: '网络繁忙，请稍后重试', // error.message,
         type: 'error',
@@ -139,7 +156,7 @@ service.interceptors.response.use(
   * @param {String} url 链接
   * @param {Object} params 参数对象
   */
- function appendUrlParams(url = '', params = {}) {
+function appendUrlParams(url = '', params = {}) {
   let str = String(url).trim();
   if (Object.keys(params).length === 0) return str;
   if (String(str).indexOf('?') === -1) str += '?';
@@ -168,7 +185,7 @@ const $fetch = async (apiName, params, config) => {
     });
   }
 
-  if(getToken()){
+  if (getToken()) {
     // newConfig.headers["Authorization"] = getToken();
     newConfig.headers["Authorization"] = 'rd_superadmin';
   }
