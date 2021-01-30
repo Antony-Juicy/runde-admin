@@ -170,7 +170,7 @@ export default {
           label: item.typeName,
           value: item.typeId,
         }));
-        this.formOptions.splice(1,1,{ prop: 'typeId', element: 'el-select', placeholder: '选择项目', options: this.typeOptions })
+        this.formOptions.splice(1,1,{ prop: 'typeId', element: 'el-select', placeholder: '项目类型', options: this.typeOptions })
       });
     },
     getTableData(params) {
