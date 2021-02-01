@@ -112,7 +112,7 @@ export default {
         liveId: this.liveId
       }).then(res => {
         this.teacherUrl = res.data.pushUrl;
-        this.assistantUrl = "http://localhost:8080/#/player?anchorId=1347511295259316224&title=%E6%B5%8B%E8%AF%95%E7%9B%B4%E6%92%AD%E9%97%B4";
+        this.assistantUrl = "http://localhost:8080/#/player?liveId="+ this.liveId;
         this.pwd = res.data.assistantPassword;
       })
     }
