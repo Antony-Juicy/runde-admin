@@ -9,7 +9,7 @@
         'search-box-wrapper2': showAll,
       }"
     >
-      <el-form :id="boxId" class="search-box" :model="formData" ref="formRef" :inline="true">
+      <el-form :id="boxId" class="search-box" :model="formData" ref="boxId" :inline="true">
         <template v-for="(item, index) in formOptions">
           <template v-if="index < showItem">
             <el-form-item
@@ -148,7 +148,7 @@ export default {
   methods: {
     // 校验
     onValidate(callback) {
-      this.$refs.formRef.validate((valid) => {
+      this.$refs.boxId.validate((valid) => {
         if (valid) {
           callback();
         }
@@ -167,7 +167,16 @@ export default {
       });
     },
     onReset() {
-      this.$refs.formRef.resetFields();
+      // this.$refs.boxId.resetFields();
+      const obj = {};
+      this.formOptions.forEach((v) => {
+        if (v.initValue !== undefined) {
+          obj[v.prop] = v.initValue;
+        }else {
+          obj[v.prop] = '';
+        }
+      });
+      this.formData = obj;
     },
     // 添加初始值
     addInitValue() {
