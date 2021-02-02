@@ -254,6 +254,7 @@ export default {
   },
   mounted() {
     this.getTableData();
+    this.getSubjectList();
   },
   methods: {
     onSearch(data) {
@@ -365,6 +366,16 @@ export default {
       } else if (val == "Hidden") {
         return "隐藏";
       }
+    },
+    getSubjectList(){
+      this.$fetch("projectType_normalList").then((res) => {
+      let typeList = res.data.map((item) => ({
+        label: item.typeName,
+        value: item.typeId,
+      }));
+      this.formOptions[2].options = typeList;
+      this.formOptions =[...this.formOptions];
+    });
     }
   },
 };
