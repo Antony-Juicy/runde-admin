@@ -48,7 +48,7 @@
             </el-input>
           </el-form-item>
           <el-form-item label="折扣面额" prop="denomination" v-if="couponForm.couponType == 'Discount' ">
-            <el-input v-model.trim="couponForm.denomination" autocomplete="off" placeholder="">
+            <el-input v-model.trim="couponForm.denomination" type="number" autocomplete="off" max="10" min="0" placeholder="">
               <template slot="append">折</template>
             </el-input>
           </el-form-item>
