@@ -98,7 +98,7 @@ export default {
     }
   },
   mounted(){
-    // this.initGetConfig = true;
+    // this.initGetConfig = tru e;
   },
   methods: {
     // 上传组件

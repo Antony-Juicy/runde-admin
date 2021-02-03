@@ -279,6 +279,8 @@ export default {
       });
       this.liveId = data.liveId;
       this.liveName = data.liveName;
+      sessionStorage.setItem('chatAudit',data.chatAudit)
+      sessionStorage.setItem('mute',data.mute)
     },
     handleLink(data) {
       this.linkVisible = true;
@@ -340,7 +342,9 @@ export default {
       });
     },
     refresh(){
-      this.getTableData();
+      this.getTableData({
+        pageNum: this.pageConfig.pageNum
+      });
     },
     changeLiveStatus(val) {
       if (val == "NotStart") {

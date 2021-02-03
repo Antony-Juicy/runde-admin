@@ -2,7 +2,7 @@
   <div class="comment">
     <el-row>
       <el-col :span="9">
-        <el-switch v-model="value1" active-text="禁言设置" @change="muteChange"> </el-switch>
+        <el-switch v-model="value.mute" active-text="禁言设置" @change="muteChange" > </el-switch>
         <span class="tips"> (开启后全体禁言)</span>
       </el-col>
       <!-- <el-col :span="8">
@@ -10,7 +10,7 @@
         <span class="tips"> (开启后全体不能发送图片)</span>
       </el-col> -->
       <el-col :span="9">
-        <el-switch v-model="value3" active-text="聊天审核" @change="examChange"> </el-switch>
+        <el-switch v-model="value.chatAudit" active-text="聊天审核" @change="examChange"> </el-switch>
         <span class="tips"> (开启后聊天内容需通过审核才能显示)</span>
       </el-col>
     </el-row>
@@ -78,9 +78,6 @@ export default {
   name: "comment",
   data() {
     return {
-      value1: true,
-      value2: true,
-      value3: true,
       tableData: [
       ],
       tableKey: [
@@ -124,6 +121,8 @@ export default {
         pageSize: 10,
       },
       selectedData: [],
+      
+      device: this.value
     };
   },
   mounted(){
@@ -132,7 +131,10 @@ export default {
   props: {
     liveId: {
       type: Number,
-    }
+    },
+      value: { //是否禁言和是否审核
+        type: Object
+      }
   },
   filters:{
     statusFilter(val){
@@ -152,7 +154,6 @@ export default {
   },
   methods: {
     pageChange(val) {
-      console.log(val,'pagechange')
       this.pageConfig.pageNum = val.page;
       this.pageConfig.pageSize = val.limit;
       this.getTableData();
@@ -185,26 +186,34 @@ export default {
     },
 
     muteChange(val){  
-      console.log(val,'mute')
+
+      this.$emit('input', {
+        mute: val,
+        chatAudit: this.value.chatAudit
+      }) 
       this.$fetch("live_im_mute",{
         liveId: this.liveId,
         mute: val
       }).then(res => {
         if(res.code == 200){
           this.$message.success("操作成功")
-          this.getTableData()
+          this.$emit("refresh")
         }
       })
     },
 
     examChange(val){
+      this.$emit('input', {
+        mute: this.value.mute,
+        chatAudit: val
+      }) 
       this.$fetch("live_im_chat_audit_switch",{
         liveId: this.liveId,
         audit: val
       }).then(res => {
         if(res.code == 200){
           this.$message.success("操作成功")
-          this.getTableData()
+          this.$emit("refresh")
         }
       })
     },
