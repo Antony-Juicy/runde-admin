@@ -89,7 +89,7 @@ export default {
       },// 富文本编辑器配置
       uploadOssElem: true,
       bgImg: "",
-      initGetConfig: false
+      initGetConfig: true
     };
   },
   watch:{
@@ -98,7 +98,7 @@ export default {
     }
   },
   mounted(){
-    this.initGetConfig = true;
+    // this.initGetConfig = true;
   },
   methods: {
     // 上传组件
