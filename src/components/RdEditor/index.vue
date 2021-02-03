@@ -5,6 +5,7 @@
               v-if="uploadOssElem"
               :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
               :src.sync="bgImg"
+              :initGetConfig="initGetConfig"
               @srcChangeFun="
                 (data) => {
                   imgChange(data)
@@ -87,13 +88,17 @@ export default {
         }
       },// 富文本编辑器配置
       uploadOssElem: true,
-      bgImg: ""
+      bgImg: "",
+      initGetConfig: false
     };
   },
   watch:{
     quillContent(newVal){
       this.content = newVal;
     }
+  },
+  mounted(){
+    this.initGetConfig = true;
   },
   methods: {
     // 上传组件

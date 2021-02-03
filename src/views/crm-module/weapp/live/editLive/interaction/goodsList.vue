@@ -11,7 +11,7 @@
         <div class="content">
           <div class="title">{{item.goodsName}}</div>
           <div class="tags">
-            <el-tag size="small" v-for="(ele,i) in item.goodsLabels" :key="i">{{ele}}</el-tag>
+            <el-tag size="small" v-for="(ele,i) in item.goodsLabels" :key="i" style="margin-left: 5px">{{ele}}</el-tag>
           </div>
           <div class="price">￥ {{item.goodsPrices}}</div>
         </div>
