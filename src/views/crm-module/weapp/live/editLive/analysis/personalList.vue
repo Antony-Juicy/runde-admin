@@ -156,7 +156,7 @@ export default {
         lock: true,
         target: ".personal-list .el-table",
       });
-      this.$fetch("live_branch_school_list", {
+      this.$fetch("live_personal_list", {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
