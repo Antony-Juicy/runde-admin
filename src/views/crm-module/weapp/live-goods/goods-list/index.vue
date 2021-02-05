@@ -97,7 +97,7 @@
               />
             </el-form-item>
             <el-form-item label="课程详情" prop="goodsDetail">
-              <RdEditor @change="changeEditor" />
+              <RdEditor :quillContent="quillContent" @change="changeEditor" />
             </el-form-item>
           </el-form>
           <div class="btn-bottom">
@@ -237,6 +237,7 @@ export default {
         recommend: true, // 是否推荐
         goodsStatus: '' // 上下架
       },
+      quillContent: "uuuu",
       typeOptions: [], // 项目类型
       couponOptions: [], // 商品优惠券
       labelOptions: [
@@ -378,6 +379,7 @@ export default {
         }
       ).then((res) => {
         this.goodsForm = res.data
+        this.quillContent = res.data.goodsDetail
         this.goodsForm.couponIds = res.data.coupons.map(item => item.couponId)
       });
     },
