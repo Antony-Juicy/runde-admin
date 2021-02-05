@@ -424,7 +424,8 @@ export default {
       });
     },
     changeEditor(val) {
-      this.goodsDetail = val;
+      console.log(val,996)
+      this.goodsForm.goodsDetail = val;
     },
     // 获取项目类型
     getTypeData() {
