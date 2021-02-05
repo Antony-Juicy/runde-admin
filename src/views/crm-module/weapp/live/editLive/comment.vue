@@ -174,8 +174,7 @@ export default {
         ...this.pageConfig,
         ...this.formInline,
         ...params,
-        // liveId: this.liveId
-        liveId: 151
+        liveId: this.liveId
       }).then((res) => {
         this.tableData = res.data.records;
         this.pageConfig.totalCount = res.data.totalCount;
