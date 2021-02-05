@@ -112,7 +112,7 @@ export default {
         liveId: this.liveId
       }).then(res => {
         this.teacherUrl = res.data.pushUrl;
-        this.assistantUrl = "http://localhost:8080/#/player?liveId="+ this.liveId;
+        this.assistantUrl = "https://zhujiao.rundejy.com/#/player?liveId="+ this.liveId;
         this.pwd = res.data.assistantPassword;
       })
     }

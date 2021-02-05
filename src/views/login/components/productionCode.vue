@@ -20,7 +20,7 @@ export default {
   data() {
     return {
         topBg: {
-            backgroundImage: 'url(http://rdimg.rundejy.com/assets/images/login/divimg.png?0.47601208483398394)',
+            backgroundImage: 'url(https://rdimg.rundejy.com/assets/images/login/divimg.png?0.47601208483398394)',
             backgroundRepeat: 'no-repeat',
             backgroundSize: '100% 100%'
         }

@@ -1,10 +1,10 @@
 <template>
   <div class="comment">
     <el-row>
-      <el-col :span="9">
+      <!-- <el-col :span="9">
         <el-switch v-model="value.mute" active-text="禁言设置" @change="muteChange" > </el-switch>
         <span class="tips"> (开启后全体禁言)</span>
-      </el-col>
+      </el-col> -->
       <!-- <el-col :span="8">
         <el-switch v-model="value2" active-text="禁止图片"> </el-switch>
         <span class="tips"> (开启后全体不能发送图片)</span>

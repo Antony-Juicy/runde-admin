@@ -24,7 +24,8 @@
             type="text"
             size="small"
             style="color: #ec5b56"
-            >停止派发</el-button
+            @click="handleSend(scope.row)"
+            >{{scope.row.distributeStatus == 'Normal'?'停止派发':'继续派发'}}</el-button
           >
         </template>
       </rd-table>
@@ -134,6 +135,15 @@ export default {
     },
     handleEdit(val){
       this.drawerVisible1 = true;
+    },
+    handleSend(data){
+        this.$fetch("live_coupon_send",{
+          liveCouponId:  data.liveCouponId,
+          distributeStatus: data.distributeStatus == 'Normal'?'Disable':'Normal'
+        }).then(res => {
+          this.$message.success("操作成功")
+          this.getTableData();
+        })
     }
   },
 };

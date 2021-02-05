@@ -73,6 +73,9 @@ export default {
        refresh(){
            this.$emit("refresh")
        },
+       changeTab(){
+           this.activeName = 'fourth'
+       }
     //    changeMute(val){
     //        this.$emit('update:mute',val)
     //    }

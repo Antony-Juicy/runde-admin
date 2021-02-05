@@ -252,9 +252,19 @@ export default {
     editLive,
     manageLink,
   },
-  mounted() {
-    this.getTableData();
+  async mounted() {
+    
     this.getSubjectList();
+    await this.getTableData();
+    const {liveId,flag} = this.$route.query;
+    if(flag == 'analysis'){
+      const data = this.tableData.find(item => item.liveId)
+      this.handleEdit(data)
+      setTimeout(() => {
+        this.$refs.editLive.changeTab()
+      }, 10);
+    }
+    
   },
   methods: {
     onSearch(data) {
@@ -312,7 +322,8 @@ export default {
         .catch(() => {});
     },
     getTableData(params={}) {
-      const loading = this.$loading({
+      return new Promise((resolve,reject)=>{
+        const loading = this.$loading({
         lock: true,
         target: ".el-table",
       });
@@ -336,10 +347,13 @@ export default {
         setTimeout(() => {
           loading.close();
         }, 200);
+        resolve();
       }).catch(err=>{
         loading.close();
         console.log(err)
+        reject();
       });
+      })
     },
     refresh(){
       this.getTableData({

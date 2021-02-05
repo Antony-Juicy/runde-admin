@@ -23,6 +23,8 @@ export default {
     live_get_coupon_detail: {url: '/live/console/coupon/get',method: 'post'}, //根据id获取数据
     live_coupon_add: {url: '/live/console/live_coupon/add',method: 'post'}, //添加直播优惠券
     live_coupon_related_list: {url: '/live/console/live_coupon/get_live_related_coupon_list',method: 'post'}, //获取直播关联优惠券列表
+    live_coupon_send: {url: '/live/console/live_coupon/send',method: 'post'}, //优惠券派发
+
 
     // 答题卡
     live_answer_list: {url: '/live/console/live_answer_sheet/get_live_answer_sheet_list',method: 'post'}, //获取直播答题卡列表
