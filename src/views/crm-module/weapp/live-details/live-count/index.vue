@@ -199,6 +199,16 @@ export default {
         pageSize: (val && val.limit) || 10,
       });
     },
+    openConfig(row) {
+      console.log(row,'row-----')
+      this.$router.push({
+        path: '/crm-module/weapp/live',
+        query: {
+          liveId: row.liveId,
+          flag: 'analysis'
+        }
+      })
+    }
   },
   filters: {
     liveChargeModeFilter(status){

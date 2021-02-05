@@ -12,13 +12,16 @@
         :pageConfig="pageConfig"
         @select="handleSelect"
         @pageChange="pageChange">
+        <template slot="typeIcon" slot-scope="scope">
+          <img :src="scope.row.typeIcon" style="width:60px;height:60px;" alt="">
+        </template>
         <template slot="typeStatus" slot-scope="scope">
           <span>{{ scope.row.typeStatus | typeStatusFilter }}</span>
         </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑</el-button>
-          <el-divider direction="vertical"></el-divider>
-          <el-button @click="handleDelete(scope.row)" type="text" size="small" style="color: #ec5b56">删除</el-button>
+          <!-- <el-divider direction="vertical"></el-divider>
+          <el-button @click="handleDelete(scope.row)" type="text" size="small" style="color: #ec5b56">删除</el-button> -->
         </template>
       </rd-table>
       <rd-dialog
@@ -30,6 +33,19 @@
         <el-form ref="dataForm" :model="projectForm" label-width="100px">
           <el-form-item label="项目名称" prop="typeName">
             <el-input v-model.trim="projectForm.typeName" autocomplete="off" placeholder="请输入项目名称" />
+          </el-form-item>
+          <el-form-item label="分类图标" prop="typeIcon" class="icon-wrapper">
+            <Upload-oss
+              v-if="uploadOssElem"
+              :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
+              :src.sync="projectForm.typeIcon"
+              @srcChangeFun="
+                (data) => {
+                  projectForm.typeIcon = data;
+                  reloadElem('uploadOssElem');
+                }
+              "
+            />
           </el-form-item>
           <el-form-item label="排序" prop="orderValue">
             <el-input-number controls-position="right" v-model.trim ="projectForm.orderValue" autocomplete="off" :min="0" placeholder="请输入排序编号" />
@@ -47,9 +63,13 @@
 </template>
 
 <script>
+import UploadOss from "@/components/UploadOss";
 let loginUserId = JSON.parse(localStorage.getItem("userInfo")).userId;
 export default {
   name:"project-type",
+  components: {
+    UploadOss
+  },
   data(){
     return {
       tableData: [
@@ -69,6 +89,7 @@ export default {
       tableKey: [
         { name: 'id',value: 'typeId' },
         { name: '项目名称',value: 'typeName' },
+        { name: '项目图标',value: 'typeIcon',operate: true },
         { name: '排序',value: 'orderValue',sortable: true },
         { name: '状态',value: 'typeStatus',operate: true, },
         { name: '操作',value: 'edit',operate: true,width: 140 }
@@ -84,12 +105,14 @@ export default {
       loading: false,
 
       // 弹窗
+      uploadOssElem: true,
       widthNew: "600px",
       projectVisible: false,
       projectStatus: true,
       projectForm: {
         typeId: '',
         typeName: '',
+        typeIcon: '',
         orderValue: '',
         typeStatus: ''
       },
@@ -208,6 +231,14 @@ export default {
             });
           }
         }
+      });
+    },
+    // 上传组件
+    reloadElem(dataElem) {
+      // 重新加载组件
+      this[dataElem] = false;
+      this.$nextTick(() => {
+        this[dataElem] = true;
       });
     }
   },

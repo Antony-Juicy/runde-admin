@@ -76,7 +76,7 @@
           append-to-body
           @handleClose="closeRule('dataRuleForm')"
           @submitForm="submitRuleForm('dataRuleForm')">
-          <el-form ref="dataRuleForm" :model="ruleForm" :rules="gzRules" label-width="110px">
+          <el-form ref="dataRuleForm" :model="ruleForm" :rules="gzRules" label-width="120px">
             <el-form-item label="规格名称" prop="goodsItemName">
               <el-input v-model.trim="ruleForm.goodsItemName" autocomplete="off" placeholder="请输入规则组名称" />
             </el-form-item>
@@ -89,8 +89,14 @@
             <el-form-item label="开通的班型id" prop="openClassId">
               <el-input v-model.trim="ruleForm.openClassId" autocomplete="off" placeholder="请输入班型id" />
             </el-form-item>
+            <el-form-item label="开通的班型名称" prop="openClassName">
+              <el-input v-model.trim="ruleForm.openClassName" autocomplete="off" placeholder="请输入班型名称" />
+            </el-form-item>
             <el-form-item label="开通的科目id" prop="openSubjectId">
               <el-input v-model.trim="ruleForm.openSubjectId" autocomplete="off" placeholder="请输入科目id" />
+            </el-form-item>
+            <el-form-item label="开通的科目名称" prop="openSubjectName">
+              <el-input v-model.trim="ruleForm.openSubjectName" autocomplete="off" placeholder="请输入科目名称" />
             </el-form-item>
             <el-form-item
               v-for="(domain, index) in ruleForm.ancillaryGoods"
@@ -217,7 +223,9 @@ export default {
         { name: '划线价',value: 'originalPrice' },
         // { name: '剩余库存量',value: 'inventory',width: 120 },
         { name: '开通班型id',value: 'openClassId' },
+        { name: '开通班型名称',value: 'openClassName' },
         { name: '开通科目id',value: 'openSubjectId' },
+        { name: '开通科目名称',value: 'openSubjectName' },
         { name: '配套内容',value: 'ancillaryGoods' },
         { name: '状态',value: 'goodsItemStatus',operate: true },
         { name: '操作',value: 'edit',operate: true,width: 120 }
@@ -233,7 +241,9 @@ export default {
         salesPrice: '',
         originalPrice: '',
         openClassId: '',
+        openClassName: '',
         openSubjectId: '',
+        openSubjectName: '',
         goodsItemStatus: '',
         ancillaryGoods: [
           {
@@ -256,8 +266,14 @@ export default {
         openClassId: [
           { required: true, message: "请输入班型id", trigger: "blur" }
         ],
+        openClassName: [
+          { required: true, message: "请输入班型名称", trigger: "blur" }
+        ],
         openSubjectId: [
           { required: true, message: "请输入科目id", trigger: "blur" }
+        ],
+        openSubjectName: [
+          { required: true, message: "请输入科目名称", trigger: "blur" }
         ],
         goodsItemStatus: [
           { required: true, message: "请选择状态", trigger: "blur" }

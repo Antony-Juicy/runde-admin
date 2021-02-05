@@ -26,7 +26,7 @@ export default {
   goods_rule_getList: { url: '/live/console/goods_item/get_update_info', method: 'post'},
   goods_rule_delete: { url: '/live/console/goods_item/delete', method: 'post'},
   goods_rule_update: { url:'/live/console/goods_item/update', method: 'post'},
-  goods_rule_list: { url: '/live/console/goods_item/page_list', method: 'post'},
+  goods_rule_list: { url: '/live/console/goods_item/group_item_list', method: 'post'},
   goods_rule_add: { url: '/live/console/goods_item/add', method: 'post'},
 
   // 商品规格组关联
