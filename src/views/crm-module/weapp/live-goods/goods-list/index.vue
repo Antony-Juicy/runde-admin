@@ -48,7 +48,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label="商品优惠券" prop="couponIds">
-              <el-select v-model="goodsForm.couponIds" filterable multiple placeholder="请选择优惠券">
+              <el-select @change="changCoupon" v-model="goodsForm.couponIds" filterable multiple placeholder="请选择优惠券">
                 <el-option v-for="item in couponOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
               </el-select>
             </el-form-item>
@@ -63,8 +63,8 @@
             </el-form-item>
             <el-form-item label="是否推荐" prop="recommend">
               <el-switch v-model="goodsForm.recommend"></el-switch>
-              <!-- <el-radio v-model.trim="goodsForm.recommend" label="true">是</el-radio>
-              <el-radio v-model.trim="goodsForm.recommend" label="false">否</el-radio> -->
+              <!-- <el-radio v-model.trim="goodsForm.recommend" :label="true">是</el-radio>
+              <el-radio v-model.trim="goodsForm.recommend" :label="false">否</el-radio> -->
             </el-form-item>
             <el-form-item label="商品状态" prop="goodsStatus">
               <el-radio v-model.trim="goodsForm.goodsStatus" label="Open">上架</el-radio>
@@ -234,7 +234,7 @@ export default {
         goodsExhibitionImage: '', // 展示图
         goodsDetail: '', // 商品简介
         freight: '', // 运费
-        recommend: false, // 是否推荐
+        recommend: true, // 是否推荐
         goodsStatus: '' // 上下架
       },
       typeOptions: [], // 项目类型
@@ -311,6 +311,7 @@ export default {
   mounted () {
     this.getTableData()
     this.getTypeData();
+    this.getCouponData();
   },
   methods: {
     onSearch(val) {
@@ -359,15 +360,16 @@ export default {
       for (const key in this.goodsForm) {
         this.goodsForm[key] = "";
       }
+      this.goodsForm.recommend = true
       // this.getTypeData();
-      this.getCouponData();
+      // this.getCouponData();
     },
     // 编辑商品
     handleEdit(row) {
       this.goodsVisible = true;
       this.goodsStatusVisible = false;
       this.getTypeData()
-      this.getCouponData();
+      // this.getCouponData();
       this.$fetch(
         "goods_getList",
         {
@@ -378,6 +380,9 @@ export default {
         this.goodsForm = res.data
         this.goodsForm.couponIds = res.data.coupons.map(item => item.couponId)
       });
+    },
+    changCoupon() {
+      this.$forceUpdate();
     },
     // 删除商品
     handleDelete(row) {
