@@ -370,7 +370,7 @@ export default {
       this.goodsVisible = true;
       this.goodsStatusVisible = false;
       this.getTypeData()
-      // this.getCouponData();
+      this.getCouponData();
       this.$fetch(
         "goods_getList",
         {

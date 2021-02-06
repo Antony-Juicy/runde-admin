@@ -89,11 +89,16 @@ export default {
   },
   methods: {
     onSearch(val) {
-      this.searchForm = {
-        ...val,
-        createDateStart: val.ordersTime[0],
-        createDateEnd: val.ordersTime[1]
-      };
+      if(val.ordersTime) {
+        this.searchForm = {
+          createDateStart: val.ordersTime[0],
+          createDateEnd: val.ordersTime[1]
+        }
+      } else {
+        this.searchForm = {
+          ...val,
+        };
+      }
       this.pageConfig.pageNum = 1;
       this.getTableData();
       console.log(this.searchForm , 'val---')
