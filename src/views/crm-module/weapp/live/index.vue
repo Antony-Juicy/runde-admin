@@ -30,6 +30,14 @@
           >
           <el-divider direction="vertical"></el-divider>
           <el-button
+            @click="handleShare(scope.row)"
+            type="text"
+            size="small"
+            style="color: #67c23a"
+            >分享</el-button
+          >
+          <el-divider direction="vertical"></el-divider>
+          <el-button
             @click="handleLink(scope.row)"
             type="text"
             size="small"
@@ -73,7 +81,18 @@
         :width="'900px'"
         @handleClose="linkVisible = false"
       >
-        <manageLink :liveId="liveId"/>
+        <manageLink :liveId="liveId" v-if="linkVisible"/>
+      </rd-dialog>
+
+      <!-- 分享-小程序二维码 -->
+      <rd-dialog
+        :title="'直播间名称：' + liveName"
+        :dialogVisible="shareVisible"
+        :showFooter="false"
+        :width="'400px'"
+        @handleClose="shareVisible = false"
+      >
+        <manageShare :liveId="liveId" v-if="shareVisible"/>
       </rd-dialog>
     </div>
   </div>
@@ -83,6 +102,7 @@
 import fullDialog from "@/components/FullDialog";
 import addLive from "./addLive";
 import manageLink from "./manageLink";
+import manageShare from "./manageShare";
 import editLive from "./editLive/index.vue";
 export default {
   name: "live",
@@ -226,11 +246,11 @@ export default {
           name: "操作",
           value: "edit",
           operate: true,
-          width: 160,
+          width: 200,
         },
       ],
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
@@ -240,6 +260,8 @@ export default {
       editVisible: false,
       // 链接弹窗
       linkVisible: false,
+      // 分享弹窗
+      shareVisible: false,
       showAdd: true,
       searchForm: {}, //搜索栏信息
       liveId:"",
@@ -251,6 +273,7 @@ export default {
     addLive,
     editLive,
     manageLink,
+    manageShare
   },
   async mounted() {
     
@@ -295,6 +318,12 @@ export default {
     handleLink(data) {
       this.linkVisible = true;
       this.liveId = data.liveId;
+      this.liveName = data.liveName;
+    },
+    handleShare(data){
+      this.shareVisible = true;
+      this.liveId = data.liveId;
+      this.liveName = data.liveName;
     },
     handleDelete(data) {
       let info = "直播"

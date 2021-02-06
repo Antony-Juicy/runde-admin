@@ -32,7 +32,7 @@
         <div style="text-align: right">
             <el-button @click="resetForm('ruleForm')" size="small">取消</el-button>
             <el-button type="primary" @click="submitForm('ruleForm')" size="small"
-            >发送优惠券</el-button
+            >添加优惠券</el-button
             >
         </div>
       </el-form-item>

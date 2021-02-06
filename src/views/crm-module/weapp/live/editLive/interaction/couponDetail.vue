@@ -29,12 +29,12 @@ export default {
     return {
       formOptions: [
         {
-          prop: "menuName",
+          prop: "nickName",
           element: "el-input",
           placeholder: "昵称",
         },
         {
-          prop: "menuName",
+          prop: "phone",
           element: "el-input",
           placeholder: "用户手机号",
         },
@@ -47,21 +47,11 @@ export default {
         },
       ],
       tableData: [
-       { id: 1, name: "飞翔的荷兰人3", cutdown: 1608897351706, visit: 2,phone:'15692026183' },
-        { id: 2, name: "飞翔的荷兰人2",cutdown: new Date().getTime(),phone:'17092026183'  },
-        { id: 3,name: "飞翔的荷兰人1", phone:'18892026183'  },
-        { id: 4,name: "飞翔的荷兰人1", phone:'18892026183'  },
-        { id: 5,name: "飞翔的荷兰人1", phone:'18892026183'  },
-        { id: 6,name: "飞翔的荷兰人1", phone:'18892026183'  },
-        { id: 7,name: "飞翔的荷兰人1", phone:'18892026183'  },
-        { id: 8,name: "飞翔的荷兰人1", phone:'18892026183'  },
-        { id: 9,name: "飞翔的荷兰人1", phone:'18892026183'  },
-        { id: 10,name: "飞翔的荷兰人1", phone:'18892026183'  }
       ],
       tableKey: [
         {
           name: "微信昵称",
-          value: "index"
+          value: "nickName"
         },
          {
           name: "手机号",
@@ -69,38 +59,71 @@ export default {
         },
         {
           name: "领取时间",
-          value: "cutdown",
+          value: "createAt",
         },
         {
           name: "使用时间",
-          value: "menuUrl"
+          value: "updateAt"
         }
       ],
       pageConfig: {
         totalCount: 100,
-        currentPage: 1,
+        pageNum: 1,
         pageSize: 10,
       },
+      searchForm:{}
     }
+  },
+  props: {
+    liveCouponId: {
+      type: Number
+    }
+  },
+  mounted(){
+    this.getTableData();
   },
    methods: {
      handleAdd(){},
-      onSearch() {},
-      pageChange(val) {
-      // this.pageConfig.currentPage = val.page;
-      // this.pageConfig.pageSize = val.limit;
-      // console.log(this.searchForm,'this.searchForm--')
-      // this.getTableData({
-      //   currentPage: (val && val.page) || 1,
-      //   pageSize: (val && val.limit) || 10,
-      //   loginUserId,
-      //   ...this.searchForm,
-      //   parentId: this.parentId
-      // });
+      onSearch(val) {
+        if(val.time&& val.time.length>0){
+          this.searchForm = {
+            ...val,
+            receiveStart: val.time[0],
+            receiveEnd: val.time[1]
+          }
+        }else {
+          this.searchForm = {...val};
+        }
+        
+        this.getTableData();
+      },
+    pageChange(val) {
+      console.log(val,'pagechange')
+      this.pageConfig.pageNum = val.page;
+      this.pageConfig.pageSize = val.limit;
+      this.getTableData();
     },
     handelSortChange(val){
       console.log(val,'valll')
-    }
+    },
+    getTableData(params = {}) {
+      const loading = this.$loading({
+        lock: true,
+        target: ".coupon-detail .el-table",
+      });
+      this.$fetch("live_page_coupon_receive_record", {
+        ...this.pageConfig,
+        ...params,
+        ...this.searchForm,
+        liveCouponId: this.liveCouponId
+      }).then((res) => {
+        this.tableData = res.data.records;
+        this.pageConfig.totalCount = res.data.totalCount;
+        setTimeout(() => {
+          loading.close();
+        }, 200);
+      });
+    },
   }
 }
 </script>

@@ -24,7 +24,7 @@ export default {
     live_coupon_add: {url: '/live/console/live_coupon/add',method: 'post'}, //添加直播优惠券
     live_coupon_related_list: {url: '/live/console/live_coupon/get_live_related_coupon_list',method: 'post'}, //获取直播关联优惠券列表
     live_coupon_send: {url: '/live/console/live_coupon/send',method: 'post'}, //优惠券派发
-
+    live_page_coupon_receive_record: {url: '/live/console/live_coupon/page_coupon_receive_record',method: 'post'}, //优惠券派发
 
     // 答题卡
     live_answer_list: {url: '/live/console/live_answer_sheet/get_live_answer_sheet_list',method: 'post'}, //获取直播答题卡列表
@@ -41,4 +41,6 @@ export default {
 
     // 链接
     live_get_url: {url: '/live/console/live/get_url',method: 'post'}, //获取链接
+    // 小程序码
+    live_get_qr_code: {url: '/live/console/live/get_qr_code',method: 'post'},
   } 

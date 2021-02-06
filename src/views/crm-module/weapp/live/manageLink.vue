@@ -53,7 +53,7 @@
         >
         <p class="tips pwd">助教密码：{{pwd}}</p>
       </el-form-item>
-      <el-form-item label="观看端">
+      <!-- <el-form-item label="观看端">
         <div class="view">
           <el-image
             style="width: 100px; height: 100px"
@@ -63,7 +63,7 @@
           <p>小程序观看二维码</p>
           <el-button size="small">下载</el-button>
         </div>
-      </el-form-item>
+      </el-form-item> -->
     </el-form>
   </div>
 </template>
@@ -87,11 +87,11 @@ export default {
   mounted(){
     this.getData();
   },
-  watch:{
-    liveId(){
-      this.getData();
-    }
-  },
+  // watch:{
+  //   liveId(){
+  //     this.getData();
+  //   }
+  // },
   methods: {
     copyLink(btnName) {
       let clipboard = new Clipboard(btnName);
@@ -122,6 +122,8 @@ export default {
 
 <style lang="scss" scoped>
 .manage-link {
+  min-height: 268px;
+  padding-top: 25px;
   .pwd {
     position: absolute;
     bottom: -27px;
@@ -146,5 +148,6 @@ export default {
       color: #333;
     }
   }
+  
 }
 </style>

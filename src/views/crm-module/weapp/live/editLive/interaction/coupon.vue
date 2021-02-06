@@ -38,7 +38,7 @@
       :direction="'rtl'"
       :size="'50%'"
       append-to-body>
-      <couponDetail/>
+      <couponDetail :liveCouponId="liveCouponId" v-if="drawerVisible1"/>
     </el-drawer>
   </div>
 </template>
@@ -81,7 +81,8 @@ export default {
           width: 160,
         },
       ],
-      drawerVisible1: false
+      drawerVisible1: false,
+      liveCouponId: 0
     };
   },
   components:{
@@ -134,6 +135,7 @@ export default {
       });
     },
     handleEdit(val){
+      this.liveCouponId = val.liveCouponId;
       this.drawerVisible1 = true;
     },
     handleSend(data){
