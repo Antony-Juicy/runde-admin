@@ -92,11 +92,11 @@
             <el-form-item label="开通的班型名称" prop="openClassName">
               <el-input v-model.trim="ruleForm.openClassName" autocomplete="off" placeholder="请输入班型名称" />
             </el-form-item>
-            <el-form-item label="开通的科目id" prop="openSubjectId">
-              <el-input v-model.trim="ruleForm.openSubjectId" autocomplete="off" placeholder="请输入科目id" />
+            <el-form-item label="开通的课程id" prop="openSubjectId">
+              <el-input v-model.trim="ruleForm.openSubjectId" autocomplete="off" placeholder="请输入课程id" />
             </el-form-item>
-            <el-form-item label="开通的科目名称" prop="openSubjectName">
-              <el-input v-model.trim="ruleForm.openSubjectName" autocomplete="off" placeholder="请输入科目名称" />
+            <el-form-item label="开通的课程名称" prop="openSubjectName">
+              <el-input v-model.trim="ruleForm.openSubjectName" autocomplete="off" placeholder="请输入课程名称" />
             </el-form-item>
             <el-form-item
               v-for="(domain, index) in ruleForm.ancillaryGoods"
@@ -224,8 +224,8 @@ export default {
         // { name: '剩余库存量',value: 'inventory',width: 120 },
         { name: '开通班型id',value: 'openClassId' },
         { name: '开通班型名称',value: 'openClassName' },
-        { name: '开通科目id',value: 'openSubjectId' },
-        { name: '开通科目名称',value: 'openSubjectName' },
+        { name: '开通课程id',value: 'openSubjectId' },
+        { name: '开通课程名称',value: 'openSubjectName' },
         { name: '配套内容',value: 'ancillaryGoods' },
         { name: '状态',value: 'goodsItemStatus',operate: true },
         { name: '操作',value: 'edit',operate: true,width: 120 }
@@ -270,10 +270,10 @@ export default {
           { required: true, message: "请输入班型名称", trigger: "blur" }
         ],
         openSubjectId: [
-          { required: true, message: "请输入科目id", trigger: "blur" }
+          { required: true, message: "请输入课程id", trigger: "blur" }
         ],
         openSubjectName: [
-          { required: true, message: "请输入科目名称", trigger: "blur" }
+          { required: true, message: "请输入课程名称", trigger: "blur" }
         ],
         goodsItemStatus: [
           { required: true, message: "请选择状态", trigger: "blur" }

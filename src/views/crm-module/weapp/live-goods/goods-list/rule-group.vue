@@ -64,7 +64,7 @@ export default {
         { name: '价格',value: 'salesPrice' },
         { name: '划线价',value: 'originalPrice' },
         { name: '开通班型id',value: 'openClassId' },
-        { name: '开通科目id',value: 'openSubjectId' },
+        { name: '开通课程id',value: 'openSubjectId' },
         { name: '配套内容',value: 'ancillaryGoods' }
       ],
       loading: false,
