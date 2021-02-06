@@ -1,9 +1,9 @@
 <template>
   <div class="personal-list">
-      <search-form
+      <!-- <search-form
         :formOptions="formOptions"
         @onSearch="onSearch"
-      ></search-form>
+      ></search-form> -->
       <div class="w-container">
         <div class="btn-wrapper">
         <el-button type="warning" size="small" @click="handleAdd"
@@ -156,7 +156,7 @@ export default {
         lock: true,
         target: ".personal-list .el-table",
       });
-      this.$fetch("live_page_all_personal_list", {
+      this.$fetch("live_page_current_user_personal_list", {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,

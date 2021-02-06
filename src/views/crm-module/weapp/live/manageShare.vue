@@ -4,11 +4,12 @@
       <el-form-item label="">
         <div class="view">
           <el-image
-            style="width: 100px; height: 100px"
+            style="width: 180px; height: 180px"
             :src="url"
           >
             <div slot="error" class="image-slot">
-              <i class="el-icon-picture-outline"></i>
+              <!-- <i class="el-icon-picture-outline"></i> -->
+              <i class="el-icon-loading" style="font-size: 36px"></i>
             </div>
           </el-image>
           <p>小程序观看二维码</p>
@@ -80,6 +81,8 @@ export default {
     .el-image {
       .image-slot {
         text-align: center;
+        height: 100%;
+        line-height: 180px;
         .el-icon-picture-outline {
           font-size: 60px;
         }

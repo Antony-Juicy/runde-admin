@@ -27,14 +27,14 @@
           <el-card shadow="hover" :body-style="{ height: cardHeight }">
             <p class="num">{{ this.dataList.orderCount }}</p>
             <p>订单量</p>
-            <p class="details">查看明细</p>
+            <p class="details" @click="showOrder">查看明细</p>
           </el-card>
         </div>
         <div class="item2">
           <el-card shadow="hover" :body-style="{ height: cardHeight }">
             <p class="num">{{ this.dataList.invitationCount }}</p>
             <p>邀请量</p>
-            <p class="details">查看明细</p>
+            <p class="details" @click="showInvite">查看明细</p>
           </el-card>
         </div>
         <div class="item2">
@@ -81,7 +81,39 @@
             :body-style="{ height: '100px' }"
             @click.native="drawerVisible3 = true"
           >
-            <p class="item3-title">个人榜</p>
+            <p class="item3-title">全国个人榜</p>
+            <p class="details">查看明细</p>
+          </el-card>
+        </div>
+      </div>
+      <div class="third-row">
+        <div class="item3">
+          <el-card
+            shadow="hover"
+            :body-style="{ height: '100px' }"
+            @click.native="drawerVisible4 = true"
+          >
+            <p class="item3-title">省校个人榜</p>
+            <p class="details">查看明细</p>
+          </el-card>
+        </div>
+        <div class="item3">
+          <el-card
+            shadow="hover"
+            :body-style="{ height: '100px' }"
+            @click.native="drawerVisible5 = true"
+          >
+            <p class="item3-title">分校个人榜</p>
+            <p class="details">查看明细</p>
+          </el-card>
+        </div>
+        <div class="item3">
+          <el-card
+            shadow="hover"
+            :body-style="{ height: '100px' }"
+            @click.native="drawerVisible6 = true"
+          >
+            <p class="item3-title">当前用户个人榜</p>
             <p class="details">查看明细</p>
           </el-card>
         </div>
@@ -157,7 +189,7 @@
       :size="'50%'"
       append-to-body
     >
-      <provinceList :liveId="liveId" @close="drawerVisible1 = false"/>
+      <provinceList :liveId="liveId" @close="drawerVisible1 = false" />
     </el-drawer>
 
     <el-drawer
@@ -167,17 +199,47 @@
       :size="'50%'"
       append-to-body
     >
-      <campustList :liveId="liveId"/>
+      <campustList :liveId="liveId" />
     </el-drawer>
 
     <el-drawer
-      title="个人榜"
+      title="全国个人榜"
       :visible.sync="drawerVisible3"
       :direction="'rtl'"
       :size="'50%'"
       append-to-body
     >
-      <personalList :liveId="liveId"/>
+      <personalList :liveId="liveId" />
+    </el-drawer>
+
+    <el-drawer
+      title="省校个人榜"
+      :visible.sync="drawerVisible4"
+      :direction="'rtl'"
+      :size="'50%'"
+      append-to-body
+    >
+      <personalList2 :liveId="liveId" />
+    </el-drawer>
+
+    <el-drawer
+      title="分校个人榜"
+      :visible.sync="drawerVisible5"
+      :direction="'rtl'"
+      :size="'50%'"
+      append-to-body
+    >
+      <personalList3 :liveId="liveId" />
+    </el-drawer>
+
+    <el-drawer
+      title="当前用户个人榜"
+      :visible.sync="drawerVisible6"
+      :direction="'rtl'"
+      :size="'50%'"
+      append-to-body
+    >
+      <personalList4 :liveId="liveId" />
     </el-drawer>
   </div>
 </template>
@@ -187,6 +249,9 @@ import rdDrawer from "@/components/RdDrawer";
 import provinceList from "./provinceList";
 import campustList from "./campustList";
 import personalList from "./personalList";
+import personalList2 from "./personalList2";
+import personalList3 from "./personalList3";
+import personalList4 from "./personalList4";
 export default {
   name: "analysis",
   data() {
@@ -216,8 +281,7 @@ export default {
         pageSize: 10,
       },
 
-      tableData2: [
-      ],
+      tableData2: [],
       tableKey2: [
         {
           name: "排名",
@@ -244,6 +308,9 @@ export default {
       drawerVisible1: false,
       drawerVisible2: false,
       drawerVisible3: false,
+      drawerVisible4: false,
+      drawerVisible5: false,
+      drawerVisible6: false,
       dataList: "",
       provinceSchoolList: "",
       branchSchoolList: "",
@@ -257,10 +324,16 @@ export default {
     provinceList,
     campustList,
     personalList,
+    personalList2,
+    personalList3,
+    personalList4,
   },
   props: {
     liveId: {
       type: Number,
+    },
+    liveName: {
+      type: String,
     },
   },
   mounted() {
@@ -300,8 +373,8 @@ export default {
     this.getRewardList();
   },
   methods: {
-     pageChange(val) {
-      console.log(val,'pagechange')
+    pageChange(val) {
+      console.log(val, "pagechange");
       this.pageConfig.pageNum = val.page;
       this.pageConfig.pageSize = val.limit;
       this.getInvitationList();
@@ -345,6 +418,24 @@ export default {
         setTimeout(() => {
           loading.close();
         }, 200);
+      });
+    },
+
+    showOrder() {
+      this.$router.push({
+        path: "/crm-module/weapp/live-details/goods-orders",
+        query: {
+          sourceName: this.liveName
+        },
+      });
+    },
+
+    showInvite() {
+      this.$router.push({
+        path: "/crm-module/weapp/live-details/invite-count",
+        query: {
+          liveName: this.liveName
+        },
       });
     },
   },

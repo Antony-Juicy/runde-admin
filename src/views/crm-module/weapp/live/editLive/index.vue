@@ -12,7 +12,7 @@
                 <interaction :liveId="liveId"/>
             </el-tab-pane>
             <el-tab-pane label="数据分析" name="fourth">
-                <analysis :liveId="liveId"/>
+                <analysis :liveId="liveId" :liveName="liveName"/>
             </el-tab-pane>
             <el-tab-pane label="评论管理" name="fifth">
                 <comment :liveId="liveId" v-model="deviceF" @refresh="refresh"/>
@@ -46,6 +46,9 @@ export default {
       liveId: {
           type: Number
       },
+      liveName: {
+          type: String
+      }
     //   chatAudit: {
     //       type: Boolean
     //   },
@@ -70,8 +73,8 @@ export default {
     }
   },
    methods: {
-       refresh(){
-           this.$emit("refresh")
+       refresh(val){
+           this.$emit("refresh",val)
        },
        changeTab(){
            this.activeName = 'fourth'

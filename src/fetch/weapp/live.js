@@ -14,6 +14,12 @@ export default {
     live_reward_list: {url: '/live/console/live_statistics/page_reward_list',method: 'post'},
     live_invitation_list: {url: '/live/console/live_statistics/page_invitation_list',method: 'post'},
 
+    // 统计
+    live_page_all_personal_list: {url: '/live/console/live_statistics/page_all_personal_list',method: 'post'}, //分页获取全国个人榜数据
+    live_page_province_personal_list: {url: '/live/console/live_statistics/page_province_personal_list',method: 'post'}, //分页获取省校个人榜数据
+    live_page_branch_personal_list: {url: '/live/console/live_statistics/page_branch_personal_list',method: 'post'}, //分页获取分校个人榜数据
+    live_page_current_user_personal_list: {url: '/live/console/live_statistics/page_current_user_personal_list',method: 'post'}, //分页获取当前用户个人榜数据
+
     // 互动设置
     live_get_live_add_goods_list: {url: '/live/console/goods/get_live_add_goods_list',method: 'post'}, //弹窗商品列表
     live_batch_add_related: {url: '/live/console/live_goods/batch_add_related',method: 'post'}, //添加直播商品

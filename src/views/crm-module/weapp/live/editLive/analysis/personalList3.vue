@@ -41,11 +41,11 @@ export default {
   data(){
     return {
       formOptions: [
-        {
-          prop: "branchSchoolName",
-          element: "el-input",
-          placeholder: "请输入校区名称",
-        },
+        // {
+        //   prop: "branchSchoolName",
+        //   element: "el-input",
+        //   placeholder: "请输入校区名称",
+        // },
          {
           prop: "teacherName",
           element: "el-input",
@@ -156,7 +156,7 @@ export default {
         lock: true,
         target: ".personal-list .el-table",
       });
-      this.$fetch("live_page_all_personal_list", {
+      this.$fetch("live_page_branch_personal_list", {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,

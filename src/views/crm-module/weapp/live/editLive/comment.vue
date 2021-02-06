@@ -18,7 +18,7 @@
     <div class="operate-table">
       <div class="title">审核列表</div>
       <div class="btn-wrapper">
-        <el-button type="primary" size="small" @click="handlePassAll"
+        <el-button type="success" size="small" @click="handlePassAll"
           >批量通过</el-button
         >
         <el-button type="warning" size="small" @click="handleNopassAll"
@@ -26,6 +26,9 @@
         >
         <el-button type="info" size="small" @click="handleDeleteAll"
           >批量删除</el-button
+        >
+        <el-button type="primary" size="small" @click="refresh"
+          >刷新</el-button
         >
       </div>
       <rd-table
@@ -299,6 +302,10 @@ export default {
           this.getTableData()
         }
       })
+    },
+
+    refresh(){
+      this.$emit("refresh",1)
     }
   },
 };

@@ -26,7 +26,7 @@
       :size="'50%'"
       append-to-body
     >
-      <answerDetail :answerId="answerId"/>
+      <answerDetail :answerId="answerId" v-if="drawerVisible1"/>
     </el-drawer>
   </div>
 </template>

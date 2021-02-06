@@ -70,7 +70,7 @@
         :title="'直播间名称：' + liveName"
         @change="editVisible = false"
       >
-        <editLive ref="editLive" :liveId="liveId" @close="editVisible = false" @refresh="refresh" v-if="editVisible"/>
+        <editLive ref="editLive" :liveName="liveName" :liveId="liveId" @close="editVisible = false" @refresh="refresh" v-if="editVisible"/>
       </fullDialog>
 
       <!-- 链接 -->
@@ -89,7 +89,7 @@
         :title="'直播间名称：' + liveName"
         :dialogVisible="shareVisible"
         :showFooter="false"
-        :width="'400px'"
+        :width="'480px'"
         @handleClose="shareVisible = false"
       >
         <manageShare :liveId="liveId" v-if="shareVisible"/>
@@ -384,9 +384,9 @@ export default {
       });
       })
     },
-    refresh(){
+    refresh(val){
       this.getTableData({
-        pageNum: this.pageConfig.pageNum
+        pageNum: val || this.pageConfig.pageNum
       });
     },
     changeLiveStatus(val) {
