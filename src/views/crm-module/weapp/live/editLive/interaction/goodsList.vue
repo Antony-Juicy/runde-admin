@@ -21,6 +21,11 @@
       </div>
     </div>
 
+    <div style="display: flex;flex-direction: column;align-items: center;" v-show="!tableData.length">
+        <img src="@/assets/empty-image.png" alt="" class="img-empty" style="width:260px;height:260px;"/>
+        <p>暂无数据</p>
+      </div>
+
     <Pagination
       :total="pageConfig.totalCount"
       :page.sync="pageConfig.currentPage"
@@ -45,7 +50,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
       },
-      tableData:[]
+      tableData:[{}]
     };
   },
   components: {
