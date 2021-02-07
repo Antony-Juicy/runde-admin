@@ -209,13 +209,9 @@ export default {
     },
     pageGroupChange(val) {
       console.log(val,'pagechange')
-      this.pageConfig.pageNum = val.page;
-      this.pageConfig.pageSize = val.limit;
+      this.pageGroupConfig.pageNum = val.page;
+      this.pageGroupConfig.pageSize = val.limit;
       this.getRuleTableData(
-        // {
-        //   pageNum: (val && val.page) || 1,
-        //   pageSize: (val && val.limit) || 10,
-        // }
       );
     },
   }
