@@ -28,7 +28,7 @@
 
     <Pagination
       :total="pageConfig.totalCount"
-      :page.sync="pageConfig.currentPage"
+      :page.sync="pageConfig.pageNum"
       :limit.sync="pageConfig.pageSize"
       @pagination="pageChange"
     />
