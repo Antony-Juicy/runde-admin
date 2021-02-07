@@ -24,7 +24,7 @@
           <el-divider direction="vertical"></el-divider>
           <el-button @click="openfullDialogGroup(scope.row)" type="text" size="small">关联规则组</el-button>
           <el-divider direction="vertical"></el-divider>
-          <el-button @click="handleEdit(scope.row)" type="text" size="small">查看订单</el-button>
+          <el-button @click="goOrders(scope.row)" type="text" size="small">查看订单</el-button>
           <el-divider direction="vertical"></el-divider>
           <el-button @click="handleComment(scope.row)" type="text" size="small">评价</el-button>
           <el-divider direction="vertical"></el-divider>
@@ -493,6 +493,15 @@ export default {
           }
         }
       });
+    },
+
+    goOrders(row) {
+      this.$router.push({
+        path: '/crm-module/weapp/live-details/goods-orders',
+        query: {
+          goodsName: row.goodsName,
+        } 
+      })
     },
     
 

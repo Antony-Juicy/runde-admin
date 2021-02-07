@@ -1,6 +1,6 @@
 <template>
   <div class="goodsorders-container">
-    <search-form :formOptions = "formOptions" :showNum="showNum" @onSearch = onSearch></search-form>
+    <search-form :formOptions = "formOptions" :showNum="showNum" @onSearch = onSearch ref="myserach"></search-form>
     <div class="w-container">
       <div class="btn-wrapper">
         <el-button type="primary" size="small">导出</el-button>
@@ -86,6 +86,19 @@ export default {
   mounted () {
     this.getTableData();
     this.getTypeData();
+    const { goodsName } = this.$route.query;
+    if (goodsName) {
+      // 年后处理
+      // // this.searchForm.goodsName = goodsName
+      // this.formOptions[1].initValue = goodsName;
+      // this.formOptions = [...this.formOptions];
+      // this.$forceUpdate();
+      // console.log(this.formOptions,'this.formOptions')
+      // this.pageConfig.pageNum = 1;
+      // this.searchForm = {goodsName};
+      // // this.$refs.myserach.onSearch({goodsName});
+      // this.getTableData();
+    }
   },
   methods: {
     onSearch(val) {
