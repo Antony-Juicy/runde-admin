@@ -43,7 +43,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="立减面额" prop="denomination" v-if="couponForm.couponType == 'InstantDecrease' ">
-            <el-input v-model.trim="couponForm.denomination" autocomplete="off" placeholder="">
+            <el-input v-model.trim="couponForm.denomination" @input="couponForm.denomination = String(couponForm.denomination).replace(/[^\d]/g,'')" autocomplete="off" placeholder="">
               <template slot="append">元</template>
             </el-input>
           </el-form-item>
@@ -55,7 +55,7 @@
           <el-row :gutter="24">
             <el-col :span="14">
               <el-form-item label="满减面额" prop="condition" v-if="couponForm.couponType == 'FullDiscount' ">
-                <el-input v-model.trim="couponForm.condition" autocomplete="off" placeholder="">
+                <el-input v-model.trim="couponForm.condition" @input="couponForm.condition = String(couponForm.condition).replace(/[^\d]/g,'')" autocomplete="off" placeholder="">
                   <template slot="prepend">满</template>
                   <template slot="append">元</template>
                 </el-input>
@@ -63,7 +63,7 @@
             </el-col>
             <el-col :span="10">
               <el-form-item label="" prop="denomination" v-if="couponForm.couponType == 'FullDiscount' " label-width="1px">
-                <el-input v-model.trim="couponForm.denomination" autocomplete="off" placeholder="">
+                <el-input v-model.trim="couponForm.denomination" @input="couponForm.denomination = String(couponForm.denomination).replace(/[^\d]/g,'')" autocomplete="off" placeholder="">
                   <template slot="prepend">减</template>
                   <template slot="append">元</template>
                 </el-input>
@@ -218,12 +218,11 @@ export default {
     },
     pageChange(val) {
       console.log(val,'pagechange')
-      this.currentPageInfo = val;
-      this.getTableData({
-        pageNum: (val && val.page) || 1,
-        pageSize: (val && val.limit) || 10,
-        loginUserId: this.$common.getUserId()
-      });
+      // this.currentPageInfo = val;
+      this.pageConfig.pageNum = val.page;
+      this.pageConfig.pageSize = val.limit;
+      loginUserId: this.$common.getUserId()
+      this.getTableData();
     },
     
     // 新增

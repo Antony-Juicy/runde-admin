@@ -19,7 +19,7 @@
         <template slot="edit" slot-scope="scope">
           <el-button @click="openConfig(scope.row)" type="text" size="small">管理</el-button>
           <el-divider direction="vertical"></el-divider>
-          <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑规格</el-button>
+          <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑规则组</el-button>
         </template>
       </rd-table>
       <!-- 添加规则组 -->
@@ -50,7 +50,7 @@
       </rd-dialog>
       <!-- 添加规则组 -->
       <!-- 管理规格 -->
-      <fullDialog v-model="showGroup" title="标题标题标题标题" @change="closeConfig">
+      <fullDialog v-model="showGroup" :title="showGroupTitle" @change="closeConfig">
         <div class="btn-wrapper">
           <el-button type="primary" size="small" @click="handleAddRule">添加规格</el-button>
         </div>
@@ -87,13 +87,13 @@
               <el-input-number controls-position="right" v-model.trim ="ruleForm.originalPrice" autocomplete="off" :min="0" placeholder="" />
             </el-form-item>
             <el-form-item label="开通的班型id" prop="openClassId">
-              <el-input v-model.trim="ruleForm.openClassId" autocomplete="off" placeholder="请输入班型id" />
+              <el-input v-model.trim="ruleForm.openClassId" autocomplete="off" @input="ruleForm.openClassId = String(ruleForm.openClassId).replace(/[^\d]/g,'')" placeholder="请输入班型id" />
             </el-form-item>
             <el-form-item label="开通的班型名称" prop="openClassName">
               <el-input v-model.trim="ruleForm.openClassName" autocomplete="off" placeholder="请输入班型名称" />
             </el-form-item>
             <el-form-item label="开通的课程id" prop="openSubjectId">
-              <el-input v-model.trim="ruleForm.openSubjectId" autocomplete="off" placeholder="请输入课程id" />
+              <el-input v-model.trim="ruleForm.openSubjectId" autocomplete="off" @input="ruleForm.openSubjectId = String(ruleForm.openSubjectId).replace(/[^\d]/g,'')" placeholder="请输入课程id" />
             </el-form-item>
             <el-form-item label="开通的课程名称" prop="openSubjectName">
               <el-input v-model.trim="ruleForm.openSubjectName" autocomplete="off" placeholder="请输入课程名称" />
@@ -168,7 +168,7 @@ export default {
         { name: '规格数',value: 'itemCount' },
         { name: '状态',value: 'goodsGroupStatus',operate: true },
         { name: '备注',value: 'remark' },
-        { name: '操作',value: 'edit',operate: true,width: 130 }
+        { name: '操作',value: 'edit',operate: true,width: 140 }
       ],
       emptyText: '暂无数据',
       fixedTwoRow: true,
@@ -205,6 +205,7 @@ export default {
 
       // 管理规格大弹窗
       showGroup: false, // 规格展示
+      showGroupTitle: '',
       tableRuleData: [
         {
           goodsItemName: "中药学专业知识一",
@@ -317,10 +318,9 @@ export default {
     },
     pageChange(val) {
       console.log(val,'pagechange')
-      this.getTableData({
-        pageNum: (val && val.page) || 1,
-        pageSize: (val && val.limit) || 10,
-      });
+      this.pageConfig.pageNum = val.page;
+      this.pageConfig.pageSize = val.limit;
+      this.getTableData();
     },
     
     // 添加规则组弹窗
@@ -419,6 +419,7 @@ export default {
     openConfig(row) {
       this.showGroup = true;
       this.currentGoodsGroupId = row.goodsGroupId
+      this.showGroupTitle = row.goodsGroupName
       this.gitRuletableData(row.goodsGroupId)
     },
     closeConfig(val) {
@@ -448,7 +449,7 @@ export default {
       this.ruleVisible = true;
       this.ruleStatus = true;
     },
-    // 编辑规格
+    // 编辑规则组
     handleEditRule(row) {
       this.ruleVisible = true;
       this.ruleStatus = false;

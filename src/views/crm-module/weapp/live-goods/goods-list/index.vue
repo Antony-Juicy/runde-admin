@@ -22,7 +22,7 @@
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑</el-button>
           <el-divider direction="vertical"></el-divider>
-          <el-button @click="openfullDialogGroup(scope.row)" type="text" size="small">关联规格组</el-button>
+          <el-button @click="openfullDialogGroup(scope.row)" type="text" size="small">关联规则组</el-button>
           <el-divider direction="vertical"></el-divider>
           <el-button @click="handleEdit(scope.row)" type="text" size="small">查看订单</el-button>
           <el-divider direction="vertical"></el-divider>
@@ -32,13 +32,13 @@
         </template>
       </rd-table>
       <fullDialog v-model="goodsVisible" :title="goodsStatusVisible ? '添加商品' : '编辑商品'" @change="fullDialogChange">
-        <div class="w-container">
+        <div class="w-container" v-if="goodsVisible">
           <el-form ref="dataForm" :model="goodsForm" :rules="rules" label-width="120px">
             <el-form-item label="商品名称" prop="goodsName">
               <el-input v-model.trim="goodsForm.goodsName" autocomplete="off" placeholder="请输入商品名称" />
             </el-form-item>
             <el-form-item label="项目类型" prop="typeId">
-              <el-select v-model="goodsForm.typeId" :disabled="goodsStatusVisible ? false : true" placeholder="请选择">
+              <el-select v-model="goodsForm.typeId" :disabled="goodsStatusVisible ? false : true" clearable placeholder="请选择">
                 <el-option v-for="item in typeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
               </el-select>
             </el-form-item>
@@ -198,7 +198,7 @@ export default {
         { name: '项目类型',value: 'typeName' },
         { name: '商品缩略图',value: 'goodsThumbnail',operate: true,width: 100 },
         { name: '商品名称',value: 'goodsName' },
-        { name: '规格组数',value: 'goodsItemGroupCount' },
+        { name: '规则组数',value: 'goodsItemGroupCount' },
         { name: '商品价格',value: 'goodsPrices' },
         { name: '总销售量',value: 'totalSalesCount' },
         { name: '状态',value: 'goodsStatus',operate: true },
@@ -460,10 +460,10 @@ export default {
     },
     // 提交新增商品
     submitForm() {
-      this.goodsForm.couponIds = JSON.stringify(this.goodsForm.couponIds)
-      this.goodsForm.goodsLabels = JSON.stringify(this.goodsForm.goodsLabels)
       this.$refs.dataForm.validate((val, data) => {
         if(val) {
+          this.goodsForm.couponIds = JSON.stringify(this.goodsForm.couponIds)
+          this.goodsForm.goodsLabels = JSON.stringify(this.goodsForm.goodsLabels)
           if(this.goodsStatusVisible) {
             // 新增
             this.$fetch("goods_add", {

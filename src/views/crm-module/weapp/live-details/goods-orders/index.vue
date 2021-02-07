@@ -45,11 +45,11 @@ export default {
           placeholder: '订单状态',
           options: [
             {
-              label: "已支付",
+              label: "待支付",
               value: "WaitPay",
             },
             {
-              label: "付费",
+              label: "已支付",
               value: "Finish",
             },
             {
@@ -142,10 +142,9 @@ export default {
     },
     pageChange(val) {
       console.log(val,'pagechange')
-      this.getTableData({
-        pageNum: (val && val.page) || 1,
-        pageSize: (val && val.limit) || 10,
-      });
+      this.pageConfig.pageNum = val.page;
+      this.pageConfig.pageSize = val.limit;
+      this.getTableData();
     }
   },
   filters: {

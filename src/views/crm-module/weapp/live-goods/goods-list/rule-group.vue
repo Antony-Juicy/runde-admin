@@ -2,11 +2,11 @@
   <div class="rulegroup-container">
     <div class="w-container">
       <div class="btn-wrapper">
-        <el-button type="primary" size="small" @click="openAddGroup">选择规格组</el-button>
+        <el-button type="primary" size="small" @click="openAddGroup">选择规则组</el-button>
       </div>
       <div v-for="(item, i) in this.tableData" :key="i" style="margin-bottom:10px;">
         <div style="padding: 0 20px;height: 40px; border: 1px solid #EBEEF5; line-height:40px;background-color: rgb(242, 242, 242);">
-          规格组：{{item.groupName}}
+          规则组：{{item.groupName}}
           <span style="float:right;padding-right:20px;">  
             共{{item.goodsItemCount}}个规则
             <el-button @click="deleteAddGroup(item)" type="text" size="small" style="margin-left:20px; color: #ec5b56" >删除</el-button>
@@ -22,7 +22,7 @@
         </rd-table>
       </div>
       <rd-dialog
-        title="选择规格组"
+        title="选择规则组"
         :dialogVisible="showAddGroup"
         :width="widthGroup"
         append-to-body
@@ -57,10 +57,10 @@ export default {
   },
   data(){
     return {
-      // 关联规格组弹窗
+      // 关联规则组弹窗
       tableData: [],
       tableKey: [
-        { name: '规格',value: 'goodsItemName' },
+        { name: '规则',value: 'goodsItemName' },
         { name: '价格',value: 'salesPrice' },
         { name: '划线价',value: 'originalPrice' },
         { name: '开通班型id',value: 'openClassId' },
@@ -68,7 +68,7 @@ export default {
         { name: '配套内容',value: 'ancillaryGoods' }
       ],
       loading: false,
-      emptyText: '暂无规格',
+      emptyText: '暂无规则',
       isImage: false, // 控制表格无数据展示图
       fixedTwoRow: true,
       showGroup: false,
@@ -78,7 +78,7 @@ export default {
       searchGroupForm: {},
       goodsGroupIdData: [], // 选择的规则id集合
       optionsGroup: [
-        { prop: 'goodsGroupName', element: 'el-input', placeholder: '请输入规格组名称' },
+        { prop: 'goodsGroupName', element: 'el-input', placeholder: '请输入规则组名称' },
         { prop: 'remark', element: 'el-input', placeholder: '请输入备注内容' },
       ],
       tableGroupData: [
@@ -89,7 +89,7 @@ export default {
         }
       ],
       tableGroupKey: [
-        { name: '规格组',value: 'goodsGroupName' },
+        { name: '规则组',value: 'goodsGroupName' },
         { name: '规则数量',value: 'itemCount' },
         { name: '备注',value: 'remark' },
       ],
@@ -122,7 +122,7 @@ export default {
       });
     },
 
-    // 选择规格组弹窗
+    // 选择规则组弹窗
     onGroupSearch(val) {
       this.searchGroupForm = {...val};
       this.pageGroupConfig.pageNum = 1;
@@ -160,7 +160,7 @@ export default {
     deleteAddGroup(item) {
       console.log(item, 996)
       let info = item.groupName;
-      this.$confirm(`此操作将删除${info}规格组, 是否继续?`, "提示", {
+      this.$confirm(`此操作将删除${info}规则组, 是否继续?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -209,6 +209,14 @@ export default {
     },
     pageGroupChange(val) {
       console.log(val,'pagechange')
+      this.pageConfig.pageNum = val.page;
+      this.pageConfig.pageSize = val.limit;
+      this.getRuleTableData(
+        // {
+        //   pageNum: (val && val.page) || 1,
+        //   pageSize: (val && val.limit) || 10,
+        // }
+      );
     },
   }
 }

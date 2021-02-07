@@ -179,6 +179,11 @@ export default {
     },
     pageChange(val) {
       console.log(val,'pagechange')
+      this.getCommentData({
+        goodsId: this.goodsId,
+        pageNum: (val && val.page) || 1,
+        pageSize: (val && val.limit) || 10,
+      });
     },
     closeComment(formName) {
       this.commentVisible = false;
