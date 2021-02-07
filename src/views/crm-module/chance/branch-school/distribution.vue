@@ -30,7 +30,7 @@
     <rd-table
       :tableData="tableData"
       :tableKey="tableKey"
-      :pageConfig="pageConfig"
+      :pageConfig.sync="pageConfig"
       highlight-current-row
       @pageChange="pageChange"
     >

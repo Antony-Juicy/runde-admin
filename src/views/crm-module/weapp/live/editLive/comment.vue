@@ -34,7 +34,7 @@
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
-        :pageConfig="pageConfig"
+        :pageConfig.sync="pageConfig"
         :multiple="true"
         fixedTwoRow
         @pageChange="pageChange"

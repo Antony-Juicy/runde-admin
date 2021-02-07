@@ -9,7 +9,7 @@
         :tableKey="tableKey"
         :loading="loading"
         :fixedTwoRow="fixedTwoRow"
-        :pageConfig="pageConfig"
+        :pageConfig.sync="pageConfig"
         @select="handleSelect"
         @pageChange="pageChange">
         <template slot="typeIcon" slot-scope="scope">

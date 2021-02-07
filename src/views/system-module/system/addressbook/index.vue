@@ -12,7 +12,7 @@
         :tableKey="tableKey"
         :loading="loading"
         :fixedTwoRow="fixedTwoRow"
-        :pageConfig="pageConfig"
+        :pageConfig.sync="pageConfig"
         :emptyText="emptyText"
         :tbodyHeight="600"
         @select="handleSelect"

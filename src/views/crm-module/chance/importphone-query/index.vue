@@ -10,7 +10,7 @@
         :tableKey="tableKey"
         :loading="loading"
         :fixedTwoRow="fixedTwoRow"
-        :pageConfig="pageConfig"
+        :pageConfig.sync="pageConfig"
         :tbodyHeight="600"
         @select="handleSelect"
         @pageChange="pageChange"

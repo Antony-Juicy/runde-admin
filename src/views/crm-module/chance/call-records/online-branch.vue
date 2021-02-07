@@ -15,7 +15,7 @@
       :tableKey="tableKey"
       :loading="loading"
       :fixedTwoRow="fixedTwoRow"
-      :pageConfig="pageConfig"
+      :pageConfig.sync="pageConfig"
       @select="handleSelect"
       @pageChange="pageChange"
     >

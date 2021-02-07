@@ -74,7 +74,7 @@
           <rd-table
             :tableData="tableData"
             :tableKey="tableKey"
-            :pageConfig="pageConfig"
+            :pageConfig.sync="pageConfig"
             fixedTwoRow
           >
           </rd-table>

@@ -10,7 +10,7 @@
       :tableData="tableData"
       :tableKey="tableKey"
       :fixedTwoRow="true"
-      :pageConfig="pageConfig"
+      :pageConfig.sync="pageConfig"
       :tbodyHeight="800"
     >
     </rd-table>

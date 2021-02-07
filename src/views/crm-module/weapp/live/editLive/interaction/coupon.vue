@@ -9,7 +9,7 @@
         :tableKey="tableKey"
         fixedTwoRow
         highlight-current-row
-        :pageConfig="pageConfig"
+        :pageConfig.sync="pageConfig"
         @pageChange="pageChange"
       >
         <template slot="couponType" slot-scope="scope">

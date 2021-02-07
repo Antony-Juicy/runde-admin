@@ -18,7 +18,7 @@
         :loading="loading"
         :fixedTwoRow="fixedTwoRow"
         :multiple="true"
-        :pageConfig="pageConfig"
+        :pageConfig.sync="pageConfig"
         @select="handleSelect"
         @pageChange="pageChange"
       >

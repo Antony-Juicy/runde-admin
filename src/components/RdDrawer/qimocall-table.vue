@@ -5,7 +5,7 @@
       :tableKey="tableKey"
       :loading="loading"
       :fixedTwoRow="fixedTwoRow"
-      :pageConfig="pageConfig"
+      :pageConfig.sync="pageConfig"
       :tbodyHeight="650"
       :pager-count="5"
       @select="handleSelect"

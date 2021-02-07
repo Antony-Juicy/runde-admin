@@ -29,7 +29,7 @@
         :tableData="tableData"
         :tableKey="tableKey"
         :fixedTwoRow="fixedTwoRow"
-        :pageConfig="pageConfig"
+        :pageConfig.sync="pageConfig"
         :filterColumn="true"
         :tbodyHeight="600"
         @select="handleSelect"

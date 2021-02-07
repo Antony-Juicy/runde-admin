@@ -37,7 +37,7 @@
           :multiple="true"
           :emptyText="emptyText"
           :isImage="isImage"
-          :pageConfig="pageGroupConfig"
+          :pageConfig.sync="pageGroupConfig"
           @select="handleGroupSelect"
           @pageChange="pageGroupChange">
         </rd-table>

@@ -209,8 +209,19 @@ export default {
     checkColumn() {
       return this.tableKeyData.filter((item) => item.show);
     },
-    currentPage(){
-      return this.pageConfig.currentPage || this.pageConfig.pageNum
+    currentPage: {
+      get() {
+        return this.pageConfig.currentPage || this.pageConfig.pageNum
+      },
+      set(val){
+        return this.pageConfig.currentPage?this.$emit('update:pageConfig', {
+          ...this.pageConfig,
+          currentPage: val
+        }):this.$emit('update:pageConfig', {
+          ...this.pageConfig,
+          pageNum: val
+        })
+      }
     }
   },
   methods: {
