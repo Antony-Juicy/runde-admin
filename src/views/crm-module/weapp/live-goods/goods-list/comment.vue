@@ -3,7 +3,7 @@
     <div class="w-container">
       <div class="btn-wrapper">
         <el-button type="primary" size="small" @click="handleAdd">新增</el-button>
-        <el-button type="primary" size="small" @click="handleAdd">批量导入</el-button>
+        <!-- <el-button type="primary" size="small" @click="handleAdd">批量导入</el-button> -->
       </div>
       <rd-table
         :tableData="tableCommentData"
