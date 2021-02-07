@@ -20,7 +20,7 @@
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
-        :pageConfig="pageConfig"
+        :pageConfig.sync="pageConfig"
         :filterColumn="true"
         :multiple="true"
         fixedTwoRow

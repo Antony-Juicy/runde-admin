@@ -9,7 +9,7 @@
         :tableData="tableCommentData"
         :tableKey="tableCommentKey"
         :loading="loading"
-        :pageConfig="pageCommentConfig"
+        :pageConfig.sync="pageCommentConfig"
         @select="handleSelect"
         @pageChange="pageChange">
         <template slot="headPic" slot-scope="scope">

@@ -21,7 +21,7 @@
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
-        :pageConfig="pageConfig"
+        :pageConfig.sync="pageConfig"
         :multiple="true"
         :filterColumn="true"
         :tbodyHeight="600"

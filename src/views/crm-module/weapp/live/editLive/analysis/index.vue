@@ -138,7 +138,7 @@
               <rd-table
                 :tableData="tableData"
                 :tableKey="tableKey"
-                :pageConfig="pageConfig"
+                :pageConfig.sync="pageConfig"
                 :border="false"
                 :fixedTwoRow="true"
                 :pager-count="5"
@@ -166,7 +166,7 @@
               <rd-table
                 :tableData="tableData2"
                 :tableKey="tableKey2"
-                :pageConfig="pageConfig2"
+                :pageConfig.sync="pageConfig2"
                 :border="false"
                 :fixedTwoRow="true"
                 :pager-count="5"

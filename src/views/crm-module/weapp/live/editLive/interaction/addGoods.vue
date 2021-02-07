@@ -28,7 +28,7 @@
         <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
-        :pageConfig="pageConfig"
+        :pageConfig.sync="pageConfig"
         :multiple="true"
         :show-header="false"
         :border="false"

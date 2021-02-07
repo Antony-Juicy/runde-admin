@@ -10,7 +10,7 @@
         :tableKey="tableKey"
         :loading="loading"
         :fixedTwoRow="fixedTwoRow"
-        :pageConfig="pageConfig"
+        :pageConfig.sync="pageConfig"
         @select="handleSelect"
         @pageChange="pageChange">
         <template slot="goodsThumbnail" slot-scope="scope">
@@ -139,7 +139,7 @@
             :loading="loading"
             :fixedTwoRow="fixedTwoRow"
             :multiple="true"
-            :pageConfig="pageGroupConfig"
+            :pageConfig.sync="pageGroupConfig"
             @select="handleGroupSelect"
             @pageChange="pageGroupChange">
           </rd-table>

@@ -6,7 +6,7 @@
         :tableKey="tableKey"
         fixedTwoRow
         highlight-current-row
-        :pageConfig="pageConfig"
+        :pageConfig.sync="pageConfig"
         @pageChange="pageChange"
       >
       <template slot="issuesType" slot-scope="scope">

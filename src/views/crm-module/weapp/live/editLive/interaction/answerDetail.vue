@@ -6,7 +6,7 @@
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
-        :pageConfig="pageConfig"
+        :pageConfig.sync="pageConfig"
         :pager-count="5"
         :tbodyHeight="600"
         @pageChange="pageChange"

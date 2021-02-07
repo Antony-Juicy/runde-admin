@@ -10,7 +10,7 @@
         <rd-table
           :tableData="tableData"
           :tableKey="tableKey"
-          :pageConfig="pageConfig"
+          :pageConfig.sync="pageConfig"
           :filterColumn="true"
           fixedTwoRow
           highlight-current-row
