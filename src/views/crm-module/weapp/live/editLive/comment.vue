@@ -305,6 +305,7 @@ export default {
     },
 
     refresh(){
+      this.pageConfig.pageNum = 1;
       this.getTableData({
         pageNum: 1
       });
