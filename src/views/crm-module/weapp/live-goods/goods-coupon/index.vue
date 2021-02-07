@@ -285,6 +285,10 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if(valid) {
+          if(this.couponForm.condition < this.couponForm.denomination){
+            this.$message.error("减去金额不能多于满足金额")
+            return
+          }
           if(this.couponStatusVisible) {
             // 新增
             this.$fetch("coupon_add", {
