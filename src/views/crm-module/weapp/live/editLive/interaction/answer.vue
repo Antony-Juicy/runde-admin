@@ -6,6 +6,8 @@
         :tableKey="tableKey"
         fixedTwoRow
         highlight-current-row
+        :pageConfig="pageConfig"
+        @pageChange="pageChange"
       >
       <template slot="issuesType" slot-scope="scope">
           {{scope.row.issuesType=='SingleSelection'?'单选':'多选'}}
@@ -72,7 +74,12 @@ export default {
         },
       ],
       drawerVisible1: false,
-      answerId:''
+      answerId:'',
+      pageConfig: {
+        totalCount: 100,
+        pageNum: 1,
+        pageSize: 10,
+      },
     };
   },
   components: {
@@ -87,6 +94,12 @@ export default {
     this.getTableData();
   },
   methods: {
+    pageChange(val) {
+      console.log(val,'pagechange')
+      this.pageConfig.pageNum = val.page;
+      this.pageConfig.pageSize = val.limit;
+      this.getTableData();
+    },
     handleEdit(val){
       this.answerId = val.answerSheetId;
       console.log(this.answerId,'this.answerId--')
@@ -101,7 +114,8 @@ export default {
         ...params,
         liveId: this.liveId
       }).then((res) => {
-        this.tableData = res.data;
+        this.tableData = res.data.records;
+        this.pageConfig.totalCount = res.data.totalCount;
         setTimeout(() => {
           loading.close();
         }, 200);

@@ -9,6 +9,8 @@
         :tableKey="tableKey"
         fixedTwoRow
         highlight-current-row
+        :pageConfig="pageConfig"
+        @pageChange="pageChange"
       >
         <template slot="couponType" slot-scope="scope">
           {{scope.row.couponType | typeFilter}}
@@ -82,7 +84,12 @@ export default {
         },
       ],
       drawerVisible1: false,
-      liveCouponId: 0
+      liveCouponId: 0,
+      pageConfig: {
+        totalCount: 100,
+        pageNum: 1,
+        pageSize: 10,
+      },
     };
   },
   components:{
@@ -119,6 +126,12 @@ export default {
     },
   },
   methods: {
+    pageChange(val) {
+      console.log(val,'pagechange')
+      this.pageConfig.pageNum = val.page;
+      this.pageConfig.pageSize = val.limit;
+      this.getTableData();
+    },
     getTableData(params = {}) {
       const loading = this.$loading({
         lock: true,
@@ -128,7 +141,8 @@ export default {
         ...params,
         liveId: this.liveId
       }).then((res) => {
-        this.tableData = res.data;
+        this.tableData = res.data.records;
+        this.pageConfig.totalCount = res.data.totalCount;
         setTimeout(() => {
           loading.close();
         }, 200);

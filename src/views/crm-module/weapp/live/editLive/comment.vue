@@ -305,7 +305,9 @@ export default {
     },
 
     refresh(){
-      this.$emit("refresh",1)
+      this.getTableData({
+        pageNum: 1
+      });
     }
   },
 };

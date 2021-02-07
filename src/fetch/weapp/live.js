@@ -28,12 +28,12 @@ export default {
     live_get_coupon_list: {url: '/live/console/coupon/live_get_coupon_list',method: 'post'}, //直播获取优惠券列表
     live_get_coupon_detail: {url: '/live/console/coupon/get',method: 'post'}, //根据id获取数据
     live_coupon_add: {url: '/live/console/live_coupon/add',method: 'post'}, //添加直播优惠券
-    live_coupon_related_list: {url: '/live/console/live_coupon/get_live_related_coupon_list',method: 'post'}, //获取直播关联优惠券列表
+    live_coupon_related_list: {url: '/live/console/live_coupon/page_live_related_coupon_list',method: 'post'}, //获取直播关联优惠券列表
     live_coupon_send: {url: '/live/console/live_coupon/send',method: 'post'}, //优惠券派发
     live_page_coupon_receive_record: {url: '/live/console/live_coupon/page_coupon_receive_record',method: 'post'}, //优惠券派发
 
     // 答题卡
-    live_answer_list: {url: '/live/console/live_answer_sheet/get_live_answer_sheet_list',method: 'post'}, //获取直播答题卡列表
+    live_answer_list: {url: '/live/console/live_answer_sheet/page_live_answer_sheet_list',method: 'post'}, //获取直播答题卡列表
     live_page_user_answer_data: {url: '/live/console/live_answer_sheet/page_user_answer_data',method: 'post'}, //分页获取用户答题数据
     live_get_options_statistics: {url: '/live/console/live_answer_sheet/get_options_statistics',method: 'post'}, //获取直播答题卡选项统计数据
     // 评论管理
