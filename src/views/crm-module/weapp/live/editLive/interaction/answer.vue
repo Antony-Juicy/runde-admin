@@ -111,6 +111,7 @@ export default {
         target: ".answer .el-table",
       });
       this.$fetch("live_answer_list", {
+        ...this.pageConfig,
         ...params,
         liveId: this.liveId
       }).then((res) => {

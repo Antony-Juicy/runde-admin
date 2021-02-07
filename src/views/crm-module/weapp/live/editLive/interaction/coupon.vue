@@ -139,6 +139,7 @@ export default {
       });
       this.$fetch("live_coupon_related_list", {
         ...params,
+        ...this.pageConfig,
         liveId: this.liveId
       }).then((res) => {
         this.tableData = res.data.records;
