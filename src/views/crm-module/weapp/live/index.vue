@@ -292,6 +292,7 @@ export default {
   methods: {
     onSearch(data) {
       this.searchForm = { ...data };
+      this.pageConfig.pageNum = 1;
       this.getTableData();
     },
     pageChange(val) {

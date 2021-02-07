@@ -89,7 +89,7 @@
     <template v-if="pageConfig && pageConfig.totalCount">
       <pagination
         :total="pageConfig.totalCount"
-        :page.sync="pageConfig.currentPage"
+        :page.sync="currentPage"
         :limit.sync="pageConfig.pageSize"
         :pager-count="pagerCount"
         @pagination="pageChange"
@@ -209,6 +209,9 @@ export default {
     checkColumn() {
       return this.tableKeyData.filter((item) => item.show);
     },
+    currentPage(){
+      return this.pageConfig.currentPage || this.pageConfig.pageNum
+    }
   },
   methods: {
     checkboxChange(val) {
