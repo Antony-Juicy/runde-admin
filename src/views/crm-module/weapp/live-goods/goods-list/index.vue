@@ -173,7 +173,7 @@ export default {
       showNum: 6,
       searchForm: {},
       formOptions: [
-        { prop: 'goodsId', element: 'el-input', placeholder: '请输入商品id' },
+        // { prop: 'goodsId', element: 'el-input', placeholder: '请输入商品id' },
         { prop: 'typeId', element: 'el-select', placeholder: '请选择项目' },
         { prop: 'goodsName', element: 'el-input', placeholder: '请输入商品名称' },
         { 
