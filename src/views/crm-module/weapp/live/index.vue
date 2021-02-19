@@ -281,7 +281,8 @@ export default {
     await this.getTableData();
     const {liveId,flag} = this.$route.query;
     if(flag == 'analysis'){
-      const data = this.tableData.find(item => item.liveId)
+      const data = this.tableData.find(item => item.liveId == liveId)
+      console.log(data,'data-----')
       this.handleEdit(data)
       setTimeout(() => {
         this.$refs.editLive.changeTab()
@@ -289,9 +290,26 @@ export default {
     }
     
   },
+  watch:{
+    "$route.query.liveId"(newVal){
+      const {liveId,flag} = this.$route.query;
+      if(flag == 'analysis'){
+      const data = this.tableData.find(item => item.liveId == newVal)
+      console.log(data,'data-----')
+      this.handleEdit(data)
+      setTimeout(() => {
+        this.$refs.editLive.changeTab()
+      }, 10);
+    }
+    }
+  },
   methods: {
     onSearch(data) {
       this.searchForm = { ...data };
+      if(this.searchForm.liveId&&isNaN(this.searchForm.liveId) ){
+        this.$message.warning("请输入正确的直播id")
+        return
+      }
       this.pageConfig.pageNum = 1;
       this.getTableData();
     },
