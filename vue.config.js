@@ -22,7 +22,7 @@ module.exports = {
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
   publicPath: './',
-  outputDir: 'dist',
+  outputDir: 'web_jiaowu',
   assetsDir: 'static',
   lintOnSave: false,
   productionSourceMap: false,
