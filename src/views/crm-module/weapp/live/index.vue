@@ -306,6 +306,10 @@ export default {
   methods: {
     onSearch(data) {
       this.searchForm = { ...data };
+      if(this.searchForm.liveId&&isNaN(this.searchForm.liveId) ){
+        this.$message.warning("请输入正确的直播id")
+        return
+      }
       this.pageConfig.pageNum = 1;
       this.getTableData();
     },
