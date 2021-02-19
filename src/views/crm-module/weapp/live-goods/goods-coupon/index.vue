@@ -42,20 +42,20 @@
               <el-option label="满减优惠" value="FullDiscount"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="立减面额" prop="denomination" v-if="couponForm.couponType == 'InstantDecrease' ">
-            <el-input v-model.trim="couponForm.denomination" @input="couponForm.denomination = String(couponForm.denomination).replace(/[^\d]/g,'')" autocomplete="off" placeholder="">
+          <el-form-item label="立减面额" prop="minus" v-if="couponForm.couponType == 'InstantDecrease' ">
+            <el-input v-model.trim="couponForm.minus" type="number" autocomplete="off" placeholder="请输入">
               <template slot="append">元</template>
             </el-input>
           </el-form-item>
-          <el-form-item label="折扣面额" prop="denomination" v-if="couponForm.couponType == 'Discount' ">
-            <el-input v-model.trim="couponForm.denomination" type="number" autocomplete="off" max="10" min="0" placeholder="">
-              <template slot="append">折</template>
-            </el-input>
+          <el-form-item label="折扣面额" prop="discount" v-if="couponForm.couponType == 'Discount' ">
+            <el-input-number v-model.trim="couponForm.discount" controls-position="right" type="number" autocomplete="off" :max="10" :min="0" placeholder="请输入">
+            </el-input-number>
+            <span class="number-title">折</span>
           </el-form-item>
           <el-row :gutter="24">
             <el-col :span="14">
               <el-form-item label="满减面额" prop="condition" v-if="couponForm.couponType == 'FullDiscount' ">
-                <el-input v-model.trim="couponForm.condition" @input="couponForm.condition = String(couponForm.condition).replace(/[^\d]/g,'')" autocomplete="off" placeholder="">
+                <el-input v-model.trim="couponForm.condition" autocomplete="off" placeholder="">
                   <template slot="prepend">满</template>
                   <template slot="append">元</template>
                 </el-input>
@@ -63,7 +63,7 @@
             </el-col>
             <el-col :span="10">
               <el-form-item label="" prop="denomination" v-if="couponForm.couponType == 'FullDiscount' " label-width="1px">
-                <el-input v-model.trim="couponForm.denomination" @input="couponForm.denomination = String(couponForm.denomination).replace(/[^\d]/g,'')" autocomplete="off" placeholder="">
+                <el-input v-model.trim="couponForm.denomination" autocomplete="off" placeholder="">
                   <template slot="prepend">减</template>
                   <template slot="append">元</template>
                 </el-input>
@@ -161,7 +161,9 @@ export default {
         couponType: '',
         denomination: '',
         condition: 0,
-        couponStatus: ''
+        couponStatus: '',
+        discount:'',
+        minus:''
       },
       rules: {
         couponName: [
@@ -172,6 +174,10 @@ export default {
           { required: true, message: "请选择优惠券类型", trigger: "blur" }
         ],
         denomination: [
+          { required: true, message: "请输入面额", trigger: "blur" },
+        ],discount: [
+          { required: true, message: "请输入面额", trigger: "blur" },
+        ],minus: [
           { required: true, message: "请输入面额", trigger: "blur" },
         ],
         condition: [
@@ -285,10 +291,28 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if(valid) {
-          if(this.couponForm.condition < this.couponForm.denomination){
-            this.$message.error("减去金额不能多于满足金额")
-            return
+          console.log(this.couponForm,'this.couponForm',Number(this.couponForm.condition),Number(this.couponForm.denomination),
+          this.$common.isNumber((this.couponForm.condition)),
+          this.$common.isNumber((this.couponForm.denomination)))
+          if(this.couponForm.couponType == 'FullDiscount'){
+             if(!this.$common.isNumber((this.couponForm.condition))){
+              this.$message.error("请输入正确的满减金额")
+              return
+            }
+            if(!this.$common.isNumber((this.couponForm.denomination))){
+              this.$message.error("请输入正确的满减金额")
+              return
+            }
+            if( Number(this.couponForm.condition) < Number(this.couponForm.denomination)){
+              this.$message.error("减去金额不能多于满足金额")
+              return
+            }
+          }else if(this.couponForm.couponType == 'InstantDecrease'){
+            this.couponForm.denomination = this.couponForm.minus;
+          }else if(this.couponForm.couponType == 'Discount'){
+            this.couponForm.denomination = this.couponForm.discount;
           }
+         
           if(this.couponStatusVisible) {
             // 新增
             this.$fetch("coupon_add", {

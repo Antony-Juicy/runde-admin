@@ -113,7 +113,16 @@ const $common = {
     // 获取用户userId
     getUserId(){
         return localStorage.getItem('loginUserId');
-    }
+    },
+
+    // 校验只要是数字（包含正负整数，0以及正负浮点数）就返回true
+    isNumber(val) {
+        　　if (parseFloat(val).toString() == "NaN") {　
+        　　　　return false;
+        　　} else {
+        　　　　return true;
+        　　}
+        }
 }
 
 export default $common
