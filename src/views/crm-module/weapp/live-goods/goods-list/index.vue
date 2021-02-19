@@ -173,7 +173,7 @@ export default {
       showNum: 6,
       searchForm: {},
       formOptions: [
-        // { prop: 'goodsId', element: 'el-input', placeholder: '请输入商品id' },
+        { prop: 'goodsId', element: 'el-input', placeholder: '请输入商品id' },
         { prop: 'typeId', element: 'el-select', placeholder: '请选择项目' },
         { prop: 'goodsName', element: 'el-input', placeholder: '请输入商品名称' },
         { 
@@ -317,6 +317,10 @@ export default {
   methods: {
     onSearch(val) {
       this.searchForm = {...val};
+      if(this.searchForm.goodsId && isNaN(this.searchForm.goodsId) ){
+        this.$message.warning("请输入正确的商品id")
+        return
+      }
       this.pageConfig.pageNum = 1;
       this.getTableData();
       console.log(val,this.searchForm , 'val---')

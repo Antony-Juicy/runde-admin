@@ -137,6 +137,10 @@ export default {
   methods: {
     onSearch(val) {
       this.searchForm = {...val};
+      if(this.searchForm.liveId && isNaN(this.searchForm.liveId) ){
+        this.$message.warning("请输入正确的直播id")
+        return
+      }
       this.pageConfig.pageNum = 1;
       this.getTableData();
       console.log(val,this.searchForm , 'val---')
@@ -173,31 +177,42 @@ export default {
         this.formOptions.splice(1,1,{ prop: 'typeId', element: 'el-select', placeholder: '项目类型', options: this.typeOptions })
       });
     },
-    getTableData(params) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
-      this.$fetch(
-        "live_detail_list",
-        params || {
-          ...this.pageConfig,
-          ...this.searchForm
-        }
-      ).then((res) => {
-        this.tableData = res.data.records;
-        this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
+    getTableData(params={}) {
+      return new Promise((resolve,reject)=>{
+        const loading = this.$loading({
+          lock: true,
+          target: ".el-table",
+        });
+        this.$fetch(
+          "live_detail_list",
+          {
+            ...this.pageConfig,
+            ...this.searchForm,
+            ...params
+          }
+        ).then((res) => {
+          this.tableData = res.data.records;
+          this.pageConfig.totalCount = res.data.totalCount;
+          setTimeout(() => {
+            loading.close();
+          }, 200);
+          resolve();
+        }).catch(err=>{
           loading.close();
-        }, 200);
-      });
+          console.log(err)
+          reject();
+        });
+      })
     },
     pageChange(val) {
-      console.log(val,'pagechange')
-      this.getTableData({
-        pageNum: (val && val.page) || 1,
-        pageSize: (val && val.limit) || 10,
-      });
+      // console.log(val,'pagechange')
+      // this.getTableData({
+      //   pageNum: (val && val.page) || 1,
+      //   pageSize: (val && val.limit) || 10,
+      // });
+      this.pageConfig.pageNum = val.page;
+      this.pageConfig.pageSize = val.limit;
+      this.getTableData();
     },
     openConfig(row) {
       console.log(row,'row-----')
