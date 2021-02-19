@@ -253,7 +253,16 @@ export default {
         }
       ).then((res) => {
         console.log(res, 998877665544332211)
-        this.couponForm = res.data
+        if(res.data.couponType == "Discount") {
+          this.couponForm = res.data
+          this.couponForm.discount = res.data.denomination
+        } else if(res.data.couponType == "InstantDecrease") {
+          this.couponForm = res.data
+          this.couponForm.minus = res.data.denomination
+        } else {
+          this.couponForm = res.data
+        }
+        console.log(this.couponForm,'this.couponForm--------')
       });
     },
     // 删除
