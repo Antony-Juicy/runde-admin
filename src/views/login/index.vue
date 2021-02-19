@@ -88,8 +88,8 @@
               访问
             </p>
           </el-tab-pane>
-          <el-tab-pane label="钉钉扫码登录" name="second">
-            <!-- 钉钉二维码 -->
+          <!-- 钉钉二维码 -->
+          <!-- <el-tab-pane label="钉钉扫码登录" name="second">
             <div class="login_qrcode">
               <img src="../../assets/jwqrcode.png" alt="">
             </div>
@@ -97,7 +97,7 @@
               请使用钉钉扫描二维码登录
               <span class="el-icon-refresh">刷新</span>
             </div>
-          </el-tab-pane>
+          </el-tab-pane> -->
         </el-tabs>
       </div>
 
