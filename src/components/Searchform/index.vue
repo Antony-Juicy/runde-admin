@@ -173,7 +173,7 @@ export default {
         if (v.initValue !== undefined) {
           obj[v.prop] = v.initValue;
         }else {
-          obj[v.prop] = '';
+          obj[v.prop] = undefined;
         }
       });
       this.formData = obj;
