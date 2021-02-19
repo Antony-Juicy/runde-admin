@@ -127,12 +127,12 @@
           <el-card class="box-card">
             <div slot="header" class="clearfix card-header">
               <span class="title-name">邀请榜（Top100）</span>
-              <el-button
+              <!-- <el-button
                 class="export-btn"
                 style="float: right; padding: 3px 0"
                 type="text"
                 >导出数据</el-button
-              >
+              > -->
             </div>
             <div class="text invite">
               <rd-table
@@ -155,12 +155,12 @@
           <el-card class="box-card">
             <div slot="header" class="clearfix card-header">
               <span class="title-name">打赏榜（Top100）</span>
-              <el-button
+              <!-- <el-button
                 class="export-btn"
                 style="float: right; padding: 3px 0"
                 type="text"
                 >导出数据</el-button
-              >
+              > -->
             </div>
             <div class="text reward">
               <rd-table

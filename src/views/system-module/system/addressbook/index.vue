@@ -1,6 +1,6 @@
 <template>
   <div class="addressbook_container">
-    <search-form :formOptions = "formOptions" :showNum="showNum" @onSearch = onSearch></search-form>
+    <search-form :formOptions = "formOptions" :showNum="showNum" @onSearch = onSearch @onReset="onReset"></search-form>
     <div class="center_l">
       <rd-tree :data="treeData" :defaultProps="defaultProps" @nodeClick="handleNodeClick" :default-expanded-keys="defaultKeys">
     </rd-tree>
@@ -275,6 +275,9 @@ export default {
       // })
       this.pageConfig.currentPage = 1;
       this.getTableData();
+    },
+    onReset(){
+      this.searchForm = {};
     },
     // 获取通讯录组织树
     getTreeData() {

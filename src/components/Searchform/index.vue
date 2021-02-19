@@ -177,6 +177,7 @@ export default {
         }
       });
       this.formData = obj;
+      this.$emit('onReset')
     },
     // 添加初始值
     addInitValue() {
