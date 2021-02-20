@@ -264,18 +264,18 @@ export default {
         originalPrice: [
           { required: true, message: "请输入划线价(原价)", trigger: "blur" }
         ],
-        openClassId: [
-          { required: true, message: "请输入班型id", trigger: "blur" }
-        ],
-        openClassName: [
-          { required: true, message: "请输入班型名称", trigger: "blur" }
-        ],
-        openSubjectId: [
-          { required: true, message: "请输入课程id", trigger: "blur" }
-        ],
-        openSubjectName: [
-          { required: true, message: "请输入课程名称", trigger: "blur" }
-        ],
+        // openClassId: [
+        //   { required: true, message: "请输入班型id", trigger: "blur" }
+        // ],
+        // openClassName: [
+        //   { required: true, message: "请输入班型名称", trigger: "blur" }
+        // ],
+        // openSubjectId: [
+        //   { required: true, message: "请输入课程id", trigger: "blur" }
+        // ],
+        // openSubjectName: [
+        //   { required: true, message: "请输入课程名称", trigger: "blur" }
+        // ],
         goodsItemStatus: [
           { required: true, message: "请选择状态", trigger: "blur" }
         ]
