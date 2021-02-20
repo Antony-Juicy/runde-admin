@@ -44,6 +44,7 @@ export default {
           startPlaceholder: "领取时间(开始)",
           endPlaceholder: "领取时间(结束)",
           initWidth: true,
+          popperClass: "coupon-date"
         },
       ],
       tableData: [
@@ -141,5 +142,13 @@ export default {
     padding-left: 20px;
     padding-right: 20px;
     border-top: 1px solid #eee;
+}
+</style>
+
+<style lang="scss">
+.coupon-date {
+  .el-time-panel {
+    left: -33px;
+  }
 }
 </style>
