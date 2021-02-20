@@ -106,7 +106,7 @@
             <div class="detail">{{goodsInfo.openClassId}}</div>
           </el-col>
           <el-col :span="8">
-            <div class="term">开通科目id：</div>
+            <div class="term">开通课程id：</div>
             <div class="detail">{{goodsInfo.openSubjectId}}</div>
           </el-col>
           <el-col :span="8">
