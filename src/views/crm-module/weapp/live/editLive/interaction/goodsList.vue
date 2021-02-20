@@ -4,9 +4,11 @@
       <div class="goods-item-left">
         <div class="pic">
            <el-image
-                    style="width: 130px; height: 100px"
-                    :src="item.goodsThumbnail"
-                    fit="cover"></el-image>
+              style="width: 130px; height: 100px"
+              :src="item.goodsThumbnail"
+              fit="cover"
+              >
+            </el-image>
         </div>
         <div class="content">
           <div class="title">{{item.goodsName}}</div>
@@ -50,7 +52,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
       },
-      tableData:[{}]
+      tableData:[]
     };
   },
   components: {
