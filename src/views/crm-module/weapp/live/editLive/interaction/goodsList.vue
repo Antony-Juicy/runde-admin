@@ -60,9 +60,19 @@ export default {
     liveId: {
       type: Number,
     },
+     refreshFlag:{
+      type: Number
+    }
   },
   mounted(){
       this.getTableData();
+  },
+  watch:{
+    refreshFlag(newVal,oldVal){
+      if(newVal>oldVal){
+        this.getTableData();
+      }
+    }
   },
   methods: {
     pageChange(val) {

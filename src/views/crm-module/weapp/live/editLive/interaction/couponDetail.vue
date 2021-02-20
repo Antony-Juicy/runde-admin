@@ -63,7 +63,12 @@ export default {
         },
         {
           name: "使用时间",
-          value: "updateAt"
+          value: "usageTime"
+        },
+        {
+          name: "是否使用",
+          value: "used",
+          width: 100
         }
       ],
       pageConfig: {
@@ -117,7 +122,10 @@ export default {
         ...this.searchForm,
         liveCouponId: this.liveCouponId
       }).then((res) => {
-        this.tableData = res.data.records;
+        this.tableData = res.data.records.map(item => {
+          item.used = item.used?'是':'否'
+          return item
+        });
         this.pageConfig.totalCount = res.data.totalCount;
         setTimeout(() => {
           loading.close();
