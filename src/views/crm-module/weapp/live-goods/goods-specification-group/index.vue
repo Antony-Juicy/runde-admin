@@ -3,7 +3,7 @@
     <search-form :formOptions="formOptions" :showNum="showNum" @onSearch="onSearch"></search-form>
     <div class="w-container">
       <div class="btn-wrapper">
-        <el-button type="primary" size="small" @click="handleAdd">添加规则组</el-button>
+        <el-button type="primary" size="small" @click="handleAdd">添加规格组</el-button>
       </div>
       <rd-table
         :tableData="tableData"
@@ -19,19 +19,19 @@
         <template slot="edit" slot-scope="scope">
           <el-button @click="openConfig(scope.row)" type="text" size="small">管理</el-button>
           <el-divider direction="vertical"></el-divider>
-          <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑规则组</el-button>
+          <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑规格组</el-button>
         </template>
       </rd-table>
-      <!-- 添加规则组 -->
+      <!-- 添加规格组 -->
       <rd-dialog
-        :title="groupVisibleStatus ? '添加规则组' : '编辑规则组'"
+        :title="groupVisibleStatus ? '添加规格组' : '编辑规格组'"
         :dialogVisible="groupVisible"
         :width="widthNew"
         @handleClose="closeGroup('dataForm')"
         @submitForm="submitForm('dataForm')">
         <el-form ref="dataForm" :model="groupForm" :rules="rules" label-width="100px">
-          <el-form-item label="规则组名称" prop="goodsGroupName">
-            <el-input v-model.trim="groupForm.goodsGroupName" autocomplete="off" placeholder="请输入规则组名称" />
+          <el-form-item label="规格组名称" prop="goodsGroupName">
+            <el-input v-model.trim="groupForm.goodsGroupName" autocomplete="off" placeholder="请输入规格组名称" />
           </el-form-item>
           <el-form-item label="项目类型" prop="typeId">
             <!-- <el-input v-model.trim="groupForm.typeId" autocomplete="off" placeholder="请选择项目类型" /> -->
@@ -48,7 +48,7 @@
           </el-form-item>
         </el-form>
       </rd-dialog>
-      <!-- 添加规则组 -->
+      <!-- 添加规格组 -->
       <!-- 管理规格 -->
       <fullDialog v-model="showGroup" :title="showGroupTitle" @change="closeConfig">
         <div class="btn-wrapper">
@@ -78,7 +78,7 @@
           @submitForm="submitRuleForm('dataRuleForm')">
           <el-form ref="dataRuleForm" :model="ruleForm" :rules="gzRules" label-width="120px">
             <el-form-item label="规格名称" prop="goodsItemName">
-              <el-input v-model.trim="ruleForm.goodsItemName" autocomplete="off" placeholder="请输入规则组名称" />
+              <el-input v-model.trim="ruleForm.goodsItemName" autocomplete="off" placeholder="请输入规格组名称" />
             </el-form-item>
             <el-form-item label="价格" prop="salesPrice">
               <el-input-number controls-position="right" v-model.trim ="ruleForm.salesPrice" autocomplete="off" :min="0" placeholder="" />
@@ -135,7 +135,7 @@ export default {
       showNum: 6,
       searchForm: {},
       formOptions: [
-        { prop: 'goodsGroupName', element: 'el-input', placeholder: '规则组名称' },
+        { prop: 'goodsGroupName', element: 'el-input', placeholder: '规格组名称' },
         { prop: 'typeId', element: 'el-select', placeholder: '选择项目' },
         { 
           prop: 'goodsGroupStatus',
@@ -163,7 +163,7 @@ export default {
         }
       ],
       tableKey: [
-        { name: '规则组名称',value: 'goodsGroupName' },
+        { name: '规格组名称',value: 'goodsGroupName' },
         { name: '项目类型',value: 'typeName' },
         { name: '规格数',value: 'itemCount' },
         { name: '状态',value: 'goodsGroupStatus',operate: true },
@@ -179,7 +179,7 @@ export default {
       },
       loading: false,
 
-      // 添加规则组弹窗
+      // 添加规格组弹窗
       widthNew: "600px",
       groupVisible: false,
       groupVisibleStatus: true,
@@ -192,7 +192,7 @@ export default {
       typeOptions: [], // 项目类型
       rules: {
         goodsGroupName: [
-          { required: true, message: "请输入规则组名称", trigger: "blur" },
+          { required: true, message: "请输入规格组名称", trigger: "blur" },
           {  max: 25, message: '长度不多于25个字符', trigger: 'blur' }
         ],
         typeId: [
@@ -296,7 +296,7 @@ export default {
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
-    // 获取规则组列表数据
+    // 获取规格组列表数据
     getTableData(params) {
       const loading = this.$loading({
         lock: true,
@@ -323,7 +323,7 @@ export default {
       this.getTableData();
     },
     
-    // 添加规则组弹窗
+    // 添加规格组弹窗
     handleAdd() {
       this.groupVisible = true;
       this.groupVisibleStatus = true;
@@ -362,7 +362,7 @@ export default {
           value: item.typeId,
         }));
         // this.formOptions = [
-        //   { prop: 'goodsGroupName', element: 'el-input', placeholder: '规则组名称' },
+        //   { prop: 'goodsGroupName', element: 'el-input', placeholder: '规格组名称' },
         //   { prop: 'typeId', element: 'el-select', placeholder: '选择项目', options: this.typeOptions },
         //   { 
         //     prop: 'goodsGroupStatus',
@@ -449,7 +449,7 @@ export default {
       this.ruleVisible = true;
       this.ruleStatus = true;
     },
-    // 编辑规则组
+    // 编辑规格组
     handleEditRule(row) {
       this.ruleVisible = true;
       this.ruleStatus = false;

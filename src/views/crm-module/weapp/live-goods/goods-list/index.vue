@@ -22,7 +22,7 @@
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑</el-button>
           <el-divider direction="vertical"></el-divider>
-          <el-button @click="openfullDialogGroup(scope.row)" type="text" size="small">关联规则组</el-button>
+          <el-button @click="openfullDialogGroup(scope.row)" type="text" size="small">关联规格组</el-button>
           <el-divider direction="vertical"></el-divider>
           <el-button @click="goOrders(scope.row)" type="text" size="small">查看订单</el-button>
           <el-divider direction="vertical"></el-divider>
@@ -198,7 +198,7 @@ export default {
         { name: '项目类型',value: 'typeName' },
         { name: '商品缩略图',value: 'goodsThumbnail',operate: true,width: 100 },
         { name: '商品名称',value: 'goodsName' },
-        { name: '规则组数',value: 'goodsItemGroupCount' },
+        { name: '规格组数',value: 'goodsItemGroupCount' },
         { name: '商品价格',value: 'goodsPrices' },
         { name: '总销售量',value: 'totalSalesCount' },
         { name: '状态',value: 'goodsStatus',operate: true },
