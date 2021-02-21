@@ -279,7 +279,7 @@ export default {
     
     this.getSubjectList();
     await this.getTableData();
-    const {liveId,flag} = this.$route.query;
+    const {liveId,flag} = this.$route.params;
     if(flag == 'analysis'){
       const data = this.tableData.find(item => item.liveId == liveId)
       console.log(data,'data-----')
@@ -291,8 +291,8 @@ export default {
     
   },
   watch:{
-    "$route.query.liveId"(newVal){
-      const {liveId,flag} = this.$route.query;
+    "$route.params.liveId"(newVal){
+      const {liveId,flag} = this.$route.params;
       if(flag == 'analysis'){
       const data = this.tableData.find(item => item.liveId == newVal)
       console.log(data,'data-----')

@@ -1,6 +1,6 @@
 <template>
   <div class="invitecount-container">
-    <search-form :formOptions = "formOptions" :showNum="showNum" @onSearch = onSearch></search-form>
+    <search-form :formOptions = "formOptions" :showNum="showNum" @onSearch = onSearch ref="searchForm" ></search-form>
     <div class="w-container">
       <rd-table
         :tableData="tableData"
@@ -58,7 +58,22 @@ export default {
     }
   },
   mounted () {
-    this.getTableData()
+    const { liveName } = this.$route.params;
+    if(liveName){
+      this.formOptions[3].initValue = decodeURIComponent(liveName)
+      this.$refs.searchForm.addInitValue()
+      this.$refs.searchForm.onSearch()
+    }else {
+      this.getTableData()
+    }
+    
+  },
+  watch:{
+    "$route.params.liveName"(newVal){
+      this.formOptions[3].initValue = decodeURIComponent(newVal)
+      this.$refs.searchForm.addInitValue()
+      this.$refs.searchForm.onSearch()
+    }
   },
   methods: {
     onSearch(val) {

@@ -501,8 +501,8 @@ export default {
 
     goOrders(row) {
       this.$router.push({
-        path: '/crm-module/weapp/live-details/goods-orders',
-        query: {
+        name: '/crm-module/weapp/live-details/goods-orders'  + '?' + sessionStorage.getItem("router-timeStamp"),
+        params: {
           goodsName: row.goodsName,
         } 
       })

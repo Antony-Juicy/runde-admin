@@ -4,6 +4,8 @@ import Layout from '@/layout'
 import Layout2 from '@/layout2'
 import axios from 'axios'
 import router from '@/router'
+
+
 /**
  * Use meta.role to determine if the current user has permission
  * @param roles
@@ -147,7 +149,9 @@ function castToFlatRoute(routes, parentPath, flatRoutes = []) {
 const actions = {
   async generateRoutes({ commit }, { type }) {
     return new Promise(async (resolve) => {
-
+      // 时间戳
+      let timeStamp = new Date().getTime();
+      sessionStorage.setItem('router-timeStamp',String(timeStamp));
       //定义子的路由
       let moduleRoutes = JSON.parse(JSON.stringify(state.moduleRoutes))
       let currentRoutes = moduleRoutes.find(item => item.id == type) && moduleRoutes.find(item => item.id == type).children;
@@ -165,7 +169,8 @@ const actions = {
             icon: item.menuIcon,
             keepAlive: true
           }
-          item.name = item.frontUrl + '?' + new Date().getTime()
+          // item.name = item.frontUrl + '?' + new Date().getTime()
+          item.name = item.frontUrl + '?' + timeStamp
           item.meta.fullPath = item.meta.fullPath.indexOf('/') == 0 ?item.meta.fullPath : '/' + item.meta.fullPath;
           if (item.children && item.children.length) {
             if (index == 1) {

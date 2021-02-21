@@ -201,20 +201,32 @@ export default {
     }
   },
   mounted () {
-    this.getTableData();
+    
     this.getTypeData();
-    const { goodsName } = this.$route.query;
-    if (goodsName) {
-      // 年后处理
-      // // this.searchForm.goodsName = goodsName
-      // this.formOptions[1].initValue = goodsName;
-      // this.formOptions = [...this.formOptions];
-      // this.$forceUpdate();
-      // console.log(this.formOptions,'this.formOptions')
-      // this.pageConfig.pageNum = 1;
-      // this.searchForm = {goodsName};
-      // // this.$refs.myserach.onSearch({goodsName});
-      // this.getTableData();
+    const { goodsName,sourceName } = this.$route.params;
+    if(sourceName){
+      this.formOptions[2].initValue = decodeURIComponent(sourceName)
+      this.$refs.myserach.addInitValue()
+      this.$refs.myserach.onSearch()
+    }else if(goodsName){
+      this.formOptions[1].initValue = decodeURIComponent(goodsName)
+      this.$refs.myserach.addInitValue()
+      this.$refs.myserach.onSearch()
+    }
+    else{
+      this.getTableData();
+    }
+  },
+  watch:{
+    "$route.params.sourceName"(newVal){
+      this.formOptions[2].initValue = decodeURIComponent(newVal)
+      this.$refs.myserach.addInitValue()
+      this.$refs.myserach.onSearch()
+    },
+    "$route.params.goodsName"(newVal){
+      this.formOptions[1].initValue = decodeURIComponent(newVal)
+      this.$refs.myserach.addInitValue()
+      this.$refs.myserach.onSearch()
     }
   },
   methods: {

@@ -170,11 +170,11 @@ export default {
       // this.$refs.boxId.resetFields();
       const obj = {};
       this.formOptions.forEach((v) => {
-        if (v.initValue !== undefined) {
-          obj[v.prop] = v.initValue;
-        }else {
+          // if (v.initValue !== undefined) {
+          //   obj[v.prop] = v.initValue;
+          // }else {
           obj[v.prop] = undefined;
-        }
+        // }
       });
       this.formData = obj;
       this.$emit('onReset')

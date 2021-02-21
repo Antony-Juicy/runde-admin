@@ -423,18 +423,18 @@ export default {
 
     showOrder() {
       this.$router.push({
-        path: "/crm-module/weapp/live-details/goods-orders",
-        query: {
-          sourceName: this.liveName
+        name: "/crm-module/weapp/live-details/goods-orders" + '?' + sessionStorage.getItem("router-timeStamp"),
+        params: {
+          sourceName: encodeURIComponent(this.liveName)
         },
       });
     },
 
     showInvite() {
       this.$router.push({
-        path: "/crm-module/weapp/live-details/invite-count",
-        query: {
-          liveName: this.liveName
+        name: "/crm-module/weapp/live-details/invite-count" + '?' + sessionStorage.getItem("router-timeStamp"),
+        params: {
+          liveName: encodeURIComponent(this.liveName)
         },
       });
     },

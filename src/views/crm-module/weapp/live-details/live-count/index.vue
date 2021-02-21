@@ -217,8 +217,8 @@ export default {
     openConfig(row) {
       console.log(row,'row-----')
       this.$router.push({
-        path: '/crm-module/weapp/live',
-        query: {
+        name: '/crm-module/weapp/live' + '?' + sessionStorage.getItem("router-timeStamp"),
+        params: {
           liveId: row.liveId,
           flag: 'analysis'
         }
