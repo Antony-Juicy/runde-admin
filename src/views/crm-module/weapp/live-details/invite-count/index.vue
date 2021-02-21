@@ -77,9 +77,10 @@ export default {
       });
       this.$fetch(
         "invite_count_list",
-        params || {
+        {
           ...this.pageConfig,
-          ...this.searchForm
+          ...this.searchForm,
+          ...params
         }
       ).then((res) => {
         this.tableData = res.data.records;
@@ -90,11 +91,9 @@ export default {
       });
     },
     pageChange(val) {
-      console.log(val,'pagechange')
-      this.getTableData({
-        pageNum: (val && val.page) || 1,
-        pageSize: (val && val.limit) || 10,
-      });
+      this.pageConfig.pageNum = val.page;
+      this.pageConfig.pageSize = val.limit;
+      this.getTableData();
     }
   }
 }
