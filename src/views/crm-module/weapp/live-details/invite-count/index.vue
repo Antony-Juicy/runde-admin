@@ -70,6 +70,9 @@ export default {
   },
   watch:{
     "$route.params.liveName"(newVal){
+       if(!newVal){
+        return
+      }
       this.formOptions[3].initValue = decodeURIComponent(newVal)
       this.$refs.searchForm.addInitValue()
       this.$refs.searchForm.onSearch()

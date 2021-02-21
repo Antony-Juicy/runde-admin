@@ -29,6 +29,7 @@
         highlight-current-row
         @pageChange="pageChange"
         @select="handelSelect"
+        :emptyText="emptyText"
       >
       <!-- 手机号 -->
           <template slot="phone" slot-scope="scope">
@@ -88,6 +89,8 @@ export default {
   name: "temp2",
   data() {
     return {
+      emptyText:"暂无数据",
+
       drawerId:"",
       drawerPhone:"",
       drawerTitle:"",
@@ -512,6 +515,11 @@ export default {
         setTimeout(() => {
           loading.close();
         }, 200);
+      }).catch(err => {
+        loading.close();
+        if(err.response.status == 401){
+          this.emptyText = "您没有权限访问"
+        }
       });
     },
 

@@ -10,6 +10,7 @@
         fixedTwoRow
         highlight-current-row
         :pageConfig.sync="pageConfig"
+        :emptyText="emptyText"
         @pageChange="pageChange"
       >
         <template slot="couponType" slot-scope="scope">
@@ -86,10 +87,11 @@ export default {
       drawerVisible1: false,
       liveCouponId: 0,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
+      emptyText:"暂无数据"
     };
   },
   components:{
@@ -147,6 +149,11 @@ export default {
         setTimeout(() => {
           loading.close();
         }, 200);
+      }).catch(err => {
+        loading.close();
+         if(err.response.status == 401){
+          this.emptyText = "您没有权限访问"
+        }
       });
     },
     handleEdit(val){

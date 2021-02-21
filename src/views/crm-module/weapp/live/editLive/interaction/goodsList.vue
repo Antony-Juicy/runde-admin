@@ -25,10 +25,11 @@
 
     <div style="display: flex;flex-direction: column;align-items: center;" v-show="!tableData.length">
         <img src="@/assets/empty-image.png" alt="" class="img-empty" style="width:260px;height:260px;"/>
-        <p>暂无数据</p>
+        <p>{{emptyText}}</p>
       </div>
 
     <Pagination
+      v-show="pageConfig.totalCount"
       :total="pageConfig.totalCount"
       :page.sync="pageConfig.pageNum"
       :limit.sync="pageConfig.pageSize"
@@ -48,11 +49,12 @@ export default {
       value1: true,
       value2: true,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
-      tableData:[]
+      tableData:[],
+      emptyText:"暂无数据"
     };
   },
   components: {
@@ -99,6 +101,12 @@ export default {
         setTimeout(() => {
           loading.close();
         }, 200);
+      }).catch((err) => {
+        console.log(err.response.status,'err----')
+        if(err.response.status == 401){
+          this.emptyText = "您没有权限访问"
+        }
+        loading.close();
       });
     },
     handelDelete(id){

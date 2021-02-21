@@ -4,6 +4,7 @@
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
+        :emptyText="emptyText"
         fixedTwoRow
         highlight-current-row
         :pageConfig.sync="pageConfig"
@@ -76,10 +77,11 @@ export default {
       drawerVisible1: false,
       answerId:'',
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
+      emptyText:"暂无数据"
     };
   },
   components: {
@@ -120,6 +122,11 @@ export default {
         setTimeout(() => {
           loading.close();
         }, 200);
+      }).catch(err => {
+        loading.close();
+        if(err.response.status == 401){
+          this.emptyText = "您没有权限访问"
+        }
       });
     },
   },

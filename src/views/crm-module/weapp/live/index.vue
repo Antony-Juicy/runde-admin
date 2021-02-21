@@ -292,6 +292,9 @@ export default {
   },
   watch:{
     "$route.params.liveId"(newVal){
+       if(!newVal){
+        return
+      }
       const {liveId,flag} = this.$route.params;
       if(flag == 'analysis'){
       const data = this.tableData.find(item => item.liveId == newVal)

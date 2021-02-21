@@ -17,6 +17,7 @@
         :pager-count="5"
         :tbodyHeight="600"
         fixedTwoRow
+        :emptyText="emptyText"
         @pageChange="pageChange"
         @sortChange="handelSortChange"
       >
@@ -40,6 +41,7 @@ export default {
   name:"personal-list",
   data(){
     return {
+      emptyText:"暂无数据",
       formOptions: [
         // {
         //   prop: "branchSchoolName",
@@ -101,7 +103,7 @@ export default {
         }
       ],
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
@@ -168,6 +170,11 @@ export default {
         setTimeout(() => {
           loading.close();
         }, 200);
+      }).catch(err => {
+        loading.close();
+        if(err.response.status == 401){
+          this.emptyText = "您没有权限访问"
+        }
       });
     },
     gotoOrder(val){

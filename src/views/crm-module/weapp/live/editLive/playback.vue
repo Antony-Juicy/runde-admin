@@ -1,7 +1,7 @@
 <template>
   <div class="playback">
     <search-form :formOptions="formOptions" @onSearch="onSearch"></search-form>
-    <rd-table :tableData="tableData" :tableKey="tableKey" fixedTwoRow>
+    <rd-table :tableData="tableData" :tableKey="tableKey" fixedTwoRow :emptyText="emptyText">
       <template slot="index" slot-scope="scope">
         {{ scope.$index + 1 }}
       </template>
@@ -109,6 +109,8 @@ export default {
       ],
       addVisible: false,
       currentLink: "",
+
+      emptyText:"暂无数据"
     };
   },
   props: {
@@ -142,6 +144,11 @@ export default {
         setTimeout(() => {
           loading.close();
         }, 200);
+      }).catch(err => {
+        loading.close();
+        if(err.response.status == 401){
+          this.emptyText = "您没有权限访问"
+        }
       });
     },
     copyLink(btnName) {

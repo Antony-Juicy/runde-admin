@@ -32,6 +32,7 @@
         :multiple="true"
         :show-header="false"
         :border="false"
+        :emptyText="emptyText"
         @pageChange="pageChange"
         @select="handelSelect"
       >
@@ -67,6 +68,7 @@ export default {
   name: "add-goods",
   data() {
     return {
+      emptyText:"暂无数据",
       formInline: {
         goodsName: "",
         typeId: "",
@@ -81,7 +83,7 @@ export default {
         }
       ],
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
@@ -144,6 +146,11 @@ export default {
         setTimeout(() => {
           loading.close();
         }, 200);
+      }).catch(err => {
+        loading.close();
+        if(err.response.status == 401){
+          this.emptyText = "您没有权限访问"
+        }
       });
     },
     handelCancel(){

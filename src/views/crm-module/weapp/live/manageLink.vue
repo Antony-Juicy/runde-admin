@@ -74,8 +74,8 @@ export default {
   name: "manage-link",
   data() {
     return {
-      teacherUrl: "http://www.baidu.com1",
-      assistantUrl: "http://www.baidu.com",
+      teacherUrl: "",
+      assistantUrl: "",
       pwd: ""
     };
   },

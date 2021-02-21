@@ -36,6 +36,7 @@
         :tableKey="tableKey"
         :pageConfig.sync="pageConfig"
         :multiple="true"
+        :emptyText="emptyText"
         fixedTwoRow
         @pageChange="pageChange"
         @select="handelSelect"
@@ -119,13 +120,15 @@ export default {
         }
       ],
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
       selectedData: [],
       
-      device: this.value
+      device: this.value,
+
+      emptyText:"暂无数据"
     };
   },
   mounted(){
@@ -184,6 +187,11 @@ export default {
         setTimeout(() => {
           loading.close();
         }, 200);
+      }).catch(err => {
+        loading.close();
+        if(err.response.status == 401){
+          this.emptyText = "您没有权限访问"
+        }
       });
     },
 

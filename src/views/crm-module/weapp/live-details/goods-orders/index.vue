@@ -219,11 +219,17 @@ export default {
   },
   watch:{
     "$route.params.sourceName"(newVal){
+      if(!newVal){
+        return
+      }
       this.formOptions[2].initValue = decodeURIComponent(newVal)
       this.$refs.myserach.addInitValue()
       this.$refs.myserach.onSearch()
     },
     "$route.params.goodsName"(newVal){
+      if(!newVal){
+        return
+      }
       this.formOptions[1].initValue = decodeURIComponent(newVal)
       this.$refs.myserach.addInitValue()
       this.$refs.myserach.onSearch()
