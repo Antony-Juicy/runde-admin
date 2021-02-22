@@ -492,7 +492,7 @@ export default {
             }
         }
 
-        console.log(checked,'checked---')
+        // console.log(checked,'checked---')
 
         this.$nextTick( ()=> {
             this.$refs.tree.setCheckedKeys([]);

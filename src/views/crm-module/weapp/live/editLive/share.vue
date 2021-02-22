@@ -1,6 +1,7 @@
 <template>
   <div class="share-config">
-    <RdForm
+    <template v-if="!emptyText">
+      <RdForm
       :formOptions="addFormOptions"
       formLabelWidth="130px"
       :rules="addRules"
@@ -37,6 +38,11 @@
     </RdForm>
     <div class="btn-wrapper">
       <el-button type="primary" @click="handleAdd">保存</el-button>
+    </div>
+    </template>
+    <div v-else style="text-align:center">
+      <img src="@/assets/empty-image.png" alt="" class="img-empty" />
+      <p>{{ emptyText }}</p>
     </div>
   </div>
 </template>
@@ -91,6 +97,7 @@ export default {
       uploadOssElem: true,
       img: "",
       img2: "",
+      emptyText:""
     };
   },
   components: {
@@ -161,7 +168,11 @@ export default {
         });
 
         this.$refs.dataForm4.addInitValue();
-      });
+      }).catch(err => {
+        if(err.response.status == 401){
+          this.emptyText = "您没有权限访问"
+        }
+      })
     },
   },
 };

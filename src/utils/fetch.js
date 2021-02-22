@@ -61,6 +61,7 @@ service.interceptors.response.use(
 
       // 4: Illegal token;
       if (res.code == 401 || res.code === 4) {
+        Message.closeAll()
         Message({
           message: '您没有权限访问', // error.message,
           type: 'error',
@@ -91,6 +92,7 @@ service.interceptors.response.use(
           })
         })
       } else {
+        Message.closeAll()
         Message({
           message: res.msg || 'Error',
           type: 'error',
@@ -110,6 +112,7 @@ service.interceptors.response.use(
     let status = error.response.status;
     hideLoading();
     if (status === 401) {
+      Message.closeAll()
       Message({
         message: '您没有权限访问', // error.message,
         type: 'error',
@@ -140,6 +143,7 @@ service.interceptors.response.use(
         })
       })
     } else {
+      Message.closeAll()
       Message({
         message: '网络繁忙，请稍后重试', // error.message,
         type: 'error',

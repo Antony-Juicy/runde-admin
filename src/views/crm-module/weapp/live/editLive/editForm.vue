@@ -1,5 +1,6 @@
 <template>
   <div class="addLive">
+    <template v-if="!emptyText">
     <RdForm
       :formOptions="addFormOptions"
       :rules="addRules"
@@ -59,6 +60,12 @@
         >保存</el-button
       >
       <!-- <el-button size="small" @click="handleClose('dataForm3')">取消</el-button> -->
+    </div>
+    </template>
+
+    <div v-else style="text-align:center">
+      <img src="@/assets/empty-image.png" alt="" class="img-empty" />
+      <p>{{ emptyText }}</p>
     </div>
   </div>
 </template>
@@ -241,7 +248,8 @@ export default {
       initGetConfig: false,
       liveDetail: "",
       btnLoading: false,
-      quillContent: "uuuu",
+      quillContent: "",
+      emptyText:""
     };
   },
   components: {
@@ -364,7 +372,11 @@ export default {
         });
 
         this.$refs.dataForm3.addInitValue();
-      });
+      }).catch(err => {
+        if(err.response.status == 401){
+          this.emptyText = "您没有权限访问"
+        }
+      })
     },
   },
 };

@@ -344,28 +344,6 @@ export default {
       this.dataList = res.data;
     });
 
-    // this.$fetch("live_provincial_school_list", {
-    //   liveId: this.liveId
-    // }).then((res) => {
-    //   console.log(res,'provinceSchoolList')
-    //   this.provinceSchoolList = res.records
-    // });
-
-    // this.$fetch("live_branch_school_list", {
-    //   liveId: this.liveId,
-    // }).then((res) => {
-    //   console.log(res,'branchSchoolList')
-    //   this.branchSchoolList = res.records
-    // });
-
-    // this.$fetch("live_personal_list", {
-    //   liveId: this.liveId,
-    // }).then((res) => {
-    //   console.log(res,'personalList')
-    //   this.personalList = res.records
-    //   this.tableData = res.records
-    // });
-
     // 邀请榜
     this.getInvitationList();
 

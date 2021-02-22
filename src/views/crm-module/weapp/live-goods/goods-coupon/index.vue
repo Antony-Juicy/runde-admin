@@ -252,13 +252,16 @@ export default {
           couponId: row.couponId
         }
       ).then((res) => {
-        console.log(res, 998877665544332211)
         if(res.data.couponType == "Discount") {
-          this.couponForm = res.data
-          this.couponForm.discount = res.data.denomination
+          this.couponForm = {
+            ...res.data,
+            discount:res.data.denomination
+          }
         } else if(res.data.couponType == "InstantDecrease") {
-          this.couponForm = res.data
-          this.couponForm.minus = res.data.denomination
+          this.couponForm = {
+            ...res.data,
+            minus:res.data.denomination
+          }
         } else {
           this.couponForm = res.data
         }
