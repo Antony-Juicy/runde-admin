@@ -154,13 +154,13 @@ export default {
         }
       ],
       tableData: [
-        {
-          goodsGroupName: "中药",
-          typeName: "执业药师",
-          goodsGroupStatus: "正常",
-          itemCount: 4,
-          remark: "备注备注备注金牌通过班"
-        }
+        // {
+        //   goodsGroupName: "中药",
+        //   typeName: "执业药师",
+        //   goodsGroupStatus: "正常",
+        //   itemCount: 4,
+        //   remark: "备注备注备注金牌通过班"
+        // }
       ],
       tableKey: [
         { name: '规格组名称',value: 'goodsGroupName' },
@@ -173,7 +173,7 @@ export default {
       emptyText: '暂无数据',
       fixedTwoRow: true,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
@@ -297,24 +297,32 @@ export default {
       console.log(rows, "rows---");
     },
     // 获取规格组列表数据
-    getTableData(params) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
-      this.$fetch(
-        "goods_item_list",
-        params || {
-          ...this.pageConfig,
-          ...this.searchForm
-        }
-      ).then((res) => {
-        this.tableData = res.data.records;
-        this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
+    getTableData(params={}) {
+      return new Promise((resolve,reject)=>{
+        const loading = this.$loading({
+          lock: true,
+          target: ".el-table",
+        });
+        this.$fetch(
+          "goods_item_list",
+          {
+            ...this.pageConfig,
+            ...this.searchForm,
+            ...params
+          }
+        ).then((res) => {
+          this.tableData = res.data.records;
+          this.pageConfig.totalCount = res.data.totalCount;
+          setTimeout(() => {
+            loading.close();
+          }, 200);
+          resolve();
+        }).catch(err=>{
           loading.close();
-        }, 200);
-      });
+          console.log(err)
+          reject();
+        });
+      })
     },
     pageChange(val) {
       console.log(val,'pagechange')
@@ -427,21 +435,28 @@ export default {
     },
     // 获取规则列表数据
     gitRuletableData(goodsGroupId) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
-      this.$fetch(
-        "goods_rule_list",
-        {
-          goodsItemGroupId: goodsGroupId
-        }
-      ).then((res) => {
-        this.tableRuleData = res.data;
-        setTimeout(() => {
+      return new Promise((resolve,reject)=>{
+        const loading = this.$loading({
+          lock: true,
+          target: ".el-table",
+        });
+        this.$fetch(
+          "goods_rule_list",
+          {
+            goodsItemGroupId: goodsGroupId
+          }
+        ).then((res) => {
+          this.tableRuleData = res.data;
+          setTimeout(() => {
+            loading.close();
+          }, 200);
+          resolve();
+        }).catch(err=>{
           loading.close();
-        }, 200);
-      });
+          console.log(err)
+          reject();
+        });
+      })
     },
     
     // 新增规格

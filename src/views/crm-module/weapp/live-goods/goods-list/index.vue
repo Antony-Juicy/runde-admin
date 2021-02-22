@@ -209,7 +209,7 @@ export default {
       emptyText: '暂无数据',
       fixedTwoRow: true,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
@@ -329,33 +329,40 @@ export default {
       console.log(rows, "rows---");
     },
     // 获取商品列表数据
-    getTableData(params) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
-      this.$fetch(
-        "goods_list",
-        params || {
-          loginUserId: this.$common.getUserId(),
-          ...this.pageConfig,
-          ...this.searchForm
-        }
-      ).then((res) => {
-        this.tableData = res.data.records;
-        this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
+    getTableData(params={}) {
+      return new Promise((resolve,reject)=>{
+        const loading = this.$loading({
+          lock: true,
+          target: ".el-table",
+        });
+        this.$fetch(
+          "goods_list",
+          {
+            loginUserId: this.$common.getUserId(),
+            ...this.pageConfig,
+            ...this.searchForm,
+            ...params
+          }
+        ).then((res) => {
+          this.tableData = res.data.records;
+          this.pageConfig.totalCount = res.data.totalCount;
+          setTimeout(() => {
+            loading.close();
+          }, 200);
+          resolve();
+        }).catch(err=>{
           loading.close();
-        }, 200);
-      });
+          console.log(err)
+          reject();
+        });
+      })
     },
     // 分页查询
     pageChange(val) {
       console.log(val,'pagechange')
-      this.getTableData({
-        pageNum: (val && val.page) || 1,
-        pageSize: (val && val.limit) || 10,
-      });
+      this.pageConfig.pageNum = val.page;
+      this.pageConfig.pageSize = val.limit;
+      this.getTableData();
     },
 
     // 新增商品

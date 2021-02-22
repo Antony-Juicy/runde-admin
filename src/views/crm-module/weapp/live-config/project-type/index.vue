@@ -73,18 +73,18 @@ export default {
   data(){
     return {
       tableData: [
-        {
-          typeId: 1,
-          typeName: "执业药师",
-          orderValue: 1,
-          typeStatus: "正常"
-        },
-        {
-          typeId: 2,
-          typeName: "健康管理师",
-          orderValue: 2,
-          typeStatus: "停用"
-        }
+        // {
+        //   typeId: 1,
+        //   typeName: "执业药师",
+        //   orderValue: 1,
+        //   typeStatus: "正常"
+        // },
+        // {
+        //   typeId: 2,
+        //   typeName: "健康管理师",
+        //   orderValue: 2,
+        //   typeStatus: "停用"
+        // }
       ],
       tableKey: [
         { name: 'id',value: 'typeId' },
@@ -97,7 +97,7 @@ export default {
       emptyText: '暂无数据',
       fixedTwoRow: true,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
@@ -125,33 +125,43 @@ export default {
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
-    getTableData(params) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
-      this.$fetch(
-        "projectType_list",
-        params || {
-          loginUserId,
-          ...this.pageConfig,
-        }
-      ).then((res) => {
-        this.tableData = res.data.records;
-        this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
+    getTableData(params={}) {
+      return new Promise((resolve,reject)=>{
+        const loading = this.$loading({
+          lock: true,
+          target: ".el-table",
+        });
+        this.$fetch(
+          "projectType_list",
+          {
+            // loginUserId,
+            ...this.pageConfig,
+            ...params
+          }
+        ).then((res) => {
+          this.tableData = res.data.records;
+          this.pageConfig.totalCount = res.data.totalCount;
+          setTimeout(() => {
+            loading.close();
+          }, 200);
+          resolve();
+        }).catch(err=>{
           loading.close();
-        }, 200);
-      });
+          console.log(err)
+          reject();
+        });
+      })
     },
     pageChange(val) {
       console.log(val,'pagechange')
-      this.currentPageInfo = val;
-      this.getTableData({
-        pageNum: (val && val.page) || 1,
-        pageSize: (val && val.limit) || 10,
-        loginUserId
-      });
+      // this.currentPageInfo = val;
+      // this.getTableData({
+      //   pageNum: (val && val.page) || 1,
+      //   pageSize: (val && val.limit) || 10,
+      // });
+      this.pageConfig.pageNum = val.page;
+      this.pageConfig.pageSize = val.limit;
+      this.getTableData();
     },
 
     // 新增

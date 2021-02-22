@@ -30,14 +30,14 @@ export default {
         { prop: 'liveName', element: 'el-input', placeholder: '直播名称' }
       ],
       tableData: [
-        {
-          provincialSchoolName: "广东校区",
-          branchSchoolName: "广州校区",
-          teacherName: "王伯伯",
-          inviteeName: "张三",
-          inviteePhone: 13800138000,
-          liveName: "2021药师终极包过班"
-        }
+        // {
+        //   provincialSchoolName: "广东校区",
+        //   branchSchoolName: "广州校区",
+        //   teacherName: "王伯伯",
+        //   inviteeName: "张三",
+        //   inviteePhone: 13800138000,
+        //   liveName: "2021药师终极包过班"
+        // }
       ],
       tableKey: [
         { name: '校区',value: 'provincialSchoolName' },
@@ -50,7 +50,7 @@ export default {
       emptyText: '暂无数据',
       fixedTwoRow: true,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
@@ -88,25 +88,32 @@ export default {
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
-    getTableData(params) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
-      this.$fetch(
-        "invite_count_list",
-        {
-          ...this.pageConfig,
-          ...this.searchForm,
-          ...params
-        }
-      ).then((res) => {
-        this.tableData = res.data.records;
-        this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
+    getTableData(params={}) {
+      return new Promise((resolve,reject)=>{
+        const loading = this.$loading({
+          lock: true,
+          target: ".el-table",
+        });
+        this.$fetch(
+          "invite_count_list",
+          {
+            ...this.pageConfig,
+            ...this.searchForm,
+            ...params
+          }
+        ).then((res) => {
+          this.tableData = res.data.records;
+          this.pageConfig.totalCount = res.data.totalCount;
+          setTimeout(() => {
+            loading.close();
+          }, 200);
+          resolve();
+        }).catch(err=>{
           loading.close();
-        }, 200);
-      });
+          console.log(err)
+          reject();
+        });
+      })
     },
     pageChange(val) {
       this.pageConfig.pageNum = val.page;

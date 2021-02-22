@@ -114,7 +114,7 @@ export default {
         { name: '直播名称',value: 'liveName' },
         { name: '收费类型',value: 'liveChargeMode',operate: true },
         { name: '访问量pv',value: 'pv' },
-        { name: '独立访问客uv',value: 'uv' },
+        { name: '独立访问客数uv',value: 'uv' },
         { name: '订单量',value: 'orderCount' },
         { name: '成交额',value: 'turnover' },
         { name: '操作',value: 'edit',operate: true,width: 120 }
@@ -122,7 +122,7 @@ export default {
       emptyText: '暂无数据',
       fixedTwoRow: true,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
