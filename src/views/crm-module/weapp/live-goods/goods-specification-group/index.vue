@@ -297,7 +297,7 @@ export default {
       console.log(rows, "rows---");
     },
     // 获取规格组列表数据
-    getTableData(params) {
+    getTableData(params={}) {
       return new Promise((resolve,reject)=>{
         const loading = this.$loading({
           lock: true,
@@ -305,9 +305,10 @@ export default {
         });
         this.$fetch(
           "goods_item_list",
-          params || {
+          {
             ...this.pageConfig,
-            ...this.searchForm
+            ...this.searchForm,
+            ...params
           }
         ).then((res) => {
           this.tableData = res.data.records;
