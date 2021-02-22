@@ -154,13 +154,13 @@ export default {
         }
       ],
       tableData: [
-        {
-          goodsGroupName: "中药",
-          typeName: "执业药师",
-          goodsGroupStatus: "正常",
-          itemCount: 4,
-          remark: "备注备注备注金牌通过班"
-        }
+        // {
+        //   goodsGroupName: "中药",
+        //   typeName: "执业药师",
+        //   goodsGroupStatus: "正常",
+        //   itemCount: 4,
+        //   remark: "备注备注备注金牌通过班"
+        // }
       ],
       tableKey: [
         { name: '规格组名称',value: 'goodsGroupName' },
@@ -173,7 +173,7 @@ export default {
       emptyText: '暂无数据',
       fixedTwoRow: true,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },

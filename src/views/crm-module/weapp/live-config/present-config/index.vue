@@ -96,16 +96,16 @@ export default {
         }
       ],
       tableData: [
-        {
-          liveGiftId: 1,
-          liveGiftName: "测试礼物",
-          giftImage: "",
-          giftStatus: "显示",
-          orderValue: 1,
-          giftPrice: 9.9,
-          totalGiveCount: 110,
-          createAt: "2020-01-01 00:00:00"
-        }
+        // {
+        //   liveGiftId: 1,
+        //   liveGiftName: "测试礼物",
+        //   giftImage: "",
+        //   giftStatus: "显示",
+        //   orderValue: 1,
+        //   giftPrice: 9.9,
+        //   totalGiveCount: 110,
+        //   createAt: "2020-01-01 00:00:00"
+        // }
       ],
       tableKey: [
         { name: 'ID',value: 'liveGiftId',sortable: true },
@@ -121,7 +121,7 @@ export default {
       emptyText: '暂无数据',
       fixedTwoRow: true,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
@@ -155,34 +155,45 @@ export default {
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
-    getTableData(params) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
-      this.$fetch(
-        "gift_list",
-        params || {
-          loginUserId: this.$common.getUserId(),
-          ...this.pageConfig,
-          ...this.searchForm
-        }
-      ).then((res) => {
-        this.tableData = res.data.records;
-        this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
+    getTableData(params={}) {
+      return new Promise((resolve,reject)=>{
+        const loading = this.$loading({
+          lock: true,
+          target: ".el-table",
+        });
+        this.$fetch(
+          "gift_list",
+          {
+            // loginUserId: this.$common.getUserId(),
+            ...this.pageConfig,
+            ...this.searchForm,
+            ...params
+          }
+        ).then((res) => {
+          this.tableData = res.data.records;
+          this.pageConfig.totalCount = res.data.totalCount;
+          setTimeout(() => {
+            loading.close();
+          }, 200);
+          resolve();
+        }).catch(err=>{
           loading.close();
-        }, 200);
-      });
+          console.log(err)
+          reject();
+        });
+      })
     },
     pageChange(val) {
       console.log(val,'pagechange')
-      this.currentPageInfo = val;
-      this.getTableData({
-        pageNum: (val && val.page) || 1,
-        pageSize: (val && val.limit) || 10,
-        loginUserId: this.$common.getUserId()
-      });
+      // this.currentPageInfo = val;
+      // this.getTableData({
+      //   pageNum: (val && val.page) || 1,
+      //   pageSize: (val && val.limit) || 10,
+      //   loginUserId: this.$common.getUserId()
+      // });
+      this.pageConfig.pageNum = val.page;
+      this.pageConfig.pageSize = val.limit;
+      this.getTableData();
     },
 
     // 新增
