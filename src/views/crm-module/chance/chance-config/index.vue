@@ -226,7 +226,7 @@ export default {
       searchForm: {},
       formOptions: [
         {
-          prop: "campusName",
+          prop: "campusId",
           element: "el-select",
           filterable: true,
           initValue: "",
@@ -427,7 +427,7 @@ export default {
         }));
         this.formOptions = [
           {
-          prop: "campusName",
+          prop: "campusId",
           element: "el-select",
           filterable: true,
           initValue: "",

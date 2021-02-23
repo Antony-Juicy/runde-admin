@@ -131,7 +131,7 @@ export default {
           placeholder: "请选择失效原因",
         },
         {
-          prop: "zjstatus",
+          prop: "checked",
           element: "el-select",
           initValue: "",
           placeholder: "请选择是否质检",
@@ -143,7 +143,7 @@ export default {
           placeholder: "请选择归属销售",
         },
         {
-          prop: "campusName",
+          prop: "campusId",
           element: "el-select",
           initValue: "",
           placeholder: "请选择组织架构",
@@ -300,24 +300,23 @@ export default {
           return p.catch((error) => error);
         })
       ).then((result) => {
-        console.log(result,'result')
+        console.log(result,'result---------------')
         let eduOptions = result[0].data.map((item) => ({
           label: item.value,
           value: item.key,
         }));
-        let staffOptions = JSON.parse(result[1].msg).map((item) => ({
+        let staffOptions = result[1].msg?JSON.parse(result[1].msg).map((item) => ({
           label: item.staffName,
           value: item.id,
-        }));
+        })):[];
         let campusOptions = result[2].data.data.map((item) => ({
           label: item.campusName,
           value: item.id,
         }));
-        console.log(result[3],'result[3].msg')
-        let productOptions = JSON.parse(result[3].msg).map((item) => ({
+        let productOptions = result[3].msg?JSON.parse(result[3].msg).map((item) => ({
           value: item.id,
           label: item.productName,
-        }));
+        })):[];
         let reasonOptions = [
           {
             label: "无法核实",
@@ -344,7 +343,6 @@ export default {
             value: "SignBranch"
           },
         ]
-        console.log(enquireProductIdOne,'enquireProductIdOne----')
         this.formOptions = [
           {
             prop: "studentName",
@@ -381,7 +379,7 @@ export default {
             options: reasonOptions
           },
           {
-            prop: "zjstatus",
+            prop: "checked",
             element: "el-select",
             initValue: "",
             placeholder: "请选择是否质检",
@@ -405,7 +403,7 @@ export default {
             options: staffOptions,
           },
           {
-            prop: "campusName",
+            prop: "campusId",
             element: "el-select",
             initValue: "",
             placeholder: "请选择组织架构",
