@@ -18,7 +18,7 @@
                 <comment :liveId="liveId" v-model="deviceF" @refresh="refresh"/>
             </el-tab-pane>
             <el-tab-pane label="回放管理" name="sixth">
-                <playback :liveId="liveId"/>
+                <playback :liveId="liveId" ref="playback"/>
             </el-tab-pane>
         </el-tabs>
   </div>

@@ -78,14 +78,16 @@
           <privateCustomers
             @currentChange="currentChange"
             :newFormOptions="formOptions"
+            ref="privateCustomers"
           />
         </div>
         <div v-show="tabIndex == '1'">
           <publicCustomers @currentChange="currentChange"
-            :newFormOptions="formOptions"/>
+            :newFormOptions="formOptions"
+            ref="publicCustomers"/>
         </div>
         <div v-show="tabIndex == '2'">
-          <lockUser />
+          <lockUser ref="lockUser"/>
         </div>
       </div>
       <!-- 右侧表单 -->
@@ -510,6 +512,7 @@ export default {
           this.$fetch("chance_saveData", param).then((res) => {
             if(res.code == 200 || res.code == 1){
               this.$message.success("保存成功")
+              this.refreshTable();
             }
           });
         }
@@ -569,10 +572,21 @@ export default {
           }).then(res => {
             if(res.code == 200){
               this.$message.success("保存成功")
+              this.refreshTable();
             }
           })
         }
       });
+    },
+
+    refreshTable(){
+      if(this.tabIndex == '0'){
+        this.$refs.privateCustomers.getTableData();
+      }else if(this.tabIndex == '1'){
+        this.$refs.publicCustomers.getTableData();
+      }else if(this.tabIndex == '2'){
+        this.$refs.lockUser.getTableData();
+      }
     },
 
     handleDetail() {

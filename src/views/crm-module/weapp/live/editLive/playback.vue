@@ -1,6 +1,6 @@
 <template>
   <div class="playback">
-    <search-form :formOptions="formOptions" @onSearch="onSearch"></search-form>
+    <search-form :formOptions="formOptions" @onSearch="onSearch" v-if="showSearchForm"></search-form>
     <rd-table :tableData="tableData" :tableKey="tableKey" fixedTwoRow :emptyText="emptyText">
       <template slot="index" slot-scope="scope">
         {{ scope.$index + 1 }}
@@ -70,6 +70,7 @@ export default {
           prop: "livePlaybackName",
           element: "el-input",
           placeholder: "请输入回放名称",
+          initWidth: true
         },
       ],
       tableData: [],
@@ -110,7 +111,9 @@ export default {
       addVisible: false,
       currentLink: "",
 
-      emptyText:"暂无数据"
+      emptyText:"暂无数据",
+
+      showSearchForm: true
     };
   },
   props: {

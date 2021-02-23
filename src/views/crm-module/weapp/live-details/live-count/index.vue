@@ -214,14 +214,24 @@ export default {
       this.pageConfig.pageSize = val.limit;
       this.getTableData();
     },
-    openConfig(row) {
+    async openConfig(row) {
       console.log(row,'row-----')
+      const res = await this.getLiveInfo(row.liveId);
       this.$router.push({
         name: '/crm-module/weapp/live' + '?' + sessionStorage.getItem("router-timeStamp"),
         params: {
           liveId: row.liveId,
-          flag: 'analysis'
+          flag: 'analysis',
+          chatAudit: res.data.chatAudit,
+          mute: res.data.mute,
+          liveName: res.data.liveName
         }
+      })
+    },
+
+    getLiveInfo(liveId){
+      return this.$fetch("live_getInfo",{
+        liveId
       })
     }
   },

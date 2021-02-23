@@ -113,7 +113,7 @@ export default {
           placeholder: "请输入学员手机",
         },
         {
-          prop: "project",
+          prop: "enquireProductIdOne",
           element: "el-select",
           initValue: "",
           placeholder: "请选择项目",
@@ -300,6 +300,7 @@ export default {
           return p.catch((error) => error);
         })
       ).then((result) => {
+        console.log(result,'result')
         let eduOptions = result[0].data.map((item) => ({
           label: item.value,
           value: item.key,
@@ -312,6 +313,7 @@ export default {
           label: item.campusName,
           value: item.id,
         }));
+        console.log(result[3],'result[3].msg')
         let productOptions = JSON.parse(result[3].msg).map((item) => ({
           value: item.id,
           label: item.productName,
@@ -342,6 +344,7 @@ export default {
             value: "SignBranch"
           },
         ]
+        console.log(enquireProductIdOne,'enquireProductIdOne----')
         this.formOptions = [
           {
             prop: "studentName",
@@ -356,7 +359,7 @@ export default {
             placeholder: "请输入学员手机",
           },
           {
-            prop: "project",
+            prop: "enquireProductIdOne",
             element: "el-select",
             initValue: "",
             placeholder: "请选择项目",

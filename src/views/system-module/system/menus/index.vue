@@ -75,7 +75,7 @@
           :label-width="formLabelWidth"
         >
           <el-form-item
-            label="父级菜单"
+            :label="selectedTree.menuType=='1'?'父级接口':'父级菜单'"
             prop="parentId"
             :label-width="formLabelWidth"
             v-if="dialogStatus"
@@ -501,9 +501,9 @@ export default {
           type: "warning",
         });
         return;
-      } else if (this.selectedTree.menuType != "0") {
+      } else if (this.selectedTree.menuType == "2") {
         this.$message({
-          message: "请选择正确的菜单",
+          message: "请选择正确的菜单或接口",
           type: "warning",
         });
         return;
