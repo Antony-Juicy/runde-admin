@@ -93,7 +93,7 @@ export default {
                 },
                 {
                     prop: "orderValue",
-                    element: "el-input",
+                    element: "el-input-number",
                     placeholder: "请输入",
                     label: "排序值",
                 },
@@ -106,9 +106,7 @@ export default {
                 },
             ],
             addRules: {
-                typeId: [
-                    { required: true, message: "请选择项目名类型", trigger: "blur" },
-                ],
+
                 teacherName: [
                     { required: true, message: "请输入老师名称", trigger: "blur" },
                 ],
@@ -132,7 +130,7 @@ export default {
                 ],
             },
             uploadOssElem: true,
-            initGetConfig: false,
+            initGetConfig: true,
             teacherId: "",
             teacherPhoto: "",
             teacherDetail: "", // 用于后续保存富文本时使用
@@ -233,27 +231,23 @@ export default {
         initFormData(teacherId) {
             this.mode = 'save';
             this.teacherId = teacherId;
-        },
-        getTeacherInfo() {
-            if (this.mode == 'save') {
-                this.$fetch("online_course_teacher_getInfo", {
-                    teacherId: this.teacherId,
-                    loginUserId: this.$common.getUserId(),
-                }).then((res) => {
-                    this.addFormOptions.forEach((item) => {
-                        item.initValue = res.data[item.prop];
-                        if (item.prop == "teacherPhoto") {
-                            this.teacherPhoto = res.data.teacherPhoto;
-                        }
-                        if (item.prop == "teacherDetail") {
-                            this.teacherDetailByEdit = res.data.teacherDetail;
-                        }
-                    })
-                    this.$refs.dataForm.addInitValue();
+            this.$fetch("online_course_teacher_getInfo", {
+                teacherId: this.teacherId,
+                loginUserId: this.$common.getUserId(),
+            }).then((res) => {
+                this.addFormOptions.forEach((item) => {
+                    item.initValue = res.data[item.prop];
+                    if (item.prop == "teacherPhoto") {
+                        this.teacherPhoto = res.data.teacherPhoto;
+                    }
+                    if (item.prop == "teacherDetail") {
+                        this.teacherDetail = res.data.teacherDetail;
+                        this.teacherDetailByEdit = res.data.teacherDetail;
+                    }
                 })
-            }
-
-        }
+                this.$refs.dataForm.addInitValue();
+            })
+        },
     },
 
     created() {
@@ -262,23 +256,6 @@ export default {
 
     mounted() {
         scrollTo(0, 800);
-        this.$fetch("projectType_normalList", {
-            loginUserId: this.$common.getUserId(),
-        }).then((res) => {
-            let typeList = res.data.map((item) => ({
-                label: item.typeName,
-                value: item.typeId,
-            }));
-            this.addFormOptions.unshift({
-                prop: "typeId",
-                element: "el-select",
-                placeholder: "请选择项目类型",
-                label: "项目类型",
-                options: typeList,
-            });
-
-            this.getTeacherInfo()
-        });
     },
     beforeCreate() { },
     beforeMount() { },
