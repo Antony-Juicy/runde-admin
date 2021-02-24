@@ -122,7 +122,24 @@ const $common = {
         　　} else {
         　　　　return true;
         　　}
-        }
+    },
+
+    // 获取当天日期
+    getCurrentDate(){
+        let time = new Date()
+        let year = time.getFullYear();
+        let month = time.getMonth() + 1;
+        let day = time.getDate();
+        if (month < 10) month = `0${month}`;
+        if (day < 10) day = `0${day}`
+        return `${year}${month}${day}`;
+        
+    },
+
+    // 配置图片缩略图
+    setThumbnail(pic){
+        return pic + '?x-oss-process=image/auto-orient,1/resize,m_lfit,w_550/quality,q_100'
+    }
 }
 
 export default $common

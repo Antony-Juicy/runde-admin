@@ -38,7 +38,7 @@
           <el-form-item label="礼物图片" prop="giftImage" class="icon-wrapper">
             <Upload-oss
               v-if="uploadOssElem"
-              :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
+              :objConfig="{module: 'live', project: 'icon_'}"
               :src.sync="presentForm.giftImage"
               @srcChangeFun="
                 (data) => {

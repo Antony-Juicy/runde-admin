@@ -15,7 +15,7 @@
             <Upload-oss
               v-if="uploadOssElem"
               :initGetConfig="initGetConfig"
-              :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
+             :objConfig="{module: 'live', project: 'icon_',}"
               :src.sync="bgImg"
               @srcChangeFun="
                 (data) => {
@@ -32,7 +32,7 @@
       <template slot="liveCover">
         <Upload-oss
           v-if="uploadOssElem2"
-          :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
+          :objConfig="{module: 'live', project: 'icon_',}"
           :src.sync="coverImg"
           :initGetConfig="initGetConfig"
           @srcChangeFun="
@@ -46,6 +46,7 @@
       <template slot="liveDetail">
         <RdEditor
           placeholder="编辑直播简介"
+          module="live"
           :quillContent="quillContent"
           @change="changeEditor"
         />
@@ -245,7 +246,7 @@ export default {
       coverImg: "",
       bgType: "1",
       liveMode: true,
-      initGetConfig: false,
+      initGetConfig: true,
       liveDetail: "",
       btnLoading: false,
       quillContent: "",

@@ -11,10 +11,11 @@
         <el-radio v-model="bgType" label="2">自定义背景色</el-radio><br />
         <div class="pic-container">
           <div class="pic-item">
+            
             <Upload-oss
               v-if="uploadOssElem"
               :initGetConfig="initGetConfig"
-              :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
+              :objConfig="{module: 'live', project: 'icon_'}"
               :src.sync="bgImg"
               @srcChangeFun="
                 (data) => {
@@ -31,7 +32,7 @@
       <template slot="liveCover">
         <Upload-oss
           v-if="uploadOssElem2"
-          :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
+          :objConfig="{ module: 'live', project: 'icon_' }"
           :src.sync="coverImg"
           :initGetConfig="initGetConfig"
           @srcChangeFun="
@@ -43,7 +44,7 @@
         />
       </template>
       <template slot="liveDetail">
-        <RdEditor placeholder="编辑直播简介" @change="changeEditor" />
+        <RdEditor placeholder="编辑直播简介" module="live" @change="changeEditor" />
       </template>
     </RdForm>
     <div class="btn-wrapper">
@@ -235,7 +236,7 @@ export default {
       coverImg: "",
       bgType: "1",
       liveMode: true,
-      initGetConfig: false,
+      initGetConfig: true,
       liveDetail: "",
       btnLoading: false,
     };

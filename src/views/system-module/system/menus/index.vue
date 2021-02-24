@@ -193,7 +193,7 @@
           >
             <Upload-oss
               v-if="uploadOssElem"
-              :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
+             :objConfig="{module: 'system', project: 'icon_'}"
               :src.sync="basicInfo.menuIcon"
               @srcChangeFun="
                 (data) => {

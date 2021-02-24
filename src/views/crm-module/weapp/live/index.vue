@@ -22,6 +22,7 @@
           <el-image
             style="width: 100px; height: 100px"
             :src="scope.row.liveCover"
+            fit="cover"
           ></el-image>
         </template>
         <template slot="edit" slot-scope="scope">
@@ -422,7 +423,7 @@ export default {
               item.liveMode = item.liveMode == "Vertical" ? "竖屏" : "横屏";
               item.liveStatus = this.changeLiveStatus(item.liveStatus);
               item.liveChargeMode = this.changeChargeMode(item.liveChargeMode);
-              item.liveShowStatus = this.changeShowStatus(item.liveShowStatus);
+              item.liveCover = this.$common.setThumbnail(item.liveCover);
               return item;
             });
             this.pageConfig.totalCount = res.data.totalCount;

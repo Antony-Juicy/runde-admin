@@ -11,7 +11,7 @@
         {{ img }}
         <Upload-oss
           v-if="uploadOssElem"
-          :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
+          :objConfig="{module: 'live', project: 'icon_'}"
           :src.sync="img"
           @srcChangeFun="
             (data) => {
@@ -25,7 +25,7 @@
         {{ img2 }}
         <Upload-oss
           v-if="uploadOssElem"
-          :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
+          :objConfig="{module: 'live', project: 'icon_'}"
           :src.sync="img2"
           @srcChangeFun="
             (data) => {

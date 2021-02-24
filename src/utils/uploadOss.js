@@ -1,3 +1,4 @@
+import $common from '@/utils/common'
 let multipart_params = {
     key: '',
     success_action_status: ''
@@ -21,7 +22,7 @@ import plupload from "plupload";
 export function uploadOss(uploaderInput, isMult, objConfig = {}) {
     return new Promise((resolve, reject)=>{
     // thePath 代表处理后台上传, 默认到'web/runde_console' 之外，还有一部分是上传到 cmsuserinfo/yxy上的
-    let thePath = Object.keys(objConfig).length > 0 ? objConfig.dir : 'web/runde_console';
+    let thePath =  objConfig.module? 'web/runde_jiaowu/'+ objConfig.module + '/' + $common.getCurrentDate() : 'web/runde_jiaowu' + '/' + $common.getCurrentDate();
     axios.post('https://h5.rundejy.com/aliyunoss/getAliyunOssConfig', qs.stringify({path: thePath})).then(({data}) => {
         multipart_params = data.data;
         baseKey = data.data.key;
@@ -46,10 +47,12 @@ export function uploadOss(uploaderInput, isMult, objConfig = {}) {
                 if(Object.keys(objConfig).length > 0) {
                     // console.log("objConfig",objConfig);
                     if(objConfig.name) {
-                        set_upload_param(uploader,  objConfig.dir +"/"+ objConfig.project+ objConfig.name, false);
+                        set_upload_param(uploader,  objConfig.dir +"/"+ objConfig.project || '' + objConfig.name, false);
                         return;
                     }else {
-                        set_upload_param(uploader, objConfig.dir +"/"+  objConfig.project +files[0].name, false);
+                        // set_upload_param(uploader, objConfig.dir +"/"+  objConfig.project +files[0].name, false);
+                        // 修改了图片上传的名称为随机的32为字符 解决了图片是中文的问题
+                        set_upload_param(uploader,baseKey + randomString()+"."+files[0].name.split(".")[1], false);
                         return;
                     }
                 }
@@ -69,7 +72,7 @@ export function uploadOss(uploaderInput, isMult, objConfig = {}) {
                         options.index++;
                         if(options.index < options.files.length) { // 已经全部上传完毕
                             if(Object.keys(objConfig).length > 0) {
-                                set_upload_param(uploader, objConfig.dir +"/"+ objConfig.project +options.files[options.index].name, false);
+                                set_upload_param(uploader, objConfig.dir +"/"+ objConfig.project || '' +options.files[options.index].name, false);
                                 return;
                             }
                             set_upload_param(uploader, baseKey + timestamp()+ options.files[options.index].name, false);

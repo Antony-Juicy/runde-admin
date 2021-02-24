@@ -73,7 +73,7 @@
             <el-form-item label="商品缩略图(4:3)" prop="goodsThumbnail" class="icon-wrapper">
               <Upload-oss
                 v-if="uploadOssElem"
-                :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
+                :objConfig="{module: 'live', project: 'icon_'}"
                 :src.sync="goodsForm.goodsThumbnail"
                 @srcChangeFun="
                   (data) => {
@@ -86,7 +86,7 @@
             <el-form-item label="商品展示图(16:9)" prop="goodsExhibitionImage" class="icon-wrapper">
               <Upload-oss
                 v-if="uploadOssElem2"
-                :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
+                :objConfig="{module: 'live', project: 'icon_'}"
                 :src.sync="goodsForm.goodsExhibitionImage"
                 @srcChangeFun="
                   (data) => {
@@ -97,7 +97,7 @@
               />
             </el-form-item>
             <el-form-item label="课程详情" prop="goodsDetail">
-              <RdEditor :quillContent="quillContent" @change="changeEditor" />
+              <RdEditor :quillContent="quillContent" module="live" @change="changeEditor" />
             </el-form-item>
           </el-form>
           <div class="btn-bottom">

@@ -3,7 +3,7 @@
     <div v-show="false" class="avatar-uploader">
         <Upload-Oss
               v-if="uploadOssElem"
-              :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
+              :objConfig="{module, project: 'icon_'}"
               :src.sync="bgImg"
               :initGetConfig="initGetConfig"
               @srcChangeFun="
@@ -60,6 +60,11 @@ export default {
     },
     placeholder: {
       default: String,
+      type: String,
+    },
+    // 上传的图片属于哪个模块
+    module: {
+      default: '',
       type: String,
     }
   },

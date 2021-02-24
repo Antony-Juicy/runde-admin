@@ -37,7 +37,7 @@
           <el-form-item label="分类图标" prop="typeIcon" class="icon-wrapper">
             <Upload-oss
               v-if="uploadOssElem"
-              :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
+              :objConfig="{module: 'live', project: 'icon_'}"
               :src.sync="projectForm.typeIcon"
               @srcChangeFun="
                 (data) => {
