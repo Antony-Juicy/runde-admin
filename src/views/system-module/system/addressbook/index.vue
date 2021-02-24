@@ -185,6 +185,22 @@ export default {
           initValue: '',
           placeholder: '请输入职位',
         },
+        {
+          prop: 'status',
+          element: 'el-select',
+          initValue: '',
+          placeholder: '请选择在职/离职',
+          options: [
+            {
+              label: "在职",
+              value: "Normal",
+            },
+            {
+              label: "离职",
+              value: "Stop",
+            }
+          ],
+        },
         // {
         //   prop: 'idcard',
         //   element: 'el-input',
