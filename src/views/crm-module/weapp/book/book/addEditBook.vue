@@ -1,25 +1,33 @@
-<!--  -->
+<!-- 创建|编辑图书 -->
 <template>
-    <div class='addEditClass'>
+    <div class='addEditBook'>
         <RdForm :formOptions="addFormOptions" :rules="addRules" :formLabelWidth="'150px'" ref="dataForm">
-            <template slot="classType">
-                <el-radio v-model="classType" label="Charge">
+            <template slot="bookType">
+                <el-radio v-model="bookType" label="Charge">
                     收费
                 </el-radio>
-                <el-radio v-model="classType" label="Free">
+                <el-radio v-model="bookType" label="Free">
                     免费
                 </el-radio>
             </template>
-            <template slot="imageUrl">
-                <Upload-oss v-if="uploadOssElem" :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }" :src.sync="imageUrl" :initGetConfig="initGetConfig" @srcChangeFun="
+            <template slot="bookImageUrl">
+                <Upload-oss v-if="uploadOssElem" :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }" :src.sync="bookImageUrl" :initGetConfig="initGetConfig" @srcChangeFun="
                     (data) => {
-                    imageUrl = data;
+                    bookImageUrl = data;
                     reloadElem('uploadOssElem');
                     }
                 " />
             </template>
-            <template slot="courseClassDetail">
-                <RdEditor placeholder="编辑班级详细介绍" :quillContent="courseClassDetailByEdit" @change="changeEditor" />
+            <template slot="bookDetailImageUrl">
+                <Upload-oss v-if="uploadOssElem2" :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }" :src.sync="bookDetailImageUrl" :initGetConfig="initGetConfig" @srcChangeFun="
+                    (data) => {
+                    bookDetailImageUrl = data;
+                    reloadElem('uploadOssElem2');
+                    }
+                " />
+            </template>
+            <template slot="bookDetail">
+                <RdEditor placeholder="编辑班级详细介绍" :quillContent="bookDetailByEdit" @change="changeEditor" />
             </template>
         </RdForm>
         <div class="btn-wrapper">
@@ -32,45 +40,60 @@
 
 <script>
 
+
+
 import RdForm from "@/components/RdForm";
 import UploadOss from "@/components/UploadOss";
 import RdEditor from "@/components/RdEditor";
 import { scrollTo } from "@/utils/scroll-to";
 export default {
 
+    components: { RdForm, UploadOss, RdEditor },
 
     data() {
 
         return {
             addFormOptions: [
                 {
-                    prop: "courseClassName",
+                    prop: "bookName",
                     element: "el-input",
                     placeholder: "请输入",
-                    label: "班级名称",
+                    label: "图书名称",
                 },
                 {
-                    prop: "courseClassKeywords",
+                    prop: "bookKeywords",
                     element: "el-input",
                     placeholder: "请输入",
                     label: "关键字",
                 },
                 {
-                    prop: "courseClassCode",
+                    prop: "bookImageUrl",
                     element: "el-input",
-                    placeholder: "请输入",
-                    label: "班次代号",
-                },
-                {
-                    prop: "imageUrl",
-                    element: "el-input",
-                    label: "封面图(21:9)",
+                    label: "封面图(5:6)",
                     operate: true,
                     initValue: 0,
                 },
-
                 {
-                    prop: "classType",
+                    prop: "bookDetailImageUrl",
+                    element: "el-input",
+                    label: "详情轮播图",
+                    operate: true,
+                    initValue: 0,
+                },
+                {
+                    prop: "bookLabel",
+                    element: "el-select",
+                    placeholder: "请输入图书标签",
+                    label: "图书标签",
+                    filterable: true,
+                    multiple: true,
+                    allowCreate: true,
+                    defaultFirstOption: true,
+                    options: [],
+                    initValue: 0,
+                },
+                {
+                    prop: "bookType",
                     element: "el-input",
                     placeholder: "请选择",
                     label: "收费模式",
@@ -78,13 +101,13 @@ export default {
                     initValue: "Charge",
                 },
                 {
-                    prop: "enrollFee",
+                    prop: "bookEnrollFee",
                     element: "el-input-number",
                     placeholder: "请输入",
                     label: "报名费用",
                 },
                 {
-                    prop: "classStatus",
+                    prop: "bookStatus",
                     element: "el-radio",
                     placeholder: "请选择显示状态",
                     label: "显示状态",
@@ -111,14 +134,21 @@ export default {
                     label: "排序值",
                 },
                 {
-                    prop: "courseClassDescribe",
+                    prop: "bookDescribe",
                     element: "el-input",
                     placeholder: "请输入",
-                    label: "班级描述",
+                    label: "图书介绍",
                     initValue: ""
                 },
                 {
-                    prop: "courseClassDetail",
+                    prop: "bookPurchaseUrl",
+                    element: "el-input",
+                    placeholder: "请输入",
+                    label: "图书购买链接",
+                    initValue: ""
+                },
+                {
+                    prop: "bookDetail",
                     element: "el-input",
                     placeholder: "请输入",
                     label: "详细介绍",
@@ -128,44 +158,47 @@ export default {
             ],
             addRules: {
                 typeId: [{ required: true, message: "请选择项目名类型", trigger: "blur" },],
-                courseClassName: [{ required: true, message: "请输入班级名称", trigger: "blur" },],
-                courseClassKeywords: [{ required: true, message: "请输入班级关键字", trigger: "blur" },],
-                courseClassCode: [{ required: true, message: "请输入班级代号", trigger: "blur" },],
-                imageUrl: [{ required: true, message: "请上传封面图", trigger: "blur" },],
-                classType: [{ required: true, message: "请选择班级类型", trigger: "blur" },],
-                enrollFee: [{ required: true, message: "请输入班级价格", trigger: "blur" },],
-                teacherArray: [{ required: true, message: "请选择授课讲师", trigger: "blur" }],
-                classShowStatus: [{ required: true, message: "请选择班级状态", trigger: "blur" },],
+                bookName: [{ required: true, message: "请输入图书名称", trigger: "blur" },],
+                bookKeywords: [{ required: true, message: "请输入关键字", trigger: "blur" },],
+                bookImageUrl: [{ required: true, message: "请上传封面图", trigger: "blur" },],
+                bookDetailImageUrl: [{ required: true, message: "请上传详情轮播图", trigger: "blur" },],
+                bookTeacherArray: [{ required: true, message: "请选择授课讲师", trigger: "blur" },],
+                bookLabel: [{ required: true, message: "请输入图书标签", trigger: "blur" },],
+                bookType: [{ required: true, message: "请选择收费模式", trigger: "blur" },],
+                bookEnrollFee: [{ required: true, message: "请输入报名费用", trigger: "blur" },],
+                bookStatus: [{ required: true, message: "请选择图书状态", trigger: "blur" },],
                 orderValue: [{ required: true, message: "请输入排序值", trigger: "blur" },],
-                courseClassDescribe: [{ required: true, message: "请输入班级描述", trigger: "blur" },],
-                courseClassDetail: [{ required: true, message: "请上传详细介绍", trigger: "blur" },],
+                bookDescribe: [{ required: true, message: "请输入图书介绍", trigger: "blur" },],
+                bookPurchaseUrl: [{ required: true, message: "请输入图书购买链接", trigger: "blur" },],
+                bookDetail: [{ required: true, message: "请上传详情介绍", trigger: "blur" },],
             },
             uploadOssElem: true,
+            uploadOssElem2: true,
             initGetConfig: false,
-            classType: "Charge",
-            imageUrl: "",
-            courseClassDetail: "",// 用于后续保存富文本时使用
-            courseClassDetailByEdit: "",// 用于编辑时初始化富文本内容使用
+            bookType: "Charge",
+            bookImageUrl: "",
+            bookDetailImageUrl: "",
+            bookDetail: "",// 用于后续保存富文本时使用
+            bookDetailByEdit: "",// 用于编辑时初始化富文本内容使用
             btnLoading: false,
             mode: "add",// add 新增 edit 修改
-
+            bookId: "",
         };
     },
-    components: { RdForm, UploadOss, RdEditor },
 
     computed: {},
 
     watch: {
-        classType: function (n, o) {
+        bookType: function (n, o) {
             if (n == "Charge") {
-                this.addFormOptions.splice(7, 0, {
-                    prop: "enrollFee",
+                this.addFormOptions.splice(8, 0, {
+                    prop: "bookEnrollFee",
                     element: "el-input-number",
                     placeholder: "请输入",
                     label: "报名费用",
                 })
             } else {
-                this.addFormOptions.splice(7, 1)
+                this.addFormOptions.splice(8, 1)
             }
             scrollTo(0, 800);
         }
@@ -185,28 +218,40 @@ export default {
             this.$refs[formName].resetFields();
             this.$emit("close");
         },
+        changeEditor(val) {
+            this.bookDetail = val;
+        },
         handleAdd() {
             this.$refs.dataForm.validate((val, data) => {
                 if (val) {
-                    if (this.imageUrl == "") {
+
+                    if (this.bookImageUrl == "") {
                         this.$message.error("请上传封面图");
                         return;
                     } else {
-                        data.imageUrl = this.imageUrl;
+                        data.bookImageUrl = this.bookImageUrl;
                     }
-                    if (this.courseClassDetail == "") {
-                        this.$message.error("请上传详细介绍");
+                    if (this.bookDetailImageUrl == "") {
+                        this.$message.error("请上传详情轮播图");
                         return;
                     } else {
-                        data.courseClassDetail = this.courseClassDetail;
+                        data.bookDetailImageUrl = this.bookDetailImageUrl;
                     }
-                    
-                    data.classType = this.classType;
+                    if (this.bookDetail == "") {
+                        this.$message.error("请上传详情介绍");
+                        return;
+                    } else {
+                        data.bookDetail = this.bookDetail;
+                    }
+
+                    data.bookType = this.bookType;
+                    // 标签转化成 , 隔开的字符串
+                    data.bookLabel = data.bookLabel.join(',')
                     // 由于某种问题，需要多做一次格式化成对象
-                    data.teacherArray = data.teacherArray.map(v => JSON.parse(v))
+                    data.bookTeacherArray = data.bookTeacherArray.map(v => JSON.parse(v))
                     // 后台保存的数据是用字符串，所以要格式化数组成字符串
-                    data.teacherArray = JSON.stringify(data.teacherArray);
-                    this.$fetch("online_course_add_class", {
+                    data.bookTeacherArray = JSON.stringify(data.bookTeacherArray);
+                    this.$fetch("book_add_book", {
                         ...data,
                         loginUserId: this.$common.getUserId(),
                     }).then((res) => {
@@ -223,68 +268,78 @@ export default {
                 }
             })
         },
-        changeEditor(val) {
-            this.courseClassDetail = val;
-        },
-        initFormData(courseClassId) {
+        initFormData(bookId) {
             this.mode = 'save';
-            this.courseClassId = courseClassId;
+            this.bookId = bookId;
 
         },
-        getClassInfo() {
+        getBookInfo() {
             if (this.mode == 'save') {
-                this.$fetch("online_course_class_getInfo", {
-                    courseClassId: this.courseClassId,
+                this.$fetch("book_book_getInfo", {
+                    bookId: this.bookId,
                     loginUserId: this.$common.getUserId(),
                 }).then((res) => {
                     this.addFormOptions.forEach((item) => {
                         item.initValue = res.data[item.prop];
-                        if (item.prop == "classType") {
-                            this.classType = res.data.classType;
+                        if (item.prop == "bookType") {
+                            this.bookType = res.data.bookType;
                         }
-                        if (item.prop == "imageUrl") {
-                            this.imageUrl = res.data.imageUrl;
+                        if (item.prop == "bookImageUrl") {
+                            this.bookImageUrl = res.data.bookImageUrl;
                         }
-                        if (item.prop == "courseClassDetail") {
-                            this.courseClassDetail = res.courseClassDetail;
-                            this.courseClassDetailByEdit = res.data.courseClassDetail;
+                        if (item.prop == "bookDetailImageUrl") {
+                            this.bookDetailImageUrl = res.data.bookDetailImageUrl;
                         }
-                        if (item.prop == 'teacherArray') {
-                             try {
-                                item.initValue = JSON.parse(res.data.teacherArray).map(v => JSON.stringify(v))
+                        if (item.prop == "bookDetail") {
+                            this.bookDetail = res.data.bookDetail;
+                            this.bookDetailByEdit = res.data.bookDetail;
+                        }
+                        if(item.prop == 'bookLabel'){
+                            item.initValue = res.data.bookLabel.split(',')
+                        }
+                        if (item.prop == 'bookTeacherArray') {
+                            try {
+                                item.initValue = JSON.parse(res.data.bookTeacherArray).map(v => JSON.stringify(v))
                             } catch (error) {
                                 item.initValue = []
                             }
-
                         }
                     })
                     this.$refs.dataForm.addInitValue();
                 })
             }
-
         },
         handleSave() {
             this.$refs.dataForm.validate((val, data) => {
                 if (val) {
-                    if (this.imageUrl == "") {
+
+                    if (this.bookImageUrl == "") {
                         this.$message.error("请上传封面图");
                         return;
                     } else {
-                        data.imageUrl = this.imageUrl;
+                        data.bookImageUrl = this.bookImageUrl;
                     }
-                    if (this.courseClassDetail == "") {
-                        this.$message.error("请上传详细介绍");
+                    if (this.bookDetailImageUrl == "") {
+                        this.$message.error("请上传详情轮播图");
                         return;
                     } else {
-                        data.courseClassDetail = this.courseClassDetail;
+                        data.bookDetailImageUrl = this.bookDetailImageUrl;
                     }
-                    data.courseClassId = this.courseClassId
-                    data.classType = this.classType;
+                    if (this.bookDetail == "") {
+                        this.$message.error("请上传详情介绍");
+                        return;
+                    } else {
+                        data.bookDetail = this.bookDetail;
+                    }
+                    data.bookId = this.bookId
+                    data.bookType = this.bookType;
+                    // 标签转化成 , 隔开的字符串
+                    data.bookLabel = data.bookLabel.join(',')
                     // 由于某种问题，需要多做一次格式化成对象
-                    data.teacherArray = data.teacherArray.map(v => JSON.parse(v))
+                    data.bookTeacherArray = data.bookTeacherArray.map(v => JSON.parse(v))
                     // 后台保存的数据是用字符串，所以要格式化数组成字符串
-                    data.teacherArray = JSON.stringify(data.teacherArray);
-                    this.$fetch("online_course_update_class", {
+                    data.bookTeacherArray = JSON.stringify(data.bookTeacherArray);
+                    this.$fetch("book_update_book", {
                         ...data,
                         loginUserId: this.$common.getUserId(),
                     }).then((res) => {
@@ -308,7 +363,7 @@ export default {
     },
 
     async mounted() {
-        scrollTo(0, 800);
+        scrollTo(0, 800)
         // 项目类型 选项来源后台数据，使用请求返回的数值组装表单内容
         await this.$fetch("projectType_normalList", {
             loginUserId: this.$common.getUserId(),
@@ -329,7 +384,7 @@ export default {
             loginUserId: this.$common.getUserId(),
         }).then((res) => {
             this.addFormOptions.splice(5, 0, {
-                prop: "teacherArray",
+                prop: "bookTeacherArray",
                 element: "el-select",
                 placeholder: "请选择",
                 label: "授课讲师",
@@ -340,9 +395,8 @@ export default {
                     value: JSON.stringify(item)
                 }))
             });
-            this.getClassInfo()
+            this.getBookInfo()
         })
-
     },
     beforeCreate() { },
     beforeMount() { },
@@ -354,7 +408,7 @@ export default {
 }
 </script>
 <style lang='scss' scoped>
-.addEditClass {
+.addEditBook {
     /deep/ {
         .img180 {
             width: 100px;
@@ -374,12 +428,6 @@ export default {
     }
     .btn-wrapper {
         margin-left: 400px;
-    }
-    .pic-container {
-        display: flex;
-        .pic-item {
-            margin-right: 20px;
-        }
     }
 }
 </style>

@@ -129,7 +129,7 @@ export default {
                     target: ".el-table",
                 });
                 this.$fetch(
-                    "online_course_get_teachers",
+                    "config_get_teachers",
                     {
                         loginUserId: this.$common.getUserId(),
                         ...this.pageConfig,
@@ -184,8 +184,6 @@ export default {
                 this.$refs.addEditTeacher.initGetConfig = true;
                 this.$refs.addEditTeacher.initFormData(data.teacherId);
             });
-
-            
         },
         handleDelete(data) {
             let info = "讲师"
@@ -194,7 +192,7 @@ export default {
                 cancelButtonText: "取消",
                 type: "warning",
             }).then(async () => {
-                await this.$fetch("online_course_delete_teacher", {
+                await this.$fetch("config_delete_teacher", {
                     teacherId: data.teacherId,
                     loginUserId: this.$common.getUserId(),
                 }).then((res) => {

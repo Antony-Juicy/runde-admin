@@ -173,7 +173,7 @@ export default {
                         data.teacherDetail = this.teacherDetail;
                     }
                     this.btnLoading = true;
-                    this.$fetch("online_course_add_teacher", {
+                    this.$fetch("config_add_teacher", {
                         ...data,
                         loginUserId: this.$common.getUserId(),
                     }).then((res) => {
@@ -207,7 +207,7 @@ export default {
                     }
                     data.teacherId = this.teacherId;
                     this.btnLoading = true;
-                    this.$fetch("online_course_update_teacher", {
+                    this.$fetch("config_update_teacher", {
                         ...data,
                         loginUserId: this.$common.getUserId(),
                     }).then((res) => {
@@ -231,7 +231,7 @@ export default {
         initFormData(teacherId) {
             this.mode = 'save';
             this.teacherId = teacherId;
-            this.$fetch("online_course_teacher_getInfo", {
+            this.$fetch("config_teacher_getInfo", {
                 teacherId: this.teacherId,
                 loginUserId: this.$common.getUserId(),
             }).then((res) => {
