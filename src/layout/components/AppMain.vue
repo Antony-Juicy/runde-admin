@@ -8,9 +8,6 @@
         <router-view :key="key"></router-view>
       </keep-alive>
     </transition>
-    <!-- <transition name="el-fade-in" mode="out-in">
-      <router-view v-if="!$route.meta.keepAlive" :key="key"></router-view>
-    </transition> -->
   </section>
 </template>
 

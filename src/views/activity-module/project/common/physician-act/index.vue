@@ -71,8 +71,18 @@ export default {
         },
         {
           prop: "menuName",
-          element: "el-input",
+          element: "el-select",
           placeholder: "是否关注",
+          options:[
+            {
+              label:"关注",
+              value: "Alreadyattention"
+            },
+            {
+              label:"不关注",
+              value: "Notattention"
+            }
+          ]        
         }
       ],
       searchForm:{},

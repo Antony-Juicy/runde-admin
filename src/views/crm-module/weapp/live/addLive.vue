@@ -44,7 +44,7 @@
         />
       </template>
       <template slot="liveDetail">
-        <RdEditor placeholder="编辑直播简介" module="live" @change="changeEditor" />
+        <RdEditor placeholder="编辑直播简介" height="500px" module="live" @change="changeEditor" />
       </template>
     </RdForm>
     <div class="btn-wrapper">

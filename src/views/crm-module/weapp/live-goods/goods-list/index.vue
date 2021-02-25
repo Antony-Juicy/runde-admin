@@ -97,7 +97,7 @@
               />
             </el-form-item>
             <el-form-item label="课程详情" prop="goodsDetail">
-              <RdEditor :quillContent="quillContent" module="live" @change="changeEditor" />
+              <RdEditor :quillContent="quillContent" height="500px" module="live" @change="changeEditor" />
             </el-form-item>
           </el-form>
           <div class="btn-bottom">

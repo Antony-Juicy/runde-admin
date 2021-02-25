@@ -47,6 +47,7 @@
         <RdEditor
           placeholder="编辑直播简介"
           module="live"
+          height="500px"
           :quillContent="quillContent"
           @change="changeEditor"
         />

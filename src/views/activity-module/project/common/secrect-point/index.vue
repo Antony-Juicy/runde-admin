@@ -1,5 +1,5 @@
 <template>
-  <div class="post-manage">
+  <div class="secrect-point">
       <search-form
       :formOptions="formOptions"
       :showNum="7"
@@ -22,7 +22,19 @@
       >
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
-            >查阅/编辑</el-button
+            >编辑</el-button
+          >
+          <el-divider direction="vertical"></el-divider>
+          <el-button @click="handleEdit(scope.row)" type="text" size="small" style="color: #ffa500"
+            >上传题目</el-button
+          >
+          <el-divider direction="vertical"></el-divider>
+          <el-button @click="handleEdit(scope.row)" type="text" size="small" style="color: #ffa500"
+            >查看题目详情</el-button
+          >
+          <el-divider direction="vertical"></el-divider>
+          <el-button @click="handleEdit(scope.row)" type="text" size="small" style="color: #ffa500"
+            >预览答案图片</el-button
           >
           <el-divider direction="vertical"></el-divider>
           <el-button
@@ -32,22 +44,46 @@
             style="color: #ec5b56"
             >删除</el-button
           >
+          <el-divider direction="vertical"></el-divider>
+          <el-button
+            @click="handleDelete(scope.row)"
+            type="text"
+            size="small"
+            style="color: #ec5b56"
+            >删除题库</el-button
+          >
+          <el-divider direction="vertical"></el-divider>
+          <el-button @click="handleEdit(scope.row)" type="text" size="small"
+            >考后对答案</el-button
+          >
         </template>
       </rd-table>
     </div>
     
-    <!-- 添加海报 -->
+    <!-- 添加 -->
     <rd-dialog
-        :title="addStatus?'添加海报':'编辑海报'"
+        :title="addStatus?'添加':'编辑'"
         :dialogVisible="addVisible"
+        width="850px"
         @handleClose="addVisible = false"
         @submitForm="submitAddForm('dataForm3')"
       >
-        <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
+        <RdForm :formOptions="addFormOptions" formLabelWidth="140px" :rules="addRules" ref="dataForm3">
           <template slot="post">
             <el-button size="small" type="primary">上传海报</el-button>
           </template>
         </RdForm>
+      </rd-dialog>
+
+      <!-- 上传 -->
+      <rd-dialog
+        :title="'上传题目'"
+        :dialogVisible="uploadVisible"
+        width="850px"
+        @handleClose="uploadVisible = false"
+        @submitForm="submitAddForm('dataForm4')"
+      >
+        
       </rd-dialog>
   </div>
 </template>
@@ -55,15 +91,10 @@
 <script>
 import RdForm from "@/components/RdForm";
 export default {
-  name:"post-manage",
+  name:"secrect-point",
   data(){
     return {
       formOptions: [
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "商品名称",
-        },
         {
           prop: "menuName",
           element: "el-input",
@@ -72,7 +103,12 @@ export default {
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "海报名称",
+          placeholder: "项目名称",
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "科目名称",
         }
       ],
       searchForm:{},
@@ -94,58 +130,78 @@ export default {
           width: 80
         },
         {
-          name: "老师名称",
+          name: "活动名称",
           value: "staffName",
         },
         {
-          name: "商品名称",
+          name: "项目名称",
           value: "goodsName",
         },
         {
-          name: "活动名称",
+          name: "科目名称",
           value: "activityName",
         },
         {
-          name: "海报名称",
+          name: "课程名称",
           value: "posterName",
         },
         {
-          name: "海报图片",
+          name: "科目单元",
           value: "posterPic",
         },
         {
-          name: "分享文案一",
+          name: "项目科目和课程ID",
           value: "posterCopyFirst",
         },
         {
-          name: "分享文案二",
+          name: "科目启动时间",
           value: "posterCopySecond",
         },
         {
-          name: "分享文案三",
+          name: "科目结束时间",
           value: "posterCopyThird",
         },
         {
-          name: "分享文案四",
+          name: "是否关注",
           value: "posterCopyFourth",
         },
         {
-          name: "分享文案五",
+          name: "题库版本号",
           value: "posterCopyFifth",
         },
         {
-          name: "创建时间",
+          name: "总题数",
           value: "createAt",
         },
         {
-          name: "修改时间",
+          name: "压中的题数",
+          value: "updateAt",
+        },
+           {
+          name: "视频答案",
+          value: "updateAt",
+        },
+           {
+          name: "数据状态",
+          value: "updateAt",
+        },
+           {
+          name: "排序",
+          value: "updateAt",
+        },
+           {
+          name: "创建时间",
+          value: "updateAt",
+        },
+           {
+          name: "更新时间",
           value: "updateAt",
         },
         {
           name: "操作",
           value: "edit",
           operate: true,
-          width: 140,
+          width: 330,
           fixed: "right"
         },
       ],
@@ -159,55 +215,109 @@ export default {
           
         {
           prop: "menuName",
-          element: "el-input",
-          placeholder: "请输入海报名称",
-          label: "海报名称"
+          element: "el-select",
+          placeholder: "请选择",
+          label: "活动名称",
+          options: [
+          ]
         },
         {
           prop: "post",
           element: "el-input",
-          placeholder: "",
-          label: "上传海报",
-          operate: true,
-          initValue: 0
+          placeholder: "请输入",
+          label: "项目名称"
+        },
+        {
+          prop: "roleName",
+          element: "el-select",
+          placeholder: "请输入",
+          label: "科目名称"
+        },
+        {
+          prop: "roleName",
+          element: "el-select",
+          placeholder: "请输入",
+          label: "课程名称"
         },
         {
           prop: "roleName",
           element: "el-select",
           placeholder: "请选择",
-          label: "所属九块九包邮",
+          label: "科目单元",
           options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
+          ]
         },
         {
-          prop: "roleName",
+          prop: "menuName3",
+          element: "el-input",
+          placeholder: "请使用逗号隔开",
+          label: "项目科目和课程ID",
+        },
+         {
+          prop: "time",
+          element: "el-date-picker",
+          startPlaceholder: "科目启动时间",
+          endPlaceholder: "科目结束时间",
+          initWidth: true,
+          label: "科目起止时间"
+        },
+         {
+           prop: "roleName",
           element: "el-select",
           placeholder: "请选择",
-          label: "所属活动",
+          label: "是否关注公众号",
           options: [
-            {
-              label: "博士",
-              value: "0",
+             {
+              label:"关注",
+              value: "Alreadyattention"
             },
             {
-              label: "硕士",
-              value: 1,
+              label:"不关注",
+              value: "Notattention"
+            }
+          ]
+        },
+         {
+           prop: "roleName",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "是否强制分享",
+          options: [
+             {
+              label:"关注",
+              value: "Alreadyattention"
             },
-          ],
+            {
+              label:"不关注",
+              value: "Notattention"
+            }
+          ]
         },
         {
           prop: "menuName3",
           element: "el-input",
           placeholder: "请输入",
-          label: "分享分案一",
+          label: "总题数"
+        },
+         {
+          prop: "menuName3",
+          element: "el-input",
+          placeholder: '请按此格式录入["http://qnyimg.kaoyaoshi.net/zhongyaomiyakaodian198186.png","http://qnyimg.kaoyaoshi.net/zhongyaomiyakaodian198187.png"]',
+          label: "答案图片",
+          type:"textarea",
+          rows: 2
+        },
+        {
+          prop: "menuName3",
+          element: "el-input",
+          placeholder: "请输入",
+          label: "压中的题数"
+        },
+         {
+          prop: "menuName3",
+          element: "el-input",
+          placeholder: '请按此格式录入["http://qnyimg.kaoyaoshi.net/zhongyaomiyakaodian198186.png","http://qnyimg.kaoyaoshi.net/zhongyaomiyakaodian198187.png"]',
+          label: "压中的题目答案图片",
           type:"textarea",
           rows: 2
         },
@@ -215,34 +325,16 @@ export default {
           prop: "menuName3",
           element: "el-input",
           placeholder: "请输入",
-          label: "分享分案二",
+          label: "视频答案",
           type:"textarea",
           rows: 2
         },
          {
-          prop: "menuName3",
+          prop: "排序",
           element: "el-input",
           placeholder: "请输入",
-          label: "分享分案三",
-          type:"textarea",
-          rows: 2
+          label: "总题数"
         },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案四",
-          type:"textarea",
-          rows: 2
-        },
-           {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案五",
-          type:"textarea",
-          rows: 2
-        }
       ],
       addRules:{
         updateReason: [
@@ -317,7 +409,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.post-manage {
+.secrect-point {
 
 }
 </style>

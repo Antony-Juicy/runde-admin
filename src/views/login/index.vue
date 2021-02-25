@@ -75,7 +75,7 @@
               type="primary"
               style="width:90%;margin-left:20px;"
               v-prevent-re-click="2000"
-              @click.native.prevent="handleLogin">登陆
+              @click.native.prevent="handleLogin">登录
             </el-button>
             <p style="font-size: 14px; text-align: center">
               建议使用

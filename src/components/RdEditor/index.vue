@@ -18,7 +18,7 @@
       ref="myQuillEditor"
       v-model="content"
       :options="editorOption"
-      style="height: 200px"
+      :style="'height:' + height"
       @ready="onEditorReady($event)"
         @change="onEditorChange($event)"
     ></quill-editor>
@@ -66,6 +66,11 @@ export default {
     module: {
       default: '',
       type: String,
+    },
+    // 编辑器高度
+    height: {
+      default:'200px',
+      type: String
     }
   },
   data() {
