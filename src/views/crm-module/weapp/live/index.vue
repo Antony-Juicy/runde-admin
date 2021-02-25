@@ -424,6 +424,7 @@ export default {
               item.liveStatus = this.changeLiveStatus(item.liveStatus);
               item.liveChargeMode = this.changeChargeMode(item.liveChargeMode);
               item.liveCover = this.$common.setThumbnail(item.liveCover);
+              item.liveShowStatus = this.changeShowStatus(item.liveShowStatus);
               return item;
             });
             this.pageConfig.totalCount = res.data.totalCount;

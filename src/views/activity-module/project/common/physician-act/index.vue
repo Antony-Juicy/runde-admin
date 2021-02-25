@@ -1,5 +1,5 @@
 <template>
-  <div class="post-manage">
+  <div class="physician-act">
       <search-form
       :formOptions="formOptions"
       :showNum="7"
@@ -10,6 +10,11 @@
         <el-button type="primary" size="small" @click="handleAdd"
           >添加</el-button
         >
+        <el-radio-group v-model="activePoint" size="small">
+          <el-radio-button label="top">全部</el-radio-button>
+          <el-radio-button label="right">一期站点</el-radio-button>
+          <el-radio-button label="bottom">二期站点</el-radio-button>
+        </el-radio-group>
       </div>
       <rd-table
         :tableData="tableData"
@@ -55,24 +60,19 @@
 <script>
 import RdForm from "@/components/RdForm";
 export default {
-  name:"post-manage",
+  name:"physician-act",
   data(){
     return {
       formOptions: [
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "商品名称",
+          placeholder: "站点名称",
         },
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "活动名称",
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "海报名称",
+          placeholder: "是否关注",
         }
       ],
       searchForm:{},
@@ -88,57 +88,65 @@ export default {
       ],
       tableKey: [
         {
-          name: "ID主键",
+          name: "项目名称",
           value: "id",
           fixed: "left",
           width: 80
         },
         {
-          name: "老师名称",
+          name: "科目名称",
           value: "staffName",
         },
         {
-          name: "商品名称",
+          name: "站点名称",
           value: "goodsName",
         },
         {
-          name: "活动名称",
+          name: "站点别名",
           value: "activityName",
         },
         {
-          name: "海报名称",
+          name: "是否关注",
           value: "posterName",
         },
         {
-          name: "海报图片",
+          name: "状态",
           value: "posterPic",
         },
         {
-          name: "分享文案一",
+          name: "初始人数",
           value: "posterCopyFirst",
         },
         {
-          name: "分享文案二",
+          name: "考前参与人数",
           value: "posterCopySecond",
         },
         {
-          name: "分享文案三",
+          name: "考后参与人数",
           value: "posterCopyThird",
         },
         {
-          name: "分享文案四",
+          name: "押中题数",
           value: "posterCopyFourth",
         },
         {
-          name: "分享文案五",
+          name: "考后更新题数",
           value: "posterCopyFifth",
         },
         {
-          name: "创建时间",
+          name: "考前总题数",
           value: "createAt",
         },
         {
-          name: "修改时间",
+          name: "排序",
+          value: "updateAt",
+        },
+        {
+          name: "创建时间",
+          value: "updateAt",
+        },
+        {
+          name: "更新时间",
           value: "updateAt",
         },
         {
@@ -249,7 +257,8 @@ export default {
           { required: true, message: "请输入修改事由", trigger: "blur" },
         ]
       },
-      addStatus: true
+      addStatus: true,
+      activePoint: "top"
     }
   },
   components:{
@@ -317,7 +326,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.post-manage {
-
+.physician-act {
+  .btn-wrapper {
+    display: flex;
+    justify-content: space-between;
+  }
 }
 </style>
