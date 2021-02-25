@@ -212,7 +212,7 @@ export default {
         {
           name: "直播id",
           value: "liveId",
-          width: 80,
+          width: 70,
         },
         {
           name: "直播名称",
@@ -244,7 +244,7 @@ export default {
         {
           name: "开始时间",
           value: "liveStartTime",
-          width: 160,
+          // width: 160,
         },
         {
           name: "直播模式",
@@ -253,7 +253,7 @@ export default {
         {
           name: "浏览量",
           value: "liveRealNumber",
-          width: 80,
+           width: 70,
         },
         {
           name: "操作",
