@@ -292,6 +292,11 @@ $light_gray: #eee;
     margin: 0 auto;
     overflow: hidden;
   }
+  @media screen and (max-width: 1366px) {
+    .login-form {
+      width: 440px;
+    }
+  }
   .tabs-container {
     // width: 420px;
     height: 430px;
@@ -324,7 +329,7 @@ $light_gray: #eee;
       margin-bottom: 20px;
       color: #454545;
       .verifyCode-input {
-        width: 54%;
+        width: 52%;
       }
       .el-checkbox {
         margin-left: 22px;
