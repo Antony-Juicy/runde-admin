@@ -1,25 +1,25 @@
-<!--  -->
+<!-- 创建|编辑 科目 -->
 <template>
-    <div class='addEditClass'>
+    <div class='addEditCourse'>
         <RdForm :formOptions="addFormOptions" :rules="addRules" :formLabelWidth="'150px'" ref="dataForm">
-            <template slot="classType">
-                <el-radio v-model="classType" label="Charge">
-                    收费
-                </el-radio>
-                <el-radio v-model="classType" label="Free">
-                    免费
-                </el-radio>
-            </template>
-            <template slot="imageUrl">
-                <Upload-oss v-if="uploadOssElem" :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }" :src.sync="imageUrl" :initGetConfig="initGetConfig" @srcChangeFun="
+            <template slot="defaultImageUrl">
+                <Upload-oss v-if="uploadOssElem" :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }" :src.sync="defaultImageUrl" :initGetConfig="initGetConfig" @srcChangeFun="
                     (data) => {
-                    imageUrl = data;
+                    defaultImageUrl = data;
                     reloadElem('uploadOssElem');
                     }
                 " />
             </template>
-            <template slot="courseClassDetail">
-                <RdEditor placeholder="编辑班级详细介绍" :quillContent="courseClassDetailByEdit" @change="changeEditor" />
+            <template slot="introducesImageUrl">
+                <Upload-oss v-if="uploadOssElem2" :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }" :src.sync="introducesImageUrl" :initGetConfig="initGetConfig" @srcChangeFun="
+                    (data) => {
+                    introducesImageUrl = data;
+                    reloadElem('uploadOssElem2');
+                    }
+                " />
+            </template>
+            <template slot="courseDetail">
+                <RdEditor placeholder="编辑详细介绍" :quillContent="courseDetailByEdit" @change="changeEditor" />
             </template>
         </RdForm>
         <div class="btn-wrapper">
@@ -37,54 +37,58 @@ import UploadOss from "@/components/UploadOss";
 import RdEditor from "@/components/RdEditor";
 import { scrollTo } from "@/utils/scroll-to";
 export default {
-
-
     data() {
-
         return {
             addFormOptions: [
                 {
-                    prop: "courseClassName",
+                    prop: "typeName",
                     element: "el-input",
-                    placeholder: "请输入",
-                    label: "班级名称",
+                    placeholder: "",
+                    label: "项目分类",
+                    disabled: true,
+                    // ! 数据来源 1：班级打开时来自班级信息 2：科目打开时来自所选科目信息
+                    initValue: this.$store.state.onlineCourse.courseClassType.typeName,
                 },
                 {
-                    prop: "courseClassKeywords",
+                    prop: "courseName",
+                    element: "el-input",
+                    placeholder: "请输入",
+                    label: "科目名称",
+                },
+                {
+                    prop: "courseCode",
+                    element: "el-input",
+                    placeholder: "请输入",
+                    label: "课程自编号",
+                },
+                {
+                    prop: "courseKeywords",
                     element: "el-input",
                     placeholder: "请输入",
                     label: "关键字",
                 },
                 {
-                    prop: "courseClassCode",
+                    prop: "defaultImageUrl",
                     element: "el-input",
-                    placeholder: "请输入",
-                    label: "班次代号",
-                },
-                {
-                    prop: "imageUrl",
-                    element: "el-input",
-                    label: "封面图(21:9)",
+                    label: "封面图(4:3)",
                     operate: true,
                     initValue: 0,
                 },
-
                 {
-                    prop: "classType",
+                    prop: "introducesImageUrl",
                     element: "el-input",
-                    placeholder: "请选择",
-                    label: "收费模式",
+                    label: "介绍图(21:9)",
                     operate: true,
-                    initValue: "Charge",
+                    initValue: 0,
                 },
                 {
-                    prop: "enrollFee",
+                    prop: "totalEnrolment",
                     element: "el-input-number",
                     placeholder: "请输入",
-                    label: "报名费用",
+                    label: "报名人数",
                 },
                 {
-                    prop: "classStatus",
+                    prop: "courseStatus",
                     element: "el-radio",
                     placeholder: "请选择显示状态",
                     label: "显示状态",
@@ -111,65 +115,43 @@ export default {
                     label: "排序值",
                 },
                 {
-                    prop: "courseClassDescribe",
+                    prop: "courseDetail",
                     element: "el-input",
-                    placeholder: "请输入",
-                    label: "班级描述",
-                    initValue: ""
-                },
-                {
-                    prop: "courseClassDetail",
-                    element: "el-input",
-                    placeholder: "请输入",
+                    placeholder: "",
                     label: "详细介绍",
                     operate: true,
                     initValue: "0"
                 },
             ],
             addRules: {
-                typeId: [{ required: true, message: "请选择项目名类型", trigger: "blur" },],
-                courseClassName: [{ required: true, message: "请输入班级名称", trigger: "blur" },],
-                courseClassKeywords: [{ required: true, message: "请输入班级关键字", trigger: "blur" },],
-                courseClassCode: [{ required: true, message: "请输入班级代号", trigger: "blur" },],
-                imageUrl: [{ required: true, message: "请上传封面图", trigger: "blur" },],
-                classType: [{ required: true, message: "请选择班级类型", trigger: "blur" },],
-                enrollFee: [{ required: true, message: "请输入班级价格", trigger: "blur" },],
+                courseName: [{ required: true, message: "请输入科目名称", trigger: "blur" },],
+                courseKeywords: [{ required: true, message: "请输入课程自编号", trigger: "blur" },],
+                courseCode: [{ required: true, message: "请输入关键字", trigger: "blur" },],
+                defaultImageUrl: [{ required: true, message: "请上传封面图", trigger: "blur" },],
+                introducesImageUrl: [{ required: true, message: "请上传介绍图", trigger: "blur" },],
                 teacherArray: [{ required: true, message: "请选择授课讲师", trigger: "blur" }],
-                classShowStatus: [{ required: true, message: "请选择班级状态", trigger: "blur" },],
-                orderValue: [{ required: true, message: "请输入排序值", trigger: "blur" },],
-                courseClassDescribe: [{ required: true, message: "请输入班级描述", trigger: "blur" },],
-                courseClassDetail: [{ required: true, message: "请上传详细介绍", trigger: "blur" },],
+                totalEnrolment: [{ required: true, message: "请输入报名人数", trigger: "blur" },],
+                courseStatus: [{ required: true, message: "请输入", trigger: "blur" },],
+                orderValue: [{ required: true, message: "请输入", trigger: "blur" },],
+                courseDetail: [{ required: true, message: "请输入", trigger: "blur" },],
             },
             uploadOssElem: true,
+            uploadOssElem2: true,
             initGetConfig: false,
-            classType: "Charge",
-            imageUrl: "",
-            courseClassDetail: "",// 用于后续保存富文本时使用
-            courseClassDetailByEdit: "",// 用于编辑时初始化富文本内容使用
+            defaultImageUrl: "",
+            introducesImageUrl: "",
+            courseDetail: "",
+            courseDetailByEdit: "",
             btnLoading: false,
             mode: "add",// add 新增 edit 修改
-
         };
     },
     components: { RdForm, UploadOss, RdEditor },
+    computed: {
 
-    computed: {},
-
-    watch: {
-        classType: function (n, o) {
-            if (n == "Charge") {
-                this.addFormOptions.splice(7, 0, {
-                    prop: "enrollFee",
-                    element: "el-input-number",
-                    placeholder: "请输入",
-                    label: "报名费用",
-                })
-            } else {
-                this.addFormOptions.splice(7, 1)
-            }
-            scrollTo(0, 800);
-        }
     },
+
+    watch: {},
 
     methods: {
         // 上传组件
@@ -181,107 +163,37 @@ export default {
                 this[dataElem] = true;
             });
         },
-        handleClose(formName) {
-            this.$refs[formName].resetFields();
-            this.$emit("close");
+        changeEditor(val) {
+            this.courseDetail = val;
         },
         handleAdd() {
+
             this.$refs.dataForm.validate((val, data) => {
                 if (val) {
-                    if (this.imageUrl == "") {
+                    if (this.defaultImageUrl == "") {
                         this.$message.error("请上传封面图");
                         return;
                     } else {
-                        data.imageUrl = this.imageUrl;
+                        data.defaultImageUrl = this.defaultImageUrl;
                     }
-                    if (this.courseClassDetail == "") {
+                    if (this.introducesImageUrl == "") {
+                        this.$message.error("请上传介绍图");
+                        return;
+                    } else {
+                        data.introducesImageUrl = this.introducesImageUrl;
+                    }
+                    if (this.courseDetail == "") {
                         this.$message.error("请上传详细介绍");
                         return;
                     } else {
-                        data.courseClassDetail = this.courseClassDetail;
+                        data.courseDetail = this.courseDetail;
                     }
-                    
-                    data.classType = this.classType;
                     // 由于某种问题，需要多做一次格式化成对象
                     data.teacherArray = data.teacherArray.map(v => JSON.parse(v))
                     // 后台保存的数据是用字符串，所以要格式化数组成字符串
                     data.teacherArray = JSON.stringify(data.teacherArray);
-                    this.$fetch("online_course_add_class", {
-                        ...data,
-                        loginUserId: this.$common.getUserId(),
-                    }).then((res) => {
-                        if (res.code == 200) {
-                            this.btnLoading = false;
-                            this.$message.success("创建成功");
-                            this.$emit("close");
-                            this.$emit("refresh");
-                        }
-                    }).catch((err) => {
-                        console.log(err);
-                        this.btnLoading = false;
-                    });
-                }
-            })
-        },
-        changeEditor(val) {
-            this.courseClassDetail = val;
-        },
-        initFormData(courseClassId) {
-            this.mode = 'save';
-            this.courseClassId = courseClassId;
-
-        },
-        getClassInfo() {
-            if (this.mode == 'save') {
-                this.$fetch("online_course_class_getInfo", {
-                    courseClassId: this.courseClassId,
-                    loginUserId: this.$common.getUserId(),
-                }).then((res) => {
-                    this.addFormOptions.forEach((item) => {
-                        item.initValue = res.data[item.prop];
-                        if (item.prop == "classType") {
-                            this.classType = res.data.classType;
-                        }
-                        if (item.prop == "imageUrl") {
-                            this.imageUrl = res.data.imageUrl;
-                        }
-                        if (item.prop == "courseClassDetail") {
-                            this.courseClassDetail = res.courseClassDetail;
-                            this.courseClassDetailByEdit = res.data.courseClassDetail;
-                        }
-                        if (item.prop == 'teacherArray') {
-                            item.initValue = JSON.parse(res.data.teacherArray).map(v => JSON.stringify(v))
-                            // item.initValue = ["天天"
-                            // ]
-                        }
-                    })
-                    this.$refs.dataForm.addInitValue();
-                })
-            }
-
-        },
-        handleSave() {
-            this.$refs.dataForm.validate((val, data) => {
-                if (val) {
-                    if (this.imageUrl == "") {
-                        this.$message.error("请上传封面图");
-                        return;
-                    } else {
-                        data.imageUrl = this.imageUrl;
-                    }
-                    if (this.courseClassDetail == "") {
-                        this.$message.error("请上传详细介绍");
-                        return;
-                    } else {
-                        data.courseClassDetail = this.courseClassDetail;
-                    }
-                    data.courseClassId = this.courseClassId
-                    data.classType = this.classType;
-                    // 由于某种问题，需要多做一次格式化成对象
-                    data.teacherArray = data.teacherArray.map(v => JSON.parse(v))
-                    // 后台保存的数据是用字符串，所以要格式化数组成字符串
-                    data.teacherArray = JSON.stringify(data.teacherArray);
-                    this.$fetch("online_course_update_class", {
+                    data.courseClassId = this.$store.state.onlineCourse.courseClassId
+                    this.$fetch("online_course_add_course", {
                         ...data,
                         loginUserId: this.$common.getUserId(),
                     }).then((res) => {
@@ -297,7 +209,95 @@ export default {
                     });
                 }
             })
+        },
+        handleSave() {
+            this.$refs.dataForm.validate((val, data) => {
+                if (val) {
+                    if (this.defaultImageUrl == "") {
+                        this.$message.error("请上传封面图");
+                        return;
+                    } else {
+                        data.defaultImageUrl = this.defaultImageUrl;
+                    }
+                    if (this.introducesImageUrl == "") {
+                        this.$message.error("请上传介绍图");
+                        return;
+                    } else {
+                        data.introducesImageUrl = this.introducesImageUrl;
+                    }
+                    if (this.courseDetail == "") {
+                        this.$message.error("请上传详细介绍");
+                        return;
+                    } else {
+                        data.courseDetail = this.courseDetail;
+                    }
+                    data.courseId = this.courseId
+                    // 由于某种问题，需要多做一次格式化成对象
+                    data.teacherArray = data.teacherArray.map(v => JSON.parse(v))
+                    // 后台保存的数据是用字符串，所以要格式化数组成字符串
+                    data.teacherArray = JSON.stringify(data.teacherArray);
+                    data.courseClassId = this.$store.state.onlineCourse.courseClassId
+                    this.$fetch("online_course_update_course", {
+                        ...data,
+                        loginUserId: this.$common.getUserId(),
+                    }).then((res) => {
+                        if (res.code == 200) {
+                            this.btnLoading = false;
+                            this.$message.success("保存成功");
+                            this.$emit("close");
+                            this.$emit("refresh");
+                        }
+                    }).catch((err) => {
+                        console.log(err);
+                        this.btnLoading = false;
+                    });
+                }
+            })
+        },
+        handleClose(formName) {
+            this.$refs[formName].resetFields();
+            this.$emit("close");
+        },
+        initFormData(courseId) {
+            this.mode = 'save';
+            this.courseId = courseId;
+        },
+        getCourseInfo() {
+            if (this.mode == 'save') {
+                this.$fetch("online_course_course_getInfo", {
+                    courseId: this.courseId,
+                    loginUserId: this.$common.getUserId(),
+                }).then((res) => {
+                    this.addFormOptions.forEach((item) => {
+                        item.initValue = res.data[item.prop];
+                        if (item.prop == "defaultImageUrl") {
+                            this.defaultImageUrl = res.data.defaultImageUrl;
+                        }
+                        if (item.prop == "introducesImageUrl") {
+                            this.introducesImageUrl = res.data.introducesImageUrl;
+                        }
+                        if (item.prop == "courseDetail") {
+                            this.courseDetail = res.courseDetail;
+                            this.courseDetailByEdit = res.data.courseDetail;
+                        }
+                        if (item.prop == 'teacherArray') {
+                            try {
+                                item.initValue = JSON.parse(res.data.teacherArray).map(v => JSON.stringify(v))
+                            } catch (error) {
+                                item.initValue = []
+                            }
+
+                            // item.initValue = ["天天"
+                            // ]
+                        }
+
+
+                    })
+                    this.$refs.dataForm.addInitValue();
+                })
+            }
         }
+
     },
 
     created() {
@@ -306,26 +306,11 @@ export default {
 
     async mounted() {
         scrollTo(0, 800);
-        // 项目类型 选项来源后台数据，使用请求返回的数值组装表单内容
-        await this.$fetch("projectType_normalList", {
+        await this.$fetch("online_course_get_course_teacher", {
             loginUserId: this.$common.getUserId(),
+            courseClassId: this.$store.state.onlineCourse.courseClassId
         }).then((res) => {
-            let typeList = res.data.map((item) => ({
-                label: item.typeName,
-                value: item.typeId,
-            }));
-            this.addFormOptions.unshift({
-                prop: "typeId",
-                element: "el-select",
-                placeholder: "请选择项目类型",
-                label: "项目类型",
-                options: typeList,
-            });
-        });
-        await this.$fetch("online_course_get_teachers_list", {
-            loginUserId: this.$common.getUserId(),
-        }).then((res) => {
-            this.addFormOptions.splice(5, 0, {
+            this.addFormOptions.splice(6, 0, {
                 prop: "teacherArray",
                 element: "el-select",
                 placeholder: "请选择",
@@ -337,9 +322,8 @@ export default {
                     value: JSON.stringify(item)
                 }))
             });
-            this.getClassInfo()
+            this.getCourseInfo()
         })
-
     },
     beforeCreate() { },
     beforeMount() { },
@@ -351,12 +335,8 @@ export default {
 }
 </script>
 <style lang='scss' scoped>
-.addEditClass {
+.addEditCourse {
     /deep/ {
-        .img180 {
-            width: 100px;
-            height: 100px;
-        }
         .el-input-number--small {
             width: 100%;
         }
@@ -369,14 +349,9 @@ export default {
             color: #409eff;
         }
     }
-    .btn-wrapper {
-        margin-left: 400px;
-    }
-    .pic-container {
-        display: flex;
-        .pic-item {
-            margin-right: 20px;
-        }
-    }
+}
+
+.btn-wrapper {
+    margin-left: 400px;
 }
 </style>
