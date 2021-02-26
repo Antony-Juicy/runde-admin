@@ -41,12 +41,12 @@ export default {
         return {
             formOptions: [
                 {
-                    prop: "courseChapterName",
+                    prop: "bookChapterName",
                     element: "el-input",
                     placeholder: "请输入章名称"
                 },
                 {
-                    prop: "courseChapterStatus",
+                    prop: "bookChapterStatus",
                     element: "el-select",
                     placeholder: "章状态",
                     options: [
@@ -69,24 +69,24 @@ export default {
             tableKey: [
                 {
                     name: "ID主键",
-                    value: "courseChapterId",
+                    value: "bookChapterId",
                     width: 80
                 },
                 {
                     name: "章名称",
-                    value: "courseChapterName",
+                    value: "bookChapterName",
                 },
                 {
-                    name: "班级",
-                    value: "courseClassName",
+                    name: "图书名称",
+                    value: "bookName",
                 },
                 {
                     name: "科目",
-                    value: "courseName",
+                    value: "bookSubjectName",
                 },
                 {
                     name: "状态",
-                    value: "courseChapterStatus",
+                    value: "bookChapterStatus",
                 },
                 {
                     name: "排序值",
@@ -133,17 +133,17 @@ export default {
                     target: ".el-table",
                 });
                 this.$fetch(
-                    "online_course_get_chapters",
+                    "book_get_chapters",
                     {
                         loginUserId: this.$common.getUserId(),
                         ...this.pageConfig,
                         ...this.searchForm,
                         ...params,
-                        courseId: this.$store.state.onlineCourse.courseId, // 查询目录 courseId 查询所属科目
+                        bookSubjectId: this.$store.state.book.bookSubjectId, // 查询目录 bookSubjectId 查询所属科目
                     }
                 ).then((res) => {
                     this.tableData = res.data.records.map((item) => {
-                        item.courseChapterStatus = this.courseChapterStatus2Zh(item.courseChapterStatus)
+                        item.bookChapterStatus = this.bookChapterStatus2Zh(item.bookChapterStatus)
                         return item;
                     });
                     this.pageConfig.totalCount = res.data.totalCount;
@@ -166,19 +166,19 @@ export default {
             this.titleAddOrEdit = "编辑章节"
             this.addEditVisiable = true
             this.$nextTick(() => {
-                this.$refs.addEditChapter.initFormData(data.courseChapterId)
+                this.$refs.addEditChapter.initFormData(data.bookChapterId)
             })
 
         },
         handleSection(data) {
             this.chapterSectionVisible = true
-            this.$store.commit('onlineCourse/setCourseChapterId', data.courseChapterId)
-            this.$store.commit('onlineCourse/setCourseChapterName', data.courseChapterName)
+            this.$store.commit('book/setBookChapterId', data.bookChapterId)
+            this.$store.commit('book/setBookChapterName', data.bookChapterName)
 
         },
         handleSectionClose() {
             this.chapterSectionVisible = false;
-            this.$store.dispatch('onlineCourse/clearChapter')
+            this.$store.dispatch('book/clearChapter')
         },
         handleDelete(data) {
             let info = "章节"
@@ -187,8 +187,8 @@ export default {
                 cancelButtonText: "取消",
                 type: "warning",
             }).then(async () => {
-                await this.$fetch("online_course_delete_chapter", {
-                    courseChapterId: data.courseChapterId,
+                await this.$fetch("book_delete_chapter", {
+                    bookChapterId: data.bookChapterId,
                     loginUserId: this.$common.getUserId(),
                 }).then((res) => {
                     if (res) {
@@ -208,7 +208,7 @@ export default {
                 pageNum: val || this.pageConfig.pageNum
             });
         },
-        courseChapterStatus2Zh(status) {
+        bookChapterStatus2Zh(status) {
             switch (status) {
                 case 'Open': return '上架';
                 case "Close": return '下架';

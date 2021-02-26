@@ -2,7 +2,7 @@
 <template>
     <div class='course-container'>
         <!-- 搜索栏 -->
-        <search-form ref="searchForm" :formOptions="formOptions" :showNum="3" @onSearch="onSearch"></search-form>
+        <search-form ref="searchForm" :formOptions="formOptions" :showNum="4" @onSearch="onSearch"></search-form>
         <div class="w-container">
             <div class="btn-wrapper" v-if="mode=='fromClass'">
                 <el-button type="primary" size="small" @click="handleAdd">创建科目</el-button>
@@ -56,7 +56,7 @@ export default {
                     prop: "courseClassName",
                     element: "el-input",
                     placeholder: "请输入班级名称",
-                    disabled:false
+                    disabled: false
                 },
                 {
                     prop: "courseName",
@@ -289,7 +289,36 @@ export default {
             scrollTo(0, 800);
             this.formOptions[0].initValue = this.courseClass.courseClassName
             this.formOptions[0].disabled = true
+            this.formOptions.push({
+                prop: "typeId",
+                element: "el-select",
+                placeholder: "分类",
+                disabled: true,
+                options: [
+                    {
+                        label: this.courseClass.typeName,
+                        value: this.courseClass.typeId,
+                    }
+                ],
+                initValue: this.courseClass.typeId
+            });
             this.$refs.searchForm.onReset()
+        }
+        else {
+            this.$fetch("projectType_normalList", {
+                loginUserId: this.$common.getUserId(),
+            }).then((res) => {
+                let typeList = res.data.map((item) => ({
+                    label: item.typeName,
+                    value: item.typeId,
+                }));
+                this.formOptions.push({
+                    prop: "typeId",
+                    element: "el-select",
+                    placeholder: "分类",
+                    options: typeList,
+                });
+            });
         }
         this.getTableData();
     },

@@ -1,4 +1,4 @@
-// 网课 专用store
+// 网课-班级 专用store
 const state = {
     courseClassType: false, // 编辑科目时的项目类型信息 {typeId,typeName}
     courseClassId: false, // 编辑科目时使用的班级id
@@ -54,7 +54,7 @@ const actions = {
     // 清除编辑小节使用的数据
     clearChapter({ commit }) {
         commit('setCourseChapterId', false)
-        commit('setourseChapterName', false)
+        commit('setCourseChapterName', false)
     }
 }
 
