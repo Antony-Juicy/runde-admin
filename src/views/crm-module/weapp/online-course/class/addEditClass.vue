@@ -18,6 +18,11 @@
                     }
                 " />
             </template>
+            <template slot="teacherArray">
+                <el-select multiple filterable v-model="teacherArray" placeholder="请选择授课讲师">
+                    <el-option v-for="(item,index) in teacherArrayOptions" :key="index" :label="item.label" :value="item.value"></el-option>
+                </el-select>
+            </template>
             <template slot="courseClassDetail">
                 <RdEditor placeholder="编辑班级详细介绍" :quillContent="courseClassDetailByEdit" @change="changeEditor" />
             </template>
@@ -68,7 +73,14 @@ export default {
                     operate: true,
                     initValue: 0,
                 },
-
+                {
+                    prop: "teacherArray",
+                    element: "el-input",
+                    placeholder: "请选择",
+                    label: "授课讲师",
+                    operate: true,
+                    initValue: "0",
+                },
                 {
                     prop: "classType",
                     element: "el-input",
@@ -146,6 +158,9 @@ export default {
             imageUrl: "",
             courseClassDetail: "",// 用于后续保存富文本时使用
             courseClassDetailByEdit: "",// 用于编辑时初始化富文本内容使用
+            oldTeacherArray: [], // 编辑时要用的老师源数据
+            teacherArray: [],
+            teacherArrayOptions: [],
             btnLoading: false,
             mode: "add",// add 新增 edit 修改
 
@@ -200,12 +215,15 @@ export default {
                     } else {
                         data.courseClassDetail = this.courseClassDetail;
                     }
-                    
+                    if (this.teacherArray.length == 0) {
+                        this.$message.error("请选择授课讲师");
+                        return;
+                    } else {
+                        // 由于某种问题，需要多做一次格式化成对象
+                        // 后台保存的数据是用字符串，所以要格式化数组成字符串
+                        data.teacherArray = JSON.stringify(this.teacherArray.map(v => JSON.parse(v)));
+                    }
                     data.classType = this.classType;
-                    // 由于某种问题，需要多做一次格式化成对象
-                    data.teacherArray = data.teacherArray.map(v => JSON.parse(v))
-                    // 后台保存的数据是用字符串，所以要格式化数组成字符串
-                    data.teacherArray = JSON.stringify(data.teacherArray);
                     this.$fetch("online_course_add_class", {
                         ...data,
                         loginUserId: this.$common.getUserId(),
@@ -246,14 +264,20 @@ export default {
                             this.imageUrl = res.data.imageUrl;
                         }
                         if (item.prop == "courseClassDetail") {
-                            this.courseClassDetail = res.courseClassDetail;
+                            this.courseClassDetail = res.data.courseClassDetail;
                             this.courseClassDetailByEdit = res.data.courseClassDetail;
                         }
                         if (item.prop == 'teacherArray') {
-                             try {
-                                item.initValue = JSON.parse(res.data.teacherArray).map(v => JSON.stringify(v))
+                            // try {
+                            //     item.initValue = JSON.parse(res.data.teacherArray).map(v => JSON.stringify(v))
+                            // } catch (error) {
+                            //     item.initValue = []
+                            // }
+                            try {
+                                this.oldTeacherArray = JSON.parse(res.data.teacherArray).map(v => JSON.stringify(v))
+                                this.teacherArray = JSON.parse(res.data.teacherArray).map(v => JSON.stringify(v))
                             } catch (error) {
-                                item.initValue = []
+
                             }
 
                         }
@@ -278,26 +302,46 @@ export default {
                     } else {
                         data.courseClassDetail = this.courseClassDetail;
                     }
+                    if (this.teacherArray.length == 0) {
+                        this.$message.error("请选择授课讲师");
+                        return;
+                    } else {
+                        // 由于某种问题，需要多做一次格式化成对象
+                        // 后台保存的数据是用字符串，所以要格式化数组成字符串
+                        data.teacherArray = JSON.stringify(this.teacherArray.map(v => JSON.parse(v)));
+                    }
                     data.courseClassId = this.courseClassId
                     data.classType = this.classType;
-                    // 由于某种问题，需要多做一次格式化成对象
-                    data.teacherArray = data.teacherArray.map(v => JSON.parse(v))
-                    // 后台保存的数据是用字符串，所以要格式化数组成字符串
-                    data.teacherArray = JSON.stringify(data.teacherArray);
-                    this.$fetch("online_course_update_class", {
-                        ...data,
-                        loginUserId: this.$common.getUserId(),
-                    }).then((res) => {
-                        if (res.code == 200) {
+
+                    if (!this.oldTeacherArray.every(v => this.teacherArray.includes(v))) {
+                        this.$confirm(`检测到删除授课老师，会同时修改科目数据, 是否继续?`, "提示", {
+                            confirmButtonText: "确定",
+                            cancelButtonText: "取消",
+                            type: "warning",
+                        }).then(async () => {
+                            doUpdate.call(this, data)
+                        })
+                    } else {
+                        doUpdate.call(this, data)
+                    }
+
+                    function doUpdate() {
+                        this.$fetch("online_course_update_class", {
+                            ...data,
+                            loginUserId: this.$common.getUserId(),
+                        }).then((res) => {
+                            if (res.code == 200) {
+                                this.btnLoading = false;
+                                this.$message.success("保存成功");
+                                this.$emit("close");
+                                this.$emit("refresh");
+                            }
+                        }).catch((err) => {
+                            console.log(err);
                             this.btnLoading = false;
-                            this.$message.success("保存成功");
-                            this.$emit("close");
-                            this.$emit("refresh");
-                        }
-                    }).catch((err) => {
-                        console.log(err);
-                        this.btnLoading = false;
-                    });
+                        });
+                    }
+
                 }
             })
         }
@@ -328,18 +372,19 @@ export default {
         await this.$fetch("config_get_teachers_list", {
             loginUserId: this.$common.getUserId(),
         }).then((res) => {
-            this.addFormOptions.splice(5, 0, {
-                prop: "teacherArray",
-                element: "el-select",
-                placeholder: "请选择",
-                label: "授课讲师",
-                filterable: true,
-                multiple: true,
-                options: res.data.map((item) => ({
-                    label: item.teacherName,
-                    value: JSON.stringify(item)
-                }))
-            });
+            // this.addFormOptions.splice(5, 0, {
+            //     prop: "teacherArray",
+            //     element: "el-select",
+            //     placeholder: "请选择",
+            //     label: "授课讲师",
+            //     filterable: true,
+            //     multiple: true,
+            //     options:
+            // });
+            this.teacherArrayOptions = res.data.map((item) => ({
+                label: item.teacherName,
+                value: JSON.stringify(item)
+            }))
             this.getClassInfo()
         })
 

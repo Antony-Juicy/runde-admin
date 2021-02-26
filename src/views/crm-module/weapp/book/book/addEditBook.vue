@@ -26,6 +26,11 @@
                     }
                 " />
             </template>
+            <template slot="bookTeacherArray">
+                <el-select multiple filterable v-model="bookTeacherArray" placeholder="请选择授课讲师">
+                    <el-option v-for="(item,index) in bookTeacherArrayOptions" :key="index" :label="item.label" :value="item.value"></el-option>
+                </el-select>
+            </template>
             <template slot="bookDetail">
                 <RdEditor placeholder="编辑班级详细介绍" :quillContent="bookDetailByEdit" @change="changeEditor" />
             </template>
@@ -81,6 +86,14 @@ export default {
                     initValue: 0,
                 },
                 {
+                    prop: "bookTeacherArray",
+                    element: "el-input",
+                    placeholder: "请选择",
+                    label: "授课讲师",
+                    operate: true,
+                    initValue: "0",
+                },
+                {
                     prop: "bookLabel",
                     element: "el-select",
                     placeholder: "请输入图书标签",
@@ -133,6 +146,7 @@ export default {
                     placeholder: "请输入",
                     label: "排序值",
                 },
+
                 {
                     prop: "bookDescribe",
                     element: "el-input",
@@ -180,6 +194,9 @@ export default {
             bookDetailImageUrl: "",
             bookDetail: "",// 用于后续保存富文本时使用
             bookDetailByEdit: "",// 用于编辑时初始化富文本内容使用
+            bookTeacherArray: [],
+            oldBookTeacherArray: [],
+            bookTeacherArrayOptions: [],
             btnLoading: false,
             mode: "add",// add 新增 edit 修改
             bookId: "",
@@ -294,14 +311,16 @@ export default {
                             this.bookDetail = res.data.bookDetail;
                             this.bookDetailByEdit = res.data.bookDetail;
                         }
-                        if(item.prop == 'bookLabel'){
+                        if (item.prop == 'bookLabel') {
                             item.initValue = res.data.bookLabel.split(',')
                         }
                         if (item.prop == 'bookTeacherArray') {
+
                             try {
-                                item.initValue = JSON.parse(res.data.bookTeacherArray).map(v => JSON.stringify(v))
+                                this.oldBookTeacherArray = JSON.parse(res.data.bookTeacherArray).map(v => JSON.stringify(v))
+                                this.bookTeacherArray = JSON.parse(res.data.bookTeacherArray).map(v => JSON.stringify(v))
                             } catch (error) {
-                                item.initValue = []
+
                             }
                         }
                     })
@@ -331,28 +350,48 @@ export default {
                     } else {
                         data.bookDetail = this.bookDetail;
                     }
+                    if (this.bookTeacherArray.length == 0) {
+                        this.$message.error("请选择授课老师");
+                        return;
+                    } else {
+                        // 由于某种问题，需要多做一次格式化成对象
+                        // 后台保存的数据是用字符串，所以要格式化数组成字符串
+                        data.bookTeacherArray = JSON.stringify(this.bookTeacherArray.map(v => JSON.parse(v)))
+                    }
+
                     data.bookId = this.bookId
                     data.bookType = this.bookType;
                     // 标签转化成 , 隔开的字符串
                     data.bookLabel = data.bookLabel.join(',')
-                    // 由于某种问题，需要多做一次格式化成对象
-                    data.bookTeacherArray = data.bookTeacherArray.map(v => JSON.parse(v))
-                    // 后台保存的数据是用字符串，所以要格式化数组成字符串
-                    data.bookTeacherArray = JSON.stringify(data.bookTeacherArray);
-                    this.$fetch("book_update_book", {
-                        ...data,
-                        loginUserId: this.$common.getUserId(),
-                    }).then((res) => {
-                        if (res.code == 200) {
+
+                    if (!this.oldBookTeacherArray.every(v => this.bookTeacherArray.includes(v))) {
+                        this.$confirm(`检测到删除授课老师，会同时修改科目数据, 是否继续?`, "提示", {
+                            confirmButtonText: "确定",
+                            cancelButtonText: "取消",
+                            type: "warning",
+                        }).then(async () => {
+                            doUpdate.call(this, data)
+                        })
+                    } else {
+                        doUpdate.call(this, data)
+                    }
+
+                    function doUpdate(data) {
+                        this.$fetch("book_update_book", {
+                            ...data,
+                            loginUserId: this.$common.getUserId(),
+                        }).then((res) => {
+                            if (res.code == 200) {
+                                this.btnLoading = false;
+                                this.$message.success("保存成功");
+                                this.$emit("close");
+                                this.$emit("refresh");
+                            }
+                        }).catch((err) => {
+                            console.log(err);
                             this.btnLoading = false;
-                            this.$message.success("保存成功");
-                            this.$emit("close");
-                            this.$emit("refresh");
-                        }
-                    }).catch((err) => {
-                        console.log(err);
-                        this.btnLoading = false;
-                    });
+                        });
+                    }
                 }
             })
         }
@@ -383,18 +422,23 @@ export default {
         await this.$fetch("config_get_teachers_list", {
             loginUserId: this.$common.getUserId(),
         }).then((res) => {
-            this.addFormOptions.splice(5, 0, {
-                prop: "bookTeacherArray",
-                element: "el-select",
-                placeholder: "请选择",
-                label: "授课讲师",
-                filterable: true,
-                multiple: true,
-                options: res.data.map((item) => ({
-                    label: item.teacherName,
-                    value: JSON.stringify(item)
-                }))
-            });
+            // this.addFormOptions.splice(5, 0, {
+            //     prop: "bookTeacherArray",
+            //     element: "el-select",
+            //     placeholder: "请选择",
+            //     label: "授课讲师",
+            //     filterable: true,
+            //     multiple: true,
+            //     options: res.data.map((item) => ({
+            //         label: item.teacherName,
+            //         value: JSON.stringify(item)
+            //     }))
+
+            // });
+            this.bookTeacherArrayOptions = res.data.map((item) => ({
+                label: item.teacherName,
+                value: JSON.stringify(item)
+            }))
             this.getBookInfo()
         })
     },
