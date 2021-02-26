@@ -197,7 +197,9 @@ export default {
                             type: "success",
                         });
                         setTimeout(() => {
-                            this.getTableData();
+                            this.getTableData({
+                                pageNum: (this.tableData.length == 1 && this.pageConfig.pageNum > 1) ? (this.pageConfig.pageNum - 1) : this.pageConfig.pageNum
+                            });
                         }, 50);
                     }
                 });
