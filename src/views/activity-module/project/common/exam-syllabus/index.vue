@@ -22,7 +22,11 @@
       >
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
-            >查阅/编辑</el-button
+            >编辑</el-button
+          >
+          <el-divider direction="vertical"></el-divider>
+          <el-button @click="handlePreview(scope.row)" type="text" size="small" style="color: #ffa500"
+            >预览答案图片</el-button
           >
           <el-divider direction="vertical"></el-divider>
           <el-button
@@ -49,6 +53,16 @@
           </template>
         </RdForm>
       </rd-dialog>
+
+       <!-- 预览答案图片 -->
+      <rd-dialog
+        :title="'预览答案图片'"
+        :dialogVisible="previewVisible"
+        :showFooter="false"
+        @handleClose="previewVisible = false"
+      >
+        预览答案图片
+      </rd-dialog>
   </div>
 </template>
 
@@ -61,18 +75,13 @@ export default {
       formOptions: [
         {
           prop: "menuName",
-          element: "el-input",
-          placeholder: "商品名称",
+          element: "el-select",
+          placeholder: "项目",
         },
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "活动名称",
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "海报名称",
+          placeholder: "科目名称",
         }
       ],
       searchForm:{},
@@ -94,58 +103,63 @@ export default {
           width: 80
         },
         {
-          name: "老师名称",
+          name: "项目名称",
           value: "staffName",
         },
         {
-          name: "商品名称",
+          name: "科目名称",
           value: "goodsName",
         },
         {
-          name: "活动名称",
+          name: "科目启动时间",
           value: "activityName",
         },
         {
-          name: "海报名称",
+          name: "科目结束时间",
           value: "posterName",
         },
         {
-          name: "海报图片",
+          name: "是否分享",
           value: "posterPic",
+          width: 60
         },
         {
-          name: "分享文案一",
+          name: "答案图片",
           value: "posterCopyFirst",
         },
         {
-          name: "分享文案二",
+          name: "题库版本号",
           value: "posterCopySecond",
+          width: 60
         },
         {
-          name: "分享文案三",
+          name: "视频链接",
           value: "posterCopyThird",
+          width: 60
         },
         {
-          name: "分享文案四",
+          name: "视频首页图",
           value: "posterCopyFourth",
+          width: 60
         },
         {
-          name: "分享文案五",
+          name: "排序",
           value: "posterCopyFifth",
+          width: 60
         },
         {
           name: "创建时间",
           value: "createAt",
         },
         {
-          name: "修改时间",
+          name: "更新时间",
           value: "updateAt",
         },
         {
           name: "操作",
           value: "edit",
           operate: true,
-          width: 140,
+          width: 200,
           fixed: "right"
         },
       ],
@@ -249,7 +263,8 @@ export default {
           { required: true, message: "请输入修改事由", trigger: "blur" },
         ]
       },
-      addStatus: true
+      addStatus: true,
+      previewVisible: false
     }
   },
   components:{
@@ -311,7 +326,10 @@ export default {
           });
         })
         .catch(() => {});
-    }
+    },
+    handlePreview(data){
+      this.previewVisible = true;
+    },
   }
 }
 </script>
