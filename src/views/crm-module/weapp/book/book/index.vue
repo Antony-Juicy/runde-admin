@@ -27,7 +27,7 @@
         <fullDialog v-model="addEditVisible" :title="titleAddOrEdit" @change="addEditVisible = false">
             <addEditBook ref="addEditBook" @close="addEditVisible = false" @refresh="refresh" v-if="addEditVisible" />
         </fullDialog>
-        <fullDialog class="subject" v-model="subjectVisiable" title="查阅科目" @change="handleSubjectClose">
+        <fullDialog class="subject" v-model="subjectVisiable" title="科目管理" @change="handleSubjectClose">
             <subject :book="book" @close="handleSubjectClose" @refresh="refresh" v-if="subjectVisiable"></subject>
         </fullDialog>
     </div>

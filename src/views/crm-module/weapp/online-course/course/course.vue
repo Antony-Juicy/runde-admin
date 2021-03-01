@@ -29,7 +29,7 @@
         <fullDialog class="addEditCourse" :title="`${titleAddOrEdit}`" :inner="true" v-model="addEditVisible" @change="addEditVisible = false">
             <addEditCourse ref="addEditCourse" v-if="addEditVisible" @close="addEditVisible = false" @refresh="refresh"></addEditCourse>
         </fullDialog>
-        <fullDialog class="chapter" title="章节目录" v-model="chapterVisible" @change="handleChapterClose">
+        <fullDialog class="chapter" title="科目管理 > 章节目录" v-model="chapterVisible" @change="handleChapterClose">
             <chapter v-if="chapterVisible" @close="handleChapterClose"></chapter>
         </fullDialog>
     </div>

@@ -29,7 +29,7 @@
         <fullDialog class="addEditSubject" :title="`${titleAddOrEdit}`" :inner="true" v-model="addEditVisible" @change="addEditVisible = false">
             <addEditSubject ref="addEditSubject" v-if="addEditVisible" @close="addEditVisible = false" @refresh="refresh"></addEditSubject>
         </fullDialog>
-        <fullDialog class="chapter" title="章节目录" v-model="chapterVisible" @change="handleChapterClose">
+        <fullDialog class="chapter" title="科目管理 > 章节目录" v-model="chapterVisible" @change="handleChapterClose">
             <chapter v-if="chapterVisible" @close="handleChapterClose"></chapter>
         </fullDialog>
     </div>
@@ -227,8 +227,8 @@ export default {
             this.titleAddOrEdit = '编辑科目';
             this.addEditVisible = true
             // ! 编辑科目时 图书数据来源以科目附带信息为准
-            this.$store.commit('book/setBookType', { typeId: this.book.typeId, typeName: this.book.typeName })
-            this.$store.commit('book/setBookId', this.book.bookId)
+            this.$store.commit('book/setBookType', { typeId: data.typeId, typeName: data.typeName })
+            this.$store.commit('book/setBookId', data.bookId)
             this.$nextTick(() => {
                 this.$refs.addEditSubject.initGetConfig = true
                 this.$refs.addEditSubject.initFormData(data.bookSubjectId);
@@ -251,7 +251,7 @@ export default {
                             type: "success",
                         });
                         setTimeout(() => {
-                             this.getTableData({
+                            this.getTableData({
                                 pageNum: (this.tableData.length == 1 && this.pageConfig.pageNum > 1) ? (this.pageConfig.pageNum - 1) : this.pageConfig.pageNum
                             });
                         }, 50);

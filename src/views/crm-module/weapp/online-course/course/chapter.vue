@@ -20,7 +20,7 @@
         <fullDialog class="addEditChapter" :title="`${titleAddOrEdit}`" v-model="addEditVisiable" @change="addEditVisiable = false">
             <addEditChapter ref="addEditChapter" v-if="addEditVisiable" @close="addEditVisiable = false" @refresh="refresh"></addEditChapter>
         </fullDialog>
-        <fullDialog class="chapterSection" title="查看小节" v-model="chapterSectionVisible" @change="handleSectionClose">
+        <fullDialog class="chapterSection" title="科目管理 > 章节目录 > 查看小节" v-model="chapterSectionVisible" @change="handleSectionClose">
             <chapterSection v-if="chapterSectionVisible" @close="handleSectionClose"></chapterSection>
         </fullDialog>
     </div>
