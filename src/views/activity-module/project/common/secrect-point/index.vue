@@ -25,15 +25,15 @@
             >编辑</el-button
           >
           <el-divider direction="vertical"></el-divider>
-          <el-button @click="handleEdit(scope.row)" type="text" size="small" style="color: #ffa500"
+          <el-button @click="uploadSubject(scope.row)" type="text" size="small" style="color: #ffa500"
             >上传题目</el-button
           >
           <el-divider direction="vertical"></el-divider>
-          <el-button @click="handleEdit(scope.row)" type="text" size="small" style="color: #ffa500"
+          <el-button @click="handleDetail(scope.row)" type="text" size="small" style="color: #ffa500"
             >查看题目详情</el-button
           >
           <el-divider direction="vertical"></el-divider>
-          <el-button @click="handleEdit(scope.row)" type="text" size="small" style="color: #ffa500"
+          <el-button @click="handlePreview(scope.row)" type="text" size="small" style="color: #ffa500"
             >预览答案图片</el-button
           >
           <el-divider direction="vertical"></el-divider>
@@ -46,14 +46,14 @@
           >
           <el-divider direction="vertical"></el-divider>
           <el-button
-            @click="handleDelete(scope.row)"
+            @click="handleDelete2(scope.row)"
             type="text"
             size="small"
             style="color: #ec5b56"
             >删除题库</el-button
           >
           <el-divider direction="vertical"></el-divider>
-          <el-button @click="handleEdit(scope.row)" type="text" size="small"
+          <el-button @click="handleAnswer(scope.row)" type="text" size="small"
             >考后对答案</el-button
           >
         </template>
@@ -79,17 +79,60 @@
       <rd-dialog
         :title="'上传题目'"
         :dialogVisible="uploadVisible"
-        width="850px"
         @handleClose="uploadVisible = false"
         @submitForm="submitAddForm('dataForm4')"
       >
-        
+        <el-button type="primary">点击上传</el-button>
       </rd-dialog>
+
+      <!-- 查看题目详情 -->
+      <fullDialog
+        v-model="detailVisible"
+        title="查看题目详情"
+        @change="detailVisible = false"
+      >
+        <subjectDetail
+          ref="subjectDetail"
+          :id="detailId"
+          @close="detailVisible = false"
+          @refresh="refresh"
+          v-if="detailVisible"
+        />
+      </fullDialog>
+
+      <!-- 预览答案图片 -->
+      <rd-dialog
+        :title="'预览答案图片'"
+        :dialogVisible="previewVisible"
+        :showFooter="false"
+        @handleClose="previewVisible = false"
+        @submitForm="submitAddForm('dataForm4')"
+      >
+        预览答案图片
+      </rd-dialog>
+
+      <!-- 考后对答案 -->
+      <fullDialog
+        v-model="answerVisible"
+        title="考后对答案详情"
+        @change="answerVisible = false"
+      >
+        <checkAnswer
+          ref="checkAnswer"
+          :id="detailId"
+          @close="answerVisible = false"
+          @refresh="refresh"
+          v-if="answerVisible"
+        />
+      </fullDialog>
   </div>
 </template>
 
 <script>
 import RdForm from "@/components/RdForm";
+import fullDialog from "@/components/FullDialog";
+import subjectDetail from './subjectDetail';
+import checkAnswer from './checkAnswer';
 export default {
   name:"secrect-point",
   data(){
@@ -330,10 +373,10 @@ export default {
           rows: 2
         },
          {
-          prop: "排序",
+          prop: "menuName3",
           element: "el-input",
           placeholder: "请输入",
-          label: "总题数"
+          label: "排序"
         },
       ],
       addRules:{
@@ -341,11 +384,18 @@ export default {
           { required: true, message: "请输入修改事由", trigger: "blur" },
         ]
       },
-      addStatus: true
+      addStatus: true,
+      uploadVisible: false,
+      detailVisible: false,
+      previewVisible: false,
+      answerVisible: false
     }
   },
   components:{
-    RdForm
+    RdForm,
+    fullDialog,
+    subjectDetail,
+    checkAnswer
   },
    methods: {
      onSearch(val){
@@ -380,7 +430,7 @@ export default {
       this.addVisible = true;
     },
     handleDelete(row) {
-      let info = '海报';
+      let info = '项';
       this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -403,6 +453,43 @@ export default {
           });
         })
         .catch(() => {});
+    },
+    handleDelete2(row) {
+      let info = '项';
+      this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(async () => {
+          const res = await this.$fetch("projectType_delete", {
+            typeId: row.typeId,
+            loginUserId,
+          }).then((res) => {
+            if (res) {
+              this.$message({
+                message: "删除成功",
+                type: "success",
+              });
+              setTimeout(() => {
+                this.getTableData();
+              }, 50);
+            }
+          });
+        })
+        .catch(() => {});
+    },
+    uploadSubject(data){
+      this.uploadVisible = true;
+    },
+    handleDetail(data){
+      this.detailVisible = true;
+    },
+    handlePreview(data){
+      this.previewVisible = true;
+    },
+    handleAnswer(data){
+      this.answerVisible = true;
     }
   }
 }

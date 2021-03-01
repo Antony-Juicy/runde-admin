@@ -105,7 +105,10 @@ export default {
   props:{
     liveId: {
       type: Number
-    }
+    },
+    liveName: {
+      type: String
+    },
   },
   mounted() {
     this.getTableData();
@@ -169,11 +172,23 @@ export default {
       });
     },
     gotoOrder(val){
-      this.$router.push('/crm-module/weapp/live-details/goods-orders')
+      // this.$router.push('/crm-module/weapp/live-details/goods-orders')
+      this.$router.push({
+        name: '/crm-module/weapp/live-details/goods-orders'  + '?' + sessionStorage.getItem("router-timeStamp"),
+        params: {
+          sourceName: this.liveName
+        } 
+      })
       this.$emit("close")
     },
     gotoInvite(val){
-      this.$router.push('/crm-module/weapp/live-details/goods-orders')
+      // this.$router.push('/crm-module/weapp/live-details/invite-count')
+      this.$router.push({
+        name: '/crm-module/weapp/live-details/invite-count'  + '?' + sessionStorage.getItem("router-timeStamp"),
+        params: {
+          liveName: this.liveName
+        } 
+      })
       this.$emit("close")
     }
   }

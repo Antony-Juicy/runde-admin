@@ -1,6 +1,7 @@
 <template>
   <div class="analysis">
-    <div class="title">汇总数据</div>
+    <template v-if="showAll">
+      <div class="title">汇总数据</div>
     <div class="content">
       <div class="first-row">
         <div class="item1">
@@ -51,6 +52,7 @@
         </div>
       </div>
     </div>
+    </template>
 
     <div class="title">直播榜单</div>
     <div class="content">
@@ -143,6 +145,7 @@
                 :fixedTwoRow="true"
                 :pager-count="5"
                 @pageChange="pageChange"
+                :emptyText="emptyText"
               >
                 <template slot="index" slot-scope="scope">
                   {{ scope.$index + 1 }}
@@ -171,6 +174,7 @@
                 :fixedTwoRow="true"
                 :pager-count="5"
                 @pageChange="pageChange2"
+                :emptyText="emptyText2"
               >
                 <template slot="index" slot-scope="scope">
                   {{ scope.$index + 1 }}
@@ -189,7 +193,7 @@
       :size="'50%'"
       append-to-body
     >
-      <provinceList :liveId="liveId" @close="drawerVisible1 = false" />
+      <provinceList :liveId="liveId" :liveName="liveName" @close="drawerVisible1 = false" />
     </el-drawer>
 
     <el-drawer
@@ -199,7 +203,7 @@
       :size="'50%'"
       append-to-body
     >
-      <campustList :liveId="liveId" />
+      <campustList :liveId="liveId" :liveName="liveName" @close="drawerVisible2 = false"/>
     </el-drawer>
 
     <el-drawer
@@ -209,7 +213,7 @@
       :size="'50%'"
       append-to-body
     >
-      <personalList :liveId="liveId" />
+      <personalList :liveId="liveId" :liveName="liveName" @close="drawerVisible3 = false"/>
     </el-drawer>
 
     <el-drawer
@@ -219,7 +223,7 @@
       :size="'50%'"
       append-to-body
     >
-      <personalList2 :liveId="liveId" />
+      <personalList2 :liveId="liveId" :liveName="liveName" @close="drawerVisible4 = false"/>
     </el-drawer>
 
     <el-drawer
@@ -229,7 +233,7 @@
       :size="'50%'"
       append-to-body
     >
-      <personalList3 :liveId="liveId" />
+      <personalList3 :liveId="liveId" :liveName="liveName" @close="drawerVisible5 = false"/>
     </el-drawer>
 
     <el-drawer
@@ -239,7 +243,7 @@
       :size="'50%'"
       append-to-body
     >
-      <personalList4 :liveId="liveId" />
+      <personalList4 :liveId="liveId" :liveName="liveName" @close="drawerVisible6 = false"/>
     </el-drawer>
   </div>
 </template>
@@ -276,7 +280,7 @@ export default {
         },
       ],
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
@@ -300,7 +304,7 @@ export default {
         },
       ],
       pageConfig2: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
@@ -317,6 +321,9 @@ export default {
       personalList: "",
       rewardList: "",
       invitationList: [],
+      showAll: true,
+      emptyText:"暂无数据",
+      emptyText2:"暂无数据",
     };
   },
   components: {
@@ -342,7 +349,11 @@ export default {
       liveId: this.liveId,
     }).then((res) => {
       this.dataList = res.data;
-    });
+    }).catch(err =>{
+      if(err.response.status == 401){
+        this.showAll = false;
+      }
+    })
 
     // 邀请榜
     this.getInvitationList();
@@ -378,7 +389,12 @@ export default {
         setTimeout(() => {
           loading.close();
         }, 200);
-      });
+      }).catch(err =>{
+        loading.close();
+        if(err.response.status == 401){
+          this.emptyText = "您没有权限访问"
+        }
+      })
     },
 
     getRewardList(params = {}) {
@@ -396,7 +412,12 @@ export default {
         setTimeout(() => {
           loading.close();
         }, 200);
-      });
+      }).catch(err =>{
+        loading.close();
+        if(err.response.status == 401){
+          this.emptyText2 = "您没有权限访问"
+        }
+      })
     },
 
     showOrder() {
