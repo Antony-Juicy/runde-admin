@@ -80,7 +80,7 @@ export default {
       userLogoUrl: require('@/assets/userlogo.png'),
       emptyText: '暂无数据',
       pageCommentConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
