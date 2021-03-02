@@ -42,7 +42,7 @@
     
     <!-- 添加海报 -->
     <rd-dialog
-        :title="addStatus?'添加海报':'编辑海报'"
+        :title="addStatus?'添加科目':'编辑科目'"
         :dialogVisible="addVisible"
         @handleClose="addVisible = false"
         @submitForm="submitAddForm('dataForm3')"
@@ -170,93 +170,73 @@ export default {
       },
       addVisible: false,
       addFormOptions: [
-          
+         {
+          prop: "roleName",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "项目名称",
+          options: [
+          ]
+        },  
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "请输入海报名称",
-          label: "海报名称"
+          placeholder: "请输入",
+          label: "科目名称"
         },
         {
-          prop: "post",
-          element: "el-input",
-          placeholder: "",
-          label: "上传海报",
-          operate: true,
-          initValue: 0
-        },
-        {
-          prop: "roleName",
-          element: "el-select",
-          placeholder: "请选择",
-          label: "所属九块九包邮",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
+          prop: "time",
+          element: "el-date-picker",
+          startPlaceholder: "科目启动时间",
+          endPlaceholder: "科目结束时间",
+          initWidth: true,
+          label: "科目启动时间",
         },
         {
           prop: "roleName",
           element: "el-select",
           placeholder: "请选择",
-          label: "所属活动",
+          label: "是否分享",
           options: [
             {
-              label: "博士",
+              label: "是",
               value: "0",
             },
             {
-              label: "硕士",
+              label: "否",
               value: 1,
             },
           ],
         },
+         {
+          prop: "upload",
+          element: "el-input",
+          placeholder: "请输入",
+          label: "图片上传",
+          operate: true
+        },
+         {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "请输入",
+          label: "视频链接",
+          type: "textarea",
+          rows: 2
+        },
+         {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "请输入",
+          label: "视频首页图",
+          type: "textarea",
+          rows: 2
+        },
         {
-          prop: "menuName3",
+          prop: "menuName",
           element: "el-input",
           placeholder: "请输入",
-          label: "分享分案一",
-          type:"textarea",
-          rows: 2
+          label: "排序"
         },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案二",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案三",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案四",
-          type:"textarea",
-          rows: 2
-        },
-           {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案五",
-          type:"textarea",
-          rows: 2
-        }
       ],
       addRules:{
         updateReason: [

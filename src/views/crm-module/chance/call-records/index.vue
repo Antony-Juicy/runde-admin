@@ -21,6 +21,7 @@
               :pageConfig.sync="pageConfig"
               @select="handleSelect"
               @pageChange="pageChange"
+              :emptyText="emptyText"
             >
               <template slot="type" slot-scope="scope">
                 {{scope.row.type | CallTypeFilter}}
@@ -100,10 +101,9 @@ export default {
         { name: '结束时间',value: 'end_time' },
         { name: '录音',value: '10' },
       ],
-      emptyText: '暂无数据，请选择相应的组织架构',
       fixedTwoRow: true,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         currentPage: 1,
         showCount: 10,
       },
@@ -115,7 +115,8 @@ export default {
 
       // 下拉
       staffOptions:[],
-      campusOptions:[]
+      campusOptions:[],
+      emptyText:"暂无数据"
     }
   },
   mounted(){
@@ -196,7 +197,12 @@ export default {
         setTimeout(() => {
           loading.close();
         }, 200);
-      });
+      }).catch(err => {
+        loading.close();
+        if(err.response && err.response.status == 401){
+          this.emptyText = "您没有权限访问"
+        }
+      })
     },
     getSelectList(){
       Promise.all([

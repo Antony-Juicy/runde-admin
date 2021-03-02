@@ -162,6 +162,7 @@
         :formOptions="importFormOptions"
         :rules="importRules"
         ref="dataForm4"
+        
       >
         <template slot="campusId">
           <el-select v-model="importCampusId" placeholder="请选择" filterable>
@@ -213,7 +214,9 @@
             :on-exceed="handleExceed"
             :on-change="handleChange"
             :file-list="fileList"
+            :before-upload="beforeAvatarUpload"
             :auto-upload="false"
+            accept=".xls, .xlsx"
           >
             <el-button size="small" type="primary">点击上传</el-button>
           </el-upload>
@@ -381,7 +384,7 @@ export default {
         },
       ],
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         currentPage: 1,
         showCount: 10,
       },
@@ -847,7 +850,7 @@ export default {
 
       this.orderFlag = true;
     },
-    // 成单弹窗关闭
+    // 弹窗关闭
     handleClose(formName) {
       this.orderVisible = false;
       this.invalidVisible = false;
@@ -857,6 +860,12 @@ export default {
       this.productId = "";
       this.subjectId = "";
       this.classId = "";
+      this.$refs[formName].resetFields();
+      if(formName == 'dataForm4'){
+        this.importCampusId = '';
+        this.productOne = '';
+        this.subjectOne = '';
+      }
     },
     // 成单弹窗提交
     submitForm(formName) {
@@ -958,6 +967,18 @@ export default {
       this.$refs[formName].validate((valid, formData) => {
         if (valid) {
           console.log(formData, "提交");
+          if(!this.productId){
+            this.$message.error("请选择咨询项目")
+            return
+          }
+          if(!this.subjectId){
+            this.$message.error("请选择咨询项目")
+            return
+          }
+          if(!this.classId.length){
+            this.$message.error("请选择咨询项目")
+            return
+          }
           this.$fetch("chance_my_add", {
             ...formData,
             productId: this.productId,
@@ -1009,12 +1030,34 @@ export default {
           this.$fetch("chance_my_import", obj).then((res) => {
             if(res.code == 200){
               this.$message.success("操作成功")
-              this.handleClose();
+              this.handleClose('dataForm4');
               this.getTableData();
             }
           });
         }
       });
+    },
+    // 导入上传之前的文件格式校验
+    beforeAvatarUpload(file) {
+      console.log(file)
+      let testmsg=file.name.substring(file.name.lastIndexOf('.')+1)
+      const extension = testmsg === 'xls'
+      const extension2 = testmsg === 'xlsx'
+      // const isLt2M = file.size / 1024 / 1024 < 10
+      if(!extension && !extension2) {
+          this.$message({
+              message: '上传文件只能是 xls、xlsx格式!',
+              type: 'warning'
+          });
+      }
+      // if(!isLt2M) {
+      //     this.$message({
+      //         message: '上传文件大小不能超过 10MB!',
+      //         type: 'warning'
+      //     });
+      // }
+      // return extension || extension2 && isLt2M
+      return extension || extension2
     },
 
     getTableData(params = {}) {
