@@ -139,6 +139,7 @@ export default {
                         ...this.pageConfig,
                         ...this.searchForm,
                         ...params,
+                        parentId:0,
                         bookSubjectId: this.$store.state.book.bookSubjectId, // 查询目录 bookSubjectId 查询所属科目
                     }
                 ).then((res) => {

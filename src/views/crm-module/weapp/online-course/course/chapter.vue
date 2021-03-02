@@ -139,6 +139,7 @@ export default {
                         ...this.pageConfig,
                         ...this.searchForm,
                         ...params,
+                        parentId:0,
                         courseId: this.$store.state.onlineCourse.courseId, // 查询目录 courseId 查询所属科目
                     }
                 ).then((res) => {
