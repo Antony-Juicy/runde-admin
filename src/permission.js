@@ -13,15 +13,13 @@ const whiteList = ['/login','/live-redirect'] // no redirect whitelist
 router.beforeEach(async(to, from, next) => {
   // start progress bar
   NProgress.start()
-  // -----------
-  // next()
-  // NProgress.done()
-  // return;
-   // -----------
 
   // set page title
   document.title = getPageTitle(to.meta.title)
-
+  // 如果是直播中转页 不需要鉴权
+  if(to.path == '/live-redirect'){
+    next()
+  }
   // determine whether the user has logged in
   const hasToken = getToken()
   if (hasToken) {

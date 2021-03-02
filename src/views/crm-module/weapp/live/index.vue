@@ -47,6 +47,14 @@
           >
           <el-divider direction="vertical"></el-divider>
           <el-button
+            @click="handleAnalysis(scope.row)"
+            type="text"
+            size="small"
+            style="color:#73777d;margin-left:12px"
+            >数据分析</el-button
+          >
+          <el-divider direction="vertical"></el-divider>
+          <el-button
             @click="handleDelete(scope.row)"
             type="text"
             size="small"
@@ -107,6 +115,19 @@
       >
         <manageShare :liveId="liveId" v-if="shareVisible" />
       </rd-dialog>
+
+      <!-- 数据分析 -->
+      <fullDialog
+        v-model="analysisVisible"
+        :title="liveName+' - 数据分析'"
+        @change="analysisVisible = false"
+      >
+        <analysis
+          :liveId="liveId" 
+          :liveName="liveName"
+          v-if="analysisVisible"
+        />
+      </fullDialog>
     </div>
   </div>
 </template>
@@ -117,6 +138,7 @@ import addLive from "./addLive";
 import manageLink from "./manageLink";
 import manageShare from "./manageShare";
 import editLive from "./editLive/index.vue";
+import analysis from './editLive/analysis/index.vue';
 export default {
   name: "live",
   data() {
@@ -259,7 +281,7 @@ export default {
           name: "操作",
           value: "edit",
           operate: true,
-          width: 200,
+          width: 180,
         },
       ],
       pageConfig: {
@@ -275,10 +297,13 @@ export default {
       linkVisible: false,
       // 分享弹窗
       shareVisible: false,
+      // 数据分析弹窗
+      analysisVisible: false,
       showAdd: true,
       searchForm: {}, //搜索栏信息
       liveId: "",
       liveName: "",
+      
     };
   },
   components: {
@@ -287,51 +312,50 @@ export default {
     editLive,
     manageLink,
     manageShare,
+    analysis
   },
   async mounted() {
     this.getSubjectList();
-    await this.getTableData();
-    const { liveId, flag,chatAudit,mute,liveName } = this.$route.params;
-    if (flag == "analysis") {
-      // const data = this.tableData.find((item) => item.liveId == liveId);
-      // const res = await this.getLiveInfo(liveId);
-      this.handleEdit({
-            chatAudit,
-            mute,
-            liveId,
-            liveName,
-            flag
-          });
-      setTimeout(() => {
-        this.$refs.editLive.changeTab();
-      }, 10);
-    }
+    this.getTableData();
+    // const { liveId, flag,chatAudit,mute,liveName } = this.$route.params;
+    // if (flag == "analysis") {
+    //   // const data = this.tableData.find((item) => item.liveId == liveId);
+    //   // const res = await this.getLiveInfo(liveId);
+    //   this.handleEdit({
+    //         chatAudit,
+    //         mute,
+    //         liveId,
+    //         liveName,
+    //         flag
+    //       });
+    //   setTimeout(() => {
+    //     this.$refs.editLive.changeTab();
+    //   }, 10);
+    // }
   },
-  watch: {
-    async "$route.params.liveId"(newVal) {
-      if (!newVal) {
-        return;
-      }
-      const { liveId, flag,chatAudit,mute,liveName } = this.$route.params;
-      if (flag == "analysis") {
-        this.editVisible = false;
-        // const data = this.tableData.find((item) => item.liveId == newVal);
-        // const res = await this.getLiveInfo(liveId);
-        setTimeout(() => {
-          this.handleEdit({
-            chatAudit,
-            mute,
-            liveId,
-            liveName,
-            flag
-          });
-          setTimeout(() => {
-            this.$refs.editLive.changeTab();
-          }, 10);
-        }, 10);
-      }
-    },
-  },
+  // watch: {
+  //   async "$route.params.liveId"(newVal) {
+  //     if (!newVal) {
+  //       return;
+  //     }
+  //     const { liveId, flag,chatAudit,mute,liveName } = this.$route.params;
+  //     if (flag == "analysis") {
+  //       this.editVisible = false;
+  //       setTimeout(() => {
+  //         this.handleEdit({
+  //           chatAudit,
+  //           mute,
+  //           liveId,
+  //           liveName,
+  //           flag
+  //         });
+  //         setTimeout(() => {
+  //           this.$refs.editLive.changeTab();
+  //         }, 10);
+  //       }, 10);
+  //     }
+  //   },
+  // },
   methods: {
     onSearch(data) {
       this.searchForm = { ...data };
@@ -485,6 +509,12 @@ export default {
       return this.$fetch("live_getInfo",{
         liveId
       })
+    },
+
+    handleAnalysis(data){
+      this.liveId = data.liveId;
+      this.liveName = data.liveName;
+      this.analysisVisible = true;
     }
   },
 };

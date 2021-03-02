@@ -67,11 +67,25 @@
         </template>
       </rd-table>
     </div>
+
+    <!-- 数据分析 -->
+      <fullDialog
+        v-model="analysisVisible"
+        :title="liveName+' - 数据分析'"
+        @change="analysisVisible = false"
+      >
+        <analysis
+          :liveId="liveId" 
+          :liveName="liveName"
+          v-if="analysisVisible"
+        />
+      </fullDialog>
   </div>
 </template>
 
 <script>
-
+import fullDialog from "@/components/FullDialog";
+import analysis from '@/views/crm-module/weapp/live/editLive/analysis/index.vue';
 export default {
   name:"live-count",
   data(){
@@ -127,12 +141,19 @@ export default {
         pageSize: 10,
       },
       loading: false,
+      analysisVisible: false,
+      liveId: "",
+      liveName:""
     }
   },
   mounted () {
     this.getSummaryData();
     this.getTypeData();
     this.getTableData();
+  },
+  components: {
+    fullDialog,
+    analysis
   },
   methods: {
     onSearch(val) {
@@ -214,19 +235,21 @@ export default {
       this.pageConfig.pageSize = val.limit;
       this.getTableData();
     },
-    async openConfig(row) {
-      console.log(row,'row-----')
-      const res = await this.getLiveInfo(row.liveId);
-      this.$router.push({
-        name: '/crm-module/weapp/live' + '?' + sessionStorage.getItem("router-timeStamp"),
-        params: {
-          liveId: row.liveId,
-          flag: 'analysis',
-          chatAudit: res.data.chatAudit,
-          mute: res.data.mute,
-          liveName: res.data.liveName
-        }
-      })
+    async openConfig(data) {
+      this.liveId = data.liveId;
+      this.liveName = data.liveName;
+      this.analysisVisible = true;
+      // const res = await this.getLiveInfo(row.liveId);
+      // this.$router.push({
+      //   name: '/crm-module/weapp/live' + '?' + sessionStorage.getItem("router-timeStamp"),
+      //   params: {
+      //     liveId: row.liveId,
+      //     flag: 'analysis',
+      //     chatAudit: res.data.chatAudit,
+      //     mute: res.data.mute,
+      //     liveName: res.data.liveName
+      //   }
+      // })
     },
 
     getLiveInfo(liveId){
