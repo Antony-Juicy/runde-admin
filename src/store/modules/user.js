@@ -59,6 +59,22 @@ const actions = {
     })
   },
 
+  // 直播跳转链接的登录方式
+  loginLive({ commit }, userInfo) {
+    const { username, password, VerifyCode, slatkey } = userInfo
+    return new Promise((resolve, reject) => {
+      const data = userInfo
+        console.log(data,'data---')
+        commit('SET_TOKEN', data.token) //在全局vuex中存入state
+        setToken(data.token)   //把token存储在本地cookie之中
+        commit('SET_NAME', data.username)  //用户名
+        commit('SET_USERID', data.userId)  //用户id
+        localStorage.setItem('userInfo',JSON.stringify(data));
+        localStorage.setItem('loginUserId',data.userId);
+        resolve();
+    })
+  },
+
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {

@@ -49,7 +49,12 @@ export const constantRoutes = [
       path: '',
       component: () => import('@/views/redirect')
     }]
-  }
+  },
+  {
+    path: '/live-redirect', // 直播跳转中间页
+    component: () => import('@/views/live-redirect'),
+    hidden: true
+  },
 ]
 
 const createRouter = () => new Router({
@@ -81,22 +86,7 @@ export let asyncRoutes0 = [
       component: () => import('@/views/dashboard/index'),
       meta: { title: '欢迎页' }
     }]
-  },
-  // {
-  //   path: '/img-management',
-  //   component: Layout,
-  //   redirect: '/img-management',
-  //   meta: {
-  //     icon:'',
-  //     title:'test'
-  //   },
-  //   children: [{
-  //     path: '/img-management',
-  //     name: '/img-management',
-  //     component: () => import('@/views/test'),
-  //     meta: { title: 'test'}
-  //   }]
-  // }
+  }
 ];
 
 
