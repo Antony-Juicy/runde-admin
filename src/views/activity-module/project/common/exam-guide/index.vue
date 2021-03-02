@@ -1,145 +1,126 @@
 <template>
-  <div class="post-manage">
-      <search-form
-      :formOptions="formOptions"
-      :showNum="7"
-      @onSearch="onSearch"
-    ></search-form>
+  <div class="examguide-container">
     <div class="w-container">
-      <div class="btn-wrapper">
-        <el-button type="primary" size="small" @click="handleAdd"
-          >添加</el-button
-        >
-      </div>
-      <rd-table
-        :tableData="tableData"
-        :tableKey="tableKey"
-        :pageConfig.sync="pageConfig"
-        :tbodyHeight="600"
-        fixedTwoRow
-        @pageChange="pageChange"
-        :emptyText="emptyText"
-      >
-        <template slot="edit" slot-scope="scope">
-          <el-button @click="handleEdit(scope.row)" type="text" size="small"
-            >查阅/编辑</el-button
-          >
-          <el-divider direction="vertical"></el-divider>
-          <el-button
-            @click="handleDelete(scope.row)"
-            type="text"
-            size="small"
-            style="color: #ec5b56"
-            >删除</el-button
-          >
-        </template>
-      </rd-table>
+      <el-tabs v-model="activeName" @tab-click="handleClick">
+        <el-tab-pane label="报考省份" name="first">
+          <search-form :formOptions="formOptions" :showNum="7" @onSearch="onSearch"></search-form>
+          <!-- <div class="w-container"> -->
+            <div class="btn-wrapper">
+              <el-button type="primary" size="small" @click="handleAdd">添加</el-button>
+            </div>
+            <rd-table
+              :tableData="tableData"
+              :tableKey="tableKey"
+              :loading="loading"
+              :pageConfig.sync="pageConfig"
+              :tbodyHeight="600"
+              fixedTwoRow
+              @pageChange="pageChange"
+              :emptyText="emptyText">
+              <template slot="edit" slot-scope="scope">
+                <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑</el-button>
+                <el-divider direction="vertical"></el-divider>
+                <el-button @click="handleDelete(scope.row)" type="text" size="small" style="color: #ec5b56">删除</el-button>
+              </template>
+            </rd-table>
+          <!-- </div> -->
+          
+          <!-- 添加海报 -->
+          <rd-dialog
+            :title="addStatus?'添加省份':'编辑省份'"
+            :dialogVisible="addVisible"
+            @handleClose="addVisible = false"
+            @submitForm="submitAddForm('dataForm')">
+            <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm"></RdForm>
+          </rd-dialog>
+        </el-tab-pane>
+        <el-tab-pane label="报考信息" name="two">
+          <Information ref="Information"></Information>
+        </el-tab-pane>
+        <el-tab-pane label="报考专业" name="three">
+          333
+        </el-tab-pane>
+        <el-tab-pane label="审核通知" name="four">
+          444
+        </el-tab-pane>
+      </el-tabs>
     </div>
     
-    <!-- 添加海报 -->
-    <rd-dialog
-        :title="addStatus?'添加海报':'编辑海报'"
-        :dialogVisible="addVisible"
-        @handleClose="addVisible = false"
-        @submitForm="submitAddForm('dataForm3')"
-      >
-        <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
-          <template slot="post">
-            <el-button size="small" type="primary">上传海报</el-button>
-          </template>
-        </RdForm>
-      </rd-dialog>
   </div>
 </template>
 
 <script>
-import RdForm from "@/components/RdForm";
+import Information from './information';
 export default {
-  name:"post-manage",
+  name:"exam-guide",
+  components:{
+    Information
+  },
   data(){
     return {
+      activeName: 'first',
+      tabIndex: "0",
       formOptions: [
         {
           prop: "menuName",
-          element: "el-input",
-          placeholder: "商品名称",
+          element: "el-select",
+          placeholder: "请选择项目",
         },
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "活动名称",
+          placeholder: "请输入省份名称",
         },
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "海报名称",
+          placeholder: "请选择状态",
         }
       ],
       searchForm:{},
       emptyText:"暂无数据",
+      fixedTwoRow: true,
       tableData:[
-         {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-        },
+        
       ],
       tableKey: [
         {
-          name: "ID主键",
+          name: "主键id",
           value: "id",
           fixed: "left",
           width: 80
         },
         {
-          name: "老师名称",
+          name: "项目",
           value: "staffName",
         },
         {
-          name: "商品名称",
+          name: "省份/学历名称",
           value: "goodsName",
         },
         {
-          name: "活动名称",
+          name: "类型",
           value: "activityName",
         },
         {
-          name: "海报名称",
+          name: "级别",
           value: "posterName",
         },
         {
-          name: "海报图片",
+          name: "排序",
           value: "posterPic",
         },
         {
-          name: "分享文案一",
+          name: "状态",
           value: "posterCopyFirst",
         },
         {
-          name: "分享文案二",
+          name: "创建时间",
           value: "posterCopySecond",
         },
         {
-          name: "分享文案三",
+          name: "更新时间",
           value: "posterCopyThird",
-        },
-        {
-          name: "分享文案四",
-          value: "posterCopyFourth",
-        },
-        {
-          name: "分享文案五",
-          value: "posterCopyFifth",
-        },
-        {
-          name: "创建时间",
-          value: "createAt",
-        },
-        {
-          name: "修改时间",
-          value: "updateAt",
         },
         {
           name: "操作",
@@ -154,35 +135,43 @@ export default {
         currentPage: 1,
         pageSize: 10,
       },
+      loading: false,
+
+      addStatus: true,
       addVisible: false,
       addFormOptions: [
-          
         {
           prop: "menuName",
-          element: "el-input",
-          placeholder: "请输入海报名称",
-          label: "海报名称"
-        },
-        {
-          prop: "post",
-          element: "el-input",
-          placeholder: "",
-          label: "上传海报",
-          operate: true,
-          initValue: 0
+          element: "el-select",
+          placeholder: "请选择项目",
+          label: "项目",
+          options: [
+            {
+              label: "2019执业药师",
+              value: 0,
+            },
+            {
+              label: "2020执业医师",
+              value: 1,
+            },
+            {
+              label: "2020执业医师(新)",
+              value: 2,
+            },
+          ],
         },
         {
           prop: "roleName",
           element: "el-select",
-          placeholder: "请选择",
-          label: "所属九块九包邮",
+          placeholder: "请选择级别",
+          label: "级别",
           options: [
             {
-              label: "博士",
-              value: "0",
+              label: "一级",
+              value: 0,
             },
             {
-              label: "硕士",
+              label: "二级",
               value: 1,
             },
           ],
@@ -191,14 +180,14 @@ export default {
           prop: "roleName",
           element: "el-select",
           placeholder: "请选择",
-          label: "所属活动",
+          label: "省份/学历",
           options: [
             {
-              label: "博士",
-              value: "0",
+              label: "省份",
+              value: 0,
             },
             {
-              label: "硕士",
+              label: "学历",
               value: 1,
             },
           ],
@@ -206,67 +195,46 @@ export default {
         {
           prop: "menuName3",
           element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案一",
-          type:"textarea",
-          rows: 2
+          placeholder: "请输入省份名称",
+          label: "省份/学历名称"
         },
-         {
+        {
+          prop: "menuName3",
+          element: "el-input-number",
+          placeholder: "请输入排序",
+          label: "排序"
+        },
+        {
           prop: "menuName3",
           element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案二",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案三",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案四",
-          type:"textarea",
-          rows: 2
-        },
-           {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案五",
-          type:"textarea",
-          rows: 2
+          placeholder: "请输入备注",
+          label: "备注"
         }
       ],
-      addRules:{
-        updateReason: [
-          { required: true, message: "请输入修改事由", trigger: "blur" },
-        ]
-      },
-      addStatus: true
+      addRules: {},
     }
   },
-  components:{
-    RdForm
-  },
-   methods: {
-     onSearch(val){
-       this.searchForm = {
+  methods: {
+    handleClick(tab, event) {
+      console.log(tab.index, "click");
+      this.tabIndex = tab.index;
+      // if(tab.index == 0){
+      //   this.$refs.Manage.getTableData();
+      // }else if(tab.index == 1){
+      //   this.$refs.Count.getTableData();
+      // }
+    },
+    onSearch(val){
+      this.searchForm = {
         ...val
       };
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
-     },
-     getTableData(){
+    },
+    getTableData(){
 
-     },
-     pageChange(val) {
+    },
+    pageChange(val) {
       console.log(val,'pagechange')
       this.pageConfig.currentPage = val.page;
       this.pageConfig.showCount = val.limit;
@@ -288,7 +256,7 @@ export default {
       this.addVisible = true;
     },
     handleDelete(row) {
-      let info = '海报';
+      let info = '省份';
       this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -317,7 +285,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.post-manage {
+.examguide-container {
 
 }
 </style>
