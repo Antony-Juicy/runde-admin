@@ -21,6 +21,14 @@ export default {
     this.openFullScreen2();
     this.authentication();
   },
+  watch:{
+    "$route.query.userId"(newVal){
+      this.authentication()
+    },
+    "$route.query.token"(newVal){
+      this.authentication()
+    }
+  },
    methods: {
      openFullScreen2() {
         // this.loading = this.$loading({
@@ -35,6 +43,7 @@ export default {
       },
       authentication(){
         const {token,username,userId} = this.$route.query;
+        console.log( this.$route.query,' this.$route.query---')
         if(!token || !userId || !username){
           // this.loading.close();
           this.show = false;

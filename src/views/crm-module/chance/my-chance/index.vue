@@ -87,7 +87,8 @@
             ref="publicCustomers"/>
         </div>
         <div v-show="tabIndex == '2'">
-          <lockUser ref="lockUser"/>
+          <lockUser ref="lockUser" @currentChange="currentChange"
+            :newFormOptions="formOptions"/>
         </div>
       </div>
       <!-- 右侧表单 -->

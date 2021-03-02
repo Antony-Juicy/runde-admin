@@ -61,7 +61,6 @@ const actions = {
 
   // 直播跳转链接的登录方式
   loginLive({ commit }, userInfo) {
-    const { username, password, VerifyCode, slatkey } = userInfo
     return new Promise((resolve, reject) => {
       const data = userInfo
         console.log(data,'data---')

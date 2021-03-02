@@ -45,7 +45,7 @@ export default {
       emptyText: '暂无数据，请选择相应的组织架构',
       fixedTwoRow: true,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
