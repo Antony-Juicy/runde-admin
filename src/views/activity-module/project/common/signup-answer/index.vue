@@ -1,15 +1,9 @@
 <template>
-  <div class="post-manage">
-      <search-form
-      :formOptions="formOptions"
-      :showNum="7"
-      @onSearch="onSearch"
-    ></search-form>
+  <div class="signupanswer-container">
+    <search-form :formOptions="formOptions" :showNum="7" @onSearch="onSearch"></search-form>
     <div class="w-container">
       <div class="btn-wrapper">
-        <el-button type="primary" size="small" @click="handleAdd"
-          >添加</el-button
-        >
+        <el-button type="primary" size="small">导出</el-button>
       </div>
       <rd-table
         :tableData="tableData"
@@ -18,9 +12,8 @@
         :tbodyHeight="600"
         fixedTwoRow
         @pageChange="pageChange"
-        :emptyText="emptyText"
-      >
-        <template slot="edit" slot-scope="scope">
+        :emptyText="emptyText">
+        <!-- <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
             >查阅/编辑</el-button
           >
@@ -32,248 +25,102 @@
             style="color: #ec5b56"
             >删除</el-button
           >
-        </template>
+        </template> -->
       </rd-table>
     </div>
-    
-    <!-- 添加海报 -->
-    <rd-dialog
-        :title="addStatus?'添加海报':'编辑海报'"
-        :dialogVisible="addVisible"
-        @handleClose="addVisible = false"
-        @submitForm="submitAddForm('dataForm3')"
-      >
-        <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
-          <template slot="post">
-            <el-button size="small" type="primary">上传海报</el-button>
-          </template>
-        </RdForm>
-      </rd-dialog>
   </div>
 </template>
 
 <script>
-import RdForm from "@/components/RdForm";
 export default {
-  name:"post-manage",
+  name:"signup-answer",
   data(){
     return {
       formOptions: [
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "商品名称",
+          placeholder: "请输入学员姓名",
         },
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "活动名称",
+          placeholder: "请输入学员手机号",
         },
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "海报名称",
+          placeholder: "请输入科目名称",
         }
       ],
       searchForm:{},
       emptyText:"暂无数据",
       tableData:[
-         {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-        },
+        
       ],
       tableKey: [
         {
-          name: "ID主键",
+          name: "主键",
           value: "id",
           fixed: "left",
           width: 80
         },
         {
-          name: "老师名称",
+          name: "学员名称",
           value: "staffName",
         },
         {
-          name: "商品名称",
+          name: "学员手机号",
           value: "goodsName",
         },
         {
-          name: "活动名称",
+          name: "员工名称",
           value: "activityName",
         },
         {
-          name: "海报名称",
+          name: "校区名称",
           value: "posterName",
         },
         {
-          name: "海报图片",
+          name: "科目名称",
           value: "posterPic",
         },
         {
-          name: "分享文案一",
+          name: "遇见问题",
           value: "posterCopyFirst",
         },
         {
-          name: "分享文案二",
+          name: "信息类型",
           value: "posterCopySecond",
-        },
-        {
-          name: "分享文案三",
-          value: "posterCopyThird",
-        },
-        {
-          name: "分享文案四",
-          value: "posterCopyFourth",
-        },
-        {
-          name: "分享文案五",
-          value: "posterCopyFifth",
-        },
-        {
-          name: "创建时间",
-          value: "createAt",
-        },
-        {
-          name: "修改时间",
-          value: "updateAt",
-        },
-        {
-          name: "操作",
-          value: "edit",
-          operate: true,
-          width: 140,
-          fixed: "right"
-        },
+        }
       ],
-       pageConfig: {
+      pageConfig: {
         totalCount: 0,
         currentPage: 1,
         pageSize: 10,
       },
-      addVisible: false,
-      addFormOptions: [
-          
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "请输入海报名称",
-          label: "海报名称"
-        },
-        {
-          prop: "post",
-          element: "el-input",
-          placeholder: "",
-          label: "上传海报",
-          operate: true,
-          initValue: 0
-        },
-        {
-          prop: "roleName",
-          element: "el-select",
-          placeholder: "请选择",
-          label: "所属九块九包邮",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-        {
-          prop: "roleName",
-          element: "el-select",
-          placeholder: "请选择",
-          label: "所属活动",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-        {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案一",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案二",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案三",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案四",
-          type:"textarea",
-          rows: 2
-        },
-           {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案五",
-          type:"textarea",
-          rows: 2
-        }
-      ],
-      addRules:{
-        updateReason: [
-          { required: true, message: "请输入修改事由", trigger: "blur" },
-        ]
-      },
-      addStatus: true
     }
   },
-  components:{
-    RdForm
-  },
-   methods: {
-     onSearch(val){
-       this.searchForm = {
+  methods: {
+    onSearch(val){
+      this.searchForm = {
         ...val
       };
       console.log(val,this.searchForm , 'val---')
+      this.pageConfig.pageNum = 1;
       this.getTableData();
      },
-     getTableData(){
+    getTableData(){
 
-     },
-     pageChange(val) {
+    },
+    pageChange(val) {
       console.log(val,'pagechange')
       this.pageConfig.currentPage = val.page;
       this.pageConfig.showCount = val.limit;
       this.getTableData();
     },
     handleAdd(){
-      this.addVisible = true;
+      
     },
     submitAddForm(formName){
       this.$refs[formName].validate((valid, formData) => {
@@ -284,8 +131,7 @@ export default {
       });
     },
     handleEdit(data){
-      this.addStatus = false;
-      this.addVisible = true;
+      
     },
     handleDelete(row) {
       let info = '海报';
@@ -293,31 +139,31 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
-      })
-        .then(async () => {
-          const res = await this.$fetch("projectType_delete", {
-            typeId: row.typeId,
-            loginUserId,
-          }).then((res) => {
-            if (res) {
-              this.$message({
-                message: "删除成功",
-                type: "success",
-              });
-              setTimeout(() => {
-                this.getTableData();
-              }, 50);
-            }
-          });
-        })
-        .catch(() => {});
+      }).then(async () => {
+        const res = await this.$fetch("projectType_delete", {
+          typeId: row.typeId,
+          loginUserId,
+        }).then((res) => {
+          if (res) {
+            this.$message({
+              message: "删除成功",
+              type: "success",
+            });
+            setTimeout(() => {
+              this.getTableData();
+            }, 50);
+          }
+        });
+      }).catch(() => {
+
+      });
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.post-manage {
+.signupanswer-container {
 
 }
 </style>
