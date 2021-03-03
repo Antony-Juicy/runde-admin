@@ -8,13 +8,14 @@ import apiConfig from "@/fetch/api.js"
 import qs from 'qs'
 // create an axios instance
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
-
 // axios.defaults.withCredentials = true
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 20000 // request timeout
 })
+
+let loadingStatus = true;
 
 const getParam = () => {
   const timestamp = parseInt(new Date().getTime() / 1000)
@@ -26,7 +27,10 @@ const getParam = () => {
 // request interceptor
 service.interceptors.request.use(
   config => {
-    showLoading()
+    if(!config.hideLoading){
+      showLoading()
+    }
+    
     if (config.data && config.data.append) {
       config.data.append('token', getToken())
       config.data.append('loginUserId', common.getUserId())

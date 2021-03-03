@@ -763,8 +763,8 @@ export default {
       });
     },
     openDrawer(data) {
-      console.log(data, "operndrawer");
-      this.drawerId = data.id;
+      
+      this.drawerId = data.idStr;
       this.drawerPhone = data.phone;
       this.drawerTitle = data.studentName || "";
       this.drawerVisible = true;
@@ -793,8 +793,9 @@ export default {
       this.getTableData();
     },
     handelSelect(val) {
-      console.log(val, "valll");
       this.selectedData = val;
+
+      this.currentChange(val.splice(-1)[0])
     },
     getCutdown() {
       this.newArr = this.tableData.map((item) => {
@@ -974,11 +975,11 @@ export default {
             return
           }
           if(!this.subjectId){
-            this.$message.error("请选择咨询项目")
+            this.$message.error("请选择咨询科目")
             return
           }
           if(!this.classId.length){
-            this.$message.error("请选择咨询项目")
+            this.$message.error("请选择咨询班型")
             return
           }
           this.$fetch("chance_my_add", {

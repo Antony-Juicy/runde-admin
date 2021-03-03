@@ -732,8 +732,7 @@ export default {
       });
     },
     openDrawer(data) {
-      console.log(data, "operndrawer");
-      this.drawerId = data.id;
+      this.drawerId = data.idStr;
       this.drawerPhone = data.phone;
       this.drawerTitle = data.studentName || "";
       this.drawerVisible = true;
@@ -762,8 +761,8 @@ export default {
       this.getTableData();
     },
     handelSelect(val) {
-      console.log(val, "valll");
       this.selectedData = val;
+      this.currentChange(val.splice(-1)[0])
     },
     getCutdown() {
       this.newArr = this.tableData.map((item) => {
