@@ -1061,10 +1061,6 @@ export default {
     },
 
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch("chance_my_list", {
         ...this.pageConfig,
         ...this.searchForm,
@@ -1081,9 +1077,6 @@ export default {
           return item;
         });
         this.pageConfig.totalCount = res.data.count;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
 

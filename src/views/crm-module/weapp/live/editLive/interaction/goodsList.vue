@@ -86,10 +86,6 @@ export default {
       this.getTableData();
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".goods-list .el-table",
-      });
       this.$fetch("live_get_live_goods_list", {
         ...this.pageConfig,
         ...params,
@@ -98,16 +94,7 @@ export default {
         this.tableData = res.data.records;
         this.pageConfig.totalCount = res.data.totalCount;
         // this.pageConfig.totalCount = 2;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      }).catch((err) => {
-        console.log(err.response.status,'err----')
-        if(err.response.status == 401){
-          this.emptyText = "您没有权限访问"
-        }
-        loading.close();
-      });
+      })
     },
     handelDelete(id){
          let info = '商品';

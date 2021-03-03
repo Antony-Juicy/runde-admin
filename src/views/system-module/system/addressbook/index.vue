@@ -313,10 +313,6 @@ export default {
     },
     // 获取部门成员列表
     getTableData(params) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch(
         "staff_list",
         params || {
@@ -327,9 +323,6 @@ export default {
         }).then(res => {
           this.tableData = res.data.records;
           this.pageConfig.totalCount = res.data.total;
-          setTimeout(() => {
-            loading.close();
-          }, 200);
         })
     },
     // 获取成员信息

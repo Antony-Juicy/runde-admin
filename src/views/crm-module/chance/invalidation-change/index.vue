@@ -266,10 +266,6 @@ export default {
     },
 
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch("chance_invalid_list", {
         invalidStatus: "Invalid",
         // stayModule:"Lost",
@@ -284,9 +280,6 @@ export default {
           return item;
         });
         this.pageConfig.totalCount = res.data.count;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
     getSelectList() {

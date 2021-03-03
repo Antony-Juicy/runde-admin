@@ -108,10 +108,6 @@ export default {
       this.drawerVisible1 = true;
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".answer .el-table",
-      });
       this.$fetch("live_answer_list", {
         ...this.pageConfig,
         ...params,
@@ -119,15 +115,7 @@ export default {
       }).then((res) => {
         this.tableData = res.data.records;
         this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      }).catch(err => {
-        loading.close();
-        if(err.response.status == 401){
-          this.emptyText = "您没有权限访问"
-        }
-      });
+      })
     },
   },
 };

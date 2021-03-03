@@ -157,10 +157,6 @@ export default {
       this.getTableData(this.orderForm);
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".personal-list .el-table",
-      });
       this.$fetch("live_page_all_personal_list", {
         ...this.pageConfig,
         ...this.searchForm,
@@ -170,15 +166,7 @@ export default {
       }).then((res) => {
         this.tableData = res.data.records;
         this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      }).catch(err => {
-        loading.close();
-        if(err.response.status == 401){
-          this.emptyText = "您没有权限访问"
-        }
-      });
+      })
     },
     gotoOrder(val){
       this.$router.push({

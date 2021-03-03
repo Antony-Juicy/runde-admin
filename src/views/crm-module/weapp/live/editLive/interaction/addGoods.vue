@@ -131,10 +131,6 @@ export default {
       this.selectedData = val;
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".add-goods .el-table",
-      });
       this.$fetch("live_get_live_add_goods_list", {
         ...this.pageConfig,
         ...this.formInline,
@@ -143,15 +139,7 @@ export default {
       }).then((res) => {
         this.tableData = res.data.records;
         this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      }).catch(err => {
-        loading.close();
-        if(err.response.status == 401){
-          this.emptyText = "您没有权限访问"
-        }
-      });
+      })
     },
     handelCancel(){
       this.$emit("close")
