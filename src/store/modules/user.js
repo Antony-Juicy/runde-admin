@@ -10,7 +10,9 @@ const state = {
   introduction: '',
   roles: [],
   osscdn: '',
-  userId:''
+  userId:'',
+  endLoading: 0,
+  endText:"暂无数据"
 }
 
 const mutations = {
@@ -34,10 +36,24 @@ const mutations = {
   },
   SET_USERID: (state, userId) => {
     state.userId = userId
-  }
+  },
+  SET_TABLE_IMAGE: (state, endLoading) => {
+    state.endLoading = endLoading
+  },
+  SET_TABLE_TEXT: (state, endText) => {
+    state.endText = endText
+  },
 }
 
 const actions = {
+  // 公共表格无数据时图片显示
+  setTableImg({commit},data){
+    commit('SET_TABLE_IMAGE', data)
+  },
+  // 公共表格无数据时文字显示
+  setTableText({commit},data){
+    commit('SET_TABLE_TEXT', data)
+  },
   // user login
   login({ commit }, userInfo) {
     const { username, password, VerifyCode, slatkey } = userInfo
@@ -140,41 +156,6 @@ const actions = {
     })
   },
 
-  getUserInfo({
-    commit
-  }, data) {
-    return new Promise((resolve, reject) => {
-      // getUserInfo(data).then(response => {
-      //   resolve(response)
-      // }).catch(error => {
-      //   reject(error)
-      // })
-    })
-  },
-  setUserInfo({
-    commit
-  }, data) {
-    return new Promise((resolve, reject) => {
-      // setUserInfo(data).then(response => {
-      //   const { msg } = response
-      //   resolve(msg)
-      // }).catch(error => {
-      //   reject(error)
-      // })
-    })
-  },
-  delUserInfo({
-    commit
-  }, data) {
-    return new Promise((resolve, reject) => {
-      // delUserInfo(data).then(response => {
-      //   const { msg } = response
-      //   resolve(msg)
-      // }).catch(error => {
-      //   reject(error)
-      // })
-    })
-  }
 }
 
 export default {

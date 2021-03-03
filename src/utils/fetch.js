@@ -26,6 +26,7 @@ const getParam = () => {
 // request interceptor
 service.interceptors.request.use(
   config => {
+    showLoading()
     if (config.data && config.data.append) {
       config.data.append('token', getToken())
       config.data.append('loginUserId', common.getUserId())
@@ -54,6 +55,7 @@ service.interceptors.request.use(
 // response interceptor
 service.interceptors.response.use(
   response => {
+      hideLoading()
     const res = response.data
     // if the custom code is not 1, it is judged as an error.
     if (res.code !== 200 && res.code !== 1) {
@@ -67,6 +69,7 @@ service.interceptors.response.use(
           type: 'error',
           duration: 3 * 1000
         })
+        store.dispatch("user/setTableText","您没有权限访问")
       } else if (res.code == 402) {
         let msg = '您的登录已过期，请重新登录。'
         // to re-login
@@ -118,6 +121,7 @@ service.interceptors.response.use(
         type: 'error',
         duration: 3 * 1000
       })
+      store.dispatch("user/setTableText","您没有权限访问")
     } else if (status === 402) {
       let msg = '您的登录已过期，请重新登录。'
       // to re-login
