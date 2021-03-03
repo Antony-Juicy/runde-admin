@@ -232,9 +232,9 @@ export default {
     }
   },
   watch: {
-    endLoading(newVal){
-      console.log(newVal,'endLoading-------------')
-    },
+    // endLoading(newVal){
+    //   console.log(newVal,'endLoading-------------')
+    // },
     emptyText(newVal){
       store.dispatch("user/setTableText", newVal)
     }

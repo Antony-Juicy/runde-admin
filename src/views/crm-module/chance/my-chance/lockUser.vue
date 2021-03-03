@@ -312,11 +312,12 @@ export default {
         {
           name: "最近回访",
           value: "recentFeedbackTime",
-          // width: 100
+          width: 135
         },
         {
           name: "下次回访",
           value: "nextDate",
+          width: 135
         },
         {
           name: "跟进状态",
@@ -325,6 +326,7 @@ export default {
         {
           name: "创建时间",
           value: "createAt",
+          width: 135
         },
         {
           name: "呼叫状态",

@@ -338,7 +338,7 @@ export default {
       tableKey: [
         {
           name: "姓名",
-          value: "studentName",
+          value: "studentName"
         },
         {
           name: "手机号",
@@ -364,11 +364,12 @@ export default {
         {
           name: "最近回访",
           value: "recentFeedbackTime",
-          // width: 100
+          width: 135
         },
         {
           name: "下次回访",
           value: "nextDate",
+          width: 135
         },
         {
           name: "跟进状态",
@@ -377,6 +378,7 @@ export default {
         {
           name: "创建时间",
           value: "createAt",
+          width: 135
         },
         {
           name: "呼叫状态",
@@ -860,7 +862,7 @@ export default {
       this.productId = "";
       this.subjectId = "";
       this.classId = "";
-      this.$refs[formName].resetFields();
+      this.$refs[formName]&&this.$refs[formName].resetFields();
       if(formName == 'dataForm4'){
         this.importCampusId = '';
         this.productOne = '';
@@ -1169,6 +1171,9 @@ export default {
     .el-cascader {
       width: 100%;
     }
+    // .el-table__body-wrapper {
+    //   font-size: 12px;
+    // }
   }
 }
 </style>

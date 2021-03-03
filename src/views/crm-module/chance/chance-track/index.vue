@@ -166,10 +166,9 @@ export default {
       })
     },
     handleClick(tab, event) {
-      console.log(tab, event);
      
       this.getTableData({
-        opportunityId: Number(tab._props.name),
+        opportunityId: tab.name,
       });
     },
     getTableData(param) {
