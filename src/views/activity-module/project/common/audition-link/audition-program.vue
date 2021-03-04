@@ -55,7 +55,7 @@
 <script>
 import RdForm from "@/components/RdForm";
 export default {
-  name:"post-manage",
+  name:"link-manage",
   data(){
     return {
       formOptions: [

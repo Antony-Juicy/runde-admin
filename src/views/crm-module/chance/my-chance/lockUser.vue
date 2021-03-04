@@ -762,7 +762,8 @@ export default {
     },
     handelSelect(val) {
       this.selectedData = val;
-      this.currentChange(val.splice(-1)[0])
+      let data = [...val];
+      this.currentChange(data.splice(-1)[0])
     },
     getCutdown() {
       this.newArr = this.tableData.map((item) => {

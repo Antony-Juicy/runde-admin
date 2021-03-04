@@ -1,7 +1,7 @@
 export default {
     getMenuList: {url: '/admin/sec/menu/list', method: 'post'},
     getMenuTreeList:  {url: '/admin/sec/menu/getallmenutree', method: 'get'},
-    system_getCode: {url: '/admin/generate/serial', method: 'post'},
+    system_getCode: {url: '/admin/generate/serial', method: 'post', hideLoading: true},
     menu_save: {url:'/admin/sec/menu/save', method: 'post'},
     menu_edit: {url:'/admin/sec/menu/edit', method: 'post'},
     menu_delete: {url:'/admin/sec/menu/del', method: 'post'},

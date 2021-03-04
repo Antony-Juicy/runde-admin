@@ -794,8 +794,8 @@ export default {
     },
     handelSelect(val) {
       this.selectedData = val;
-
-      this.currentChange(val.splice(-1)[0])
+      let data = [...val];
+      this.currentChange(data.splice(-1)[0])
     },
     getCutdown() {
       this.newArr = this.tableData.map((item) => {
@@ -810,6 +810,7 @@ export default {
     },
     // 成单弹窗打开
     handleOrder() {
+      console.log(this.selectedData,'this.selectedData---')
       if (!this.selectedData.length) {
         this.$message.warning("请勾选要成单的机会！");
         return;
