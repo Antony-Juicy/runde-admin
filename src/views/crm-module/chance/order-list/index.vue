@@ -51,33 +51,33 @@
         label-suffix=":"
       >
         <el-form-item label="机会来源" prop="nextTime">
-          {{ selectedData.saleSource }}
+          {{ selectedData&&selectedData.saleSource }}
         </el-form-item>
         <el-form-item label="活动名称" prop="detail">
-          {{ selectedData.labelInfoName }}
+          {{ selectedData&&selectedData.labelInfoName }}
         </el-form-item>
         <el-row :gutter="5">
           <el-col :span="12">
             <el-form-item label="注册人" prop="detail">
-              {{ selectedData.createStaffName }}
+              {{ selectedData&&selectedData.createStaffName }}
             </el-form-item>
           </el-col>
           <el-col :span="12"
             ><el-form-item label="赛道" prop="detail">
-              {{ selectedData.studentName }}
+              {{ selectedData&&selectedData.studentName }}
             </el-form-item></el-col
           >
         </el-row>
         <el-row :gutter="5">
           <el-col :span="12">
             <el-form-item label="学员姓名" prop="detail">
-              {{ selectedData.studentName }}
+              {{ selectedData&&selectedData.studentName }}
             </el-form-item>
           </el-col>
           <el-col :span="12"
             >
             <el-form-item label="学历" prop="detail">
-              {{ selectedData.eduBackground }}
+              {{ selectedData&&selectedData.eduBackground }}
             </el-form-item>
             </el-col
           >
@@ -85,18 +85,18 @@
         <el-row :gutter="5">
           <el-col :span="12"
             ><el-form-item label="咨询项目" prop="detail">
-              {{ selectedData.enquireProductNameOne }}
+              {{ selectedData&&selectedData.enquireProductNameOne }}
             </el-form-item></el-col
           >
           <el-col :span="12">
             <el-form-item label="咨询科目" prop="detail">
-              {{ selectedData.enquireSubjectNameOne }}
+              {{ selectedData&&selectedData.enquireSubjectNameOne }}
             </el-form-item>
           </el-col>
         </el-row>
         <el-form-item label="咨询班型" prop="detail">
               {{
-                selectedData.enquireClassOne
+                selectedData&&selectedData.enquireClassOne
               }}
             </el-form-item>
       </el-form>

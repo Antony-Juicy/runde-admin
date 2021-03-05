@@ -640,7 +640,6 @@ export default {
   watch: {
     newFormOptions(newVal) {
       this.formOptions = newVal;
-      console.log(newVal, "newVal--");
       this.handelAddOptions(newVal);
     },
   },
@@ -833,8 +832,8 @@ export default {
           let currentMarket = this.staffArr.find(item => (item.value == formData.marketStaffId));
           this.$fetch("chance_my_transform",{
             ...formData,
-            opportunityId: this.selectedData[0].id,
-            Normal:'Normal',
+            opportunityId: this.selectedData[0].idStr,
+            status:'Normal',
             campusName: currentCampus&&currentCampus.label,
             campusNature: currentCampus&&currentCampus.nature,
             marketName: currentMarket&&currentMarket.label,

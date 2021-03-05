@@ -58,7 +58,7 @@
       :width="'990px'"
       @handleClose="distributeVisible = false"
     >
-      <distribution :opportunityIds="opportunityIds" @close="distributeVisible = false" v-if="distributeVisible"/>
+      <distribution :opportunityIds="opportunityIds" @refresh="getTableData" @close="distributeVisible = false" v-if="distributeVisible"/>
     </rd-dialog>
   </div>
 </template>

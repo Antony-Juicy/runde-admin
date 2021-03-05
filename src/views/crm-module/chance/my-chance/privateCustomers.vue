@@ -679,7 +679,6 @@ export default {
   watch: {
     newFormOptions(newVal) {
       this.formOptions = newVal;
-      console.log(newVal, "newVal--");
       this.handelAddOptions(newVal);
     },
   },
@@ -885,7 +884,7 @@ export default {
           this.$fetch("chance_my_transform", {
             ...formData,
             opportunityId: this.selectedData[0].idStr,
-            Normal: "Normal",
+            status: "Normal",
             campusName: currentCampus.label,
             campusNature: currentCampus.nature,
             marketName: currentMarket.label,

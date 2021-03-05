@@ -267,6 +267,7 @@ export default {
           name: "类型",
           value: "menuType",
           operate: true,
+          width: 80
         },
         {
           name: "路径",
@@ -277,12 +278,13 @@ export default {
         {
           name: "状态",
           value: "status",
-          operate: true
+          operate: true,
+           width: 80
         },
         {
           name: "排序",
           value: "menuOrder",
-          // width: 100
+          width: 60
         },
         {
           name: "备注",
