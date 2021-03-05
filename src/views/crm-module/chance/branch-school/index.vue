@@ -58,7 +58,7 @@
       :width="'990px'"
       @handleClose="distributeVisible = false"
     >
-      <distribution :opportunityIds="opportunityIds" @close="distributeVisible = false" v-if="distributeVisible"/>
+      <distribution :opportunityIds="opportunityIds" @refresh="getTableData" @close="distributeVisible = false" v-if="distributeVisible"/>
     </rd-dialog>
   </div>
 </template>
@@ -223,20 +223,6 @@ export default {
         },
       ],
       tableData: [
-        {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-        },
-        {
-          id: 2,
-          name: "飞翔的荷兰人2",
-          cutdown: new Date().getTime(),
-          phone: "17092026183",
-        },
-        { id: 3, name: "飞翔的荷兰人1", phone: "18892026183" },
       ],
       tableKey: [
         {

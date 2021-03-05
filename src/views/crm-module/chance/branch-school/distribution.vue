@@ -137,6 +137,7 @@ export default {
         if(res.code == 200){
           this.$message.success("操作成功")
           this.$emit("close");
+          this.$emit("refresh");
         }
       })
     },

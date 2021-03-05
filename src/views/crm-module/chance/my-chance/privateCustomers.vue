@@ -72,6 +72,7 @@
         :formOptions="orderFormOptions"
         :rules="orderRules"
         ref="dataForm"
+        v-if="orderVisible"
       />
     </rd-dialog>
 
@@ -86,6 +87,7 @@
         :formOptions="invalidFormOptions"
         :rules="invalidRules"
         ref="dataForm2"
+        v-if="invalidVisible"
       />
     </rd-dialog>
 
@@ -96,7 +98,7 @@
       @handleClose="handleClose('dataForm3')"
       @submitForm="submitAddForm('dataForm3')"
     >
-      <RdForm :formOptions="addFormOptions" :rules="addRules" ref="dataForm3">
+      <RdForm :formOptions="addFormOptions" :rules="addRules" ref="dataForm3" v-if="addVisible">
         <template slot="product">
           <el-select
             v-model="productId"
@@ -679,7 +681,6 @@ export default {
   watch: {
     newFormOptions(newVal) {
       this.formOptions = newVal;
-      console.log(newVal, "newVal--");
       this.handelAddOptions(newVal);
     },
   },
@@ -794,8 +795,8 @@ export default {
     },
     handelSelect(val) {
       this.selectedData = val;
-
-      this.currentChange(val.splice(-1)[0])
+      let data = [...val];
+      this.currentChange(data.splice(-1)[0])
     },
     getCutdown() {
       this.newArr = this.tableData.map((item) => {
@@ -810,6 +811,7 @@ export default {
     },
     // 成单弹窗打开
     handleOrder() {
+      console.log(this.selectedData,'this.selectedData---')
       if (!this.selectedData.length) {
         this.$message.warning("请勾选要成单的机会！");
         return;
@@ -847,7 +849,7 @@ export default {
           this.orderFormOptions[3].initValue = saleSource_text;
           this.orderFormOptions[4].options = staffOptions;
           this.orderFormOptions[4].initValue = marketStaffId;
-          this.orderVisible = true;
+           this.orderVisible = true;
         });
       }
 
@@ -884,7 +886,7 @@ export default {
           this.$fetch("chance_my_transform", {
             ...formData,
             opportunityId: this.selectedData[0].idStr,
-            Normal: "Normal",
+            status: "Normal",
             campusName: currentCampus.label,
             campusNature: currentCampus.nature,
             marketName: currentMarket.label,
@@ -894,6 +896,7 @@ export default {
               this.$message.success("保存成功");
               this.handleClose();
               this.getTableData();
+              this.$emit("refresh");
             }
           });
         }

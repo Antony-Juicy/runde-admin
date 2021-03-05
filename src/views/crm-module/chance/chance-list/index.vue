@@ -9,7 +9,7 @@
         :fixedTwoRow="fixedTwoRow"
         :pageConfig.sync="pageConfig"
         :filterColumn="true"
-        :tbodyHeight="600"
+        :tbodyHeight="650"
         @select="handleSelect"
         @pageChange="pageChange"
       >

@@ -40,7 +40,7 @@ export function uploadOss(uploaderInput, isMult, objConfig = {}) {
 
             // 三：点击事件 文件上传     // 获得的图片上传的地址：https://rdjiaowu.oss-cn-shenzhen.aliyuncs.com/ + key 
             uploader.bind('FilesAdded', function (uploader, files) { // 限制提交的最多的张数是多少
-                // console.log("点击事件 文件上传",files);
+                console.log("点击事件 文件上传",files);
                 
                 options.files = files;
                 defaultSetting.chooseFile = files[0];
@@ -61,10 +61,12 @@ export function uploadOss(uploaderInput, isMult, objConfig = {}) {
             });
             //五：上传成功
             uploader.bind('FileUploaded', function (up, file, info) {
+                console.log(up, file, info,'info')
                 if(info.status === 200) {
                     if(!isMult) {
                         // 非多选的情况下 可以不要reload
                         // console.log("isMult",isMult );
+                        console.log(uploadConfig,'uploadConfig---')
                         resolve(uploadConfig);
                     }else{
                         // 这一整块的内容 是为了图片管理模块 内部批量上传网页的图片处理的 基本不改动
@@ -114,7 +116,7 @@ function set_upload_param(up, filename, ret, base64tofile){
     }
     up.start();
 }
-function reloadData() {
+export function reloadData() {
     
     multipart_params = {};
     baseKey = '';
