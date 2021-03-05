@@ -18,10 +18,10 @@
             </rd-table>
         </div>
         <fullDialog class="addEditChapter" :title="`${titleAddOrEdit}`" v-model="addEditVisiable" @change="addEditVisiable = false">
-            <addEditChapter ref="addEditChapter" v-if="addEditVisiable" @close="addEditVisiable = false" @refresh="refresh"></addEditChapter>
+            <addEditChapter ref="addEditChapter" v-if="addEditVisiable" @close="addEditVisiable = false" @refresh="refresh" :courseClass="courseClass" :course="course"></addEditChapter>
         </fullDialog>
         <fullDialog class="chapterSection" title="科目管理 > 章节目录 > 查看小节" v-model="chapterSectionVisible" @change="handleSectionClose">
-            <chapterSection v-if="chapterSectionVisible" @close="handleSectionClose"></chapterSection>
+            <chapterSection v-if="chapterSectionVisible" @close="handleSectionClose" :courseClass="courseClass" :course="course" :chapter="chapter"></chapterSection>
         </fullDialog>
     </div>
 </template>
@@ -34,7 +34,16 @@ import chapterSection from './chapterSection'
 import addEditChapter from './addEditChapter'
 import { scrollTo } from "@/utils/scroll-to";
 export default {
-
+    props: {
+        courseClass: {
+            type: Object,
+            default: () => { return {} }
+        },
+        course: {
+            type: Object,
+            default: () => { return {} }
+        }
+    },
     components: { fullDialog, chapterSection, addEditChapter },
     data() {
 
@@ -107,7 +116,8 @@ export default {
             titleAddOrEdit: "创建",
             searchForm: {}, //搜索栏信息
             addEditVisiable: false,
-            chapterSectionVisible: false
+            chapterSectionVisible: false,
+            chapter:{}
         };
     },
 
@@ -139,8 +149,8 @@ export default {
                         ...this.pageConfig,
                         ...this.searchForm,
                         ...params,
-                        parentId:0,
-                        courseId: this.$store.state.onlineCourse.courseId, // 查询目录 courseId 查询所属科目
+                        parentId: 0,
+                        courseId: this.course.courseId, // 查询目录 courseId 查询所属科目
                     }
                 ).then((res) => {
                     this.tableData = res.data.records.map((item) => {
@@ -173,13 +183,10 @@ export default {
         },
         handleSection(data) {
             this.chapterSectionVisible = true
-            this.$store.commit('onlineCourse/setCourseChapterId', data.courseChapterId)
-            this.$store.commit('onlineCourse/setCourseChapterName', data.courseChapterName)
-
+            this.chapter = data
         },
         handleSectionClose() {
             this.chapterSectionVisible = false;
-            this.$store.dispatch('onlineCourse/clearChapter')
         },
         handleDelete(data) {
             let info = "章节"
@@ -247,6 +254,9 @@ export default {
             .full-dialog-container {
                 top: 0;
                 bottom: 0;
+            }
+            &.el-loading-parent--relative {
+                position: initial !important;
             }
         }
         .chapterSection {

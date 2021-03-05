@@ -18,10 +18,10 @@
             </rd-table>
         </div>
         <fullDialog class="addEditChapter" :title="`${titleAddOrEdit}`" v-model="addEditVisiable" @change="addEditVisiable = false">
-            <addEditChapter ref="addEditChapter" v-if="addEditVisiable" @close="addEditVisiable = false" @refresh="refresh"></addEditChapter>
+            <addEditChapter :book="book" :subject="subject" ref="addEditChapter" v-if="addEditVisiable" @close="addEditVisiable = false" @refresh="refresh"></addEditChapter>
         </fullDialog>
         <fullDialog class="chapterSection" title="科目管理 > 章节目录 > 查看小节" v-model="chapterSectionVisible" @change="handleSectionClose">
-            <chapterSection v-if="chapterSectionVisible" @close="handleSectionClose"></chapterSection>
+            <chapterSection :book="book" :subject="subject" :chapter="chapter" v-if="chapterSectionVisible" @close="handleSectionClose"></chapterSection>
         </fullDialog>
     </div>
 </template>
@@ -36,6 +36,16 @@ import { scrollTo } from "@/utils/scroll-to";
 export default {
 
     components: { fullDialog, chapterSection, addEditChapter },
+    props: {
+        book: {
+            type: Object,
+            default: () => { return {} }
+        },
+         subject: {
+            type: Object,
+            default: () => { return {} }
+        }
+    },
     data() {
 
         return {
@@ -107,7 +117,8 @@ export default {
             titleAddOrEdit: "创建",
             searchForm: {}, //搜索栏信息
             addEditVisiable: false,
-            chapterSectionVisible: false
+            chapterSectionVisible: false,
+            chapter:{}
         };
     },
 
@@ -140,7 +151,7 @@ export default {
                         ...this.searchForm,
                         ...params,
                         parentId:0,
-                        bookSubjectId: this.$store.state.book.bookSubjectId, // 查询目录 bookSubjectId 查询所属科目
+                        bookSubjectId: this.subject.bookSubjectId, // 查询目录 bookSubjectId 查询所属科目
                     }
                 ).then((res) => {
                     this.tableData = res.data.records.map((item) => {
@@ -174,13 +185,10 @@ export default {
         },
         handleSection(data) {
             this.chapterSectionVisible = true
-            this.$store.commit('book/setBookChapterId', data.bookChapterId)
-            this.$store.commit('book/setBookChapterName', data.bookChapterName)
-
+            this.chapter = data
         },
         handleSectionClose() {
             this.chapterSectionVisible = false;
-            this.$store.dispatch('book/clearChapter')
         },
         handleDelete(data) {
             let info = "章节"
@@ -248,6 +256,9 @@ export default {
             .full-dialog-container {
                 top: 0;
                 bottom: 0;
+            }
+            &.el-loading-parent--relative {
+                position: initial !important;
             }
         }
         .chapterSection {

@@ -1,6 +1,6 @@
 <!-- 创建|编辑 小节 -->
 <template>
-    <div class='addEditSection'>
+    <div class='addEditSection' id="addEditSection">
         <RdForm :formOptions="addFormOptions" :rules="addRules" :formLabelWidth="'150px'" ref="dataForm"></RdForm>
         <div class="btn-wrapper">
             <el-button v-if="mode == 'add'" type="primary" size="small" :loading="btnLoading" @click="handleAdd" v-prevent-re-click="2000">立即创建</el-button>
@@ -15,8 +15,22 @@
 
 import RdForm from "@/components/RdForm";
 import { scrollTo } from "@/utils/scroll-to";
+import { Loading } from 'element-ui';
 export default {
-
+props: {
+        courseClass: {
+            type: Object,
+            default: () => { return {} }
+        },
+        course: {
+            type: Object,
+            default: () => { return {} }
+        },
+         chapter: {
+            type: Object,
+            default: () => { return {} }
+        }
+    },
     components: { RdForm },
     data() {
 
@@ -29,7 +43,7 @@ export default {
                     label: "班级名",
                     disabled: true,
                     // ! 数据来源 科目单元信息
-                    initValue: this.$store.state.onlineCourse.courseClassName,
+                    initValue: this.courseClass.courseClassName,
                 },
                 {
                     prop: "courseName",
@@ -38,7 +52,7 @@ export default {
                     label: "科目名称",
                     disabled: true,
                     // ! 数据来源 科目单元信息
-                    initValue: this.$store.state.onlineCourse.courseName,
+                    initValue: this.course.courseName,
                 },
                 {
                     prop: "courseChapterNameParent",
@@ -47,7 +61,7 @@ export default {
                     label: "章名称",
                     disabled: true,
                     // ! 数据来源 章节单元信息
-                    initValue: this.$store.state.onlineCourse.courseChapterName,
+                    initValue: this.chapter.courseChapterName,
                 },
                 {
                     prop: "courseChapterName",
@@ -112,8 +126,8 @@ export default {
                     this.$fetch("online_course_add_section", {
                         ...data,
                         loginUserId: this.$common.getUserId(),
-                        courseId: this.$store.state.onlineCourse.courseId, // 科目id
-                        parentId: this.$store.state.onlineCourse.courseChapterId, // 章节id
+                        courseId: this.course.courseId, // 科目id
+                        parentId: this.chapter.courseChapterId, // 章节id
                     }).then((res) => {
                         if (res.code == 200) {
                             this.btnLoading = false;
@@ -134,8 +148,8 @@ export default {
                     this.$fetch("online_course_update_section", {
                         ...data,
                         loginUserId: this.$common.getUserId(),
-                        courseId: this.$store.state.onlineCourse.courseId, // 科目id
-                        parentId: this.$store.state.onlineCourse.courseChapterId, // 章节id
+                        courseId: this.course.courseId, // 科目id
+                        parentId: this.chapter.courseChapterId, // 章节id
                         courseChapterId: this.courseChapterId,
                     }).then((res) => {
                         if (res.code == 200) {
@@ -162,6 +176,10 @@ export default {
         },
         getChapterInfo() {
             if (this.mode == 'save') {
+                let loadingInstance = Loading.service({
+                    target: document.querySelector('#addEditSection'),
+                    lock: true,
+                });
                 this.$fetch("online_course_chapter_getInfo", {
                     courseChapterId: this.courseChapterId,
                     loginUserId: this.$common.getUserId(),
@@ -169,6 +187,7 @@ export default {
                     this.addFormOptions.forEach((item) => {
                         item.initValue = res.data[item.prop];
                     })
+                    loadingInstance.close()
                     this.$refs.dataForm.addInitValue();
                 })
             }

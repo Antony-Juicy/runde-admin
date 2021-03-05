@@ -1,6 +1,6 @@
 <!--  -->
 <template>
-    <div class='addEditClass'>
+    <div class='addEditClass' id="addEditClass">
         <RdForm :formOptions="addFormOptions" :rules="addRules" :formLabelWidth="'150px'" ref="dataForm">
             <template slot="classType">
                 <el-radio v-model="classType" label="Charge">
@@ -41,6 +41,7 @@ import RdForm from "@/components/RdForm";
 import UploadOss from "@/components/UploadOss";
 import RdEditor from "@/components/RdEditor";
 import { scrollTo } from "@/utils/scroll-to";
+import { Loading } from 'element-ui';
 export default {
 
 
@@ -249,9 +250,9 @@ export default {
             this.courseClassId = courseClassId;
 
         },
-        getClassInfo() {
+        async getClassInfo() {
             if (this.mode == 'save') {
-                this.$fetch("online_course_class_getInfo", {
+                await this.$fetch("online_course_class_getInfo", {
                     courseClassId: this.courseClassId,
                     loginUserId: this.$common.getUserId(),
                 }).then((res) => {
@@ -352,6 +353,10 @@ export default {
     },
 
     async mounted() {
+        let loadingInstance = Loading.service({
+            target: document.querySelector('#addEditClass'),
+            lock: true,
+        });
         scrollTo(0, 800);
         // 项目类型 选项来源后台数据，使用请求返回的数值组装表单内容
         await this.$fetch("projectType_normalList", {
@@ -371,21 +376,14 @@ export default {
         });
         await this.$fetch("config_get_teachers_list", {
             loginUserId: this.$common.getUserId(),
-        }).then((res) => {
-            // this.addFormOptions.splice(5, 0, {
-            //     prop: "teacherArray",
-            //     element: "el-select",
-            //     placeholder: "请选择",
-            //     label: "授课讲师",
-            //     filterable: true,
-            //     multiple: true,
-            //     options:
-            // });
+        }).then(async (res) => {
             this.teacherArrayOptions = res.data.map((item) => ({
                 label: item.teacherName,
                 value: JSON.stringify(item)
             }))
-            this.getClassInfo()
+           
+            await this.getClassInfo()
+             loadingInstance.close();
         })
 
     },

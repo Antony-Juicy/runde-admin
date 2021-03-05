@@ -10,7 +10,7 @@
             <!-- 表格主体 -->
             <rd-table :tableData="tableData" :tableKey="tableKey" :pageConfig.sync="pageConfig" fixedTwoRow @pageChange="pageChange">
                 <template slot="defaultImageUrl" slot-scope="scope">
-                    <el-image style="width: 100px; height: 100px" :src="scope.row.defaultImageUrl"></el-image>
+                    <el-image style="width: 100px; height: 100px" :src="scope.row.defaultImageUrl" fit="contain"></el-image>
                 </template>
                 <template slot="enrolment" slot-scope="scope">
                     <div>(实)&nbsp;&nbsp;{{scope.row.realEnrolment}}</div>
@@ -27,10 +27,10 @@
             </rd-table>
         </div>
         <fullDialog class="addEditCourse" :title="`${titleAddOrEdit}`" :inner="true" v-model="addEditVisible" @change="addEditVisible = false">
-            <addEditCourse ref="addEditCourse" v-if="addEditVisible" @close="addEditVisible = false" @refresh="refresh"></addEditCourse>
+            <addEditCourse ref="addEditCourse" :courseClass="nextCourseClass" v-if="addEditVisible" @close="addEditVisible = false" @refresh="refresh"></addEditCourse>
         </fullDialog>
         <fullDialog class="chapter" title="科目管理 > 章节目录" v-model="chapterVisible" @change="handleChapterClose">
-            <chapter v-if="chapterVisible" @close="handleChapterClose"></chapter>
+            <chapter v-if="chapterVisible" @close="handleChapterClose" :courseClass="nextCourseClass" :course="course"></chapter>
         </fullDialog>
     </div>
 </template>
@@ -146,7 +146,9 @@ export default {
             titleAddOrEdit: "创建",
             searchForm: {}, //搜索栏信息
             addEditVisible: false,
-            chapterVisible: false
+            chapterVisible: false,
+            course: {},
+            nextCourseClass: {}
         };
     },
     components: { fullDialog, chapter, addEditCourse },
@@ -223,9 +225,12 @@ export default {
             this.titleAddOrEdit = '创建科目';
             this.addEditVisible = true
             // 设置创建科目的一些额外信息
-            // ! 由于只有班级进入时才可能出现新增按钮 所以 this.courseClass 是必然有值的
-            this.$store.commit('onlineCourse/setCourseClassType', { typeId: this.courseClass.typeId, typeName: this.courseClass.typeName })
-            this.$store.commit('onlineCourse/setCourseClassId', this.courseClass.courseClassId)
+            this.nextCourseClass = {
+                typeName: this.courseClass.typeName,
+                typeId: this.courseClass.typeId,
+                courseClassId: this.courseClass.courseClassId,
+                courseClassName: this.courseClass.courseClassName,
+            }
             this.$nextTick(() => {
                 this.$refs.addEditCourse.initGetConfig = true
             })
@@ -233,9 +238,12 @@ export default {
         handleEdit(data) {
             this.titleAddOrEdit = '编辑科目';
             this.addEditVisible = true
-            // ! 编辑科目时 班级数据来源以科目附带信息为准
-            this.$store.commit('onlineCourse/setCourseClassType', { typeId: data.typeId, typeName: data.typeName })
-            this.$store.commit('onlineCourse/setCourseClassId', data.courseClassId)
+            this.nextCourseClass = {
+                typeName: data.typeName,
+                typeId: data.typeId,
+                courseClassId: data.courseClassId,
+                courseClassName: data.courseClassName,
+            }
             this.$nextTick(() => {
                 this.$refs.addEditCourse.initGetConfig = true
                 this.$refs.addEditCourse.initFormData(data.courseId);
@@ -268,13 +276,16 @@ export default {
         },
         handleChapter(data) {
             this.chapterVisible = true
-            this.$store.commit('onlineCourse/setCourseName', data.courseName)
-            this.$store.commit('onlineCourse/setCourseClassName', data.courseClassName)
-            this.$store.commit('onlineCourse/setCourseId', data.courseId)
+            this.course = data
+            this.nextCourseClass = {
+                typeName: data.typeName,
+                typeId: data.typeId,
+                courseClassId: data.courseClassId,
+                courseClassName: data.courseClassName,
+            }
         },
         handleChapterClose() {
             this.chapterVisible = false
-            this.$store.dispatch('onlineCourse/clearCourse')
         },
         refresh(val) {
             this.getTableData({
@@ -343,6 +354,11 @@ export default {
         .chapter {
             .full-dialog-container .content {
                 background: #f0f2f5;
+            }
+        }
+        .addEditCourse {
+            &.el-loading-parent--relative {
+                position: initial !important;
             }
         }
     }

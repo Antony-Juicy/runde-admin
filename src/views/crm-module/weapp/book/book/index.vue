@@ -11,7 +11,7 @@
             <!-- 表格主体 -->
             <rd-table :tableData="tableData" :tableKey="tableKey" :pageConfig.sync="pageConfig" fixedTwoRow @pageChange="pageChange">
                 <template slot="bookImageUrl" slot-scope="scope">
-                    <el-image style="width: 100px; height: 100px" :src="scope.row.bookImageUrl"></el-image>
+                    <el-image style="width: 100px; height: 100px" :src="scope.row.bookImageUrl" fit="contain"></el-image>
                 </template>
                 <template slot="bookTeacherArray" slot-scope="scope">
                     <span class="class-teacher" v-for="(item,index) in scope.row.bookTeacherArray" :key="index">{{item.teacherName}}</span>
@@ -307,6 +307,9 @@ export default {
             }
             .full-dialog-container .content {
                 background: #fff !important;
+            }
+            &.el-loading-parent--relative {
+                position: initial !important;
             }
         }
         // 摇摆嵌套

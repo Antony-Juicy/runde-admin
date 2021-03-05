@@ -11,7 +11,7 @@
             <rd-table :tableData="tableData" :tableKey="tableKey" :pageConfig.sync="pageConfig" fixedTwoRow @pageChange="pageChange">
 
                 <template slot="teacherPhoto" slot-scope="scope">
-                    <el-image style="width: 100px; height: 100px" :src="scope.row.teacherPhoto"></el-image>
+                    <el-image style="width: 100px; height: 100px" :src="scope.row.teacherPhoto" fit="contain"></el-image>
                 </template>
                 <template slot="edit" slot-scope="scope">
                     <el-button @click="handleEdit(scope.row)" type="text" size="small">查阅/编辑</el-button>

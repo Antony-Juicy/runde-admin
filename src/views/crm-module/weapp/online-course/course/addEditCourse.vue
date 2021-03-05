@@ -1,6 +1,6 @@
 <!-- 创建|编辑 科目 -->
 <template>
-    <div class='addEditCourse'>
+    <div class='addEditCourse' id="addEditCourse">
         <RdForm :formOptions="addFormOptions" :rules="addRules" :formLabelWidth="'150px'" ref="dataForm">
             <template slot="defaultImageUrl">
                 <Upload-oss v-if="uploadOssElem" :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }" :src.sync="defaultImageUrl" :initGetConfig="initGetConfig" @srcChangeFun="
@@ -36,7 +36,14 @@ import RdForm from "@/components/RdForm";
 import UploadOss from "@/components/UploadOss";
 import RdEditor from "@/components/RdEditor";
 import { scrollTo } from "@/utils/scroll-to";
+import { Loading } from 'element-ui';
 export default {
+    props: {
+        courseClass: {
+            type: Object,
+            default: () => { return {} }
+        }
+    },
     data() {
         return {
             addFormOptions: [
@@ -47,7 +54,7 @@ export default {
                     label: "项目分类",
                     disabled: true,
                     // ! 数据来源 1：班级打开时来自班级信息 2：科目打开时来自所选科目信息
-                    initValue: this.$store.state.onlineCourse.courseClassType.typeName,
+                    initValue: this.courseClass.typeName,
                 },
                 {
                     prop: "courseName",
@@ -192,7 +199,7 @@ export default {
                     data.teacherArray = data.teacherArray.map(v => JSON.parse(v))
                     // 后台保存的数据是用字符串，所以要格式化数组成字符串
                     data.teacherArray = JSON.stringify(data.teacherArray);
-                    data.courseClassId = this.$store.state.onlineCourse.courseClassId
+                    data.courseClassId = this.courseClass.courseClassId
                     this.$fetch("online_course_add_course", {
                         ...data,
                         loginUserId: this.$common.getUserId(),
@@ -236,7 +243,7 @@ export default {
                     data.teacherArray = data.teacherArray.map(v => JSON.parse(v))
                     // 后台保存的数据是用字符串，所以要格式化数组成字符串
                     data.teacherArray = JSON.stringify(data.teacherArray);
-                    data.courseClassId = this.$store.state.onlineCourse.courseClassId
+                    data.courseClassId = this.courseClass.courseClassId
                     this.$fetch("online_course_update_course", {
                         ...data,
                         loginUserId: this.$common.getUserId(),
@@ -262,9 +269,9 @@ export default {
             this.mode = 'save';
             this.courseId = courseId;
         },
-        getCourseInfo() {
+        async getCourseInfo() {
             if (this.mode == 'save') {
-                this.$fetch("online_course_course_getInfo", {
+                await this.$fetch("online_course_course_getInfo", {
                     courseId: this.courseId,
                     loginUserId: this.$common.getUserId(),
                 }).then((res) => {
@@ -305,11 +312,15 @@ export default {
     },
 
     async mounted() {
+        let loadingInstance = Loading.service({
+            target: document.querySelector('#addEditCourse'),
+            lock: true,
+        });
         scrollTo(0, 800);
         await this.$fetch("online_course_get_course_teacher", {
             loginUserId: this.$common.getUserId(),
-            courseClassId: this.$store.state.onlineCourse.courseClassId
-        }).then((res) => {
+            courseClassId: this.courseClass.courseClassId
+        }).then(async (res) => {
             this.addFormOptions.splice(6, 0, {
                 prop: "teacherArray",
                 element: "el-select",
@@ -322,7 +333,9 @@ export default {
                     value: JSON.stringify(item)
                 }))
             });
-            this.getCourseInfo()
+
+            await this.getCourseInfo()
+            loadingInstance.close()
         })
     },
     beforeCreate() { },

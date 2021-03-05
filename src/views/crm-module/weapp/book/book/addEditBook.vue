@@ -1,6 +1,6 @@
 <!-- 创建|编辑图书 -->
 <template>
-    <div class='addEditBook'>
+    <div class='addEditBook' id="addEditBook">
         <RdForm :formOptions="addFormOptions" :rules="addRules" :formLabelWidth="'150px'" ref="dataForm">
             <template slot="bookType">
                 <el-radio v-model="bookType" label="Charge">
@@ -51,6 +51,7 @@ import RdForm from "@/components/RdForm";
 import UploadOss from "@/components/UploadOss";
 import RdEditor from "@/components/RdEditor";
 import { scrollTo } from "@/utils/scroll-to";
+import { Loading } from 'element-ui';
 export default {
 
     components: { RdForm, UploadOss, RdEditor },
@@ -290,9 +291,9 @@ export default {
             this.bookId = bookId;
 
         },
-        getBookInfo() {
+        async getBookInfo() {
             if (this.mode == 'save') {
-                this.$fetch("book_book_getInfo", {
+                await this.$fetch("book_book_getInfo", {
                     bookId: this.bookId,
                     loginUserId: this.$common.getUserId(),
                 }).then((res) => {
@@ -402,7 +403,13 @@ export default {
     },
 
     async mounted() {
+        let loadingInstance = Loading.service({
+            target: document.querySelector('#addEditBook'),
+            lock: true,
+        });
         scrollTo(0, 800)
+        // 不知道为什么黑化，所以加一点点延时暂时解决
+        await this.$common.sleep(100)
         // 项目类型 选项来源后台数据，使用请求返回的数值组装表单内容
         await this.$fetch("projectType_normalList", {
             loginUserId: this.$common.getUserId(),
@@ -421,26 +428,17 @@ export default {
         });
         await this.$fetch("config_get_teachers_list", {
             loginUserId: this.$common.getUserId(),
-        }).then((res) => {
-            // this.addFormOptions.splice(5, 0, {
-            //     prop: "bookTeacherArray",
-            //     element: "el-select",
-            //     placeholder: "请选择",
-            //     label: "授课讲师",
-            //     filterable: true,
-            //     multiple: true,
-            //     options: res.data.map((item) => ({
-            //         label: item.teacherName,
-            //         value: JSON.stringify(item)
-            //     }))
+        }).then(async (res) => {
 
-            // });
             this.bookTeacherArrayOptions = res.data.map((item) => ({
                 label: item.teacherName,
                 value: JSON.stringify(item)
             }))
-            this.getBookInfo()
+
+            await this.getBookInfo()
+            loadingInstance.close()
         })
+        
     },
     beforeCreate() { },
     beforeMount() { },

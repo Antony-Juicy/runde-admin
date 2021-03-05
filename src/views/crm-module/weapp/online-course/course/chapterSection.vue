@@ -16,7 +16,7 @@
             </rd-table>
         </div>
         <fullDialog class="addEditSection" :title="`${titleAddOrEdit}`" v-model="addEditVisiable" @change="addEditVisiable = false">
-            <addEditSection ref="addEditSection" v-if="addEditVisiable" @close="addEditVisiable = false" @refresh="refresh"></addEditSection>
+            <addEditSection ref="addEditSection" v-if="addEditVisiable" @close="addEditVisiable = false" @refresh="refresh" :courseClass="courseClass" :course="course" :chapter="chapter"></addEditSection>
         </fullDialog>
     </div>
 </template>
@@ -27,7 +27,20 @@ import fullDialog from "@/components/FullDialog";
 import addEditSection from './addEditSection'
 import { scrollTo } from "@/utils/scroll-to";
 export default {
-
+    props: {
+        courseClass: {
+            type: Object,
+            default: () => { return {} }
+        },
+        course: {
+            type: Object,
+            default: () => { return {} }
+        },
+         chapter: {
+            type: Object,
+            default: () => { return {} }
+        }
+    },
     components: { fullDialog, addEditSection },
     data() {
         return {
@@ -130,7 +143,7 @@ export default {
                         ...this.pageConfig,
                         ...this.searchForm,
                         ...params,
-                        parentId: this.$store.state.onlineCourse.courseChapterId, // 查询小节要传章节id
+                        parentId: this.chapter.courseChapterId, // 查询小节要传章节id
                     }
                 ).then((res) => {
                     this.tableData = res.data.records.map((item) => {
@@ -226,6 +239,9 @@ export default {
             .full-dialog-container {
                 top: 0;
                 bottom: 0;
+            }
+            &.el-loading-parent--relative {
+                position: initial !important;
             }
         }
     }

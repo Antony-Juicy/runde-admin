@@ -16,7 +16,7 @@
             </rd-table>
         </div>
         <fullDialog class="addEditSection" :title="`${titleAddOrEdit}`" v-model="addEditVisiable" @change="addEditVisiable = false">
-            <addEditSection ref="addEditSection" v-if="addEditVisiable" @close="addEditVisiable = false" @refresh="refresh"></addEditSection>
+            <addEditSection :book="book" :subject="subject" :chapter="chapter" ref="addEditSection" v-if="addEditVisiable" @close="addEditVisiable = false" @refresh="refresh"></addEditSection>
         </fullDialog>
     </div>
 </template>
@@ -29,6 +29,20 @@ import { scrollTo } from "@/utils/scroll-to";
 export default {
 
     components: { fullDialog, addEditSection },
+    props: {
+        book: {
+            type: Object,
+            default: () => { return {} }
+        },
+        subject: {
+            type: Object,
+            default: () => { return {} }
+        },
+        chapter: {
+            type: Object,
+            default: () => { return {} }
+        }
+    },
     data() {
         return {
             formOptions: [
@@ -130,7 +144,7 @@ export default {
                         ...this.pageConfig,
                         ...this.searchForm,
                         ...params,
-                        parentId: this.$store.state.book.bookChapterId, // 查询小节要传章节id
+                        parentId: this.chapter.bookChapterId, // 查询小节要传章节id
                     }
                 ).then((res) => {
                     this.tableData = res.data.records.map((item) => {
@@ -226,6 +240,9 @@ export default {
             .full-dialog-container {
                 top: 0;
                 bottom: 0;
+            }
+            &.el-loading-parent--relative {
+                position: initial !important;
             }
         }
     }

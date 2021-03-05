@@ -1,6 +1,6 @@
 <!-- 创建|编辑 科目 -->
 <template>
-    <div class='addEditCourse'>
+    <div class='addEditCourse' id="addEditCourse">
         <RdForm :formOptions="addFormOptions" :rules="addRules" :formLabelWidth="'150px'" ref="dataForm"></RdForm>
         <div class="btn-wrapper">
             <el-button v-if="mode == 'add'" type="primary" size="small" :loading="btnLoading" @click="handleAdd" v-prevent-re-click="2000">立即创建</el-button>
@@ -16,7 +16,14 @@ import RdForm from "@/components/RdForm";
 import UploadOss from "@/components/UploadOss";
 import RdEditor from "@/components/RdEditor";
 import { scrollTo } from "@/utils/scroll-to";
+import { Loading } from 'element-ui';
 export default {
+    props: {
+        book: {
+            type: Object,
+            default: () => { return {} }
+        }
+    },
     data() {
         return {
             addFormOptions: [
@@ -27,7 +34,7 @@ export default {
                     label: "项目分类",
                     disabled: true,
                     // ! 数据来源 1：班级打开时来自班级信息 2：科目打开时来自所选科目信息
-                    initValue: this.$store.state.book.bookType.typeName,
+                    initValue: this.book.typeName,
                 },
                 {
                     prop: "bookSubjectName",
@@ -119,12 +126,11 @@ export default {
 
             this.$refs.dataForm.validate((val, data) => {
                 if (val) {
-                    data.bookId = this.$store.state.book.bookId
+                    data.bookId = this.book.bookId
                     // 由于某种问题，需要多做一次格式化成对象
                     data.bookSubjectTeacherArray = data.bookSubjectTeacherArray.map(v => JSON.parse(v))
                     // 后台保存的数据是用字符串，所以要格式化数组成字符串
                     data.bookSubjectTeacherArray = JSON.stringify(data.bookSubjectTeacherArray);
-                    data.courseClassId = this.$store.state.onlineCourse.courseClassId
                     this.$fetch("book_add_subject", {
                         ...data,
                         loginUserId: this.$common.getUserId(),
@@ -145,13 +151,12 @@ export default {
         handleSave() {
             this.$refs.dataForm.validate((val, data) => {
                 if (val) {
-                    data.bookId = this.$store.state.book.bookId
+                    data.bookId = this.book.bookId
                     data.bookSubjectId = this.bookSubjectId
                     // 由于某种问题，需要多做一次格式化成对象
                     data.bookSubjectTeacherArray = data.bookSubjectTeacherArray.map(v => JSON.parse(v))
                     // 后台保存的数据是用字符串，所以要格式化数组成字符串
                     data.bookSubjectTeacherArray = JSON.stringify(data.bookSubjectTeacherArray);
-                    data.courseClassId = this.$store.state.onlineCourse.courseClassId
                     this.$fetch("book_update_subject", {
                         ...data,
                         loginUserId: this.$common.getUserId(),
@@ -177,9 +182,9 @@ export default {
             this.mode = 'save';
             this.bookSubjectId = bookSubjectId;
         },
-        getCourseInfo() {
+        async getCourseInfo() {
             if (this.mode == 'save') {
-                this.$fetch("book_subject_getInfo", {
+                await this.$fetch("book_subject_getInfo", {
                     bookSubjectId: this.bookSubjectId,
                     loginUserId: this.$common.getUserId(),
                 }).then((res) => {
@@ -207,11 +212,15 @@ export default {
     },
 
     async mounted() {
+        let loadingInstance = Loading.service({
+            target: document.querySelector('#addEditCourse'),
+            lock: true,
+        });
         scrollTo(0, 800);
         await this.$fetch("book_subject_get_teachers", {
             loginUserId: this.$common.getUserId(),
-            bookId: this.$store.state.book.bookId
-        }).then((res) => {
+            bookId: this.book.bookId
+        }).then(async (res) => {
             this.addFormOptions.splice(6, 0, {
                 prop: "bookSubjectTeacherArray",
                 element: "el-select",
@@ -224,7 +233,9 @@ export default {
                     value: JSON.stringify(item)
                 }))
             });
-            this.getCourseInfo()
+
+            await this.getCourseInfo()
+            loadingInstance.close()
         })
     },
     beforeCreate() { },
@@ -252,7 +263,6 @@ export default {
         }
     }
 }
-
 .btn-wrapper {
     margin-left: 400px;
 }

@@ -11,7 +11,7 @@
             <!-- 表格主体 -->
             <rd-table :tableData="tableData" :tableKey="tableKey" :pageConfig.sync="pageConfig" fixedTwoRow @pageChange="pageChange">
                 <template slot="imageUrl" slot-scope="scope">
-                    <el-image style="width: 100px; height: 100px" :src="scope.row.imageUrl"></el-image>
+                    <el-image style="width: 100px; height: 100px" :src="scope.row.imageUrl" fit="contain"></el-image>
                 </template>
                 <template slot="teacherArray" slot-scope="scope">
                     <span class="class-teacher" v-for="(item,index) in scope.row.teacherArray" :key="index">{{item.teacherName}}</span>
@@ -227,11 +227,9 @@ export default {
         handleCourse(data) {
             this.courseVisiable = true
             this.courseClass = data
-            scrollTo(0, 800);
         },
         handleCourseClose() {
             this.courseVisiable = false
-            this.$store.dispatch('onlineCourse/clearCourseClass')
         },
         handleDelete(data) {
             let info = "班级"
@@ -300,6 +298,9 @@ export default {
             }
             .full-dialog-container .content {
                 background: #fff !important;
+            }
+            &.el-loading-parent--relative {
+                position: initial !important;
             }
         }
         // 摇摆嵌套

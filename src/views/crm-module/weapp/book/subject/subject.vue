@@ -10,7 +10,7 @@
             <!-- 表格主体 -->
             <rd-table :tableData="tableData" :tableKey="tableKey" :pageConfig.sync="pageConfig" fixedTwoRow @pageChange="pageChange">
                 <template slot="defaultImageUrl" slot-scope="scope">
-                    <el-image style="width: 100px; height: 100px" :src="scope.row.defaultImageUrl"></el-image>
+                    <el-image style="width: 100px; height: 100px" :src="scope.row.defaultImageUrl" fit="contain"></el-image>
                 </template>
                 <template slot="enrolment" slot-scope="scope">
                     <div>(实)&nbsp;&nbsp;{{scope.row.realEnrolment}}</div>
@@ -27,10 +27,10 @@
             </rd-table>
         </div>
         <fullDialog class="addEditSubject" :title="`${titleAddOrEdit}`" :inner="true" v-model="addEditVisible" @change="addEditVisible = false">
-            <addEditSubject ref="addEditSubject" v-if="addEditVisible" @close="addEditVisible = false" @refresh="refresh"></addEditSubject>
+            <addEditSubject ref="addEditSubject" v-if="addEditVisible" @close="addEditVisible = false" @refresh="refresh" :book="nextBook"></addEditSubject>
         </fullDialog>
         <fullDialog class="chapter" title="科目管理 > 章节目录" v-model="chapterVisible" @change="handleChapterClose">
-            <chapter v-if="chapterVisible" @close="handleChapterClose"></chapter>
+            <chapter v-if="chapterVisible" @close="handleChapterClose" :book="nextBook" :subject="subject"></chapter>
         </fullDialog>
     </div>
 </template>
@@ -139,7 +139,9 @@ export default {
             titleAddOrEdit: "创建",
             searchForm: {}, //搜索栏信息
             addEditVisible: false,
-            chapterVisible: false
+            chapterVisible: false,
+            subject: {},
+            nextBook: {}
         };
     },
     components: { fullDialog, chapter, addEditSubject },
@@ -215,10 +217,12 @@ export default {
         handleAdd() {
             this.titleAddOrEdit = '创建科目';
             this.addEditVisible = true
-            // 设置创建科目的一些额外信息
-            // ! 由于只有班级进入时才可能出现新增按钮 所以 this.book 是必然有值的
-            this.$store.commit('book/setBookType', { typeId: this.book.typeId, typeName: this.book.typeName })
-            this.$store.commit('book/setBookId', this.book.bookId)
+            this.nextBook = {
+                bookName: this.book.bookName,
+                bookId: this.book.bookId,
+                typeName: this.book.typeName,
+                typeId: this.book.typeId,
+            }
             this.$nextTick(() => {
                 this.$refs.addEditSubject.initGetConfig = true
             })
@@ -226,9 +230,12 @@ export default {
         handleEdit(data) {
             this.titleAddOrEdit = '编辑科目';
             this.addEditVisible = true
-            // ! 编辑科目时 图书数据来源以科目附带信息为准
-            this.$store.commit('book/setBookType', { typeId: data.typeId, typeName: data.typeName })
-            this.$store.commit('book/setBookId', data.bookId)
+            this.nextBook = {
+                bookName: data.bookName,
+                typeName: data.typeName,
+                typeId: data.typeId,
+                bookId: data.bookId,
+            }
             this.$nextTick(() => {
                 this.$refs.addEditSubject.initGetConfig = true
                 this.$refs.addEditSubject.initFormData(data.bookSubjectId);
@@ -261,13 +268,15 @@ export default {
         },
         handleChapter(data) {
             this.chapterVisible = true
-            this.$store.commit('book/setBookSubjectName', data.bookSubjectName)
-            this.$store.commit('book/setBookName', data.bookName)
-            this.$store.commit('book/setBookSubjectId', data.bookSubjectId)
+            this.subject = data
+            this.nextBook = {
+                bookName: data.bookName,
+                typeName: data.typeName,
+                typeId: data.typeId,
+            }
         },
         handleChapterClose() {
             this.chapterVisible = false
-            this.$store.dispatch('onlineCourse/clearCourse')
         },
         refresh(val) {
             this.getTableData({
@@ -335,6 +344,11 @@ export default {
         .chapter {
             .full-dialog-container .content {
                 background: #f0f2f5;
+            }
+        }
+        .addEditSubject {
+            &.el-loading-parent--relative {
+                position: initial !important;
             }
         }
     }

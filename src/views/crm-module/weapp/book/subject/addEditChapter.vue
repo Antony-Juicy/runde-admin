@@ -1,6 +1,6 @@
 <!-- 创建|编辑 章节 -->
 <template>
-    <div class='addEditChapter'>
+    <div class='addEditChapter' id="addEditChapter">
         <RdForm :formOptions="addFormOptions" :rules="addRules" :formLabelWidth="'150px'" ref="dataForm"></RdForm>
         <div class="btn-wrapper">
             <el-button v-if="mode == 'add'" type="primary" size="small" :loading="btnLoading" @click="handleAdd" v-prevent-re-click="2000">立即创建</el-button>
@@ -15,9 +15,20 @@
 
 import RdForm from "@/components/RdForm";
 import { scrollTo } from "@/utils/scroll-to";
+import { Loading } from 'element-ui';
 export default {
 
     components: { RdForm },
+    props: {
+        book: {
+            type: Object,
+            default: () => { return {} }
+        },
+         subject: {
+            type: Object,
+            default: () => { return {} }
+        }
+    },
     data() {
 
         return {
@@ -29,7 +40,7 @@ export default {
                     label: "图书名称",
                     disabled: true,
                     // ! 数据来源 科目单元信息
-                    initValue: this.$store.state.book.bookName,
+                    initValue: this.book.bookName,
                 },
                 {
                     prop: "bookSubjectName",
@@ -38,7 +49,7 @@ export default {
                     label: "科目名称",
                     disabled: true,
                     // ! 数据来源 科目单元信息
-                    initValue: this.$store.state.book.bookSubjectName,
+                    initValue: this.subject.bookSubjectName,
                 },
                 {
                     prop: "bookChapterName",
@@ -96,7 +107,7 @@ export default {
                     this.$fetch("book_add_chapter", {
                         ...data,
                         loginUserId: this.$common.getUserId(),
-                        bookSubjectId: this.$store.state.book.bookSubjectId,
+                        bookSubjectId: this.subject.bookSubjectId,
                         parentId: 0,
                     }).then((res) => {
                         if (res.code == 200) {
@@ -118,7 +129,7 @@ export default {
                     this.$fetch("book_update_chapter", {
                         ...data,
                         loginUserId: this.$common.getUserId(),
-                        bookSubjectId: this.$store.state.book.bookSubjectId,
+                        bookSubjectId: this.subject.bookSubjectId,
                         bookChapterId: this.bookChapterId,
                         parentId: 0
                     }).then((res) => {
@@ -146,6 +157,10 @@ export default {
         },
         getChapterInfo() {
             if (this.mode == 'save') {
+                let loadingInstance = Loading.service({
+                    target: document.querySelector('#addEditChapter'),
+                    lock: true,
+                });
                 this.$fetch("book_chapter_getInfo", {
                     bookChapterId: this.bookChapterId,
                     loginUserId: this.$common.getUserId(),
@@ -153,6 +168,7 @@ export default {
                     this.addFormOptions.forEach((item) => {
                         item.initValue = res.data[item.prop];
                     })
+                    loadingInstance.close()
                     this.$refs.dataForm.addInitValue();
                 })
             }
