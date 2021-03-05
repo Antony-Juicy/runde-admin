@@ -1,7 +1,7 @@
 <template>
-  <div class="information-container">
+  <div class="specialty-container">
     <search-form :formOptions="formOptions" :showNum="7" @onSearch="onSearch"></search-form>
-    <div class="">
+    <div class="w-container">
       <div class="btn-wrapper">
         <el-button type="primary" size="small" @click="handleAdd">添加</el-button>
       </div>
@@ -15,11 +15,11 @@
         @pageChange="pageChange">
       </rd-table>
       <rd-dialog
-        :title="addStatus?'添加报考信息':'编辑报考信息'"
+        :title="addStatus?'添加报考专业':'编辑报考专业'"
         :dialogVisible="addVisible"
         @handleClose="addVisible = false"
         @submitForm="submitAddForm('dataForm')">
-        <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm"></RdForm>
+        <RdForm :formOptions="addFormOptions" formLabelWidth="140px" :rules="addRules" ref="dataForm"></RdForm>
       </rd-dialog>
     </div>
   </div>
@@ -28,7 +28,7 @@
 <script>
 import RdForm from "@/components/RdForm";
 export default {
-  name:"temp",
+  name:"apply-specialty",
   components:{
     RdForm
   },
@@ -44,6 +44,11 @@ export default {
           prop: "menuName",
           element: "el-select",
           placeholder: "请选择状态",
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "级别",
         }
       ],
       searchForm: {},
@@ -56,21 +61,45 @@ export default {
         {
           name: "主键id",
           value: "staffName",
+          width: 80
         },
         {
           name: "项目",
           value: "staffName",
         },
         {
-          name: "报考信息",
+          name: "父id",
           value: "staffName",
+          width: 80
+        },
+        {
+          name: "上级名称",
+          value: "staffName",
+        },
+        {
+          name: "专业名称",
+          value: "staffName",
+        },
+        {
+          name: "报考所需年限",
+          value: "staffName",
+        },
+        {
+          name: "级别",
+          value: "staffName",
+          width: 80
         },
         {
           name: "排序",
           value: "staffName",
+          width: 80
         },
         {
-          name: "状态",
+          name: "是否能报考助理医师",
+          value: "posterCopyFirst",
+        },
+        {
+          name: "是否能报考执业医师",
           value: "posterCopyFirst",
         },
         {
@@ -119,9 +148,93 @@ export default {
         },
         {
           prop: "roleName",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "一级分类"
+        },
+        {
+          prop: "menuName3",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "二级分类"
+        },
+        {
+          prop: "menuName3",
           element: "el-input",
-          placeholder: "请输入报考信息",
-          label: "报考信息"
+          placeholder: "请输入专业名称",
+          label: "专业名称"
+        },
+        {
+          prop: "menuName3",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "工作年限",
+          options: [
+            {
+              label: "1",
+              value: 0,
+            },
+            {
+              label: "2",
+              value: 1,
+            },
+            {
+              label: "3",
+              value: 2,
+            },
+            {
+              label: "4",
+              value: 3,
+            },
+            {
+              label: "5",
+              value: 4,
+            },
+            {
+              label: "6",
+              value: 5,
+            },
+            {
+              label: "7",
+              value: 6,
+            },
+            {
+              label: "8",
+              value: 7,
+            }
+          ],
+        },
+        {
+          prop: "menuName3",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "是否能报助理医师",
+          options: [
+            {
+              label: "是",
+              value: 0,
+            },
+            {
+              label: "否",
+              value: 1,
+            }
+          ],
+        },
+        {
+          prop: "menuName3",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "是否能报执业医师",
+          options: [
+            {
+              label: "是",
+              value: 0,
+            },
+            {
+              label: "否",
+              value: 1,
+            }
+          ],
         },
         {
           prop: "menuName3",
@@ -132,8 +245,8 @@ export default {
         {
           prop: "menuName3",
           element: "el-select",
-          placeholder: "请选择状态",
-          label: "状态",
+          placeholder: "请选择",
+          label: "开放状态",
           options: [
             {
               label: "已开放",
@@ -181,7 +294,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.information-container {
+.specialty-container {
   
 }
 </style>
