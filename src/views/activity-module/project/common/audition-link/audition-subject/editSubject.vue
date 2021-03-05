@@ -36,7 +36,7 @@
           :prop="'domains.' + index + '.paramImg'"
         >
           <!-- <el-input v-model="domain.paramImg" size="small" style="width: 300px"></el-input> -->
-          {{domain.paramImg}}
+          domain.paramImg:{{domain.paramImg}}
           <Upload-oss
               :objConfig="{module: 'activity'}"
               :src.sync="domain.paramImg"
