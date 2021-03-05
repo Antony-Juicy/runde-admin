@@ -72,6 +72,7 @@
         :formOptions="orderFormOptions"
         :rules="orderRules"
         ref="dataForm"
+        v-if="orderVisible"
       />
     </rd-dialog>
 
@@ -86,6 +87,7 @@
         :formOptions="invalidFormOptions"
         :rules="invalidRules"
         ref="dataForm2"
+        v-if="invalidVisible"
       />
     </rd-dialog>
 
@@ -96,7 +98,7 @@
       @handleClose="handleClose('dataForm3')"
       @submitForm="submitAddForm('dataForm3')"
     >
-      <RdForm :formOptions="addFormOptions" :rules="addRules" ref="dataForm3">
+      <RdForm :formOptions="addFormOptions" :rules="addRules" ref="dataForm3" v-if="addVisible">
         <template slot="product">
           <el-select
             v-model="productId"
@@ -847,7 +849,7 @@ export default {
           this.orderFormOptions[3].initValue = saleSource_text;
           this.orderFormOptions[4].options = staffOptions;
           this.orderFormOptions[4].initValue = marketStaffId;
-          this.orderVisible = true;
+           this.orderVisible = true;
         });
       }
 
@@ -894,6 +896,7 @@ export default {
               this.$message.success("保存成功");
               this.handleClose();
               this.getTableData();
+              this.$emit("refresh");
             }
           });
         }

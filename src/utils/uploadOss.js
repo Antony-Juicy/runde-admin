@@ -37,10 +37,11 @@ export function uploadOss(uploaderInput, isMult, objConfig = {}) {
                 },
             })
             uploader.init();
+            console.log(uploader,'uploader---')
 
             // 三：点击事件 文件上传     // 获得的图片上传的地址：https://rdjiaowu.oss-cn-shenzhen.aliyuncs.com/ + key 
             uploader.bind('FilesAdded', function (uploader, files) { // 限制提交的最多的张数是多少
-                // console.log("点击事件 文件上传",files);
+                console.log("点击事件 文件上传",files);
                 
                 options.files = files;
                 defaultSetting.chooseFile = files[0];
@@ -114,7 +115,7 @@ function set_upload_param(up, filename, ret, base64tofile){
     }
     up.start();
 }
-function reloadData() {
+export function reloadData() {
     
     multipart_params = {};
     baseKey = '';

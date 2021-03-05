@@ -64,7 +64,7 @@
           </el-col>
           <el-col :span="12"
             ><el-form-item label="赛道" prop="detail">
-              {{ selectedData&&selectedData.studentName }}
+              {{ selectedData&&selectedData.opportunityCampusNature }}
             </el-form-item></el-col
           >
         </el-row>

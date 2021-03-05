@@ -77,17 +77,20 @@
         <div v-show="tabIndex == '0'">
           <privateCustomers
             @currentChange="currentChange"
+            @refresh="refreshForm"
             :newFormOptions="formOptions"
             ref="privateCustomers"
           />
         </div>
         <div v-show="tabIndex == '1'">
           <publicCustomers @currentChange="currentChange"
+          @refresh="refreshForm"
             :newFormOptions="formOptions"
             ref="publicCustomers"/>
         </div>
         <div v-show="tabIndex == '2'">
           <lockUser ref="lockUser" @currentChange="currentChange"
+          @refresh="refreshForm"
             :newFormOptions="formOptions"/>
         </div>
       </div>
@@ -588,6 +591,12 @@ export default {
       }else if(this.tabIndex == '2'){
         this.$refs.lockUser.getTableData();
       }
+    },
+
+    // 清空右侧表单
+    refreshForm(){
+      this.$refs.dataForm.resetFields();
+      this.$refs.dataForm2.resetFields();
     },
 
     handleDetail() {
