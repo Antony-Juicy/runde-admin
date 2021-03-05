@@ -134,25 +134,13 @@ export default {
       this.getTableData();
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".playback .el-table",
-      });
       this.$fetch("live_get_live_playback_list", {
         ...this.searchForm,
         ...params,
         liveId: this.liveId,
       }).then((res) => {
         this.tableData = res.data;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      }).catch(err => {
-        loading.close();
-        if(err.response.status == 401){
-          this.emptyText = "您没有权限访问"
-        }
-      });
+      })
     },
     copyLink(btnName) {
       let clipboard = new Clipboard(btnName);

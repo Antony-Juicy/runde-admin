@@ -90,7 +90,7 @@ export default {
       this.visible = newVal;
     },
     id(newVal){
-      console.log(newVal,'---')
+      console.log(newVal,'-newVal--')
       this.newId = newVal;
     },
     phone(newVal){
@@ -98,7 +98,7 @@ export default {
     }
   },
   mounted () {
-    
+    this.newId = this.id;
   },
   methods: {
     handleClick(tab, event) {

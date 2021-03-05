@@ -151,10 +151,6 @@ export default {
       this.getTableData();
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".distribution .el-table",
-      });
       this.$fetch("chance_distrube_list", {
         ...this.pageConfig,
         ...this.formInline,
@@ -162,9 +158,6 @@ export default {
       }).then((res) => {
         this.tableData = res.data.data;
         this.pageConfig.totalCount = res.data.count;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
   },

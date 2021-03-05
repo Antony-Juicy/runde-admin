@@ -200,10 +200,6 @@ export default {
     },
     getTableData(params={}) {
       return new Promise((resolve,reject)=>{
-        const loading = this.$loading({
-          lock: true,
-          target: ".el-table",
-        });
         this.$fetch(
           "live_detail_list",
           {
@@ -214,15 +210,8 @@ export default {
         ).then((res) => {
           this.tableData = res.data.records;
           this.pageConfig.totalCount = res.data.totalCount;
-          setTimeout(() => {
-            loading.close();
-          }, 200);
           resolve();
-        }).catch(err=>{
-          loading.close();
-          console.log(err)
-          reject();
-        });
+        })
       })
     },
     pageChange(val) {

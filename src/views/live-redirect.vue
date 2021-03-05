@@ -18,7 +18,6 @@ export default {
     }
   },
   mounted(){
-    this.openFullScreen2();
     this.authentication();
   },
   watch:{
@@ -30,17 +29,6 @@ export default {
     }
   },
    methods: {
-     openFullScreen2() {
-        // this.loading = this.$loading({
-        //   lock: true,
-        //   text: 'Loading',
-        //   spinner: 'el-icon-loading',
-        //   background: 'rgba(0, 0, 0, 0.7)'
-        // });
-        // setTimeout(() => {
-        //   loading.close();
-        // }, 2000);
-      },
       authentication(){
         const {token,username,userId} = this.$route.query;
         console.log( this.$route.query,' this.$route.query---')

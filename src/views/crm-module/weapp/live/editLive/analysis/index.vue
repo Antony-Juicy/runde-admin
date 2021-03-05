@@ -375,10 +375,6 @@ export default {
     },
 
     getInvitationList(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".invite .el-table",
-      });
       this.$fetch("live_invitation_list", {
         ...this.pageConfig,
         ...params,
@@ -386,22 +382,10 @@ export default {
       }).then((res) => {
         this.tableData = res.data.records;
         this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      }).catch(err =>{
-        loading.close();
-        if(err.response.status == 401){
-          this.emptyText = "您没有权限访问"
-        }
       })
     },
 
     getRewardList(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".reward .el-table",
-      });
       this.$fetch("live_reward_list", {
         ...this.pageConfig2,
         ...params,
@@ -409,14 +393,6 @@ export default {
       }).then((res) => {
         this.tableData2 = res.data.records;
         this.pageConfig2.totalCount = res.data.totalCount;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      }).catch(err =>{
-        loading.close();
-        if(err.response.status == 401){
-          this.emptyText2 = "您没有权限访问"
-        }
       })
     },
 

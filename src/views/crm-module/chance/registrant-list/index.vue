@@ -17,6 +17,10 @@
         @select="handleSelect"
         @pageChange="pageChange"
       >
+       <!-- 手机号 -->
+      <template slot="phone" slot-scope="scope">
+        {{ $common.hidePhone(scope.row.phone) }}
+      </template>
       <!-- 回访 -->
       <template slot="feedbackCount" slot-scope="scope">
             <span class="visit-container" @click.stop="openDrawer(scope.row)">{{
@@ -99,7 +103,7 @@ export default {
       tableKey: [
         { name: "机会ID", value: "id", width: 80 },
         { name: "姓名", value: "studentName" },
-        { name: "手机号", value: "phone" },
+        { name: "手机号", value: "phone", operate: true },
         { name: "回访", value: "feedbackCount", width: 50, operate: true },
         { name: "咨询项目", value: "enquireProductNameOne" },
         { name: "咨询科目", value: "enquireSubjectNameOne" },
@@ -165,10 +169,6 @@ export default {
       this.getTableData();
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch("chance_registrant_list", {
         ...this.pageConfig,
         ...this.searchForm,
@@ -188,9 +188,6 @@ export default {
           return item;
         });
         this.pageConfig.totalCount = res.data.count;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
     getSelectList() {

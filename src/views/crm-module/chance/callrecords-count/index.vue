@@ -273,10 +273,6 @@ export default {
       // this.$refs[formName].resetFields();
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch("chance_records_count", {
         token: getToken(),
         loginUserId: this.$common.getUserId(),
@@ -294,9 +290,6 @@ export default {
         });
         this.totalObj = res.data;
         this.pageConfig.totalCount = res.data.count;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
     getSelectList(){

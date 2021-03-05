@@ -113,10 +113,6 @@ export default {
       console.log(val,'valll')
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".coupon-detail .el-table",
-      });
       this.$fetch("live_page_coupon_receive_record", {
         ...this.pageConfig,
         ...params,
@@ -128,9 +124,6 @@ export default {
           return item
         });
         this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
   }

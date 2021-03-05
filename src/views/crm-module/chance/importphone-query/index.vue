@@ -155,10 +155,6 @@ export default {
           });
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch("chance_import_list", {
         ...this.pageConfig,
         ...this.searchForm,
@@ -176,9 +172,6 @@ export default {
           return item;
         });
         this.pageConfig.totalCount = res.data.pager.totalRows;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
     getSelectList(){

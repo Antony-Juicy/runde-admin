@@ -28,9 +28,9 @@
       @selection-change="handleSelectionChange"
       @sort-change="handelSortChange"
     >
-      <div slot="empty">
+      <div slot="empty" :style="{opacity: endLoading}">
         <img v-show="this.isImage" src="@/assets/empty-image.png" alt="" class="img-empty" />
-        <p>{{ emptyText }}</p>
+        <p>{{ endText }}</p>
       </div>
       <el-table-column v-if="multiple" type="selection" width="55">
       </el-table-column>
@@ -100,6 +100,8 @@
 
 <script>
 import Pagination from "@/components/Pagination";
+import { mapState } from "vuex";
+import store from '@/store';
 const cityOptions = ["上海", "北京", "广州", "深圳"];
 export default {
   name: "RdTable",
@@ -204,8 +206,13 @@ export default {
       item.show = true;
     });
     this.tableKeyData = this.tableKey;
+    store.dispatch("user/setTableText", this.emptyText)
   },
   computed: {
+    ...mapState({
+      endLoading: (state) => state.user.endLoading,
+      endText: (state) => state.user.endText,
+    }),
     checkColumn() {
       return this.tableKeyData.filter((item) => item.show);
     },
@@ -222,6 +229,14 @@ export default {
           pageNum: val
         })
       }
+    }
+  },
+  watch: {
+    // endLoading(newVal){
+    //   console.log(newVal,'endLoading-------------')
+    // },
+    emptyText(newVal){
+      store.dispatch("user/setTableText", newVal)
     }
   },
   methods: {

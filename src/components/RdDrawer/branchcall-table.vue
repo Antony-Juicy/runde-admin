@@ -69,10 +69,6 @@ export default {
       this.getTableData();
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".branchcall-table .el-table",
-      });
       this.$fetch("chance_feedback_fxwh", {
         ...this.pageConfig,
         ...params,
@@ -84,9 +80,6 @@ export default {
           return item;
         });
         this.pageConfig.totalCount = res.data.count;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
   }

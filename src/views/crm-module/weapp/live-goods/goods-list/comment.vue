@@ -118,10 +118,6 @@ export default {
       console.log(rows, "rows---");
     },
     getCommentData(params) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch(
         "comment_list",
         params || {
@@ -131,9 +127,6 @@ export default {
       ).then((res) => {
         this.tableCommentData = res.data.records;
         this.pageCommentConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
     handleAdd() {

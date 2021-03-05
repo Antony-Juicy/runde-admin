@@ -97,10 +97,6 @@ export default {
       this.getTableData();
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".callout-table .el-table",
-      });
       this.$fetch("chance_feedback_sjwh", {
         ...this.pageConfig,
         ...params,
@@ -113,9 +109,6 @@ export default {
           return item;
         });
         this.pageConfig.totalCount = data.count;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
   }

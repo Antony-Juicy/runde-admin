@@ -380,10 +380,6 @@ export default {
       });
     },
     getTableData(params) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch(
         "role_list",
         params || {
@@ -394,9 +390,6 @@ export default {
       ).then((res) => {
         this.tableData = res.data.records;
         this.pageConfig.totalCount = res.data.total;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
     // 打开新增弹窗

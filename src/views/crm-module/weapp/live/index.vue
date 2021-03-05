@@ -317,45 +317,7 @@ export default {
   async mounted() {
     this.getSubjectList();
     this.getTableData();
-    // const { liveId, flag,chatAudit,mute,liveName } = this.$route.params;
-    // if (flag == "analysis") {
-    //   // const data = this.tableData.find((item) => item.liveId == liveId);
-    //   // const res = await this.getLiveInfo(liveId);
-    //   this.handleEdit({
-    //         chatAudit,
-    //         mute,
-    //         liveId,
-    //         liveName,
-    //         flag
-    //       });
-    //   setTimeout(() => {
-    //     this.$refs.editLive.changeTab();
-    //   }, 10);
-    // }
   },
-  // watch: {
-  //   async "$route.params.liveId"(newVal) {
-  //     if (!newVal) {
-  //       return;
-  //     }
-  //     const { liveId, flag,chatAudit,mute,liveName } = this.$route.params;
-  //     if (flag == "analysis") {
-  //       this.editVisible = false;
-  //       setTimeout(() => {
-  //         this.handleEdit({
-  //           chatAudit,
-  //           mute,
-  //           liveId,
-  //           liveName,
-  //           flag
-  //         });
-  //         setTimeout(() => {
-  //           this.$refs.editLive.changeTab();
-  //         }, 10);
-  //       }, 10);
-  //     }
-  //   },
-  // },
   methods: {
     onSearch(data) {
       this.searchForm = { ...data };
@@ -432,10 +394,6 @@ export default {
     },
     getTableData(params = {}) {
       return new Promise((resolve, reject) => {
-        const loading = this.$loading({
-          lock: true,
-          target: ".el-table",
-        });
         this.$fetch("live_list", {
           loginUserId: this.$common.getUserId(),
           ...this.pageConfig,
@@ -452,13 +410,9 @@ export default {
               return item;
             });
             this.pageConfig.totalCount = res.data.totalCount;
-            setTimeout(() => {
-              loading.close();
-            }, 200);
             resolve();
           })
           .catch((err) => {
-            loading.close();
             console.log(err);
             reject();
           });

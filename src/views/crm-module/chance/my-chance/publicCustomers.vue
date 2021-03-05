@@ -320,11 +320,12 @@ export default {
         {
           name: "最近回访",
           value: "recentFeedbackTime",
-          // width: 100
+          width: 135
         },
         {
           name: "下次回访",
           value: "nextDate",
+          width: 135
         },
         {
           name: "跟进状态",
@@ -708,7 +709,7 @@ export default {
     },
     openDrawer(data) {
       console.log(data, "operndrawer");
-      this.drawerId = data.id;
+      this.drawerId = data.idStr;
       this.drawerPhone = data.phone;
       this.drawerTitle = data.studentName || "";
       this.drawerVisible = true;
@@ -737,8 +738,8 @@ export default {
       this.getTableData();
     },
     handelSelect(val) {
-      console.log(val, "valll");
       this.selectedData = val;
+      this.currentChange(val.splice(-1)[0])
     },
     getCutdown() {
       this.newArr = this.tableData.map((item) => {
@@ -949,10 +950,6 @@ export default {
     },
 
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch("chance_my_list", {
         ...this.pageConfig,
         ...this.searchForm,
@@ -970,9 +967,6 @@ export default {
           return item;
         });
         this.pageConfig.totalCount = res.data.count;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
   },

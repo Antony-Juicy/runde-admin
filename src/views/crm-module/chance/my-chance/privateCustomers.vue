@@ -338,7 +338,7 @@ export default {
       tableKey: [
         {
           name: "姓名",
-          value: "studentName",
+          value: "studentName"
         },
         {
           name: "手机号",
@@ -364,11 +364,12 @@ export default {
         {
           name: "最近回访",
           value: "recentFeedbackTime",
-          // width: 100
+          width: 135
         },
         {
           name: "下次回访",
           value: "nextDate",
+          width: 135
         },
         {
           name: "跟进状态",
@@ -377,6 +378,7 @@ export default {
         {
           name: "创建时间",
           value: "createAt",
+          width: 135
         },
         {
           name: "呼叫状态",
@@ -761,8 +763,8 @@ export default {
       });
     },
     openDrawer(data) {
-      console.log(data, "operndrawer");
-      this.drawerId = data.id;
+      
+      this.drawerId = data.idStr;
       this.drawerPhone = data.phone;
       this.drawerTitle = data.studentName || "";
       this.drawerVisible = true;
@@ -791,8 +793,9 @@ export default {
       this.getTableData();
     },
     handelSelect(val) {
-      console.log(val, "valll");
       this.selectedData = val;
+
+      this.currentChange(val.splice(-1)[0])
     },
     getCutdown() {
       this.newArr = this.tableData.map((item) => {
@@ -860,7 +863,7 @@ export default {
       this.productId = "";
       this.subjectId = "";
       this.classId = "";
-      this.$refs[formName].resetFields();
+      this.$refs[formName]&&this.$refs[formName].resetFields();
       if(formName == 'dataForm4'){
         this.importCampusId = '';
         this.productOne = '';
@@ -972,11 +975,11 @@ export default {
             return
           }
           if(!this.subjectId){
-            this.$message.error("请选择咨询项目")
+            this.$message.error("请选择咨询科目")
             return
           }
           if(!this.classId.length){
-            this.$message.error("请选择咨询项目")
+            this.$message.error("请选择咨询班型")
             return
           }
           this.$fetch("chance_my_add", {
@@ -1061,10 +1064,6 @@ export default {
     },
 
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch("chance_my_list", {
         ...this.pageConfig,
         ...this.searchForm,
@@ -1081,9 +1080,6 @@ export default {
           return item;
         });
         this.pageConfig.totalCount = res.data.count;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
 
@@ -1176,6 +1172,9 @@ export default {
     .el-cascader {
       width: 100%;
     }
+    // .el-table__body-wrapper {
+    //   font-size: 12px;
+    // }
   }
 }
 </style>

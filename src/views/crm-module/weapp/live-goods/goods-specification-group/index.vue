@@ -299,10 +299,6 @@ export default {
     // 获取规格组列表数据
     getTableData(params={}) {
       return new Promise((resolve,reject)=>{
-        const loading = this.$loading({
-          lock: true,
-          target: ".el-table",
-        });
         this.$fetch(
           "goods_item_list",
           {
@@ -313,15 +309,8 @@ export default {
         ).then((res) => {
           this.tableData = res.data.records;
           this.pageConfig.totalCount = res.data.totalCount;
-          setTimeout(() => {
-            loading.close();
-          }, 200);
           resolve();
-        }).catch(err=>{
-          loading.close();
-          console.log(err)
-          reject();
-        });
+        })
       })
     },
     pageChange(val) {
@@ -436,10 +425,6 @@ export default {
     // 获取规则列表数据
     gitRuletableData(goodsGroupId) {
       return new Promise((resolve,reject)=>{
-        const loading = this.$loading({
-          lock: true,
-          target: ".el-table",
-        });
         this.$fetch(
           "goods_rule_list",
           {
@@ -447,15 +432,8 @@ export default {
           }
         ).then((res) => {
           this.tableRuleData = res.data;
-          setTimeout(() => {
-            loading.close();
-          }, 200);
           resolve();
-        }).catch(err=>{
-          loading.close();
-          console.log(err)
-          reject();
-        });
+        })
       })
     },
     

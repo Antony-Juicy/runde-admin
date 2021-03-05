@@ -497,10 +497,6 @@ export default {
         .catch(() => {});
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch("chance_config_list", {
         ...this.pageConfig,
         ...this.searchForm,
@@ -512,15 +508,7 @@ export default {
           return item;
         });
         this.pageConfig.totalCount = res.data.pager.totalRows;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      }).catch(err => {
-        loading.close();
-        if(err.response.status == 401){
-          this.emptyText = "您没有权限访问"
-        }
-      });
+      })
     },
 
     getSelectList() {

@@ -105,10 +105,6 @@ export default {
   },
   methods: {
     getRuleGroupTableData(params) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch(
         "goods_rule_group_list",
         params || {
@@ -116,9 +112,6 @@ export default {
         }
       ).then((res) => {
         this.tableData = res.data
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
 
@@ -130,10 +123,6 @@ export default {
       console.log(val,this.searchGroupForm , 'val---')
     },
     getRuleTableData() {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch(
         "goods_item_page_list",
         {
@@ -145,9 +134,6 @@ export default {
         console.log(res, 446)
         this.tableGroupData = res.data.records;
         this.pageGroupConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
     openAddGroup() {
