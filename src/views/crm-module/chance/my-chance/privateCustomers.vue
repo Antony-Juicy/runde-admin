@@ -658,7 +658,7 @@ export default {
 
       sourceArr: [],
 
-      orderFlag: false,
+      // orderFlag: false,
     };
   },
   components: {
@@ -820,9 +820,9 @@ export default {
         return;
       }
 
-      if (this.orderFlag) {
-        this.orderVisible = true;
-      } else {
+      // if (this.orderFlag) {
+      //   this.orderVisible = true;
+      // } else {
         // 赋值
         const {
           idStr,
@@ -851,9 +851,9 @@ export default {
           this.orderFormOptions[4].initValue = marketStaffId;
            this.orderVisible = true;
         });
-      }
+      // }
 
-      this.orderFlag = true;
+      // this.orderFlag = true;
     },
     // 弹窗关闭
     handleClose(formName) {

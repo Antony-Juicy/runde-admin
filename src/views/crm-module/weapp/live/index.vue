@@ -356,6 +356,7 @@ export default {
       this.liveName = data.liveName;
       sessionStorage.setItem("chatAudit", data.chatAudit);
       sessionStorage.setItem("mute", data.mute);
+      sessionStorage.setItem("chatHistorySwitch", data.chatHistorySwitch);
     },
     handleLink(data) {
       this.linkVisible = true;

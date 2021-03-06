@@ -11,9 +11,6 @@
             <el-tab-pane label="互动设置" name="third">
                 <interaction :liveId="liveId"/>
             </el-tab-pane>
-            <!-- <el-tab-pane label="数据分析" name="fourth">
-                <analysis :liveId="liveId" :liveName="liveName"/>
-            </el-tab-pane> -->
             <el-tab-pane label="评论管理" name="fifth">
                 <comment :liveId="liveId" v-model="deviceF" @refresh="refresh"/>
             </el-tab-pane>
@@ -39,7 +36,8 @@ export default {
         activeName:"first",
         chatAudit: '',
         mute:'',
-        deviceF:{}
+        deviceF:{},
+        chatHistorySwitch:''
     }
   },
   props:{
@@ -67,9 +65,11 @@ export default {
   mounted(){
     this.chatAudit = JSON.parse(sessionStorage.getItem('chatAudit'))
     this.mute = JSON.parse(sessionStorage.getItem('mute'))
+    this.chatHistorySwitch = JSON.parse(sessionStorage.getItem('chatHistorySwitch'))
     this.deviceF = {
         chatAudit: this.chatAudit,
-        mute: this.mute
+        mute: this.mute,
+        chatHistorySwitch: this.chatHistorySwitch
     }
   },
    methods: {

@@ -40,6 +40,7 @@ export default {
     live_im_chat_data: {url: '/live/console/im/page_im_chat_data',method: 'post'}, //分页获取待审核聊天
     live_im_mute: {url: '/live/console/im/mute',method: 'post'}, //全体禁言开关
     live_im_chat_audit_switch: {url: '/live/console/im/chat_audit_switch',method: 'post'}, //全体聊天审核开关
+    live_im_chat_history: {url: '/live/console/im/update_chat_history_switch',method: 'post'}, //更新历史聊天开关
     live_im_audit_chat: {url: '/live/console/im/audit_chat',method: 'post'}, //聊天审核(通过，不通过，删除，禁言)
     // 回放管理
     live_get_live_playback_list:  {url: '/live/console/live/playback/get_live_playback_list',method: 'post'}, //获取直播回放列表

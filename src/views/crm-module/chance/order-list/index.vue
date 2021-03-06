@@ -128,6 +128,7 @@ export default {
               value: "campusQuery",
             },
           ],
+          initValue: "myQuery"
         },
         {
           prop: "enquireProductIdOne",
@@ -250,13 +251,18 @@ export default {
   },
   mounted() {
     this.getSelectList();
+    // 默认选中我成单的
+    this.searchForm = {
+      dataQueryType: "myQuery"
+    };
     this.getTableData();
   },
   methods: {
     onSearch(val) {
       this.searchForm = { 
         ...val,
-        updateAt: val.updateAt?val.updateAt.join(' ~ '):""
+        updateAt: val.updateAt?val.updateAt.join(' ~ '):"",
+        campusId: val.campusId?val.campusId.join(","):""
        };
       console.log(val, this.searchForm, "val---");
       this.getTableData();

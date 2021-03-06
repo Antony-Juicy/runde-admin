@@ -157,7 +157,7 @@ export default {
       ],
       tableData: [],
       tableKey: [
-        { name: "机会ID", value: "id", sortable: true, width: 100 },
+        { name: "机会ID", value: "idStr", sortable: true, width: 100 },
         { name: "姓名", value: "studentName" },
         { name: "手机号码", value: "phone", width: 100 },
         { name: "跟进次数", value: "feedbackCount" },
@@ -244,7 +244,7 @@ export default {
       console.log(this.detectForm, 666);
 
       this.$fetch("chance_invalid_update", {
-        ids: this.selectedRows.map((item) => item.id).join(","),
+        ids: this.selectedRows.map((item) => item.idStr).join(","),
         ...this.detectForm,
       }).then((res) => {
         if (res.code == 200) {

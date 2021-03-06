@@ -119,7 +119,7 @@ export default {
         },
         { name: "跟进状态", value: "status" },
         { name: "机会状态", value: "invalidStatus" },
-        { name: "机会状态", value: "saleSource" },
+        { name: "机会来源", value: "saleSource" },
         { name: "归属销售", value: "marketName" },
         { name: "分校/战队", value: "campusName" },
       ],

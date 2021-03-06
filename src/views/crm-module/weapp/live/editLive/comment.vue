@@ -13,6 +13,9 @@
         <el-switch v-model="value.chatAudit" active-text="聊天审核" @change="examChange"> </el-switch>
         <span class="tips"> (开启后聊天内容需通过审核才能显示)</span>
       </el-col>
+      <el-col :span="9">
+        <el-switch v-model="value.chatHistorySwitch" active-text="获取聊天历史" @change="chatHistorySwitchChange" > </el-switch>
+      </el-col>
     </el-row>
     <el-divider></el-divider>
     <div class="operate-table">
@@ -186,8 +189,8 @@ export default {
     muteChange(val){  
 
       this.$emit('input', {
-        mute: val,
-        chatAudit: this.value.chatAudit
+        ...this.value,
+        mute: val
       }) 
       this.$fetch("live_im_mute",{
         liveId: this.liveId,
@@ -202,12 +205,28 @@ export default {
 
     examChange(val){
       this.$emit('input', {
-        mute: this.value.mute,
+        ...this.value,
         chatAudit: val
       }) 
       this.$fetch("live_im_chat_audit_switch",{
         liveId: this.liveId,
         audit: val
+      }).then(res => {
+        if(res.code == 200){
+          this.$message.success("操作成功")
+          this.$emit("refresh")
+        }
+      })
+    },
+
+    chatHistorySwitchChange(val){
+      this.$emit('input', {
+        ...this.value,
+        chatHistorySwitch: val
+      }) 
+      this.$fetch("live_im_chat_history",{
+        liveId: this.liveId,
+        chatHistorySwitch: val
       }).then(res => {
         if(res.code == 200){
           this.$message.success("操作成功")

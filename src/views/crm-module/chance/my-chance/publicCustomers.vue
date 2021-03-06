@@ -820,6 +820,7 @@ export default {
               this.$message.success('保存成功')
               this.handleClose();
               this.getTableData();
+              this.$emit("refresh");
             }
           })
         }
