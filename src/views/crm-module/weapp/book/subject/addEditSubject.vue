@@ -95,7 +95,7 @@ export default {
                 bookSubjectTotalEnrolment: [{ required: true, message: "请输入报名人数", trigger: "blur" },],
                 bookSubjectStatus: [{ required: true, message: "请输入", trigger: "blur" },],
                 orderValue: [{ required: true, message: "请输入", trigger: "blur" },],
-                bookSubjectPurchaseUrl: [{ required: true, message: "请输入", trigger: "blur" },],
+                // bookSubjectPurchaseUrl: [{ required: true, message: "请输入", trigger: "blur" },],
             },
             btnLoading: false,
             mode: "add",// add 新增 edit 修改
