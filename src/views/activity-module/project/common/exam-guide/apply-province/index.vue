@@ -1,60 +1,45 @@
 <template>
-  <div class="examguide-container">
+  <div class="province-container">
+    <search-form :formOptions="formOptions" :showNum="7" @onSearch="onSearch"></search-form>
     <div class="w-container">
-      <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane label="报考省份" name="first">
-          <search-form :formOptions="formOptions" :showNum="7" @onSearch="onSearch"></search-form>
-          <!-- <div class="w-container"> -->
-            <div class="btn-wrapper">
-              <el-button type="primary" size="small" @click="handleAdd">添加</el-button>
-            </div>
-            <rd-table
-              :tableData="tableData"
-              :tableKey="tableKey"
-              :loading="loading"
-              :pageConfig.sync="pageConfig"
-              :tbodyHeight="600"
-              fixedTwoRow
-              @pageChange="pageChange"
-              :emptyText="emptyText">
-              <template slot="edit" slot-scope="scope">
-                <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑</el-button>
-                <el-divider direction="vertical"></el-divider>
-                <el-button @click="handleDelete(scope.row)" type="text" size="small" style="color: #ec5b56">删除</el-button>
-              </template>
-            </rd-table>
-          <!-- </div> -->
-          
-          <!-- 添加海报 -->
-          <rd-dialog
-            :title="addStatus?'添加省份':'编辑省份'"
-            :dialogVisible="addVisible"
-            @handleClose="addVisible = false"
-            @submitForm="submitAddForm('dataForm')">
-            <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm"></RdForm>
-          </rd-dialog>
-        </el-tab-pane>
-        <el-tab-pane label="报考信息" name="two">
-          <Information ref="Information"></Information>
-        </el-tab-pane>
-        <el-tab-pane label="报考专业" name="three">
-          333
-        </el-tab-pane>
-        <el-tab-pane label="审核通知" name="four">
-          444
-        </el-tab-pane>
-      </el-tabs>
+      <div class="btn-wrapper">
+        <el-button type="primary" size="small" @click="handleAdd">添加</el-button>
+      </div>
+      <rd-table
+        :tableData="tableData"
+        :tableKey="tableKey"
+        :loading="loading"
+        :pageConfig.sync="pageConfig"
+        :tbodyHeight="600"
+        fixedTwoRow
+        @pageChange="pageChange"
+        :emptyText="emptyText">
+        <template slot="edit" slot-scope="scope">
+          <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑</el-button>
+          <el-divider direction="vertical"></el-divider>
+          <el-button @click="handleDelete(scope.row)" type="text" size="small" style="color: #ec5b56">删除</el-button>
+        </template>
+      </rd-table>
+      
+      <!-- 添加海报 -->
+      <rd-dialog
+        :title="addStatus?'添加省份':'编辑省份'"
+        :dialogVisible="addVisible"
+        @handleClose="addVisible = false"
+        @submitForm="submitAddForm('dataForm')">
+        <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm"></RdForm>
+      </rd-dialog>
     </div>
     
   </div>
 </template>
 
 <script>
-import Information from './information';
+import RdForm from "@/components/RdForm";
 export default {
-  name:"exam-guide",
+  name:"apply-province",
   components:{
-    Information
+    RdForm
   },
   data(){
     return {
@@ -215,15 +200,6 @@ export default {
     }
   },
   methods: {
-    handleClick(tab, event) {
-      console.log(tab.index, "click");
-      this.tabIndex = tab.index;
-      // if(tab.index == 0){
-      //   this.$refs.Manage.getTableData();
-      // }else if(tab.index == 1){
-      //   this.$refs.Count.getTableData();
-      // }
-    },
     onSearch(val){
       this.searchForm = {
         ...val
@@ -285,7 +261,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.examguide-container {
+.province-container {
 
 }
 </style>

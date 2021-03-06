@@ -1,7 +1,7 @@
 <template>
   <div class="manage-container">
     <search-form :formOptions="formOptions" :showNum="7" @onSearch="onSearch"></search-form>
-    <div class="">
+    <div class="w-container">
       <div class="btn-wrapper">
         <el-button type="primary" size="small">打包</el-button>
       </div>
@@ -21,7 +21,7 @@
 <script>
 
 export default {
-  name:"temp",
+  name:"coupon-receive-manage",
   data(){
     return {
       formOptions: [
