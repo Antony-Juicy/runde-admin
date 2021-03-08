@@ -895,6 +895,7 @@ export default {
             campusNature: currentCampus.nature,
             marketName: currentMarket.label,
             marketPosition: "",
+            saleSource: this.selectedData[0].saleSource_text
           }).then((res) => {
             if (res.code == 200) {
               this.$message.success("保存成功");

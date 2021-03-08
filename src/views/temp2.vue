@@ -394,7 +394,7 @@ export default {
   },
   methods: {
      openDrawer(data){
-      this.drawerId = data.id;
+      this.drawerId = data.idStr;
       this.drawerPhone = data.phone;
       this.drawerTitle = data.studentName || "";
       this.drawerVisible = true;

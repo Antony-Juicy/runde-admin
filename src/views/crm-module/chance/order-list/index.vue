@@ -383,7 +383,7 @@ export default {
     },
      openDrawer(data){
        console.log(data,'data---  ')
-      this.drawerId = data.id;
+      this.drawerId = data.idStr;
       this.drawerPhone = data.phone;
       console.log(this.drawerPhone,'99')
       this.drawerVisible = true;

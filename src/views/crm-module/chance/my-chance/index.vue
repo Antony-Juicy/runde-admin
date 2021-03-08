@@ -129,6 +129,7 @@
                 v-model="basicInfo.nextTime"
                 type="datetime"
                 placeholder="选择日期时间"
+                :picker-options="startDateDisabled"
               >
               </el-date-picker>
             </el-form-item>
@@ -333,6 +334,7 @@ export default {
   name: "my-chance",
   data() {
     return {
+      startDateDisabled:{},
       currentData: {},
       showDetail: false,
       activeName: "first",
@@ -405,6 +407,12 @@ export default {
     privateCustomers,
     publicCustomers,
     lockUser,
+  },
+  created(){
+    // 限制开始日期不能超过当前日期
+    this.startDateDisabled.disabledDate = function (time) {
+      return (time.getTime() + 24 * 3600 * 1000) < Date.now()
+    }
   },
   mounted() {
     this.getSelectList();
