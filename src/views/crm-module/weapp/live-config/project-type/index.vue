@@ -10,6 +10,7 @@
         :loading="loading"
         :fixedTwoRow="fixedTwoRow"
         :pageConfig.sync="pageConfig"
+        :rowKey="rowKey"
         @select="handleSelect"
         @pageChange="pageChange">
         <template slot="typeIcon" slot-scope="scope">
@@ -72,19 +73,37 @@ export default {
   },
   data(){
     return {
+      rowKey: "typeId",
       tableData: [
-        // {
-        //   typeId: 1,
-        //   typeName: "执业药师",
-        //   orderValue: 1,
-        //   typeStatus: "正常"
-        // },
-        // {
-        //   typeId: 2,
-        //   typeName: "健康管理师",
-        //   orderValue: 2,
-        //   typeStatus: "停用"
-        // }
+        {
+          typeId: 1,
+          typeName: "执业药师",
+          orderValue: 1,
+          typeStatus: "Normal",
+          children: [
+            {
+              typeId: 3,
+              typeName: "二级执业药师",
+              orderValue: 1,
+              typeStatus: "Normal",
+              children: [
+                {
+                  typeId: 4,
+                  typeName: "三级执业药师",
+                  orderValue: 1,
+                  typeStatus: "Normal",
+                  children: []
+                },
+              ]
+            },
+          ]
+        },
+        {
+          typeId: 2,
+          typeName: "健康管理师",
+          orderValue: 2,
+          typeStatus: "Disable"
+        }
       ],
       tableKey: [
         { name: 'id',value: 'typeId' },
@@ -143,11 +162,6 @@ export default {
     },
     pageChange(val) {
       console.log(val,'pagechange')
-      // this.currentPageInfo = val;
-      // this.getTableData({
-      //   pageNum: (val && val.page) || 1,
-      //   pageSize: (val && val.limit) || 10,
-      // });
       this.pageConfig.pageNum = val.page;
       this.pageConfig.pageSize = val.limit;
       this.getTableData();

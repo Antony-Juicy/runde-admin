@@ -68,9 +68,9 @@
               <el-button style="margin-left: 20px;height:40px;" type="danger" size="small" @click.prevent="removeDomain(domain)">删除</el-button>
             </div>
             <el-form-item label="市报名通知">
-              <el-button type="primary" size="small" @click="addDomain">点击添加市报名通知</el-button>
+              <el-button type="primary" size="small" @click="addCityDomain">点击添加市报名通知</el-button>
             </el-form-item>
-            <div class="divList" v-for="(domain, index) in noticeForm.citySign" :key="index">
+            <div class="divList" v-for="(domain, index) in noticeForm.citySign" :key="'city'+index">
               <el-form-item
                 class="mtn"
                 :label="'审核时间'"
@@ -101,7 +101,7 @@
                 :prop="'citySign.' + index + '.value'">
                 <el-input type="textarea" v-model="domain.value5" placeholder="请输入活动跳转菜单名称"></el-input>
               </el-form-item>
-              <el-button style="margin-left: 50px;height:40px;" type="danger" size="small" @click.prevent="removeDomain(domain)">删除</el-button>
+              <el-button style="margin-left: 50px;height:40px;" type="danger" size="small" @click.prevent="removeCityDomain(domain)">删除</el-button>
             </div>
           </el-form>
           <div class="btn-bottom">
@@ -209,11 +209,11 @@ export default {
         ],
         citySign: [
           {
-            value1: '',
-            value2: '',
-            value3: '',
-            value4: '',
-            value5: ''
+            cityvalue1: '',
+            cityvalue2: '',
+            cityvalue3: '',
+            cityvalue4: '',
+            cityvalue5: ''
           }
         ],
       }
@@ -262,8 +262,11 @@ export default {
     },
     addDomain() {
       this.noticeForm.ancillaryGoods.push({
-        value: '',
-        num: '',
+        value1: '',
+        value2: '',
+        value3: '',
+        value4: '',
+        value5: '',
       });
     },
     removeCityDomain(item) {
@@ -274,8 +277,11 @@ export default {
     },
     addCityDomain() {
       this.noticeForm.citySign.push({
-        value: '',
-        num: '',
+        cityvalue1: '',
+        cityvalue2: '',
+        cityvalue3: '',
+        cityvalue4: '',
+        cityvalue5: ''
       });
     }
   }

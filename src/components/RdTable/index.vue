@@ -24,6 +24,8 @@
       :show-header="showHeader"
       :border="border"
       :highlight-current-row="highlightCurrentRow"
+      :row-key="rowKey"
+      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
       @current-change="handleCurrentChange"
       @selection-change="handleSelectionChange"
       @sort-change="handelSortChange"
@@ -123,6 +125,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    rowKey: {
+      type: String,
+      default: 'id'
+    },
     // 是否多选
     multiple: {
       type: Boolean,
@@ -202,6 +208,7 @@ export default {
     };
   },
   created() {
+    console.log(this.rowKey,'this.rowKey----')
     this.tableKey.forEach((item) => {
       item.show = true;
     });

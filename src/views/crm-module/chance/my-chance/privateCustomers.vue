@@ -140,12 +140,13 @@
             size="small"
             multiple
             filterable
+            @change="testData"
           >
             <el-option
               v-for="item in classArr"
               :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              :label="item.name"
+              :value="item"
             >
             </el-option>
           </el-select>
@@ -685,6 +686,9 @@ export default {
     },
   },
   methods: {
+    testData(val) {
+      console.log(val,'val----')
+    },
     importProductChange(val) {
       this.$fetch("chance_subject_list", {
         enquireProductIdOne: val,
@@ -732,7 +736,7 @@ export default {
           let data = JSON.parse(res.msg);
           nodes = data.map((item) => ({
             value: item.id,
-            label: item.className,
+            name: item.className,
           }));
         }
         this.classArr = nodes;
@@ -994,6 +998,7 @@ export default {
             productId: this.productId,
             enquireProductIdOne: this.productId,
             enquireSubjectIdOne: this.subjectId,
+            enquireClassOne: JSON.stringify(this.classId),
             undefined: this.classId.join(","),
           }).then((res) => {
             if (res.code == 200) {
