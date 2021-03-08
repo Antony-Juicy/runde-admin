@@ -263,20 +263,10 @@ export default {
         },
     },
 
-    created() {
-
-    },
-
     mounted() {
         this.getTableData()
     },
-    beforeCreate() { },
-    beforeMount() { },
-    beforeUpdate() { },
-    updated() { },
-    beforeDestroy() { },
-    destroyed() { },
-    activated() { },
+    
 }
 </script>
 <style lang='scss' scoped>

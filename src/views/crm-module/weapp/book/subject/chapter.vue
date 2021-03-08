@@ -229,21 +229,10 @@ export default {
         },
     },
 
-    created() {
-
-    },
-
     mounted() {
         scrollTo(0, 800);
         this.getTableData()
     },
-    beforeCreate() { },
-    beforeMount() { },
-    beforeUpdate() { },
-    updated() { },
-    beforeDestroy() { },
-    destroyed() { },
-    activated() { },
 }
 </script>
 <style lang='scss' scoped>

@@ -294,9 +294,6 @@ export default {
         },
     },
 
-    created() {
-    },
-
     mounted() {
         if (this.mode == 'fromClass') {
             scrollTo(0, 800);
@@ -335,13 +332,7 @@ export default {
         }
         this.getTableData();
     },
-    beforeCreate() { },
-    beforeMount() { },
-    beforeUpdate() { },
-    updated() { },
-    beforeDestroy() { },
-    destroyed() { },
-    activated() { },
+
 }
 </script>
 <style lang='scss' scoped>
