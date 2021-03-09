@@ -989,6 +989,10 @@ export default {
             this.$message.error("请选择咨询班型")
             return
           }
+          if(formData.studentName.length > 20){
+            this.$message.error("学员姓名不能超过20个字数")
+            return
+          }
           this.$fetch("chance_my_add", {
             ...formData,
             productId: this.productId,

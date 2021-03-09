@@ -293,6 +293,21 @@ export default {
           value: "phone",
           operate: true,
         },
+         {
+          name: "创建时间",
+          value: "createAt",
+          width: 135
+        },
+         {
+          name: "分配时间",
+          value: "allotTime",
+          width: 135
+        },
+         {
+          name: "锁定次数",
+          value: "lockedTimes",
+          width: 60
+        },
         {
           name: "回收倒计时",
           value: "cutdown",
@@ -322,16 +337,7 @@ export default {
         {
           name: "跟进状态",
           value: "status",
-        },
-        {
-          name: "创建时间",
-          value: "createAt",
-          width: 135
-        },
-        {
-          name: "呼叫状态",
-          value: "callStatus",
-        },
+        }
       ],
       pageConfig: {
         totalCount: 0,
@@ -955,6 +961,7 @@ export default {
       }).then((res) => {
         this.tableData = res.data.data.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
+          item.allotTime = this.$common._formatDates(item.allotTime);
           item.updateAt = this.$common._formatDates(item.updateAt);
           item.recentFeedbackTime = this.$common._formatDates(
             item.recentFeedbackTime
