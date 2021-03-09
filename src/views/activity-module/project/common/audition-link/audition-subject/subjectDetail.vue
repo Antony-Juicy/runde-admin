@@ -33,6 +33,7 @@
        <rd-dialog
         :title="'编辑'"
         :dialogVisible="editVisible"
+        :width="'700px'"
         append-to-body
         @handleClose="editVisible = false"
         @submitForm="submitAddForm('dataForm3')"

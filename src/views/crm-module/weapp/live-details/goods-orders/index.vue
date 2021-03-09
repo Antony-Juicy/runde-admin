@@ -203,19 +203,19 @@ export default {
   mounted () {
     
     this.getTypeData();
-    const { goodsName,sourceName } = this.$route.params;
+    const { goodsName,sourceName, teacherName } = this.$route.params;
     if(sourceName){
       this.formOptions[2].initValue = decodeURIComponent(sourceName)
-      this.$refs.myserach.addInitValue()
-      this.$refs.myserach.onSearch()
-    }else if(goodsName){
+    }
+    if(goodsName){
       this.formOptions[1].initValue = decodeURIComponent(goodsName)
-      this.$refs.myserach.addInitValue()
-      this.$refs.myserach.onSearch()
     }
-    else{
-      this.getTableData();
+    if(teacherName){
+      this.formOptions[3].initValue = decodeURIComponent(teacherName)
     }
+
+    this.$refs.myserach.addInitValue()
+    this.$refs.myserach.onSearch()
   },
   watch:{
     "$route.params.sourceName"(newVal){
@@ -231,6 +231,14 @@ export default {
         return
       }
       this.formOptions[1].initValue = decodeURIComponent(newVal)
+      this.$refs.myserach.addInitValue()
+      this.$refs.myserach.onSearch()
+    },
+    "$route.params.teacherName"(newVal){
+      if(!newVal){
+        return
+      }
+      this.formOptions[3].initValue = decodeURIComponent(newVal)
       this.$refs.myserach.addInitValue()
       this.$refs.myserach.onSearch()
     }
