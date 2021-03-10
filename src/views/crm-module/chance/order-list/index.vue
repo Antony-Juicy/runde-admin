@@ -5,6 +5,8 @@
         :formOptions="formOptions"
         :showNum="5"
         @onSearch="onSearch"
+        @onReset="onReset"
+        ref="searchForm"
       ></search-form>
       <div class="w-container">
         <rd-table
@@ -267,6 +269,10 @@ export default {
       console.log(val, this.searchForm, "val---");
       this.getTableData();
     },
+    onReset(){
+      this.formOptions[0].initValue = "myQuery";
+      this.$refs.searchForm.addInitValue();
+    },
     pageChange(val) {
       console.log(val, "pagechange");
       this.pageConfig.currentPage = val.page;
@@ -305,6 +311,7 @@ export default {
             prop: "dataQueryType",
             element: "el-select",
             placeholder: "查看类型",
+            unClearable: true,
             options: [
               {
                 label: "我成单的",

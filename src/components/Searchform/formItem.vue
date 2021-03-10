@@ -28,7 +28,7 @@
       size="small"
       :multiple="itemOptions.multiple"
       :filterable="itemOptions.filterable"
-      :clearable="itemOptions.clearable">
+      :clearable="!itemOptions.unClearable">
       <el-option
         v-for="item in itemOptions.options"
         :key="item.value"
