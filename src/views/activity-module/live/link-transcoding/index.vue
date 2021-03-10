@@ -3,7 +3,7 @@
     <search-form :formOptions = "formOptions" :showNum="showNum" @onSearch = onSearch></search-form>
     <div class="w-container mt-15">
       <div class="btn-wrapper">
-        <el-button type="primary" size="small">添加</el-button>
+        <el-button type="primary" size="small" @click="handleAdd">添加</el-button>
       </div>
       <rd-table
         :tableData="tableData"
@@ -19,13 +19,24 @@
           <el-button @click="handleDelete(scope.row)" type="text" size="small" style="color: #ec5b56" >删除</el-button>
         </template>
       </rd-table>
+      <rd-dialog
+        :title="addStatus?'添加直播链接':'编辑直播链接'"
+        :dialogVisible="addVisible"
+        @handleClose="addVisible = false"
+        @submitForm="submitAddForm('dataForm')">
+        <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm"></RdForm>
+      </rd-dialog>
     </div>
   </div>
 </template>
 
 <script>
+import RdForm from "@/components/RdForm";
 export default {
   name:"link-transcoding",
+  components:{
+    RdForm
+  },
   data(){
     return {
       showNum: 6,
@@ -52,7 +63,49 @@ export default {
         pageNum: 1,
         pageSize: 10,
       },
-      loading: false
+      loading: false,
+
+      addStatus: true,
+      addVisible: false,
+      addFormOptions: [
+        {
+          prop: "liveLink",
+          element: "el-input",
+          placeholder: "请输入直播链接",
+          label: "直播链接"
+        },
+        {
+          prop: "liveLinkTranscoding",
+          element: "el-input",
+          placeholder: "请输入直播转码链接",
+          label: "直播转码链接",
+          type:"textarea"
+        },
+        { 
+          prop: 'status',
+          element: 'el-select',
+          placeholder: '请选择状态',
+          label: "状态",
+          options: [
+            {
+              label: "正常",
+              value: 0,
+            },
+            {
+              label: "暂停",
+              value: 1,
+            }
+          ],
+        },
+        {
+          prop: "status",
+          element: "el-input",
+          placeholder: "备注",
+          label: "备注",
+          type:"textarea"
+        },
+      ],
+      addRules: {},
     }
   },
   mounted () {
@@ -93,6 +146,9 @@ export default {
       this.pageConfig.pageNum = val.page;
       this.pageConfig.pageSize = val.limit;
       // this.getTableData();
+    },
+    handleAdd(){
+      this.addVisible = true;
     },
     handleEdit(row) {},
     handleDelete(row) {}
