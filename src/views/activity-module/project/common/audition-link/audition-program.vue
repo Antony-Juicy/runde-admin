@@ -22,7 +22,15 @@
       >
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
-            >查阅/编辑</el-button
+            >编辑</el-button
+          >
+          <el-divider direction="vertical"></el-divider>
+          <el-button @click="handleEdit(scope.row)" type="text" size="small" style="color: #ffa500"
+            >上传AI题目</el-button
+          >
+          <el-divider direction="vertical"></el-divider>
+          <el-button @click="handleDetail(scope.row)" type="text" size="small" style="color: #ffa500"
+            >查看题目详情</el-button
           >
           <el-divider direction="vertical"></el-divider>
           <el-button
@@ -38,7 +46,7 @@
     
     <!-- 添加海报 -->
     <rd-dialog
-        :title="addStatus?'添加海报':'编辑海报'"
+        :title="addStatus?'添加':'编辑'"
         :dialogVisible="addVisible"
         @handleClose="addVisible = false"
         @submitForm="submitAddForm('dataForm3')"
@@ -49,11 +57,25 @@
           </template>
         </RdForm>
       </rd-dialog>
+
+      <!-- 题目详情 -->
+      <el-drawer
+          :visible.sync="detailVisible"
+          title="题目详情"
+          size="50%"
+        >
+          <subjectDetail
+            ref="subjectDetail"
+            @close="detailVisible = false"
+            v-if="detailVisible"
+          />
+      </el-drawer>
   </div>
 </template>
 
 <script>
 import RdForm from "@/components/RdForm";
+import subjectDetail from "./audition-subject/subjectDetail";
 export default {
   name:"link-manage",
   data(){
@@ -61,18 +83,22 @@ export default {
       formOptions: [
         {
           prop: "menuName",
-          element: "el-input",
-          placeholder: "商品名称",
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "活动名称",
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "海报名称",
+          element: "el-select",
+          placeholder: "APP名称",
+          options: [
+            {
+              label:"考药狮",
+              value: "1"
+            },
+            {
+              label:"考医狮",
+              value: "2"
+            },
+            {
+              label:"考护狮",
+              value: "3"
+            }
+          ]
         }
       ],
       searchForm:{},
@@ -94,58 +120,34 @@ export default {
           width: 80
         },
         {
-          name: "老师名称",
+          name: "APP名称",
           value: "staffName",
         },
         {
-          name: "商品名称",
+          name: "考药狮项目id",
           value: "goodsName",
         },
         {
-          name: "活动名称",
+          name: "考药狮项目名称",
           value: "activityName",
         },
         {
-          name: "海报名称",
+          name: "数据状态",
           value: "posterName",
-        },
-        {
-          name: "海报图片",
-          value: "posterPic",
-        },
-        {
-          name: "分享文案一",
-          value: "posterCopyFirst",
-        },
-        {
-          name: "分享文案二",
-          value: "posterCopySecond",
-        },
-        {
-          name: "分享文案三",
-          value: "posterCopyThird",
-        },
-        {
-          name: "分享文案四",
-          value: "posterCopyFourth",
-        },
-        {
-          name: "分享文案五",
-          value: "posterCopyFifth",
         },
         {
           name: "创建时间",
           value: "createAt",
         },
         {
-          name: "修改时间",
+          name: "更新时间",
           value: "updateAt",
         },
         {
           name: "操作",
           value: "edit",
           operate: true,
-          width: 140,
+          width: 160,
           fixed: "right"
         },
       ],
@@ -156,12 +158,17 @@ export default {
       },
       addVisible: false,
       addFormOptions: [
-          
         {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "请输入海报名称",
-          label: "海报名称"
+          prop: "roleName",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "APP名称"
+        },
+        {
+          prop: "roleName",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "项目名称"
         },
         {
           prop: "post",
@@ -170,78 +177,6 @@ export default {
           label: "上传海报",
           operate: true,
           initValue: 0
-        },
-        {
-          prop: "roleName",
-          element: "el-select",
-          placeholder: "请选择",
-          label: "所属九块九包邮",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-        {
-          prop: "roleName",
-          element: "el-select",
-          placeholder: "请选择",
-          label: "所属活动",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-        {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案一",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案二",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案三",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案四",
-          type:"textarea",
-          rows: 2
-        },
-           {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案五",
-          type:"textarea",
-          rows: 2
         }
       ],
       addRules:{
@@ -249,11 +184,13 @@ export default {
           { required: true, message: "请输入修改事由", trigger: "blur" },
         ]
       },
-      addStatus: true
+      addStatus: true,
+      detailVisible: false
     }
   },
   components:{
-    RdForm
+    RdForm,
+    subjectDetail
   },
    methods: {
      onSearch(val){
@@ -311,6 +248,9 @@ export default {
           });
         })
         .catch(() => {});
+    },
+    handleDetail(data){
+      this.detailVisible = true;
     }
   }
 }

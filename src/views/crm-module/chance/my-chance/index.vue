@@ -330,6 +330,7 @@ import publicCustomers from "./publicCustomers";
 import lockUser from "./lockUser";
 import fullDialog from "@/components/FullDialog";
 import Fetch from '@/utils/fetch'
+import { scrollTo } from '@/utils/scroll-to'
 export default {
   name: "my-chance",
   data() {
@@ -474,7 +475,7 @@ export default {
       this.getSubjectList(enquireProductIdOne);
       this.getCourseList(enquireSubjectIdOne);
       this.getClassList(enquireSubjectIdOne);
-    
+      console.log(enquireClassOne,'enquireClassOne')
       this.basicInfo2 = {
         saleSource,
         labelInfoName,
@@ -616,6 +617,7 @@ export default {
         return;
       }
       this.showDetail = true;
+      scrollTo(0, 500)
     },
 
     getSelectList() {

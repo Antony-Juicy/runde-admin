@@ -1,16 +1,16 @@
 <template>
   <div class="post-manage">
-      <search-form
+      <!-- <search-form
       :formOptions="formOptions"
       :showNum="7"
       @onSearch="onSearch"
-    ></search-form>
+    ></search-form> -->
     <div class="w-container">
-      <div class="btn-wrapper">
+      <!-- <div class="btn-wrapper">
         <el-button type="primary" size="small" @click="handleAdd"
           >添加</el-button
         >
-      </div>
+      </div> -->
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
@@ -21,8 +21,11 @@
         :emptyText="emptyText"
       >
         <template slot="edit" slot-scope="scope">
-          <el-button @click="handleEdit(scope.row)" type="text" size="small"
-            >查阅/编辑</el-button
+          <!-- <el-button @click="handleEdit(scope.row)" type="text" size="small"
+            >编辑</el-button
+          ><el-divider direction="vertical"></el-divider> -->
+          <el-button @click="handleDetail(scope.row)" type="text" size="small" style="color: #ffa500"
+            >查看题目详情</el-button
           >
           <el-divider direction="vertical"></el-divider>
           <el-button
@@ -49,11 +52,25 @@
           </template>
         </RdForm>
       </rd-dialog>
+
+      <!-- 题目详情 -->
+      <el-drawer
+          :visible.sync="detailVisible"
+          title="题目详情"
+          size="50%"
+        >
+          <subjectDetail
+            ref="subjectDetail"
+            @close="detailVisible = false"
+            v-if="detailVisible"
+          />
+      </el-drawer>
   </div>
 </template>
 
 <script>
 import RdForm from "@/components/RdForm";
+import subjectDetail from "./audition-subject/subjectDetail";
 export default {
   name:"link-manage",
   data(){
@@ -94,58 +111,35 @@ export default {
           width: 80
         },
         {
-          name: "老师名称",
+          name: "科目id",
           value: "staffName",
         },
         {
-          name: "商品名称",
+          name: "科目名",
           value: "goodsName",
         },
         {
-          name: "活动名称",
+          name: "数据状态",
           value: "activityName",
         },
         {
-          name: "海报名称",
+          name: "排序",
           value: "posterName",
-        },
-        {
-          name: "海报图片",
-          value: "posterPic",
-        },
-        {
-          name: "分享文案一",
-          value: "posterCopyFirst",
-        },
-        {
-          name: "分享文案二",
-          value: "posterCopySecond",
-        },
-        {
-          name: "分享文案三",
-          value: "posterCopyThird",
-        },
-        {
-          name: "分享文案四",
-          value: "posterCopyFourth",
-        },
-        {
-          name: "分享文案五",
-          value: "posterCopyFifth",
+          width: 80
         },
         {
           name: "创建时间",
           value: "createAt",
         },
         {
-          name: "修改时间",
+          name: "更新时间",
           value: "updateAt",
         },
         {
           name: "操作",
           value: "edit",
           operate: true,
-          width: 140,
+          width: 160,
           fixed: "right"
         },
       ],
@@ -249,11 +243,13 @@ export default {
           { required: true, message: "请输入修改事由", trigger: "blur" },
         ]
       },
-      addStatus: true
+      addStatus: true,
+      detailVisible: false
     }
   },
   components:{
-    RdForm
+    RdForm,
+    subjectDetail
   },
    methods: {
      onSearch(val){
@@ -311,6 +307,9 @@ export default {
           });
         })
         .catch(() => {});
+    },
+    handleDetail(data){
+      this.detailVisible = true;
     }
   }
 }

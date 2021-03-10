@@ -999,7 +999,10 @@ export default {
             productId: this.productId,
             enquireProductIdOne: this.productId,
             enquireSubjectIdOne: this.subjectId,
-            enquireClassOne: JSON.stringify(this.classId),
+            enquireClassOne: JSON.stringify(this.classId.map(item => ({
+              name: item.name,
+              val: item.value
+            }))),
             undefined: this.classId.join(","),
           }).then((res) => {
             if (res.code == 200) {

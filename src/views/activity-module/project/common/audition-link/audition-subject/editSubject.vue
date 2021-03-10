@@ -130,8 +130,11 @@
         </el-form-item>
       </div>
       <div class="btn-wrapper">
-        <el-button type="primary" @click="submitForm('dynamicValidateForm')"
-          >提交</el-button
+        <el-button size="small" @click="resetForm('dynamicValidateForm')"
+          >取消</el-button
+        >
+        <el-button type="primary" size="small" @click="submitForm('dynamicValidateForm')"
+          >保存</el-button
         >
       </div>
     </el-form>
@@ -195,6 +198,20 @@ export default {
 <style lang="scss" scoped>
 .edit-subject {
   padding-left: 20px;
+  max-height: calc(92vh - 71px - 63px);
+  overflow: auto;
+  box-sizing: border-box;
+  &::-webkit-scrollbar {
+    /*滚动条整体样式*/
+    width: 10px; /*高宽分别对应横竖滚动条的尺寸*/
+    height: 1px;
+  }
+  &::-webkit-scrollbar-thumb {
+    /*滚动条里面小方块*/
+    border-radius: 10px;
+    box-shadow: inset 0 0 5px #d0d1d3;
+    background: #d0d1d3;
+  }
   .param-item {
     display: flex;
     align-items: center;
@@ -204,6 +221,10 @@ export default {
     width: 60px;
     display:inline-block;
     text-align:right;
+  }
+  .btn-wrapper {
+    text-align: right;
+    margin-bottom: 0;
   }
   /deep/ {
     .img180 {
