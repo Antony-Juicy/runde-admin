@@ -895,6 +895,7 @@ export default {
             campusNature: currentCampus.nature,
             marketName: currentMarket.label,
             marketPosition: "",
+            saleSource: this.selectedData[0].saleSource_text
           }).then((res) => {
             if (res.code == 200) {
               this.$message.success("保存成功");
@@ -998,7 +999,10 @@ export default {
             productId: this.productId,
             enquireProductIdOne: this.productId,
             enquireSubjectIdOne: this.subjectId,
-            enquireClassOne: JSON.stringify(this.classId),
+            enquireClassOne: JSON.stringify(this.classId.map(item => ({
+              name: item.name,
+              val: item.value
+            }))),
             undefined: this.classId.join(","),
           }).then((res) => {
             if (res.code == 200) {

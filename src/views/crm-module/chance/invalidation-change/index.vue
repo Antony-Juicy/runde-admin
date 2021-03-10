@@ -389,11 +389,11 @@ export default {
           },
           {
             prop: "marketName",
-            element: "el-select",
+            element: "el-input",
             initValue: "",
-            placeholder: "请选择归属销售",
-            filterable: true,
-            options: staffOptions,
+            placeholder: "归属销售",
+            // filterable: true,
+            // options: staffOptions,
           },
           {
             prop: "campusId",

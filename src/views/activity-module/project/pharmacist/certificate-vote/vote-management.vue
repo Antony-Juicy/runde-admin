@@ -1,6 +1,6 @@
 <template>
   <div class="post-manage">
-     <search-form
+      <search-form
       :formOptions="formOptions"
       :showNum="7"
       @onSearch="onSearch"
@@ -9,6 +9,18 @@
       <div class="btn-wrapper">
         <el-button type="primary" size="small" @click="handleAdd"
           >添加</el-button
+        >
+        <el-button type="info" size="small" @click="handleAdd"
+          >下载</el-button
+        >
+        <el-button type="danger" size="small" @click="handleAdd"
+          >全部暂停</el-button
+        >
+        <el-button type="success" size="small" @click="handleAdd"
+          >全部恢复</el-button
+        >
+        <el-button type="warning" size="small" @click="handleAdd"
+          >导出作品图片</el-button
         >
       </div>
       <rd-table
@@ -25,91 +37,84 @@
             >编辑</el-button
           >
           <el-divider direction="vertical"></el-divider>
-          <el-button @click="uploadSubject(scope.row)" type="text" size="small" style="color: #ffa500"
-            >上传题目</el-button
+          <el-button @click="handleDetail(scope.row)" type="text" size="small" style="color: #ffa500"
+            >下载</el-button
           >
           <el-divider direction="vertical"></el-divider>
           <el-button @click="handleDetail(scope.row)" type="text" size="small" style="color: #ffa500"
-            >查看题目详情</el-button
-          >
-          <el-divider direction="vertical"></el-divider>
-          <el-button
-            @click="handleDelete(scope.row)"
-            type="text"
-            size="small"
-            style="color: #ec5b56"
-            >删除</el-button
+            >换模板</el-button
           >
         </template>
       </rd-table>
     </div>
     
-    <!-- 添加/编辑 -->
-    <rd-dialog
-        :title="addStatus?'添加':'编辑'"
-        :dialogVisible="addVisible"
-        @handleClose="addVisible = false"
-        @submitForm="submitAddForm('dataForm3')"
+    <!-- 添加 -->
+    <fullDialog
+        v-model="addVisible"
+        title="添加"
+        @change="addVisible = false"
       >
-        <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
-        </RdForm>
-      </rd-dialog>
-
-      <!-- 上传 -->
-      <rd-dialog
-        :title="'上传题目'"
-        :dialogVisible="uploadVisible"
-        @handleClose="uploadVisible = false"
-        @submitForm="submitAddForm('dataForm4')"
-      >
-        <el-button type="primary">点击上传</el-button>
-      </rd-dialog>
-
-      <!-- 题目详情 -->
-      <fullDialog
-          v-model="detailVisible"
-          title="题目详情"
-          @change="detailVisible = false"
-        >
-          <subjectRecord
-            ref="subjectRecord"
-            @close="detailVisible = false"
-            v-if="detailVisible"
-          />
+        <AddVote
+          ref="AddAct"
+          @close="addVisible = false"
+          @refresh="refresh"
+          v-if="addVisible"
+        />
       </fullDialog>
-      <!-- <editSubject/> -->
   </div>
 </template>
 
 <script>
 import RdForm from "@/components/RdForm";
-import subjectRecord from "./subjectRecord";
 import fullDialog from "@/components/FullDialog";
-import editSubject from './editSubject';
+import AddVote from "./AddVote"
 export default {
-  name:"link-manage",
+  name:"post-manage",
   data(){
     return {
       formOptions: [
         {
           prop: "menuName",
           element: "el-select",
-          placeholder: "APP名称",
-          options: [
-            {
-              label:"考药狮",
-              value: "1"
-            },
-            {
-              label:"考医狮",
-              value: "2"
-            },
-            {
-              label:"考护狮",
-              value: "3"
-            }
-          ]
-        }
+          placeholder: "活动名称",
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "项目类型",
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "微信用户",
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "作品状态",
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "自动投票",
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "排序字段",
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "排序方式",
+        },
+        {
+          prop: "time",
+          element: "el-date-picker",
+          startPlaceholder: "参赛时间(开始)",
+          endPlaceholder: "参赛时间(结束)",
+          initWidth: true,
+        },
       ],
       searchForm:{},
       emptyText:"暂无数据",
@@ -130,63 +135,51 @@ export default {
           width: 80
         },
         {
-          name: "APP名称",
+          name: "作品",
           value: "staffName",
         },
         {
-          name: "考药狮项目id",
+          name: "姓名",
           value: "goodsName",
         },
         {
-          name: "考药狮项目名称",
+          name: "昵称",
           value: "activityName",
         },
         {
-          name: "科目类型(中文)",
+          name: "手机",
           value: "posterName",
         },
         {
-          name: "科目类型(英文)",
+          name: "活动名称",
           value: "posterPic",
         },
         {
-          name: "科目名",
+          name: "项目类型",
           value: "posterCopyFirst",
         },
         {
-          name: "视频id",
+          name: "投票信息",
           value: "posterCopySecond",
         },
         {
-          name: "视频名称",
+          name: "自动投票",
           value: "posterCopyThird",
         },
         {
-          name: "视频时长",
+          name: "状态",
           value: "posterCopyFourth",
         },
         {
-          name: "科目学习人数",
+          name: "描述",
           value: "posterCopyFifth",
         },
         {
-          name: "虚拟人数",
+          name: "参赛时间",
           value: "createAt",
         },
         {
-          name: "数据状态",
-          value: "updateAt",
-        },
-         {
-          name: "排序",
-          value: "updateAt",
-        },
-         {
-          name: "创建时间",
-          value: "updateAt",
-        },
-         {
-          name: "更新时间",
+          name: "操作人",
           value: "updateAt",
         },
         {
@@ -207,80 +200,103 @@ export default {
           
         {
           prop: "menuName",
-          element: "el-select",
-          placeholder: "请选择",
-          label: "APP名称"
+          element: "el-input",
+          placeholder: "请输入海报名称",
+          label: "海报名称"
         },
         {
           prop: "post",
+          element: "el-input",
+          placeholder: "",
+          label: "上传海报",
+          operate: true,
+          initValue: 0
+        },
+        {
+          prop: "roleName",
           element: "el-select",
           placeholder: "请选择",
-          label: "项目名称",
+          label: "所属九块九包邮",
+          options: [
+            {
+              label: "博士",
+              value: "0",
+            },
+            {
+              label: "硕士",
+              value: 1,
+            },
+          ],
         },
         {
-          prop: "post",
+          prop: "roleName",
           element: "el-select",
           placeholder: "请选择",
-          label: "科目类型",
+          label: "所属活动",
+          options: [
+            {
+              label: "博士",
+              value: "0",
+            },
+            {
+              label: "硕士",
+              value: 1,
+            },
+          ],
         },
         {
           prop: "menuName3",
           element: "el-input",
           placeholder: "请输入",
-          label: "科目名称"
+          label: "分享分案一",
+          type:"textarea",
+          rows: 2
         },
-        {
+         {
           prop: "menuName3",
           element: "el-input",
           placeholder: "请输入",
-          label: "视频名称"
+          label: "分享分案二",
+          type:"textarea",
+          rows: 2
         },
-        {
+         {
           prop: "menuName3",
           element: "el-input",
           placeholder: "请输入",
-          label: "视频id"
+          label: "分享分案三",
+          type:"textarea",
+          rows: 2
         },
-        {
+         {
           prop: "menuName3",
           element: "el-input",
           placeholder: "请输入",
-          label: "视频时长"
+          label: "分享分案四",
+          type:"textarea",
+          rows: 2
         },
-        {
+           {
           prop: "menuName3",
           element: "el-input",
           placeholder: "请输入",
-          label: "虚拟人数"
-        },
-        {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "排序"
-        },
-        {
-          prop: "menuName3",
-          element: "el-select",
-          placeholder: "请选择",
-          label: "状态"
-        },
+          label: "分享分案五",
+          type:"textarea",
+          rows: 2
+        }
       ],
       addRules:{
         updateReason: [
           { required: true, message: "请输入修改事由", trigger: "blur" },
         ]
       },
-      addStatus: true,
-      uploadVisible: false,
-      detailVisible: false
+      addStatus: true
     }
   },
   components:{
     RdForm,
-    subjectRecord,
     fullDialog,
-    editSubject
+    AddVote
   },
    methods: {
      onSearch(val){
@@ -315,7 +331,7 @@ export default {
       this.addVisible = true;
     },
     handleDelete(row) {
-      let info = '项';
+      let info = '海报';
       this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -339,11 +355,8 @@ export default {
         })
         .catch(() => {});
     },
-    uploadSubject(data){
-      this.uploadVisible = true;
-    },
-    handleDetail(data){
-      this.detailVisible = true;
+    refresh(){
+
     }
   }
 }

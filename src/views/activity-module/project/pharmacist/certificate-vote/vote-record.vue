@@ -1,6 +1,6 @@
 <template>
   <div class="post-manage">
-     <search-form
+      <search-form
       :formOptions="formOptions"
       :showNum="7"
       @onSearch="onSearch"
@@ -25,14 +25,6 @@
             >编辑</el-button
           >
           <el-divider direction="vertical"></el-divider>
-          <el-button @click="uploadSubject(scope.row)" type="text" size="small" style="color: #ffa500"
-            >上传题目</el-button
-          >
-          <el-divider direction="vertical"></el-divider>
-          <el-button @click="handleDetail(scope.row)" type="text" size="small" style="color: #ffa500"
-            >查看题目详情</el-button
-          >
-          <el-divider direction="vertical"></el-divider>
           <el-button
             @click="handleDelete(scope.row)"
             type="text"
@@ -44,7 +36,7 @@
       </rd-table>
     </div>
     
-    <!-- 添加/编辑 -->
+    <!-- 添加 -->
     <rd-dialog
         :title="addStatus?'添加':'编辑'"
         :dialogVisible="addVisible"
@@ -52,64 +44,61 @@
         @submitForm="submitAddForm('dataForm3')"
       >
         <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
+          <template slot="post">
+            <el-button size="small" type="primary">上传</el-button>
+          </template>
         </RdForm>
       </rd-dialog>
-
-      <!-- 上传 -->
-      <rd-dialog
-        :title="'上传题目'"
-        :dialogVisible="uploadVisible"
-        @handleClose="uploadVisible = false"
-        @submitForm="submitAddForm('dataForm4')"
-      >
-        <el-button type="primary">点击上传</el-button>
-      </rd-dialog>
-
-      <!-- 题目详情 -->
-      <fullDialog
-          v-model="detailVisible"
-          title="题目详情"
-          @change="detailVisible = false"
-        >
-          <subjectRecord
-            ref="subjectRecord"
-            @close="detailVisible = false"
-            v-if="detailVisible"
-          />
-      </fullDialog>
-      <!-- <editSubject/> -->
   </div>
 </template>
 
 <script>
 import RdForm from "@/components/RdForm";
-import subjectRecord from "./subjectRecord";
-import fullDialog from "@/components/FullDialog";
-import editSubject from './editSubject';
 export default {
-  name:"link-manage",
+  name:"post-manage",
   data(){
     return {
       formOptions: [
         {
           prop: "menuName",
+          element: "el-input",
+          placeholder: "微信昵称",
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "手机",
+        },
+        {
+          prop: "menuName",
           element: "el-select",
-          placeholder: "APP名称",
-          options: [
-            {
-              label:"考药狮",
-              value: "1"
-            },
-            {
-              label:"考医狮",
-              value: "2"
-            },
-            {
-              label:"考护狮",
-              value: "3"
-            }
-          ]
-        }
+          placeholder: "活动名称",
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "项目类型",
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "参赛选手",
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "微信用户",
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "投票类型",
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "投票状态",
+        },
       ],
       searchForm:{},
       emptyText:"暂无数据",
@@ -130,70 +119,54 @@ export default {
           width: 80
         },
         {
-          name: "APP名称",
+          name: "头像",
           value: "staffName",
         },
         {
-          name: "考药狮项目id",
+          name: "昵称",
           value: "goodsName",
         },
         {
-          name: "考药狮项目名称",
+          name: "手机",
           value: "activityName",
         },
         {
-          name: "科目类型(中文)",
+          name: "本次投票",
           value: "posterName",
         },
         {
-          name: "科目类型(英文)",
+          name: "活动名称",
           value: "posterPic",
         },
         {
-          name: "科目名",
+          name: "项目类型",
           value: "posterCopyFirst",
         },
         {
-          name: "视频id",
+          name: "参赛者姓名",
           value: "posterCopySecond",
         },
         {
-          name: "视频名称",
+          name: "地理位置",
           value: "posterCopyThird",
         },
         {
-          name: "视频时长",
+          name: "投票类型",
           value: "posterCopyFourth",
         },
         {
-          name: "科目学习人数",
+          name: "投票状态",
           value: "posterCopyFifth",
         },
         {
-          name: "虚拟人数",
+          name: "投票时间",
           value: "createAt",
-        },
-        {
-          name: "数据状态",
-          value: "updateAt",
-        },
-         {
-          name: "排序",
-          value: "updateAt",
-        },
-         {
-          name: "创建时间",
-          value: "updateAt",
-        },
-         {
-          name: "更新时间",
-          value: "updateAt",
         },
         {
           name: "操作",
           value: "edit",
           operate: true,
-          width: 170,
+          width: 140,
           fixed: "right"
         },
       ],
@@ -209,78 +182,38 @@ export default {
           prop: "menuName",
           element: "el-select",
           placeholder: "请选择",
-          label: "APP名称"
+          label: "微信用户"
         },
         {
-          prop: "post",
+          prop: "menuName",
           element: "el-select",
           placeholder: "请选择",
-          label: "项目名称",
+          label: "参赛选手"
         },
         {
-          prop: "post",
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "请输入",
+          label: "本次投票数"
+        },
+        {
+          prop: "menuName",
           element: "el-select",
           placeholder: "请选择",
-          label: "科目类型",
+          label: "投票类型"
         },
         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "科目名称"
-        },
-        {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "视频名称"
-        },
-        {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "视频id"
-        },
-        {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "视频时长"
-        },
-        {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "虚拟人数"
-        },
-        {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "排序"
-        },
-        {
-          prop: "menuName3",
+          prop: "menuName",
           element: "el-select",
           placeholder: "请选择",
-          label: "状态"
-        },
-      ],
-      addRules:{
-        updateReason: [
-          { required: true, message: "请输入修改事由", trigger: "blur" },
-        ]
-      },
-      addStatus: true,
-      uploadVisible: false,
-      detailVisible: false
+          label: "投票状态"
+        }
+      ]
+        
     }
   },
   components:{
-    RdForm,
-    subjectRecord,
-    fullDialog,
-    editSubject
+    RdForm
   },
    methods: {
      onSearch(val){
@@ -315,7 +248,7 @@ export default {
       this.addVisible = true;
     },
     handleDelete(row) {
-      let info = '项';
+      let info = '';
       this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -338,12 +271,6 @@ export default {
           });
         })
         .catch(() => {});
-    },
-    uploadSubject(data){
-      this.uploadVisible = true;
-    },
-    handleDetail(data){
-      this.detailVisible = true;
     }
   }
 }

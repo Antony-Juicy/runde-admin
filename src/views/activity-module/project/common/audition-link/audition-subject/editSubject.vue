@@ -7,9 +7,54 @@
       class="demo-dynamic"
       inline
     >
-      <template v-for="(domain, index) in dynamicValidateForm.domains">
+      <div class="param-item">
         <el-form-item
-          :key="domain.key"
+          :rules="{
+            required: true,
+            message: '不能为空',
+            trigger: 'blur',
+          }"
+        >
+          <div class="param-label">排序</div>
+          <span style="margin-right: 5px;font-weight:bold">:</span>
+           <el-input v-model="dynamicValidateForm.name" size="small" style="width: 300px"></el-input>
+        </el-form-item>
+      </div>
+      <div class="param-item">
+        <el-form-item
+          :rules="{
+            required: true,
+            message: '不能为空',
+            trigger: 'blur',
+          }"
+        >
+          <div class="param-label">试题类型</div>
+          <span style="margin-right: 5px;font-weight:bold">:</span>
+           <el-input v-model="dynamicValidateForm.name" size="small" style="width: 300px"></el-input>
+        </el-form-item>
+      </div>
+      <div class="param-item">
+        <el-form-item
+          :rules="{
+            required: true,
+            message: '不能为空',
+            trigger: 'blur',
+          }"
+        >
+          <div class="param-label" style="line-height: 68px">题目内容</div>
+          <span style="margin-right: 5px;font-weight:bold">:</span>
+           <el-input v-model="dynamicValidateForm.name" size="small" style="width: 300px" type="textarea" rows="3"></el-input>
+        </el-form-item>
+         <el-form-item
+        >
+          <Upload-oss
+              :objConfig="{module: 'activity'}"
+              :src.sync="dynamicValidateForm.paramImg"
+            />
+        </el-form-item>
+      </div>
+      <div class="param-item" v-for="(domain, index) in dynamicValidateForm.domains" :key="domain.key">
+        <el-form-item
           :prop="'domains.' + index + '.paramName'"
           :rules="{
             required: true,
@@ -21,7 +66,6 @@
           <span style="font-weight:bold">:</span>
         </el-form-item>
         <el-form-item
-          :key="domain.key + '2'"
           :prop="'domains.' + index + '.paramVal'"
           :rules="{
             required: true,
@@ -32,31 +76,65 @@
           <el-input v-model="domain.paramVal" size="small" style="width: 300px"></el-input>
         </el-form-item>
         <el-form-item
-          :key="domain.key + '3'"
           :prop="'domains.' + index + '.paramImg'"
         >
-          <!-- <el-input v-model="domain.paramImg" size="small" style="width: 300px"></el-input> -->
-          domain.paramImg:{{domain.paramImg}}
           <Upload-oss
               :objConfig="{module: 'activity'}"
               :src.sync="domain.paramImg"
             />
         </el-form-item>
         <el-button :key="domain.key + '4'" @click.prevent="removeDomain(domain)" 
-        type="danger" size="small" style="margin-top:5px"
+        type="danger" size="small"
           >删除</el-button
         >
-        <br :key="domain.key + '5'"/>
-
-      </template>
-       <div class="btn-wrapper">
-         <el-button type="primary" size="small" @click="addDomain"
-          >点击添加参数</el-button
+         <el-button type="primary" size="small" @click="addDomain" v-if="index == dynamicValidateForm.domains.length-1"
+          >添加选项</el-button
         >
-       </div>
+      </div>
+       <!-- <div class="btn-wrapper">
+         <el-button type="primary" size="small" @click="addDomain"
+          >点击添加选项</el-button
+        >
+       </div> -->
+       <div class="param-item">
+        <el-form-item
+          :rules="{
+            required: true,
+            message: '不能为空',
+            trigger: 'blur',
+          }"
+        >
+          <div class="param-label" style="line-height: 68px">答案解释</div>
+          <span style="margin-right: 5px;font-weight:bold">:</span>
+           <el-input v-model="dynamicValidateForm.name" size="small" style="width: 300px" type="textarea" rows="3"></el-input>
+        </el-form-item>
+         <el-form-item
+        >
+          <Upload-oss
+              :objConfig="{module: 'activity'}"
+              :src.sync="dynamicValidateForm.paramImg"
+            />
+        </el-form-item>
+      </div>
+      <div class="param-item">
+        <el-form-item
+          :rules="{
+            required: true,
+            message: '不能为空',
+            trigger: 'blur',
+          }"
+        >
+          <div class="param-label">正确答案</div>
+          <span style="margin-right: 5px;font-weight:bold">:</span>
+           <el-input v-model="dynamicValidateForm.name" size="small" style="width: 300px"></el-input>
+        </el-form-item>
+      </div>
       <div class="btn-wrapper">
-        <el-button type="primary" @click="submitForm('dynamicValidateForm')"
-          >提交</el-button
+        <el-button size="small" @click="resetForm('dynamicValidateForm')"
+          >取消</el-button
+        >
+        <el-button type="primary" size="small" @click="submitForm('dynamicValidateForm')"
+          >保存</el-button
         >
       </div>
     </el-form>
@@ -77,6 +155,7 @@ export default {
             paramImg: ""
           },
         ],
+        name:""
       },
     }
   },
@@ -118,6 +197,46 @@ export default {
 
 <style lang="scss" scoped>
 .edit-subject {
-
+  padding-left: 20px;
+  max-height: calc(92vh - 71px - 63px);
+  overflow: auto;
+  box-sizing: border-box;
+  &::-webkit-scrollbar {
+    /*滚动条整体样式*/
+    width: 10px; /*高宽分别对应横竖滚动条的尺寸*/
+    height: 1px;
+  }
+  &::-webkit-scrollbar-thumb {
+    /*滚动条里面小方块*/
+    border-radius: 10px;
+    box-shadow: inset 0 0 5px #d0d1d3;
+    background: #d0d1d3;
+  }
+  .param-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .param-label {
+    width: 60px;
+    display:inline-block;
+    text-align:right;
+  }
+  .btn-wrapper {
+    text-align: right;
+    margin-bottom: 0;
+  }
+  /deep/ {
+    .img180 {
+      width: 80px;
+      height: 80px;
+    }
+    .el-form-item {
+      margin-bottom: 0;
+    }
+    .el-form-item__content {
+      line-height: normal;
+    }
+  }
 }
 </style>

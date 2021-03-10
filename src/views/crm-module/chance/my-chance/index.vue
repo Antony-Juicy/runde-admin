@@ -129,6 +129,7 @@
                 v-model="basicInfo.nextTime"
                 type="datetime"
                 placeholder="选择日期时间"
+                :picker-options="startDateDisabled"
               >
               </el-date-picker>
             </el-form-item>
@@ -329,10 +330,12 @@ import publicCustomers from "./publicCustomers";
 import lockUser from "./lockUser";
 import fullDialog from "@/components/FullDialog";
 import Fetch from '@/utils/fetch'
+import { scrollTo } from '@/utils/scroll-to'
 export default {
   name: "my-chance",
   data() {
     return {
+      startDateDisabled:{},
       currentData: {},
       showDetail: false,
       activeName: "first",
@@ -406,6 +409,12 @@ export default {
     publicCustomers,
     lockUser,
   },
+  created(){
+    // 限制开始日期不能超过当前日期
+    this.startDateDisabled.disabledDate = function (time) {
+      return (time.getTime() + 24 * 3600 * 1000) < Date.now()
+    }
+  },
   mounted() {
     this.getSelectList();
     this.getProjcetList();
@@ -466,7 +475,7 @@ export default {
       this.getSubjectList(enquireProductIdOne);
       this.getCourseList(enquireSubjectIdOne);
       this.getClassList(enquireSubjectIdOne);
-    
+      console.log(enquireClassOne,'enquireClassOne')
       this.basicInfo2 = {
         saleSource,
         labelInfoName,
@@ -608,6 +617,7 @@ export default {
         return;
       }
       this.showDetail = true;
+      scrollTo(0, 500)
     },
 
     getSelectList() {

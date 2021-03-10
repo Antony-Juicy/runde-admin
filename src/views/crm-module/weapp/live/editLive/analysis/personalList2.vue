@@ -172,7 +172,8 @@ export default {
       this.$router.push({
         name: '/crm-module/weapp/live-details/goods-orders'  + '?' + sessionStorage.getItem("router-timeStamp"),
         params: {
-          sourceName: this.liveName
+          sourceName: this.liveName,
+          teacherName: val.teacherName
         } 
       })
       this.$emit("close")
@@ -181,7 +182,8 @@ export default {
       this.$router.push({
         name: '/crm-module/weapp/live-details/invite-count'  + '?' + sessionStorage.getItem("router-timeStamp"),
         params: {
-          liveName: this.liveName
+          liveName: this.liveName,
+          teacherName: val.teacherName
         } 
       })
       this.$emit("close")

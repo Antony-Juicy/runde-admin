@@ -34,7 +34,7 @@
         </template>
         <template slot="visit" slot-scope="scope">
           <span class="visit-container" @click.stop="openDrawer(scope.row)">{{
-            scope.row.visit || 0
+            scope.row.feedbackCount || 0
           }}</span>
         </template>
       </rd-table>
@@ -227,7 +227,7 @@ export default {
       tableKey: [
         {
           name: "机会ID",
-          value: "id",
+          value: "idStr",
         },
         {
           name: "姓名",
@@ -423,7 +423,7 @@ export default {
       });
     },
     openDrawer(data) {
-      this.drawerId = data.id;
+      this.drawerId = data.idStr;
       this.drawerPhone = data.phone;
       this.drawerTitle = data.studentName || "";
       this.drawerVisible = true;

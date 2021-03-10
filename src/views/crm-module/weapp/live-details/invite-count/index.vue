@@ -30,14 +30,6 @@ export default {
         { prop: 'liveName', element: 'el-input', placeholder: '直播名称' }
       ],
       tableData: [
-        // {
-        //   provincialSchoolName: "广东校区",
-        //   branchSchoolName: "广州校区",
-        //   teacherName: "王伯伯",
-        //   inviteeName: "张三",
-        //   inviteePhone: 13800138000,
-        //   liveName: "2021药师终极包过班"
-        // }
       ],
       tableKey: [
         { name: '校区',value: 'provincialSchoolName' },
@@ -58,14 +50,16 @@ export default {
     }
   },
   mounted () {
-    const { liveName } = this.$route.params;
+    const { liveName,teacherName } = this.$route.params;
     if(liveName){
-      this.formOptions[3].initValue = decodeURIComponent(liveName)
-      this.$refs.searchForm.addInitValue()
-      this.$refs.searchForm.onSearch()
-    }else {
-      this.getTableData()
+      this.formOptions[3].initValue = decodeURIComponent(liveName) 
     }
+    if(teacherName){
+      this.formOptions[2].initValue = decodeURIComponent(teacherName) 
+    }
+
+    this.$refs.searchForm.addInitValue()
+    this.$refs.searchForm.onSearch()
     
   },
   watch:{
@@ -74,6 +68,14 @@ export default {
         return
       }
       this.formOptions[3].initValue = decodeURIComponent(newVal)
+      this.$refs.searchForm.addInitValue()
+      this.$refs.searchForm.onSearch()
+    },
+    "$route.params.teacherName"(newVal){
+       if(!newVal){
+        return
+      }
+      this.formOptions[2].initValue = decodeURIComponent(newVal)
       this.$refs.searchForm.addInitValue()
       this.$refs.searchForm.onSearch()
     }

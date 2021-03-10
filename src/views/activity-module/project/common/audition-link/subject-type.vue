@@ -1,10 +1,5 @@
 <template>
   <div class="post-manage">
-      <search-form
-      :formOptions="formOptions"
-      :showNum="7"
-      @onSearch="onSearch"
-    ></search-form>
     <div class="w-container">
       <div class="btn-wrapper">
         <el-button type="primary" size="small" @click="handleAdd"
@@ -22,7 +17,7 @@
       >
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
-            >查阅/编辑</el-button
+            >编辑</el-button
           >
           <el-divider direction="vertical"></el-divider>
           <el-button
@@ -36,16 +31,16 @@
       </rd-table>
     </div>
     
-    <!-- 添加海报 -->
+    <!-- 添加 -->
     <rd-dialog
-        :title="addStatus?'添加海报':'编辑海报'"
+        :title="addStatus?'添加':'编辑'"
         :dialogVisible="addVisible"
         @handleClose="addVisible = false"
         @submitForm="submitAddForm('dataForm3')"
       >
         <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
           <template slot="post">
-            <el-button size="small" type="primary">上传海报</el-button>
+            <el-button size="small" type="primary">上传</el-button>
           </template>
         </RdForm>
       </rd-dialog>
@@ -72,7 +67,7 @@ export default {
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "海报名称",
+          placeholder: "名称",
         }
       ],
       searchForm:{},
@@ -94,51 +89,35 @@ export default {
           width: 80
         },
         {
-          name: "老师名称",
+          name: "APP名称",
           value: "staffName",
         },
         {
-          name: "商品名称",
+          name: "考药狮项目id",
           value: "goodsName",
         },
         {
-          name: "活动名称",
+          name: "考药狮项目名称",
           value: "activityName",
         },
         {
-          name: "海报名称",
+          name: "科目类型(英文)",
           value: "posterName",
         },
         {
-          name: "海报图片",
+          name: "科目类型(中文)",
           value: "posterPic",
         },
         {
-          name: "分享文案一",
+          name: "数据状态",
           value: "posterCopyFirst",
-        },
-        {
-          name: "分享文案二",
-          value: "posterCopySecond",
-        },
-        {
-          name: "分享文案三",
-          value: "posterCopyThird",
-        },
-        {
-          name: "分享文案四",
-          value: "posterCopyFourth",
-        },
-        {
-          name: "分享文案五",
-          value: "posterCopyFifth",
         },
         {
           name: "创建时间",
           value: "createAt",
         },
         {
-          name: "修改时间",
+          name: "更新时间",
           value: "updateAt",
         },
         {
@@ -156,93 +135,34 @@ export default {
       },
       addVisible: false,
       addFormOptions: [
-          
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "请输入海报名称",
-          label: "海报名称"
-        },
-        {
-          prop: "post",
-          element: "el-input",
-          placeholder: "",
-          label: "上传海报",
-          operate: true,
-          initValue: 0
-        },
         {
           prop: "roleName",
           element: "el-select",
           placeholder: "请选择",
-          label: "所属九块九包邮",
+          label: "APP名称",
           options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
           ],
         },
         {
           prop: "roleName",
           element: "el-select",
           placeholder: "请选择",
-          label: "所属活动",
+          label: "项目名称",
           options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
           ],
         },
+         {
+          prop: "roleName",
+          element: "el-input",
+          placeholder: "请输入",
+          label: "英文科目类型",
+        },
         {
-          prop: "menuName3",
+          prop: "roleName",
           element: "el-input",
           placeholder: "请输入",
-          label: "分享分案一",
-          type:"textarea",
-          rows: 2
+          label: "中文科目类型",
         },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案二",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案三",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案四",
-          type:"textarea",
-          rows: 2
-        },
-           {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案五",
-          type:"textarea",
-          rows: 2
-        }
       ],
       addRules:{
         updateReason: [
@@ -288,7 +208,7 @@ export default {
       this.addVisible = true;
     },
     handleDelete(row) {
-      let info = '海报';
+      let info = '';
       this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",

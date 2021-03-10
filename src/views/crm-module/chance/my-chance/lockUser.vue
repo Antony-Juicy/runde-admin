@@ -843,7 +843,8 @@ export default {
             campusName: currentCampus&&currentCampus.label,
             campusNature: currentCampus&&currentCampus.nature,
             marketName: currentMarket&&currentMarket.label,
-            marketPosition:""
+            marketPosition:"",
+            saleSource: this.selectedData[0].saleSource_text
           }).then(res => {
             if(res.code == 200){
               this.$message.success('保存成功')

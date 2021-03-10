@@ -72,7 +72,7 @@ export default {
     chance_import_phone: {url: '/crm/crmopportunitylog/queryOrderInfoByPhone', method: 'post'},
 
     // 通话记录统计
-    chance_records_count: {url: '/crm/crmopportunity/opportunityNumListJson', method: 'get'},
+    chance_records_count: {url: '/crm/crmopportunity/opportunityNumListJson', method: 'post'},
 
     // 组织架构
     chance_config_campusList: {url: '/crm/crmopportunityconfig/configCampusList', method: 'post'},
