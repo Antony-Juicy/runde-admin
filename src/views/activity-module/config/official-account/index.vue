@@ -8,7 +8,7 @@
     <div class="w-container">
       <div class="btn-wrapper">
         <el-button type="primary" size="small" @click="handleAdd"
-          >导入数据</el-button
+          >添加</el-button
         >
       </div>
       <rd-table
@@ -20,19 +20,18 @@
         @pageChange="pageChange"
         :emptyText="emptyText"
       >
-        <!-- <template slot="edit" slot-scope="scope">
+        <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
             >编辑</el-button
           >
           <el-divider direction="vertical"></el-divider>
           <el-button
-            @click="handleDelete(scope.row)"
             type="text"
             size="small"
             style="color: #ec5b56"
-            >删除</el-button
+            >查看详情</el-button
           >
-        </template> -->
+        </template>
       </rd-table>
     </div>
     
@@ -43,7 +42,7 @@
         @handleClose="addVisible = false"
         @submitForm="submitAddForm('dataForm3')"
       >
-        <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
+        <RdForm :formOptions="addFormOptions" formLabelWidth="90px" :rules="addRules" ref="dataForm3">
           <template slot="post">
             <el-button size="small" type="primary">上传</el-button>
           </template>
@@ -62,12 +61,12 @@ export default {
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "昵称",
+          placeholder: "公众号名称",
         },
         {
           prop: "menuName",
           element: "el-select",
-          placeholder: "审核状态",
+          placeholder: "公众号状态",
         }
       ],
       searchForm:{},
@@ -83,34 +82,30 @@ export default {
       ],
       tableKey: [
         {
-          name: "序号",
+          name: "ID主键",
           value: "id",
           fixed: "left",
           width: 80
         },
         {
-          name: "昵称",
+          name: "公众号名称",
           value: "staffName",
         },
         {
-          name: "头像",
+          name: "公众号账户信息",
           value: "goodsName",
         },
         {
-          name: "评论内容",
+          name: "微信商户信息",
           value: "activityName",
         },
         {
-          name: "等级",
+          name: "状态",
           value: "posterName",
         },
         {
-          name: "审核状态",
+          name: "微信二维码",
           value: "posterPic",
-        },
-        {
-          name: "创建时间",
-          value: "posterCopyFirst",
         },
         {
           name: "操作",
@@ -131,89 +126,59 @@ export default {
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "请输入名称",
-          label: "名称"
+          placeholder: "请输入",
+          label: "公众号ID"
+        },
+         {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "请输入公众号账号，不知道账号请不要填",
+          label: "公众号账号"
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "请输入",
+          label: "微信公众号名称"
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "请输入APPSECRET",
+          label: "微信密钥"
         },
         {
           prop: "post",
           element: "el-input",
           placeholder: "",
-          label: "上传",
+          label: "微信二维码",
           operate: true,
           initValue: 0
         },
         {
           prop: "roleName",
-          element: "el-select",
-          placeholder: "请选择",
-          label: "所属九块九包邮",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
+          element: "el-input",
+          placeholder: "请输入",
+          label: "微信商户号"
+        },
+        {
+          prop: "roleName",
+          element: "el-input",
+          placeholder: "请输入",
+          label: "微信商户支付APIKEY"
+        },
+        {
+          prop: "roleName",
+          element: "el-input",
+          placeholder: "请输入推送消息模板，不知道怎么配置请不要填",
+          label: "推送消息模板"
         },
         {
           prop: "roleName",
           element: "el-select",
           placeholder: "请选择",
-          label: "所属活动",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
+          label: "微信公众号状态"
         },
-        {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案一",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案二",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案三",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案四",
-          type:"textarea",
-          rows: 2
-        },
-           {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案五",
-          type:"textarea",
-          rows: 2
-        }
       ],
       addRules:{
         updateReason: [
@@ -289,6 +254,10 @@ export default {
 
 <style lang="scss" scoped>
 .post-manage {
-
+  /deep/ {
+    .el-form-item__label {
+      line-height: 24px;
+    }
+  }
 }
 </style>

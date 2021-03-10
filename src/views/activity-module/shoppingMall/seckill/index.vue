@@ -24,10 +24,10 @@
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
             >编辑</el-button
           >
-          <el-divider direction="vertical"></el-divider>
+          <!-- <el-divider direction="vertical"></el-divider>
           <el-button @click="handleDetail(scope.row)" type="text" size="small" style="color: #ffa500"
             >查看评论详情</el-button
-          >
+          > -->
           <el-divider direction="vertical"></el-divider>
           <el-button
             @click="handleDelete(scope.row)"
@@ -55,19 +55,19 @@
     </rd-dialog>
 
     <!-- 评论详情 -->
-     <full-dialog
+     <!-- <full-dialog
         v-model="detailVisible"
         title="查看评论详情"
         @change="detailVisible = false"
       >
         <commonDetail></commonDetail>
-      </full-dialog>
+      </full-dialog> -->
   </div>
 </template>
 
 <script>
 import RdForm from "@/components/RdForm";
-import commonDetail from "./commonDetail";
+// import commonDetail from "./commonDetail";
 export default {
   name:"post-manage",
   data(){
@@ -136,7 +136,7 @@ export default {
           name: "操作",
           value: "edit",
           operate: true,
-          width: 200,
+          width: 140,
           fixed: "right"
         },
       ],
@@ -246,7 +246,7 @@ export default {
   },
   components:{
     RdForm,
-    commonDetail
+    // commonDetail
   },
    methods: {
      onSearch(val){

@@ -8,7 +8,7 @@
     <div class="w-container">
       <div class="btn-wrapper">
         <el-button type="primary" size="small" @click="handleAdd"
-          >导入数据</el-button
+          >添加</el-button
         >
       </div>
       <rd-table
@@ -20,7 +20,7 @@
         @pageChange="pageChange"
         :emptyText="emptyText"
       >
-        <!-- <template slot="edit" slot-scope="scope">
+        <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
             >编辑</el-button
           >
@@ -32,7 +32,7 @@
             style="color: #ec5b56"
             >删除</el-button
           >
-        </template> -->
+        </template>
       </rd-table>
     </div>
     
@@ -61,23 +61,13 @@ export default {
       formOptions: [
         {
           prop: "menuName",
-          element: "el-input",
-          placeholder: "昵称",
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "评论内容",
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "活动名称",
-        },
-        {
-          prop: "menuName",
           element: "el-select",
-          placeholder: "审核状态",
+          placeholder: "通知类型",
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "通知概述",
         }
       ],
       searchForm:{},
@@ -99,29 +89,18 @@ export default {
           width: 80
         },
         {
-          name: "昵称",
+          name: "通知类型",
           value: "staffName",
         },
         {
-          name: "头像",
+          name: "通知概述",
           value: "goodsName",
         },
         {
-          name: "评论内容",
+          name: "通知链接",
           value: "activityName",
         },
-        {
-          name: "等级",
-          value: "posterName",
-        },
-        {
-          name: "审核状态",
-          value: "posterPic",
-        },
-        {
-          name: "创建时间",
-          value: "posterCopyFirst",
-        },
+        
         {
           name: "操作",
           value: "edit",
@@ -137,93 +116,26 @@ export default {
       },
       addVisible: false,
       addFormOptions: [
-          
+        {
+          prop: "roleName",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "通知类型",
+          options: [
+          ],
+        },
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "请输入名称",
-          label: "名称"
+          placeholder: "请输入",
+          label: "通知概述"
         },
         {
-          prop: "post",
-          element: "el-input",
-          placeholder: "",
-          label: "上传",
-          operate: true,
-          initValue: 0
-        },
-        {
-          prop: "roleName",
-          element: "el-select",
-          placeholder: "请选择",
-          label: "所属九块九包邮",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-        {
-          prop: "roleName",
-          element: "el-select",
-          placeholder: "请选择",
-          label: "所属活动",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-        {
-          prop: "menuName3",
+          prop: "menuName",
           element: "el-input",
           placeholder: "请输入",
-          label: "分享分案一",
-          type:"textarea",
-          rows: 2
+          label: "通知链接"
         },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案二",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案三",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案四",
-          type:"textarea",
-          rows: 2
-        },
-           {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案五",
-          type:"textarea",
-          rows: 2
-        }
       ],
       addRules:{
         updateReason: [

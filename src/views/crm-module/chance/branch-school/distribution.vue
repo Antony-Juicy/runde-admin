@@ -131,7 +131,7 @@ export default {
   methods: {
     handleEdit(data){
       this.$fetch("chance_campus_distrubute",{
-        id: data.id,
+        staffId: data.id,
         opportunityIds: this.opportunityIds
       }).then(res => {
         if(res.code == 200){

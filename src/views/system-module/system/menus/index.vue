@@ -527,10 +527,8 @@ export default {
     // 提交
     submitForm(formName) {
       this.$forceUpdate();
-      console.log(this.basicInfo, "提交前");
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log(this.basicInfo, "提交");
 
           if (this.dialogStatus) {
             // 新增
