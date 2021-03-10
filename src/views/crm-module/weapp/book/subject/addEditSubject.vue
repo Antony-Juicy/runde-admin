@@ -148,11 +148,13 @@ export default {
 				}
 			})
 		},
-		handleSave() {
+		handleSave(Imperceptible ) {
 			this.$refs.dataForm.validate((val, data) => {
 				if (val) {
 					data.bookId = this.book.bookId
 					data.bookSubjectId = this.bookSubjectId
+					// 由于某种问题，需要多做一次格式化成对象
+					let mark_teacherArray = JSON.parse(JSON.stringify(data.bookSubjectTeacherArray)); // 记录一下原来的数据，避免出现空白
 					// 由于某种问题，需要多做一次格式化成对象
 					data.bookSubjectTeacherArray = data.bookSubjectTeacherArray.map(v => JSON.parse(v))
 					// 后台保存的数据是用字符串，所以要格式化数组成字符串
@@ -163,8 +165,12 @@ export default {
 					}).then((res) => {
 						if (res.code == 200) {
 							this.btnLoading = false;
-							this.$message.success("保存成功");
-							this.$emit("close");
+							data.bookSubjectTeacherArray = mark_teacherArray // 把缓存的数据填回去就好了
+							// todo 无感保存处理
+							if (Imperceptible != true) {
+								this.$message.success("保存成功");
+								this.$emit("close");
+							}
 							this.$emit("refresh");
 						}
 					}).catch((err) => {
@@ -188,19 +194,38 @@ export default {
 					bookSubjectId: this.bookSubjectId,
 					loginUserId: this.$common.getUserId(),
 				}).then((res) => {
+					let autoSave = false
 					this.addFormOptions.forEach((item) => {
 						item.initValue = res.data[item.prop];
 						if (item.prop == 'bookSubjectTeacherArray') {
 							try {
-								item.initValue = JSON.parse(res.data.bookSubjectTeacherArray).map(v => JSON.stringify(v))
+								let teacherArray = JSON.parse(res.data.bookSubjectTeacherArray)
+								let teacherArray_d = []
+
+								// 需要和最新的老师信息进行比对 
+								// ! 规则： id相同，替换id对应的最新信息。id不存在，删除这条记录
+								for (let index = 0; index < teacherArray.length; index++) {
+									let match_index = this.addFormOptions[6].options.findIndex(v => v.value.match(`"teacherId":${teacherArray[index].teacherId}`))
+									if (match_index > -1) {
+										teacherArray_d.push(this.addFormOptions[6].options[match_index].value)
+									}
+									if (match_index == -1 || JSON.stringify(teacherArray[index]) != this.addFormOptions[6].options[match_index].value) {
+										autoSave = true
+									}
+								}
+								item.initValue = teacherArray_d
 							} catch (error) {
+								console.log(error)
 								item.initValue = []
 							}
 						}
-
-
 					})
 					this.$refs.dataForm.addInitValue();
+					if (autoSave) {
+						this.$nextTick(() => {
+							this.handleSave(true)
+						})
+					}
 				})
 			}
 		}

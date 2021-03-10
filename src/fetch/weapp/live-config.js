@@ -21,4 +21,14 @@ export default {
   config_delete_teacher: { url: '/live/console/onlinecourse/book/teacher/delete', method: 'post' },
   config_teacher_getInfo: { url: '/live/console/onlinecourse/book/teacher/get', method: 'post' },
   config_update_teacher: { url: '/live/console/onlinecourse/book/teacher/update', method: 'post' },
+
+  // 金刚区
+  config_get_icons: { url: '/live/console/live/icon/link/page_list', method: 'post' },
+  config_add_icon: { url: '/live/console/live/icon/link/add', method: 'post' },
+  config_update_icon: { url: '/live/console/live/icon/link/update', method: 'post' },
+  config_icon_getInfo: { url: '/live/console/live/icon/link/get', method: 'post' },
+  config_delete_icon: { url: '/live/console/live/icon/link/delete', method: 'post' },
+
+
+
 }

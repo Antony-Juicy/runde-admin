@@ -257,87 +257,87 @@ export default {
     mounted() {
         scrollTo(0, 800);
     },
-    beforeCreate() { },
-    beforeMount() { },
-    beforeUpdate() { },
-    updated() { },
-    beforeDestroy() {
-        // 数据还原
-        this.addFormOptions = [
-            {
-                prop: "teacherName",
-                element: "el-input",
-                placeholder: "请输入",
-                label: "教师名称",
-            },
-            {
-                prop: "teacherAliasName",
-                element: "el-input",
-                placeholder: "请输入",
-                label: "教师别名",
-            },
-            {
-                prop: "teacherPhoto",
-                element: "el-input",
-                label: "头像",
-                operate: true,
-                initValue: 0,
-            },
-            {
-                prop: "teacherType",
-                element: "el-select",
-                placeholder: "请选择",
-                label: "教师类型",
-                options: [
-                    {
-                        label: "全职",
-                        value: "FullTime"
-                    },
-                    {
-                        label: "兼职",
-                        value: "PartTime"
-                    }
-                ]
-            },
-            {
-                prop: "teacherStatus",
-                element: "el-radio",
-                placeholder: "请选择",
-                label: "显示状态",
-                options: [
-                    {
-                        label: "上架",
-                        value: "Open"
-                    },
-                    {
-                        label: "下架",
-                        value: "Close"
-                    },
-                    {
-                        label: "隐藏",
-                        value: "Hidden"
-                    }
-                ],
-                initValue: "Open",
-            },
-            {
-                prop: "orderValue",
-                element: "el-input",
-                placeholder: "请输入",
-                label: "排序值",
-            },
-            {
-                prop: "teacherDetail",
-                element: "el-input",
-                label: "详细介绍",
-                operate: true,
-                initValue: "0",
-            },
-        ]
-        this.mode = 'add'
-    },
-    destroyed() { },
-    activated() { },
+    // beforeCreate() { },
+    // beforeMount() { },
+    // beforeUpdate() { },
+    // updated() { },
+    // beforeDestroy() {
+    //     // 数据还原
+    //     this.addFormOptions = [
+    //         {
+    //             prop: "teacherName",
+    //             element: "el-input",
+    //             placeholder: "请输入",
+    //             label: "教师名称",
+    //         },
+    //         {
+    //             prop: "teacherAliasName",
+    //             element: "el-input",
+    //             placeholder: "请输入",
+    //             label: "教师别名",
+    //         },
+    //         {
+    //             prop: "teacherPhoto",
+    //             element: "el-input",
+    //             label: "头像",
+    //             operate: true,
+    //             initValue: 0,
+    //         },
+    //         {
+    //             prop: "teacherType",
+    //             element: "el-select",
+    //             placeholder: "请选择",
+    //             label: "教师类型",
+    //             options: [
+    //                 {
+    //                     label: "全职",
+    //                     value: "FullTime"
+    //                 },
+    //                 {
+    //                     label: "兼职",
+    //                     value: "PartTime"
+    //                 }
+    //             ]
+    //         },
+    //         {
+    //             prop: "teacherStatus",
+    //             element: "el-radio",
+    //             placeholder: "请选择",
+    //             label: "显示状态",
+    //             options: [
+    //                 {
+    //                     label: "上架",
+    //                     value: "Open"
+    //                 },
+    //                 {
+    //                     label: "下架",
+    //                     value: "Close"
+    //                 },
+    //                 {
+    //                     label: "隐藏",
+    //                     value: "Hidden"
+    //                 }
+    //             ],
+    //             initValue: "Open",
+    //         },
+    //         {
+    //             prop: "orderValue",
+    //             element: "el-input",
+    //             placeholder: "请输入",
+    //             label: "排序值",
+    //         },
+    //         {
+    //             prop: "teacherDetail",
+    //             element: "el-input",
+    //             label: "详细介绍",
+    //             operate: true,
+    //             initValue: "0",
+    //         },
+    //     ]
+    //     this.mode = 'add'
+    // },
+    // destroyed() { },
+    // activated() { },
 }
 </script>
 <style lang='scss' scoped>

@@ -256,6 +256,7 @@ export default {
 					courseClassId: this.courseClassId,
 					loginUserId: this.$common.getUserId(),
 				}).then((res) => {
+					let autoSave = false
 					this.addFormOptions.forEach((item) => {
 						item.initValue = res.data[item.prop];
 						if (item.prop == "classType") {
@@ -269,26 +270,44 @@ export default {
 							this.courseClassDetailByEdit = res.data.courseClassDetail;
 						}
 						if (item.prop == 'teacherArray') {
-							// try {
-							//     item.initValue = JSON.parse(res.data.teacherArray).map(v => JSON.stringify(v))
-							// } catch (error) {
-							//     item.initValue = []
-							// }
 							try {
-								this.oldTeacherArray = JSON.parse(res.data.teacherArray).map(v => JSON.stringify(v))
-								this.teacherArray = JSON.parse(res.data.teacherArray).map(v => JSON.stringify(v))
-							} catch (error) {
+								let teacherArray = JSON.parse(res.data.teacherArray)
+								let teacherArray_d = []
 
+								// 需要和最新的老师信息进行比对 
+								// ! 规则： id相同，替换id对应的最新信息。id不存在，删除这条记录
+								for (let index = 0; index < teacherArray.length; index++) {
+									let match_index = this.teacherArrayOptions.findIndex(v => v.value.match(`"teacherId":${teacherArray[index].teacherId}`))
+									if (match_index > -1) {
+										teacherArray_d.push(this.teacherArrayOptions[match_index].value)
+									}
+									if (match_index == -1 || JSON.stringify(teacherArray[index]) != this.teacherArrayOptions[match_index].value) {
+										autoSave = true
+									}
+								}
+
+								this.oldTeacherArray = teacherArray_d
+								this.teacherArray = teacherArray_d
+
+							} catch (error) {
+								console.log(error)
 							}
 
 						}
 					})
 					this.$refs.dataForm.addInitValue();
+					if (autoSave) {
+						// console.log("自动保存")
+						this.$nextTick(() => {
+							this.handleSave(true)
+						})
+
+					}
 				})
 			}
 
 		},
-		handleSave() {
+		handleSave(Imperceptible) {
 			this.$refs.dataForm.validate((val, data) => {
 				if (val) {
 					if (this.imageUrl == "") {
@@ -320,10 +339,10 @@ export default {
 							cancelButtonText: "取消",
 							type: "warning",
 						}).then(async () => {
-							doUpdate.call(this, data)
+							doUpdate.call(this)
 						})
 					} else {
-						doUpdate.call(this, data)
+						doUpdate.call(this)
 					}
 
 					function doUpdate() {
@@ -333,8 +352,11 @@ export default {
 						}).then((res) => {
 							if (res.code == 200) {
 								this.btnLoading = false;
-								this.$message.success("保存成功");
-								this.$emit("close");
+								// todo 无感保存处理
+								if (Imperceptible != true) {
+									this.$message.success("保存成功");
+									this.$emit("close");
+								}
 								this.$emit("refresh");
 							}
 						}).catch((err) => {
