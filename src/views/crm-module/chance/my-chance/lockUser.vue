@@ -875,7 +875,7 @@ export default {
       )
         .then(async () => {
           this.$fetch("chance_my_release",{
-            id: this.selectedData.map(item => (item.idStr)).join(","),
+            opportunityIds: this.selectedData.map(item => (item.idStr)).join(","),
             stayModule: "Locked"
           }).then(res => {
             if(res.code == 200){

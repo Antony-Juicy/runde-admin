@@ -16,6 +16,8 @@ import '@/permission' // 路由守卫
 import RdTable from '@/components/RdTable' // ElDataTable
 import RdDialog from '@/components/RdDialog' // ElDataTable
 import searchForm from "@/components/Searchform";
+import fullDialog from "@/components/FullDialog";
+import RdForm from "@/components/RdForm";
 
 import Fetch from '@/utils/fetch'
 import Common from '@/utils/common'
@@ -42,6 +44,8 @@ Vue.use(ElementUI)
 Vue.component('rd-table', RdTable)
 Vue.component('rd-dialog', RdDialog)
 Vue.component('search-form',searchForm)
+Vue.component('full-dialog',fullDialog)
+Vue.component('rd-form',RdForm)
 
 Vue.config.productionTip = false
 

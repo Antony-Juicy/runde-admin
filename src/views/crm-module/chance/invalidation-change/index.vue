@@ -50,8 +50,8 @@
               <el-radio label="Potential">否</el-radio>
             </el-radio-group>
           </el-form-item>
-          <!-- v-if="detectForm.invalidStatus == 'Invalid'" -->
-          <el-form-item label="失效原因" prop="invalidReason">
+          <!--  -->
+          <el-form-item label="失效原因" prop="invalidReason" v-if="detectForm.invalidStatus == 'Invalid'">
             <el-select
               v-model="detectForm.invalidReason"
               placeholder="请选择失效原因"

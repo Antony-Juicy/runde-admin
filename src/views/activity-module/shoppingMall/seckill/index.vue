@@ -25,6 +25,10 @@
             >编辑</el-button
           >
           <el-divider direction="vertical"></el-divider>
+          <el-button @click="handleDetail(scope.row)" type="text" size="small" style="color: #ffa500"
+            >查看评论详情</el-button
+          >
+          <el-divider direction="vertical"></el-divider>
           <el-button
             @click="handleDelete(scope.row)"
             type="text"
@@ -48,12 +52,22 @@
             <el-button size="small" type="primary">上传</el-button>
           </template>
         </RdForm>
-      </rd-dialog>
+    </rd-dialog>
+
+    <!-- 评论详情 -->
+     <full-dialog
+        v-model="detailVisible"
+        title="查看评论详情"
+        @change="detailVisible = false"
+      >
+        <commonDetail></commonDetail>
+      </full-dialog>
   </div>
 </template>
 
 <script>
 import RdForm from "@/components/RdForm";
+import commonDetail from "./commonDetail";
 export default {
   name:"post-manage",
   data(){
@@ -67,13 +81,18 @@ export default {
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "活动名称",
+          placeholder: "活动编码",
         },
         {
           prop: "menuName",
-          element: "el-input",
-          placeholder: "名称",
-        }
+          element: "el-select",
+          placeholder: "项目名称",
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "状态",
+        },
       ],
       searchForm:{},
       emptyText:"暂无数据",
@@ -94,58 +113,30 @@ export default {
           width: 80
         },
         {
-          name: "老师名称",
+          name: "活动链接",
           value: "staffName",
         },
         {
-          name: "商品名称",
+          name: "轮播图",
           value: "goodsName",
         },
         {
-          name: "活动名称",
+          name: "商品详情图片",
           value: "activityName",
         },
         {
-          name: "名称",
+          name: "商品缩略图",
           value: "posterName",
         },
         {
-          name: "图片",
+          name: "活动时间",
           value: "posterPic",
-        },
-        {
-          name: "分享文案一",
-          value: "posterCopyFirst",
-        },
-        {
-          name: "分享文案二",
-          value: "posterCopySecond",
-        },
-        {
-          name: "分享文案三",
-          value: "posterCopyThird",
-        },
-        {
-          name: "分享文案四",
-          value: "posterCopyFourth",
-        },
-        {
-          name: "分享文案五",
-          value: "posterCopyFifth",
-        },
-        {
-          name: "创建时间",
-          value: "createAt",
-        },
-        {
-          name: "修改时间",
-          value: "updateAt",
         },
         {
           name: "操作",
           value: "edit",
           operate: true,
-          width: 140,
+          width: 200,
           fixed: "right"
         },
       ],
@@ -249,11 +240,13 @@ export default {
           { required: true, message: "请输入修改事由", trigger: "blur" },
         ]
       },
-      addStatus: true
+      addStatus: true,
+      detailVisible: false
     }
   },
   components:{
-    RdForm
+    RdForm,
+    commonDetail
   },
    methods: {
      onSearch(val){
@@ -311,6 +304,9 @@ export default {
           });
         })
         .catch(() => {});
+    },
+    handleDetail(data){
+        this.detailVisible = true;
     }
   }
 }

@@ -6,11 +6,11 @@
       @onSearch="onSearch"
     ></search-form>
     <div class="w-container">
-      <div class="btn-wrapper">
+      <!-- <div class="btn-wrapper">
         <el-button type="primary" size="small" @click="handleAdd"
           >添加</el-button
         >
-      </div>
+      </div> -->
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
@@ -20,45 +20,33 @@
         @pageChange="pageChange"
         :emptyText="emptyText"
       >
-        <template slot="edit" slot-scope="scope">
-          <el-button @click="handleEdit(scope.row)" type="text" size="small"
-            >编辑</el-button
-          >
-          <el-divider direction="vertical"></el-divider>
-          <el-button
-            @click="handleDelete(scope.row)"
-            type="text"
-            size="small"
-            style="color: #ec5b56"
-            >删除</el-button
-          >
-        </template>
       </rd-table>
     </div>
     
-    <!-- 添加 -->
-    <rd-dialog
-        :title="addStatus?'添加':'编辑'"
-        :dialogVisible="addVisible"
-        @handleClose="addVisible = false"
-        @submitForm="submitAddForm('dataForm3')"
-      >
-        <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
-          <template slot="post">
-            <el-button size="small" type="primary">上传</el-button>
-          </template>
-        </RdForm>
-      </rd-dialog>
   </div>
 </template>
 
 <script>
-import RdForm from "@/components/RdForm";
 export default {
   name:"post-manage",
   data(){
     return {
       formOptions: [
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "支付类型",
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "活动编码",
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "电话号码",
+        },
         {
           prop: "menuName",
           element: "el-input",
@@ -67,13 +55,35 @@ export default {
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "活动名称",
+          placeholder: "学员名称",
         },
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "名称",
-        }
+          placeholder: "微信昵称",
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "快递状态",
+        },
+        {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "地址区域",
+        },
+         {
+          prop: "menuName",
+          element: "el-input",
+          placeholder: "老师名称",
+        },
+        {
+          prop: "time",
+          element: "el-date-picker",
+          startPlaceholder: "支付时间(开始)",
+          endPlaceholder: "支付时间(结束)",
+          initWidth: true,
+        },
       ],
       searchForm:{},
       emptyText:"暂无数据",
@@ -94,60 +104,25 @@ export default {
           width: 80
         },
         {
-          name: "老师名称",
+          name: "学员信息",
           value: "staffName",
         },
         {
-          name: "商品名称",
+          name: "商品信息",
           value: "goodsName",
         },
         {
-          name: "活动名称",
+          name: "老师信息",
           value: "activityName",
         },
         {
-          name: "名称",
+          name: "订单状态",
           value: "posterName",
         },
         {
-          name: "图片",
+          name: "快递信息",
           value: "posterPic",
-        },
-        {
-          name: "分享文案一",
-          value: "posterCopyFirst",
-        },
-        {
-          name: "分享文案二",
-          value: "posterCopySecond",
-        },
-        {
-          name: "分享文案三",
-          value: "posterCopyThird",
-        },
-        {
-          name: "分享文案四",
-          value: "posterCopyFourth",
-        },
-        {
-          name: "分享文案五",
-          value: "posterCopyFifth",
-        },
-        {
-          name: "创建时间",
-          value: "createAt",
-        },
-        {
-          name: "修改时间",
-          value: "updateAt",
-        },
-        {
-          name: "操作",
-          value: "edit",
-          operate: true,
-          width: 140,
-          fixed: "right"
-        },
+        }
       ],
        pageConfig: {
         totalCount: 0,
@@ -251,9 +226,6 @@ export default {
       },
       addStatus: true
     }
-  },
-  components:{
-    RdForm
   },
    methods: {
      onSearch(val){

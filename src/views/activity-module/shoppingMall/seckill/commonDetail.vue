@@ -8,7 +8,7 @@
     <div class="w-container">
       <div class="btn-wrapper">
         <el-button type="primary" size="small" @click="handleAdd"
-          >添加</el-button
+          >导入数据</el-button
         >
       </div>
       <rd-table
@@ -20,7 +20,7 @@
         @pageChange="pageChange"
         :emptyText="emptyText"
       >
-        <template slot="edit" slot-scope="scope">
+        <!-- <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
             >编辑</el-button
           >
@@ -32,7 +32,7 @@
             style="color: #ec5b56"
             >删除</el-button
           >
-        </template>
+        </template> -->
       </rd-table>
     </div>
     
@@ -62,17 +62,12 @@ export default {
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "商品名称",
+          placeholder: "昵称",
         },
         {
           prop: "menuName",
-          element: "el-input",
-          placeholder: "活动名称",
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "名称",
+          element: "el-select",
+          placeholder: "审核状态",
         }
       ],
       searchForm:{},
@@ -88,58 +83,34 @@ export default {
       ],
       tableKey: [
         {
-          name: "ID主键",
+          name: "序号",
           value: "id",
           fixed: "left",
           width: 80
         },
         {
-          name: "老师名称",
+          name: "昵称",
           value: "staffName",
         },
         {
-          name: "商品名称",
+          name: "头像",
           value: "goodsName",
         },
         {
-          name: "活动名称",
+          name: "评论内容",
           value: "activityName",
         },
         {
-          name: "名称",
+          name: "等级",
           value: "posterName",
         },
         {
-          name: "图片",
+          name: "审核状态",
           value: "posterPic",
         },
         {
-          name: "分享文案一",
-          value: "posterCopyFirst",
-        },
-        {
-          name: "分享文案二",
-          value: "posterCopySecond",
-        },
-        {
-          name: "分享文案三",
-          value: "posterCopyThird",
-        },
-        {
-          name: "分享文案四",
-          value: "posterCopyFourth",
-        },
-        {
-          name: "分享文案五",
-          value: "posterCopyFifth",
-        },
-        {
           name: "创建时间",
-          value: "createAt",
-        },
-        {
-          name: "修改时间",
-          value: "updateAt",
+          value: "posterCopyFirst",
         },
         {
           name: "操作",
