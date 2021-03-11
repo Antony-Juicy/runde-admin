@@ -12,6 +12,7 @@ const chanceSelect = {
             props: {
               checkStrictly: true,
               lazy: true,
+              expandTrigger: 'hover',
               lazyLoad:(node, resolve)=> {
                 console.log(node,'node')
                 const { level } = node;
@@ -35,7 +36,7 @@ const chanceSelect = {
                      if(res.msg == "没有相关数据"){
                        nodes = [];
                      }else {
-                       let data = res.dataJson.list;
+                       let data = res.data.list;
                       nodes = data.map(item =>({
                         value: item.id,
                         label: item.subjectName,

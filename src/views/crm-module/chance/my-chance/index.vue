@@ -752,7 +752,7 @@ export default {
       this.$fetch("chance_subject_list",{
                    productIdOne: id
                  }).then((res) => {
-        let data = res.dataJson.list;
+        let data = res.data.list;
         let nodes = data.map((item) => ({
           value: item.id,
           label: item.subjectName,
