@@ -68,6 +68,7 @@ let id = 0;
 import Fetch from "@/utils/fetch";
 import rdDrawer from "@/components/RdDrawer";
 import distribution from "./distribution";
+import chanceSelect from '@/utils/chance-select';
 export default {
   name: "branch-school",
   data() {
@@ -658,67 +659,10 @@ export default {
             options: numsOptions,
           },
           // 课程
-          {
+          chanceSelect.getProjectCascader({
             prop: "product",
-            element: "el-cascader",
-            placeholder: "咨询项目/科目/课程",
-            props: {
-              checkStrictly: true,
-              lazy: true,
-              lazyLoad: (node, resolve) => {
-                console.log(node, "node");
-                const { level } = node;
-                if (level == 0) {
-                  Fetch("chance_product_list").then((res) => {
-                    let data = JSON.parse(res.msg);
-                    let nodes = data.map((item) => ({
-                      value: item.id,
-                      label: item.productName,
-                      leaf: level >= 2,
-                    }));
-                    resolve(nodes);
-                  });
-                } else if (level == 1) {
-                  Fetch("chance_subject_list", {
-                    enquireProductIdOne: node.data.value,
-                  }).then((res) => {
-                    let nodes;
-                    if (res.msg == "没有相关数据") {
-                      nodes = [];
-                    } else {
-                      let data = res.data;
-                      nodes = data.map((item) => ({
-                        value: item.id,
-                        label: item.subjectName,
-                        leaf: level >= 2,
-                      }));
-                    }
-                    resolve(nodes);
-                  });
-                } else if (level == 2) {
-                  Fetch("chance_course_list", {
-                    subjectIdOne: node.data.value,
-                  }).then((res) => {
-                    let nodes;
-                    if (res.msg == "没有相关数据") {
-                      nodes = [];
-                    } else {
-                      let data = JSON.parse(res.msg);
-                      nodes = data.map((item) => ({
-                        value: item.id,
-                        label: item.courseName,
-                        leaf: level >= 2,
-                      }));
-                    }
-                    resolve(nodes);
-                  });
-                } else {
-                  resolve([]);
-                }
-              },
-            },
-            initWidth: true,
-          },
+            placeholder: "咨询项目/科目/课程"
+          }),
           // 时间
           {
             prop: "updateAt",

@@ -660,6 +660,8 @@ export default {
                     leaf: level >= 2,
                   }));
                   resolve(nodes);
+                }).catch(err => {
+                  resolve([]);
                 })
               }else if(level == 1){
                  Fetch("chance_subject_list",{
@@ -677,6 +679,8 @@ export default {
                     }));
                    }
                   resolve(nodes);
+                }).catch(err => {
+                  resolve([]);
                 })
               }else if(level == 2){
                  Fetch("chance_course_list",{
@@ -694,6 +698,8 @@ export default {
                     }));
                    }
                   resolve(nodes);
+                }).catch(err => {
+                  resolve([]);
                 })
               }else {
                 resolve([]);
