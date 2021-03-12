@@ -20,7 +20,7 @@
           >
           <el-divider direction="vertical"></el-divider>
           <el-button
-            @click="handleDelete(scope.row)"
+            @click="handleLink(scope.row)"
             type="text"
             size="small"
             style="color: #ffa500"
@@ -29,6 +29,7 @@
         </template>
       </rd-table>
 
+      <!-- 添加活动 -->
       <fullDialog
         v-model="addVisible"
         title="添加活动"
@@ -41,6 +42,58 @@
           v-if="addVisible"
         />
       </fullDialog>
+
+      <!-- 编辑活动 -->
+      <fullDialog
+        v-model="editVisible"
+        title="编辑活动"
+        @change="editVisible = false"
+      >
+        <EditAct
+          ref="EditAct"
+          @close="editVisible = false"
+          @refresh="refresh2"
+          v-if="editVisible"
+        />
+      </fullDialog>
+
+      <!-- 活动链接 -->
+      <rd-dialog
+        :title="'活动邀请链接'"
+        :dialogVisible="linkVisible"
+        @handleClose="linkVisible = false"
+        :showFooter="false"
+        width="1200px"
+      >
+        <rd-table
+          :tableData="tableLinkData"
+          :tableKey="tableLinkKey"
+          fixedTwoRow
+          :emptyText="emptyLinkText"
+        >
+        <template slot="link" slot-scope="scope">
+          <el-input
+            v-model="scope.row.link"
+            id="link"
+            ref="link"
+            style="width: 380px"
+            :readonly="true"
+            :title="scope.row.link"
+          >
+          </el-input>
+        </template>
+        <template slot="edit">
+          <el-button 
+          class="teacher-btn" 
+          @click="copyLink('.teacher-btn')" 
+          type="text" size="small"
+           data-clipboard-action="copy"
+          data-clipboard-target="#link"
+            >复制长链接</el-button
+          >
+        </template>
+      </rd-table>
+      </rd-dialog>
     </div>
   </div>
 </template>
@@ -49,6 +102,8 @@
 import fullDialog from "@/components/FullDialog";
 import RdForm from "@/components/RdForm";
 import AddAct from "./addAct.vue";
+import EditAct from "./editAct.vue";
+import Clipboard from "clipboard";
 export default {
   name: "activity-manage",
   data() {
@@ -149,17 +204,57 @@ export default {
         },
       ],
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         currentPage: 1,
         pageSize: 10,
       },
       addVisible: false,
+      editVisible: false,
+      linkVisible: false,
+      tableLinkData:[
+         {
+          id: 1,
+          name: "飞翔的荷兰人3",
+          cutdown: 1608897351706,
+          visit: 2,
+          phone: "15692026183",
+          link:"http://wx.kaoyaoshi.cn/yaoshi/2019/MyRoad/HomePage.html?activityId=119&id=3182880"
+        },
+      ],
+      tableLinkKey:[
+         {
+          name: "活动名称",
+          value: "name",
+        },
+        {
+          name: "老师名称",
+          value: "phone",
+        },
+        {
+          name: "老师邀请码",
+          value: "cutdown",
+        },
+        {
+          name: "活动链接",
+          value: "link",
+          width: 400,
+          operate: true
+        },
+        {
+          name: "操作",
+          value: "edit",
+          operate: true,
+          width: 120
+        },
+      ],
+      emptyLinkText:"暂无数据"
     };
   },
   components: {
     fullDialog,
     RdForm,
     AddAct,
+    EditAct
   },
   methods: {
     onSearch() {},
@@ -178,6 +273,26 @@ export default {
     },
     refresh(){
 
+    },
+    refresh2(){
+
+    },
+    handleLink(data){
+      this.linkVisible = true;
+    },
+    copyLink(btnName) {
+      let clipboard = new Clipboard(btnName);
+      clipboard.on("success", (e) => {
+        this.$message.success("复制成功");
+        clipboard.destroy(); // 使用destroy可以清楚缓存
+      });
+      clipboard.on("error", (e) => {
+        this.$message.error("该浏览器不支持自动复制");
+        clipboard.destroy();
+      });
+    },
+    handleEdit(){
+      this.editVisible = true;
     }
   },
 };

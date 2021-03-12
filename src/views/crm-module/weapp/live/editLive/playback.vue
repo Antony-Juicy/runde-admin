@@ -1,7 +1,7 @@
 <template>
   <div class="playback">
-    <search-form :formOptions="formOptions" @onSearch="onSearch"></search-form>
-    <rd-table :tableData="tableData" :tableKey="tableKey" fixedTwoRow>
+    <search-form :formOptions="formOptions" @onSearch="onSearch" v-if="showSearchForm"></search-form>
+    <rd-table :tableData="tableData" :tableKey="tableKey" fixedTwoRow :emptyText="emptyText">
       <template slot="index" slot-scope="scope">
         {{ scope.$index + 1 }}
       </template>
@@ -70,6 +70,7 @@ export default {
           prop: "livePlaybackName",
           element: "el-input",
           placeholder: "请输入回放名称",
+          initWidth: true
         },
       ],
       tableData: [],
@@ -109,6 +110,10 @@ export default {
       ],
       addVisible: false,
       currentLink: "",
+
+      emptyText:"暂无数据",
+
+      showSearchForm: true
     };
   },
   props: {
@@ -129,20 +134,13 @@ export default {
       this.getTableData();
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".playback .el-table",
-      });
       this.$fetch("live_get_live_playback_list", {
         ...this.searchForm,
         ...params,
         liveId: this.liveId,
       }).then((res) => {
         this.tableData = res.data;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      });
+      })
     },
     copyLink(btnName) {
       let clipboard = new Clipboard(btnName);

@@ -1,6 +1,7 @@
 <template>
   <div class="analysis">
-    <div class="title">汇总数据</div>
+    <template v-if="showAll">
+      <div class="title">汇总数据</div>
     <div class="content">
       <div class="first-row">
         <div class="item1">
@@ -51,6 +52,7 @@
         </div>
       </div>
     </div>
+    </template>
 
     <div class="title">直播榜单</div>
     <div class="content">
@@ -127,12 +129,12 @@
           <el-card class="box-card">
             <div slot="header" class="clearfix card-header">
               <span class="title-name">邀请榜（Top100）</span>
-              <el-button
+              <!-- <el-button
                 class="export-btn"
                 style="float: right; padding: 3px 0"
                 type="text"
                 >导出数据</el-button
-              >
+              > -->
             </div>
             <div class="text invite">
               <rd-table
@@ -143,6 +145,7 @@
                 :fixedTwoRow="true"
                 :pager-count="5"
                 @pageChange="pageChange"
+                :emptyText="emptyText"
               >
                 <template slot="index" slot-scope="scope">
                   {{ scope.$index + 1 }}
@@ -155,12 +158,12 @@
           <el-card class="box-card">
             <div slot="header" class="clearfix card-header">
               <span class="title-name">打赏榜（Top100）</span>
-              <el-button
+              <!-- <el-button
                 class="export-btn"
                 style="float: right; padding: 3px 0"
                 type="text"
                 >导出数据</el-button
-              >
+              > -->
             </div>
             <div class="text reward">
               <rd-table
@@ -171,6 +174,7 @@
                 :fixedTwoRow="true"
                 :pager-count="5"
                 @pageChange="pageChange2"
+                :emptyText="emptyText2"
               >
                 <template slot="index" slot-scope="scope">
                   {{ scope.$index + 1 }}
@@ -189,7 +193,7 @@
       :size="'50%'"
       append-to-body
     >
-      <provinceList :liveId="liveId" @close="drawerVisible1 = false" />
+      <provinceList :liveId="liveId" :liveName="liveName" @close="drawerVisible1 = false" />
     </el-drawer>
 
     <el-drawer
@@ -199,7 +203,7 @@
       :size="'50%'"
       append-to-body
     >
-      <campustList :liveId="liveId" />
+      <campustList :liveId="liveId" :liveName="liveName" @close="drawerVisible2 = false"/>
     </el-drawer>
 
     <el-drawer
@@ -209,7 +213,7 @@
       :size="'50%'"
       append-to-body
     >
-      <personalList :liveId="liveId" />
+      <personalList :liveId="liveId" :liveName="liveName" @close="drawerVisible3 = false"/>
     </el-drawer>
 
     <el-drawer
@@ -219,7 +223,7 @@
       :size="'50%'"
       append-to-body
     >
-      <personalList2 :liveId="liveId" />
+      <personalList2 :liveId="liveId" :liveName="liveName" @close="drawerVisible4 = false"/>
     </el-drawer>
 
     <el-drawer
@@ -229,7 +233,7 @@
       :size="'50%'"
       append-to-body
     >
-      <personalList3 :liveId="liveId" />
+      <personalList3 :liveId="liveId" :liveName="liveName" @close="drawerVisible5 = false"/>
     </el-drawer>
 
     <el-drawer
@@ -239,7 +243,7 @@
       :size="'50%'"
       append-to-body
     >
-      <personalList4 :liveId="liveId" />
+      <personalList4 :liveId="liveId" :liveName="liveName" @close="drawerVisible6 = false"/>
     </el-drawer>
   </div>
 </template>
@@ -276,7 +280,7 @@ export default {
         },
       ],
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
@@ -300,7 +304,7 @@ export default {
         },
       ],
       pageConfig2: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
@@ -317,6 +321,9 @@ export default {
       personalList: "",
       rewardList: "",
       invitationList: [],
+      showAll: true,
+      emptyText:"暂无数据",
+      emptyText2:"暂无数据",
     };
   },
   components: {
@@ -342,29 +349,11 @@ export default {
       liveId: this.liveId,
     }).then((res) => {
       this.dataList = res.data;
-    });
-
-    // this.$fetch("live_provincial_school_list", {
-    //   liveId: this.liveId
-    // }).then((res) => {
-    //   console.log(res,'provinceSchoolList')
-    //   this.provinceSchoolList = res.records
-    // });
-
-    // this.$fetch("live_branch_school_list", {
-    //   liveId: this.liveId,
-    // }).then((res) => {
-    //   console.log(res,'branchSchoolList')
-    //   this.branchSchoolList = res.records
-    // });
-
-    // this.$fetch("live_personal_list", {
-    //   liveId: this.liveId,
-    // }).then((res) => {
-    //   console.log(res,'personalList')
-    //   this.personalList = res.records
-    //   this.tableData = res.records
-    // });
+    }).catch(err =>{
+      if(err.response.status == 401){
+        this.showAll = false;
+      }
+    })
 
     // 邀请榜
     this.getInvitationList();
@@ -386,10 +375,6 @@ export default {
     },
 
     getInvitationList(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".invite .el-table",
-      });
       this.$fetch("live_invitation_list", {
         ...this.pageConfig,
         ...params,
@@ -397,17 +382,10 @@ export default {
       }).then((res) => {
         this.tableData = res.data.records;
         this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      });
+      })
     },
 
     getRewardList(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".reward .el-table",
-      });
       this.$fetch("live_reward_list", {
         ...this.pageConfig2,
         ...params,
@@ -415,26 +393,23 @@ export default {
       }).then((res) => {
         this.tableData2 = res.data.records;
         this.pageConfig2.totalCount = res.data.totalCount;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      });
+      })
     },
 
     showOrder() {
       this.$router.push({
-        path: "/crm-module/weapp/live-details/goods-orders",
-        query: {
-          sourceName: this.liveName
+        name: "/crm-module/weapp/live-details/goods-orders" + '?' + sessionStorage.getItem("router-timeStamp"),
+        params: {
+          sourceName: encodeURIComponent(this.liveName)
         },
       });
     },
 
     showInvite() {
       this.$router.push({
-        path: "/crm-module/weapp/live-details/invite-count",
-        query: {
-          liveName: this.liveName
+        name: "/crm-module/weapp/live-details/invite-count" + '?' + sessionStorage.getItem("router-timeStamp"),
+        params: {
+          liveName: encodeURIComponent(this.liveName)
         },
       });
     },

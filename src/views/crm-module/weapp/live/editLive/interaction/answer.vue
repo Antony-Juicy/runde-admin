@@ -4,6 +4,7 @@
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
+        :emptyText="emptyText"
         fixedTwoRow
         highlight-current-row
         :pageConfig.sync="pageConfig"
@@ -76,10 +77,11 @@ export default {
       drawerVisible1: false,
       answerId:'',
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
+      emptyText:"暂无数据"
     };
   },
   components: {
@@ -106,10 +108,6 @@ export default {
       this.drawerVisible1 = true;
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".answer .el-table",
-      });
       this.$fetch("live_answer_list", {
         ...this.pageConfig,
         ...params,
@@ -117,10 +115,7 @@ export default {
       }).then((res) => {
         this.tableData = res.data.records;
         this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      });
+      })
     },
   },
 };

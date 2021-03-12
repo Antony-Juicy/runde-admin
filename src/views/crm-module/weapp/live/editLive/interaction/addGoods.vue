@@ -32,6 +32,7 @@
         :multiple="true"
         :show-header="false"
         :border="false"
+        :emptyText="emptyText"
         @pageChange="pageChange"
         @select="handelSelect"
       >
@@ -67,6 +68,7 @@ export default {
   name: "add-goods",
   data() {
     return {
+      emptyText:"暂无数据",
       formInline: {
         goodsName: "",
         typeId: "",
@@ -81,7 +83,7 @@ export default {
         }
       ],
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
@@ -129,10 +131,6 @@ export default {
       this.selectedData = val;
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".add-goods .el-table",
-      });
       this.$fetch("live_get_live_add_goods_list", {
         ...this.pageConfig,
         ...this.formInline,
@@ -141,10 +139,7 @@ export default {
       }).then((res) => {
         this.tableData = res.data.records;
         this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      });
+      })
     },
     handelCancel(){
       this.$emit("close")

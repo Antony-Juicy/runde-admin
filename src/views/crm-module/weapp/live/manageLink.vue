@@ -74,8 +74,8 @@ export default {
   name: "manage-link",
   data() {
     return {
-      teacherUrl: "http://www.baidu.com1",
-      assistantUrl: "http://www.baidu.com",
+      teacherUrl: "",
+      assistantUrl: "",
       pwd: ""
     };
   },
@@ -112,7 +112,8 @@ export default {
         liveId: this.liveId
       }).then(res => {
         this.teacherUrl = res.data.pushUrl;
-        this.assistantUrl = "https://zhujiao.rundejy.com/#/player?liveId="+ this.liveId;
+        this.assistantUrl = "https://zhujiao.rundejy.com/#/player?liveId="+ this.liveId + '&userId=' + this.$common.getUserId();
+        // this.assistantUrl = "http://192.168.0.130:8080/#/player?liveId="+ this.liveId + '&userId=' + this.$common.getUserId();
         this.pwd = res.data.assistantPassword;
       })
     }

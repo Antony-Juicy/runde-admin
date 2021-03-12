@@ -1,5 +1,6 @@
 <template>
   <div class="addLive">
+    <template v-if="!emptyText">
     <RdForm
       :formOptions="addFormOptions"
       :rules="addRules"
@@ -14,7 +15,7 @@
             <Upload-oss
               v-if="uploadOssElem"
               :initGetConfig="initGetConfig"
-              :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
+             :objConfig="{module: 'live', project: 'icon_',}"
               :src.sync="bgImg"
               @srcChangeFun="
                 (data) => {
@@ -31,7 +32,7 @@
       <template slot="liveCover">
         <Upload-oss
           v-if="uploadOssElem2"
-          :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
+          :objConfig="{module: 'live', project: 'icon_',}"
           :src.sync="coverImg"
           :initGetConfig="initGetConfig"
           @srcChangeFun="
@@ -45,6 +46,8 @@
       <template slot="liveDetail">
         <RdEditor
           placeholder="编辑直播简介"
+          module="live"
+          height="500px"
           :quillContent="quillContent"
           @change="changeEditor"
         />
@@ -59,6 +62,12 @@
         >保存</el-button
       >
       <!-- <el-button size="small" @click="handleClose('dataForm3')">取消</el-button> -->
+    </div>
+    </template>
+
+    <div v-else style="text-align:center">
+      <img src="@/assets/empty-image.png" alt="" class="img-empty" />
+      <p>{{ emptyText }}</p>
     </div>
   </div>
 </template>
@@ -238,10 +247,11 @@ export default {
       coverImg: "",
       bgType: "1",
       liveMode: true,
-      initGetConfig: false,
+      initGetConfig: true,
       liveDetail: "",
       btnLoading: false,
-      quillContent: "uuuu",
+      quillContent: "",
+      emptyText:""
     };
   },
   components: {
@@ -364,7 +374,11 @@ export default {
         });
 
         this.$refs.dataForm3.addInitValue();
-      });
+      }).catch(err => {
+        if(err.response.status == 401){
+          this.emptyText = "您没有权限访问"
+        }
+      })
     },
   },
 };

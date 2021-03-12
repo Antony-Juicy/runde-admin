@@ -67,11 +67,25 @@
         </template>
       </rd-table>
     </div>
+
+    <!-- 数据分析 -->
+      <fullDialog
+        v-model="analysisVisible"
+        :title="liveName+' - 数据分析'"
+        @change="analysisVisible = false"
+      >
+        <analysis
+          :liveId="liveId" 
+          :liveName="liveName"
+          v-if="analysisVisible"
+        />
+      </fullDialog>
   </div>
 </template>
 
 <script>
-
+import fullDialog from "@/components/FullDialog";
+import analysis from '@/views/crm-module/weapp/live/editLive/analysis/index.vue';
 export default {
   name:"live-count",
   data(){
@@ -80,7 +94,7 @@ export default {
       searchForm: {},
       formOptions: [
         { prop: 'liveId', element: 'el-input', placeholder: '直播id' },
-        { prop: 'typeId', element: 'el-select', placeholder: '项目类型' },
+        { prop: 'typeId', element: 'el-cascader', placeholder: '项目类型', props: { checkStrictly: true } },
         { 
           prop: 'liveChargeMode',
           element: 'el-select',
@@ -114,7 +128,7 @@ export default {
         { name: '直播名称',value: 'liveName' },
         { name: '收费类型',value: 'liveChargeMode',operate: true },
         { name: '访问量pv',value: 'pv' },
-        { name: '独立访问客uv',value: 'uv' },
+        { name: '独立访问客数uv',value: 'uv' },
         { name: '订单量',value: 'orderCount' },
         { name: '成交额',value: 'turnover' },
         { name: '操作',value: 'edit',operate: true,width: 120 }
@@ -122,11 +136,14 @@ export default {
       emptyText: '暂无数据',
       fixedTwoRow: true,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
       loading: false,
+      analysisVisible: false,
+      liveId: "",
+      liveName:""
     }
   },
   mounted () {
@@ -134,9 +151,17 @@ export default {
     this.getTypeData();
     this.getTableData();
   },
+  components: {
+    fullDialog,
+    analysis
+  },
   methods: {
     onSearch(val) {
       this.searchForm = {...val};
+      if(this.searchForm.liveId && isNaN(this.searchForm.liveId) ){
+        this.$message.warning("请输入正确的直播id")
+        return
+      }
       this.pageConfig.pageNum = 1;
       this.getTableData();
       console.log(val,this.searchForm , 'val---')
@@ -161,52 +186,65 @@ export default {
     // 获取项目类型
     getTypeData() {
       this.$fetch(
-        "projectType_normalList",
-        {
-          loginUserId: this.$common.getUserId()
-        }
+        "projectType_select",
       ).then((res) => {
-        this.typeOptions = res.data.map((item) => ({
-          label: item.typeName,
-          value: item.typeId,
-        }));
-        this.formOptions.splice(1,1,{ prop: 'typeId', element: 'el-select', placeholder: '项目类型', options: this.typeOptions })
+        // this.typeOptions = res.data.map((item) => ({
+        //   label: item.typeName,
+        //   value: item.typeId,
+        // }));
+        this.typeOptions = this.$common.getTypeTree((res.data))
+        this.formOptions.splice(1,1,{ prop: 'typeId', element: 'el-cascader', placeholder: '项目类型',props: { checkStrictly: true }, options: this.typeOptions })
       });
     },
-    getTableData(params) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
-      this.$fetch(
-        "live_detail_list",
-        params || {
-          ...this.pageConfig,
-          ...this.searchForm
+    getTableData(params={}) {
+      return new Promise((resolve,reject)=>{
+        if(this.searchForm.typeId) {
+          this.searchForm.typeId = this.searchForm.typeId.pop()
         }
-      ).then((res) => {
-        this.tableData = res.data.records;
-        this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      });
+        this.$fetch(
+          "live_detail_list",
+          {
+            ...this.pageConfig,
+            ...this.searchForm,
+            ...params
+          }
+        ).then((res) => {
+          this.tableData = res.data.records;
+          this.pageConfig.totalCount = res.data.totalCount;
+          resolve();
+        })
+      })
     },
     pageChange(val) {
-      console.log(val,'pagechange')
-      this.getTableData({
-        pageNum: (val && val.page) || 1,
-        pageSize: (val && val.limit) || 10,
-      });
+      // console.log(val,'pagechange')
+      // this.getTableData({
+      //   pageNum: (val && val.page) || 1,
+      //   pageSize: (val && val.limit) || 10,
+      // });
+      this.pageConfig.pageNum = val.page;
+      this.pageConfig.pageSize = val.limit;
+      this.getTableData();
     },
-    openConfig(row) {
-      console.log(row,'row-----')
-      this.$router.push({
-        path: '/crm-module/weapp/live',
-        query: {
-          liveId: row.liveId,
-          flag: 'analysis'
-        }
+    async openConfig(data) {
+      this.liveId = data.liveId;
+      this.liveName = data.liveName;
+      this.analysisVisible = true;
+      // const res = await this.getLiveInfo(row.liveId);
+      // this.$router.push({
+      //   name: '/crm-module/weapp/live' + '?' + sessionStorage.getItem("router-timeStamp"),
+      //   params: {
+      //     liveId: row.liveId,
+      //     flag: 'analysis',
+      //     chatAudit: res.data.chatAudit,
+      //     mute: res.data.mute,
+      //     liveName: res.data.liveName
+      //   }
+      // })
+    },
+
+    getLiveInfo(liveId){
+      return this.$fetch("live_getInfo",{
+        liveId
       })
     }
   },

@@ -1,6 +1,6 @@
 const state = {
     viewId: 1,
-    keepAlivePage: ['appRedirect']
+    keepAlivePage: ['appRedirect','live-redirect','DashboardAdmin']
 };
 const getters = {
     getViewId: state => {

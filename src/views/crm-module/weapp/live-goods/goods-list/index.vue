@@ -22,7 +22,7 @@
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑</el-button>
           <el-divider direction="vertical"></el-divider>
-          <el-button @click="openfullDialogGroup(scope.row)" type="text" size="small">关联规则组</el-button>
+          <el-button @click="openfullDialogGroup(scope.row)" type="text" size="small">关联规格组</el-button>
           <el-divider direction="vertical"></el-divider>
           <el-button @click="goOrders(scope.row)" type="text" size="small">查看订单</el-button>
           <el-divider direction="vertical"></el-divider>
@@ -38,9 +38,18 @@
               <el-input v-model.trim="goodsForm.goodsName" autocomplete="off" placeholder="请输入商品名称" />
             </el-form-item>
             <el-form-item label="项目类型" prop="typeId">
-              <el-select v-model="goodsForm.typeId" :disabled="goodsStatusVisible ? false : true" clearable placeholder="请选择">
+              <!-- <el-select v-model="goodsForm.typeId" :disabled="goodsStatusVisible ? false : true" clearable placeholder="请选择">
                 <el-option v-for="item in typeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
-              </el-select>
+              </el-select> -->
+              <el-cascader
+                style="width:100%;"
+                v-model.trim="goodsForm.typeId"
+                :disabled="goodsStatusVisible ? false : true"
+                :options="typeOptions"
+                :props="{ checkStrictly: true }"
+                :placeholder="goodsStatusVisible ? '请选择项目分类' : '暂无'"
+                clearable>
+              </el-cascader>
             </el-form-item>
             <el-form-item label="商品标签" prop="goodsLabels">
               <el-select v-model.trim="goodsForm.goodsLabels" multiple filterable allow-create default-first-option placeholder="请选择标签，也可自行添加标签">
@@ -73,7 +82,7 @@
             <el-form-item label="商品缩略图(4:3)" prop="goodsThumbnail" class="icon-wrapper">
               <Upload-oss
                 v-if="uploadOssElem"
-                :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
+                :objConfig="{module: 'live', project: 'icon_'}"
                 :src.sync="goodsForm.goodsThumbnail"
                 @srcChangeFun="
                   (data) => {
@@ -86,7 +95,7 @@
             <el-form-item label="商品展示图(16:9)" prop="goodsExhibitionImage" class="icon-wrapper">
               <Upload-oss
                 v-if="uploadOssElem2"
-                :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
+                :objConfig="{module: 'live', project: 'icon_'}"
                 :src.sync="goodsForm.goodsExhibitionImage"
                 @srcChangeFun="
                   (data) => {
@@ -97,7 +106,7 @@
               />
             </el-form-item>
             <el-form-item label="课程详情" prop="goodsDetail">
-              <RdEditor :quillContent="quillContent" @change="changeEditor" />
+              <RdEditor :quillContent="quillContent" height="500px" module="live" @change="changeEditor" />
             </el-form-item>
           </el-form>
           <div class="btn-bottom">
@@ -107,43 +116,6 @@
         </div>
       </fullDialog>
       <fullDialog v-model="showGroup" :title="showGroupTitle" @change="showGroup = false">
-        <!-- <el-button type="primary" size="small" @click="openAddGroup">选择规格组</el-button>
-        <div class="w-container">
-          <div v-for="item in 2" :key="item" style="margin-bottom:10px;">
-            <div style="padding: 0 20px;height: 40px; border: 1px solid #EBEEF5; line-height:40px;background-color: rgb(242, 242, 242);">
-              标题栏
-              <span style="float:right;padding-right:20px;">
-                共1个规格
-                <el-button @click="handleDelete()" type="text" size="small" style="margin-left:20px; color: #ec5b56" >删除</el-button>
-              </span>
-            </div>
-            <rd-table
-              :tableData="tableData"
-              :tableKey="tableKey"
-              :loading="loading"
-              :fixedTwoRow="fixedTwoRow">
-            </rd-table>
-          </div>
-        </div>
-        <rd-dialog
-          title="选择规格组"
-          :dialogVisible="showAddGroup"
-          :width="widthGroup"
-          append-to-body
-          @handleClose="closeAddGroup('dataForm')"
-          @submitForm="submitGroupForm('dataForm')">
-          <search-form :formOptions="optionsGroup" @onSearch="onGroupSearch"></search-form>
-          <rd-table
-            :tableData="tableGroupData"
-            :tableKey="tableGroupKey"
-            :loading="loading"
-            :fixedTwoRow="fixedTwoRow"
-            :multiple="true"
-            :pageConfig.sync="pageGroupConfig"
-            @select="handleGroupSelect"
-            @pageChange="pageGroupChange">
-          </rd-table>
-        </rd-dialog> -->
         <Rule-Group ref="rulegroup" :goodsId="goodsId"  @close="showGroup = false" @refresh="refresh" v-if="showGroup"></Rule-Group>
       </fullDialog>
       <fullDialog v-model="commentVisible" title="评论管理" @change="commentVisible = false">
@@ -173,8 +145,8 @@ export default {
       showNum: 6,
       searchForm: {},
       formOptions: [
-        // { prop: 'goodsId', element: 'el-input', placeholder: '请输入商品id' },
-        { prop: 'typeId', element: 'el-select', placeholder: '请选择项目' },
+        { prop: 'goodsId', element: 'el-input', placeholder: '请输入商品id' },
+        { prop: 'typeId', element: 'el-cascader', placeholder: '请选择项目', props: { checkStrictly: true } },
         { prop: 'goodsName', element: 'el-input', placeholder: '请输入商品名称' },
         { 
           prop: 'goodsStatus',
@@ -198,7 +170,7 @@ export default {
         { name: '项目类型',value: 'typeName' },
         { name: '商品缩略图',value: 'goodsThumbnail',operate: true,width: 100 },
         { name: '商品名称',value: 'goodsName' },
-        { name: '规则组数',value: 'goodsItemGroupCount' },
+        { name: '规格组数',value: 'goodsItemGroupCount' },
         { name: '商品价格',value: 'goodsPrices' },
         { name: '总销售量',value: 'totalSalesCount' },
         { name: '状态',value: 'goodsStatus',operate: true },
@@ -209,7 +181,7 @@ export default {
       emptyText: '暂无数据',
       fixedTwoRow: true,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
@@ -240,18 +212,7 @@ export default {
       quillContent: "uuuu",
       typeOptions: [], // 项目类型
       couponOptions: [], // 商品优惠券
-      labelOptions: [
-        // {
-        //   value: 'HTML',
-        //   label: 'HTML'
-        // }, {
-        //   value: 'CSS',
-        //   label: 'CSS'
-        // }, {
-        //   value: 'JavaScript',
-        //   label: 'JavaScript'
-        // }
-      ], // 商品标签
+      labelOptions: [], // 商品标签
       rules: {
         goodsName: [
           { required: true, message: "请输入商品名称", trigger: "blur" },
@@ -280,43 +241,25 @@ export default {
       // 关联规格组弹窗
       showGroup: false,
       showGroupTitle: '',
-      // showAddGroup: false,
-      // widthGroup: "800px",
-      // searchGroupForm: {},
-      // optionsGroup: [
-      //   { prop: 'groupName', element: 'el-input', placeholder: '请输入规格组名称' },
-      //   { prop: 'groupRemark', element: 'el-input', placeholder: '请输入备注内容' },
-      // ],
-      // tableGroupData: [
-      //   {
-      //     groupName: "中药",
-      //     groupCount: 4,
-      //     groupRemark: '备注备注金牌通过班',
-      //   }
-      // ],
-      // tableGroupKey: [
-      //   { name: '规格组',value: 'groupName' },
-      //   { name: '规格数量',value: 'groupCount' },
-      //   { name: '备注',value: 'groupRemark' },
-      // ],
-      // pageGroupConfig: {
-      //   totalCount: 20,
-      //   pageNum: 1,
-      //   pageSize: 10,
-      // },
 
       // 评论弹窗
       commentVisible: false,
     }
   },
-  mounted () {
+  created () {
     this.getTableData()
     this.getTypeData();
     this.getCouponData();
   },
   methods: {
     onSearch(val) {
+      // console.log(val,'val---')
+      // return;
       this.searchForm = {...val};
+      if(this.searchForm.goodsId && isNaN(this.searchForm.goodsId) ){
+        this.$message.warning("请输入正确的商品id")
+        return
+      }
       this.pageConfig.pageNum = 1;
       this.getTableData();
       console.log(val,this.searchForm , 'val---')
@@ -325,33 +268,33 @@ export default {
       console.log(rows, "rows---");
     },
     // 获取商品列表数据
-    getTableData(params) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
-      this.$fetch(
-        "goods_list",
-        params || {
-          loginUserId: this.$common.getUserId(),
-          ...this.pageConfig,
-          ...this.searchForm
+    getTableData(params={}) {
+      return new Promise((resolve,reject)=>{
+        console.log(this.searchForm,'this.searchForm----')
+        if(this.searchForm.typeId) {
+          this.searchForm.typeId = this.searchForm.typeId.pop()
         }
-      ).then((res) => {
-        this.tableData = res.data.records;
-        this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      });
+        this.$fetch(
+          "goods_list",
+          {
+            loginUserId: this.$common.getUserId(),
+            ...this.pageConfig,
+            ...this.searchForm,
+            ...params
+          }
+        ).then((res) => {
+          this.tableData = res.data.records;
+          this.pageConfig.totalCount = res.data.totalCount;
+          resolve();
+        })
+      })
     },
     // 分页查询
     pageChange(val) {
       console.log(val,'pagechange')
-      this.getTableData({
-        pageNum: (val && val.page) || 1,
-        pageSize: (val && val.limit) || 10,
-      });
+      this.pageConfig.pageNum = val.page;
+      this.pageConfig.pageSize = val.limit;
+      this.getTableData();
     },
 
     // 新增商品
@@ -432,16 +375,17 @@ export default {
     // 获取项目类型
     getTypeData() {
       this.$fetch(
-        "projectType_normalList",
+        "projectType_select",
         {
           loginUserId: this.$common.getUserId()
         }
       ).then((res) => {
-        this.typeOptions = res.data.map((item) => ({
-          label: item.typeName,
-          value: item.typeId,
-        }));
-        this.formOptions.splice(1,1,{ prop: 'typeId', element: 'el-select', placeholder: '选择项目', options: this.typeOptions })
+        // this.typeOptions = res.data.map((item) => ({
+        //   label: item.typeName,
+        //   value: item.typeId,
+        // }));
+        this.typeOptions = this.$common.getTypeTree((res.data))
+        this.formOptions.splice(1,1,{ prop: 'typeId', element: 'el-cascader', placeholder: '选择项目',props: { checkStrictly: true }, options: this.typeOptions })
       });
     },
     // 获取优惠券
@@ -466,6 +410,11 @@ export default {
           this.goodsForm.goodsLabels = JSON.stringify(this.goodsForm.goodsLabels)
           if(this.goodsStatusVisible) {
             // 新增
+            if (this.goodsForm.typeId != 0) {
+              this.goodsForm.typeId = this.goodsForm.typeId.pop()
+            } else {
+              this.goodsForm.typeId = 0
+            }
             this.$fetch("goods_add", {
               ...this.goodsForm,
               loginUserId: this.$common.getUserId()
@@ -497,8 +446,8 @@ export default {
 
     goOrders(row) {
       this.$router.push({
-        path: '/crm-module/weapp/live-details/goods-orders',
-        query: {
+        name: '/crm-module/weapp/live-details/goods-orders'  + '?' + sessionStorage.getItem("router-timeStamp"),
+        params: {
           goodsName: row.goodsName,
         } 
       })

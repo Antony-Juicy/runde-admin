@@ -60,7 +60,7 @@ export default {
         },
       ],
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
@@ -109,10 +109,7 @@ export default {
       console.log(val, "valll");
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".answer-detail .el-table",
-      });
+
       this.$fetch("live_page_user_answer_data", {
         ...this.pageConfig,
         ...this.searchForm,
@@ -121,9 +118,6 @@ export default {
       }).then((res) => {
         this.tableData = res.data.records;
         this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
   },

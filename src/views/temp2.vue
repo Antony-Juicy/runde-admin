@@ -29,6 +29,7 @@
         highlight-current-row
         @pageChange="pageChange"
         @select="handelSelect"
+        :emptyText="emptyText"
       >
       <!-- 手机号 -->
           <template slot="phone" slot-scope="scope">
@@ -88,6 +89,8 @@ export default {
   name: "temp2",
   data() {
     return {
+      emptyText:"暂无数据",
+
       drawerId:"",
       drawerPhone:"",
       drawerTitle:"",
@@ -270,7 +273,7 @@ export default {
         },
       ],
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         currentPage: 1,
         pageSize: 10,
       },
@@ -391,7 +394,7 @@ export default {
   },
   methods: {
      openDrawer(data){
-      this.drawerId = data.id;
+      this.drawerId = data.idStr;
       this.drawerPhone = data.phone;
       this.drawerTitle = data.studentName || "";
       this.drawerVisible = true;
@@ -494,10 +497,6 @@ export default {
         .catch(() => {});
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch("chance_config_list", {
         ...this.pageConfig,
         ...this.searchForm,
@@ -509,10 +508,7 @@ export default {
           return item;
         });
         this.pageConfig.totalCount = res.data.pager.totalRows;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      });
+      })
     },
 
     getSelectList() {

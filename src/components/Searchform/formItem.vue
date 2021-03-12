@@ -28,7 +28,7 @@
       size="small"
       :multiple="itemOptions.multiple"
       :filterable="itemOptions.filterable"
-      clearable>
+      :clearable="!itemOptions.unClearable">
       <el-option
         v-for="item in itemOptions.options"
         :key="item.value"
@@ -50,6 +50,7 @@
        :start-placeholder="itemOptions.startPlaceholder"
       range-separator="至"
       :end-placeholder="itemOptions.endPlaceholder"
+      :popper-class="itemOptions.popperClass"
       :default-time="['00:00:00', '23:59:59']"
       value-format="yyyy-MM-dd HH:mm:ss">
     </el-date-picker>
@@ -67,6 +68,7 @@
       :start-placeholder="itemOptions.startPlaceholder"
       range-separator="至"
       :end-placeholder="itemOptions.endPlaceholder"
+      :popper-class="itemOptions.popperClass"
       value-format="yyyy-MM">
     </el-date-picker>
 
@@ -80,6 +82,7 @@
        :start-placeholder="itemOptions.startPlaceholder"
       range-separator="至"
       :end-placeholder="itemOptions.endPlaceholder"
+      :popper-class="itemOptions.popperClass"
       size="small"
       clearable
       placeholder="请选择日期">

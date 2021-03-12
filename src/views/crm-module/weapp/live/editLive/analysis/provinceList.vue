@@ -5,11 +5,11 @@
         @onSearch="onSearch"
       ></search-form>
       <div class="w-container">
-        <div class="btn-wrapper">
+        <!-- <div class="btn-wrapper">
         <el-button type="warning" size="small" @click="handleAdd"
           >导出数据</el-button
         >
-      </div>
+      </div> -->
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
@@ -17,6 +17,7 @@
         :pager-count="5"
         :tbodyHeight="600"
         fixedTwoRow
+        :emptyText="emptyText"
         @pageChange="pageChange"
         @sortChange="handelSortChange"
       >
@@ -40,6 +41,7 @@ export default {
   name:"province-list",
   data(){
     return {
+      emptyText:"暂无数据",
       formOptions: [
         {
           prop: "provincialSchoolName",
@@ -92,7 +94,7 @@ export default {
         }
       ],
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
@@ -103,7 +105,10 @@ export default {
   props:{
     liveId: {
       type: Number
-    }
+    },
+    liveName: {
+      type: String
+    },
   },
   mounted() {
     this.getTableData();
@@ -143,10 +148,6 @@ export default {
       this.getTableData(this.orderForm);
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".province-list .el-table",
-      });
       this.$fetch("live_provincial_school_list", {
         ...this.pageConfig,
         ...this.searchForm,
@@ -156,17 +157,26 @@ export default {
       }).then((res) => {
         this.tableData = res.data.records;
         this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      });
+      })
     },
     gotoOrder(val){
-      this.$router.push('/crm-module/weapp/live-details/goods-orders')
+      // this.$router.push('/crm-module/weapp/live-details/goods-orders')
+      this.$router.push({
+        name: '/crm-module/weapp/live-details/goods-orders'  + '?' + sessionStorage.getItem("router-timeStamp"),
+        params: {
+          sourceName: this.liveName
+        } 
+      })
       this.$emit("close")
     },
     gotoInvite(val){
-      this.$router.push('/crm-module/weapp/live-details/goods-orders')
+      // this.$router.push('/crm-module/weapp/live-details/invite-count')
+      this.$router.push({
+        name: '/crm-module/weapp/live-details/invite-count'  + '?' + sessionStorage.getItem("router-timeStamp"),
+        params: {
+          liveName: this.liveName
+        } 
+      })
       this.$emit("close")
     }
   }

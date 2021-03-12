@@ -3,7 +3,7 @@
     <div v-show="false" class="avatar-uploader">
         <Upload-Oss
               v-if="uploadOssElem"
-              :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
+              :objConfig="{module, project: 'icon_'}"
               :src.sync="bgImg"
               :initGetConfig="initGetConfig"
               @srcChangeFun="
@@ -18,7 +18,7 @@
       ref="myQuillEditor"
       v-model="content"
       :options="editorOption"
-      style="height: 200px"
+      :style="'height:' + height"
       @ready="onEditorReady($event)"
         @change="onEditorChange($event)"
     ></quill-editor>
@@ -61,6 +61,16 @@ export default {
     placeholder: {
       default: String,
       type: String,
+    },
+    // 上传的图片属于哪个模块
+    module: {
+      default: '',
+      type: String,
+    },
+    // 编辑器高度
+    height: {
+      default:'200px',
+      type: String
     }
   },
   data() {

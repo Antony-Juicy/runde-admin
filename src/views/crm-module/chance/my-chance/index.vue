@@ -77,15 +77,21 @@
         <div v-show="tabIndex == '0'">
           <privateCustomers
             @currentChange="currentChange"
+            @refresh="refreshForm"
             :newFormOptions="formOptions"
+            ref="privateCustomers"
           />
         </div>
         <div v-show="tabIndex == '1'">
           <publicCustomers @currentChange="currentChange"
-            :newFormOptions="formOptions"/>
+          @refresh="refreshForm"
+            :newFormOptions="formOptions"
+            ref="publicCustomers"/>
         </div>
         <div v-show="tabIndex == '2'">
-          <lockUser />
+          <lockUser ref="lockUser" @currentChange="currentChange"
+          @refresh="refreshForm"
+            :newFormOptions="formOptions"/>
         </div>
       </div>
       <!-- 右侧表单 -->
@@ -123,6 +129,7 @@
                 v-model="basicInfo.nextTime"
                 type="datetime"
                 placeholder="选择日期时间"
+                :picker-options="startDateDisabled"
               >
               </el-date-picker>
             </el-form-item>
@@ -323,10 +330,12 @@ import publicCustomers from "./publicCustomers";
 import lockUser from "./lockUser";
 import fullDialog from "@/components/FullDialog";
 import Fetch from '@/utils/fetch'
+import { scrollTo } from '@/utils/scroll-to'
 export default {
   name: "my-chance",
   data() {
     return {
+      startDateDisabled:{},
       currentData: {},
       showDetail: false,
       activeName: "first",
@@ -400,6 +409,12 @@ export default {
     publicCustomers,
     lockUser,
   },
+  created(){
+    // 限制开始日期不能超过当前日期
+    this.startDateDisabled.disabledDate = function (time) {
+      return (time.getTime() + 24 * 3600 * 1000) < Date.now()
+    }
+  },
   mounted() {
     this.getSelectList();
     this.getProjcetList();
@@ -460,7 +475,7 @@ export default {
       this.getSubjectList(enquireProductIdOne);
       this.getCourseList(enquireSubjectIdOne);
       this.getClassList(enquireSubjectIdOne);
-    
+      console.log(enquireClassOne,'enquireClassOne')
       this.basicInfo2 = {
         saleSource,
         labelInfoName,
@@ -510,6 +525,7 @@ export default {
           this.$fetch("chance_saveData", param).then((res) => {
             if(res.code == 200 || res.code == 1){
               this.$message.success("保存成功")
+              this.refreshTable();
             }
           });
         }
@@ -569,10 +585,27 @@ export default {
           }).then(res => {
             if(res.code == 200){
               this.$message.success("保存成功")
+              this.refreshTable();
             }
           })
         }
       });
+    },
+
+    refreshTable(){
+      if(this.tabIndex == '0'){
+        this.$refs.privateCustomers.getTableData();
+      }else if(this.tabIndex == '1'){
+        this.$refs.publicCustomers.getTableData();
+      }else if(this.tabIndex == '2'){
+        this.$refs.lockUser.getTableData();
+      }
+    },
+
+    // 清空右侧表单
+    refreshForm(){
+      this.$refs.dataForm.resetFields();
+      this.$refs.dataForm2.resetFields();
     },
 
     handleDetail() {
@@ -584,6 +617,7 @@ export default {
         return;
       }
       this.showDetail = true;
+      scrollTo(0, 500)
     },
 
     getSelectList() {

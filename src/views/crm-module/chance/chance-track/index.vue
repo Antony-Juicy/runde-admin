@@ -13,9 +13,9 @@
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane
         :label="item.label"
-        :name="item.id + ''"
+        :name="item.idStr + ''"
         v-for="item in tabList"
-        :key="item.id"
+        :key="item.idStr"
       ></el-tab-pane>
     </el-tabs>
     <div class="content-box">
@@ -149,22 +149,26 @@ export default {
         phone: this.formInline.phone,
       }).then((res) => {
         this.tabList = res.data.map((item) => ({
-          id: item.id,
-          label: `机会id：${item.id}`,
+          idStr: item.idStr,
+          label: `机会id：${item.idStr}`,
         }));
-        this.activeName = this.tabList[0].id + "";
+        this.activeName = this.tabList[0].idStr + "";
         // // 获取当前id的信息
+        console.log(this.tabList,'this.tablist')
         // 获取表格信息
         this.getTableData({
-          opportunityId: this.tabList[0].id,
+          opportunityId: this.tabList[0].idStr,
         });
-      });
+      }).catch(()=>{
+        this.tabList = [];
+        this.currentInfo = {};
+        this.tableData = [];
+      })
     },
     handleClick(tab, event) {
-      console.log(tab, event);
      
       this.getTableData({
-        opportunityId: Number(tab._props.name),
+        opportunityId: tab.name,
       });
     },
     getTableData(param) {

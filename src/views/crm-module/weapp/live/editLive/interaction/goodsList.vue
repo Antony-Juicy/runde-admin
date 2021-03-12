@@ -4,9 +4,11 @@
       <div class="goods-item-left">
         <div class="pic">
            <el-image
-                    style="width: 130px; height: 100px"
-                    :src="item.goodsThumbnail"
-                    fit="cover"></el-image>
+              style="width: 130px; height: 100px"
+              :src="item.goodsThumbnail"
+              fit="cover"
+              >
+            </el-image>
         </div>
         <div class="content">
           <div class="title">{{item.goodsName}}</div>
@@ -23,10 +25,11 @@
 
     <div style="display: flex;flex-direction: column;align-items: center;" v-show="!tableData.length">
         <img src="@/assets/empty-image.png" alt="" class="img-empty" style="width:260px;height:260px;"/>
-        <p>暂无数据</p>
+        <p>{{emptyText}}</p>
       </div>
 
     <Pagination
+      v-show="pageConfig.totalCount"
       :total="pageConfig.totalCount"
       :page.sync="pageConfig.pageNum"
       :limit.sync="pageConfig.pageSize"
@@ -46,11 +49,12 @@ export default {
       value1: true,
       value2: true,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
-      tableData:[{}]
+      tableData:[],
+      emptyText:"暂无数据"
     };
   },
   components: {
@@ -60,9 +64,19 @@ export default {
     liveId: {
       type: Number,
     },
+     refreshFlag:{
+      type: Number
+    }
   },
   mounted(){
       this.getTableData();
+  },
+  watch:{
+    refreshFlag(newVal,oldVal){
+      if(newVal>oldVal){
+        this.getTableData();
+      }
+    }
   },
   methods: {
     pageChange(val) {
@@ -72,10 +86,6 @@ export default {
       this.getTableData();
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".goods-list .el-table",
-      });
       this.$fetch("live_get_live_goods_list", {
         ...this.pageConfig,
         ...params,
@@ -84,10 +94,7 @@ export default {
         this.tableData = res.data.records;
         this.pageConfig.totalCount = res.data.totalCount;
         // this.pageConfig.totalCount = 2;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      });
+      })
     },
     handelDelete(id){
          let info = '商品';

@@ -1,6 +1,6 @@
 <template>
   <div class="addressbook_container">
-    <search-form :formOptions = "formOptions" :showNum="showNum" @onSearch = onSearch></search-form>
+    <search-form :formOptions = "formOptions" :showNum="showNum" @onSearch = onSearch @onReset="onReset"></search-form>
     <div class="center_l">
       <rd-tree :data="treeData" :defaultProps="defaultProps" @nodeClick="handleNodeClick" :default-expanded-keys="defaultKeys">
     </rd-tree>
@@ -185,6 +185,22 @@ export default {
           initValue: '',
           placeholder: '请输入职位',
         },
+        {
+          prop: 'status',
+          element: 'el-select',
+          initValue: '',
+          placeholder: '请选择在职/离职',
+          options: [
+            {
+              label: "在职",
+              value: "Normal",
+            },
+            {
+              label: "离职",
+              value: "Stop",
+            }
+          ],
+        },
         // {
         //   prop: 'idcard',
         //   element: 'el-input',
@@ -276,6 +292,9 @@ export default {
       this.pageConfig.currentPage = 1;
       this.getTableData();
     },
+    onReset(){
+      this.searchForm = {};
+    },
     // 获取通讯录组织树
     getTreeData() {
       this.$fetch(
@@ -294,10 +313,6 @@ export default {
     },
     // 获取部门成员列表
     getTableData(params) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch(
         "staff_list",
         params || {
@@ -308,9 +323,6 @@ export default {
         }).then(res => {
           this.tableData = res.data.records;
           this.pageConfig.totalCount = res.data.total;
-          setTimeout(() => {
-            loading.close();
-          }, 200);
         })
     },
     // 获取成员信息

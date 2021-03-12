@@ -72,6 +72,7 @@
         :formOptions="orderFormOptions"
         :rules="orderRules"
         ref="dataForm"
+        v-if="orderVisible"
       />
     </rd-dialog>
 
@@ -86,6 +87,7 @@
         :formOptions="invalidFormOptions"
         :rules="invalidRules"
         ref="dataForm2"
+        v-if="invalidVisible"
       />
     </rd-dialog>
 
@@ -96,7 +98,7 @@
       @handleClose="handleClose('dataForm3')"
       @submitForm="submitAddForm('dataForm3')"
     >
-      <RdForm :formOptions="addFormOptions" :rules="addRules" ref="dataForm3">
+      <RdForm :formOptions="addFormOptions" :rules="addRules" ref="dataForm3" v-if="addVisible">
         <template slot="product">
           <el-select
             v-model="productId"
@@ -138,12 +140,13 @@
             size="small"
             multiple
             filterable
+            @change="testData"
           >
             <el-option
               v-for="item in classArr"
               :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              :label="item.name"
+              :value="item"
             >
             </el-option>
           </el-select>
@@ -162,6 +165,7 @@
         :formOptions="importFormOptions"
         :rules="importRules"
         ref="dataForm4"
+        
       >
         <template slot="campusId">
           <el-select v-model="importCampusId" placeholder="请选择" filterable>
@@ -213,7 +217,9 @@
             :on-exceed="handleExceed"
             :on-change="handleChange"
             :file-list="fileList"
+            :before-upload="beforeAvatarUpload"
             :auto-upload="false"
+            accept=".xls, .xlsx"
           >
             <el-button size="small" type="primary">点击上传</el-button>
           </el-upload>
@@ -335,7 +341,7 @@ export default {
       tableKey: [
         {
           name: "姓名",
-          value: "studentName",
+          value: "studentName"
         },
         {
           name: "手机号",
@@ -361,11 +367,12 @@ export default {
         {
           name: "最近回访",
           value: "recentFeedbackTime",
-          // width: 100
+          width: 135
         },
         {
           name: "下次回访",
           value: "nextDate",
+          width: 135
         },
         {
           name: "跟进状态",
@@ -374,6 +381,7 @@ export default {
         {
           name: "创建时间",
           value: "createAt",
+          width: 135
         },
         {
           name: "呼叫状态",
@@ -381,7 +389,7 @@ export default {
         },
       ],
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         currentPage: 1,
         showCount: 10,
       },
@@ -651,7 +659,7 @@ export default {
 
       sourceArr: [],
 
-      orderFlag: false,
+      // orderFlag: false,
     };
   },
   components: {
@@ -674,11 +682,13 @@ export default {
   watch: {
     newFormOptions(newVal) {
       this.formOptions = newVal;
-      console.log(newVal, "newVal--");
       this.handelAddOptions(newVal);
     },
   },
   methods: {
+    testData(val) {
+      console.log(val,'val----')
+    },
     importProductChange(val) {
       this.$fetch("chance_subject_list", {
         enquireProductIdOne: val,
@@ -726,7 +736,7 @@ export default {
           let data = JSON.parse(res.msg);
           nodes = data.map((item) => ({
             value: item.id,
-            label: item.className,
+            name: item.className,
           }));
         }
         this.classArr = nodes;
@@ -758,8 +768,8 @@ export default {
       });
     },
     openDrawer(data) {
-      console.log(data, "operndrawer");
-      this.drawerId = data.id;
+      
+      this.drawerId = data.idStr;
       this.drawerPhone = data.phone;
       this.drawerTitle = data.studentName || "";
       this.drawerVisible = true;
@@ -788,8 +798,9 @@ export default {
       this.getTableData();
     },
     handelSelect(val) {
-      console.log(val, "valll");
       this.selectedData = val;
+      let data = [...val];
+      this.currentChange(data.splice(-1)[0])
     },
     getCutdown() {
       this.newArr = this.tableData.map((item) => {
@@ -804,6 +815,7 @@ export default {
     },
     // 成单弹窗打开
     handleOrder() {
+      console.log(this.selectedData,'this.selectedData---')
       if (!this.selectedData.length) {
         this.$message.warning("请勾选要成单的机会！");
         return;
@@ -812,9 +824,9 @@ export default {
         return;
       }
 
-      if (this.orderFlag) {
-        this.orderVisible = true;
-      } else {
+      // if (this.orderFlag) {
+      //   this.orderVisible = true;
+      // } else {
         // 赋值
         const {
           idStr,
@@ -841,13 +853,13 @@ export default {
           this.orderFormOptions[3].initValue = saleSource_text;
           this.orderFormOptions[4].options = staffOptions;
           this.orderFormOptions[4].initValue = marketStaffId;
-          this.orderVisible = true;
+           this.orderVisible = true;
         });
-      }
+      // }
 
-      this.orderFlag = true;
+      // this.orderFlag = true;
     },
-    // 成单弹窗关闭
+    // 弹窗关闭
     handleClose(formName) {
       this.orderVisible = false;
       this.invalidVisible = false;
@@ -857,6 +869,12 @@ export default {
       this.productId = "";
       this.subjectId = "";
       this.classId = "";
+      this.$refs[formName]&&this.$refs[formName].resetFields();
+      if(formName == 'dataForm4'){
+        this.importCampusId = '';
+        this.productOne = '';
+        this.subjectOne = '';
+      }
     },
     // 成单弹窗提交
     submitForm(formName) {
@@ -872,16 +890,18 @@ export default {
           this.$fetch("chance_my_transform", {
             ...formData,
             opportunityId: this.selectedData[0].idStr,
-            Normal: "Normal",
+            status: "Normal",
             campusName: currentCampus.label,
             campusNature: currentCampus.nature,
             marketName: currentMarket.label,
             marketPosition: "",
+            saleSource: this.selectedData[0].saleSource_text
           }).then((res) => {
             if (res.code == 200) {
               this.$message.success("保存成功");
               this.handleClose();
               this.getTableData();
+              this.$emit("refresh");
             }
           });
         }
@@ -958,11 +978,31 @@ export default {
       this.$refs[formName].validate((valid, formData) => {
         if (valid) {
           console.log(formData, "提交");
+          if(!this.productId){
+            this.$message.error("请选择咨询项目")
+            return
+          }
+          if(!this.subjectId){
+            this.$message.error("请选择咨询科目")
+            return
+          }
+          if(!this.classId.length){
+            this.$message.error("请选择咨询班型")
+            return
+          }
+          if(formData.studentName.length > 20){
+            this.$message.error("学员姓名不能超过20个字数")
+            return
+          }
           this.$fetch("chance_my_add", {
             ...formData,
             productId: this.productId,
             enquireProductIdOne: this.productId,
             enquireSubjectIdOne: this.subjectId,
+            enquireClassOne: JSON.stringify(this.classId.map(item => ({
+              name: item.name,
+              val: item.value
+            }))),
             undefined: this.classId.join(","),
           }).then((res) => {
             if (res.code == 200) {
@@ -1009,19 +1049,37 @@ export default {
           this.$fetch("chance_my_import", obj).then((res) => {
             if(res.code == 200){
               this.$message.success("操作成功")
-              this.handleClose();
+              this.handleClose('dataForm4');
               this.getTableData();
             }
           });
         }
       });
     },
+    // 导入上传之前的文件格式校验
+    beforeAvatarUpload(file) {
+      console.log(file)
+      let testmsg=file.name.substring(file.name.lastIndexOf('.')+1)
+      const extension = testmsg === 'xls'
+      const extension2 = testmsg === 'xlsx'
+      // const isLt2M = file.size / 1024 / 1024 < 10
+      if(!extension && !extension2) {
+          this.$message({
+              message: '上传文件只能是 xls、xlsx格式!',
+              type: 'warning'
+          });
+      }
+      // if(!isLt2M) {
+      //     this.$message({
+      //         message: '上传文件大小不能超过 10MB!',
+      //         type: 'warning'
+      //     });
+      // }
+      // return extension || extension2 && isLt2M
+      return extension || extension2
+    },
 
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch("chance_my_list", {
         ...this.pageConfig,
         ...this.searchForm,
@@ -1038,9 +1096,6 @@ export default {
           return item;
         });
         this.pageConfig.totalCount = res.data.count;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
 
@@ -1133,6 +1188,9 @@ export default {
     .el-cascader {
       width: 100%;
     }
+    // .el-table__body-wrapper {
+    //   font-size: 12px;
+    // }
   }
 }
 </style>

@@ -5,6 +5,8 @@
         :formOptions="formOptions"
         :showNum="5"
         @onSearch="onSearch"
+        @onReset="onReset"
+        ref="searchForm"
       ></search-form>
       <div class="w-container">
         <rd-table
@@ -51,33 +53,33 @@
         label-suffix=":"
       >
         <el-form-item label="机会来源" prop="nextTime">
-          {{ selectedData.saleSource }}
+          {{ selectedData&&selectedData.saleSource }}
         </el-form-item>
         <el-form-item label="活动名称" prop="detail">
-          {{ selectedData.labelInfoName }}
+          {{ selectedData&&selectedData.labelInfoName }}
         </el-form-item>
         <el-row :gutter="5">
           <el-col :span="12">
             <el-form-item label="注册人" prop="detail">
-              {{ selectedData.createStaffName }}
+              {{ selectedData&&selectedData.createStaffName }}
             </el-form-item>
           </el-col>
           <el-col :span="12"
             ><el-form-item label="赛道" prop="detail">
-              {{ selectedData.studentName }}
+              {{ selectedData&&selectedData.opportunityCampusNature }}
             </el-form-item></el-col
           >
         </el-row>
         <el-row :gutter="5">
           <el-col :span="12">
             <el-form-item label="学员姓名" prop="detail">
-              {{ selectedData.studentName }}
+              {{ selectedData&&selectedData.studentName }}
             </el-form-item>
           </el-col>
           <el-col :span="12"
             >
             <el-form-item label="学历" prop="detail">
-              {{ selectedData.eduBackground }}
+              {{ selectedData&&selectedData.eduBackground }}
             </el-form-item>
             </el-col
           >
@@ -85,18 +87,18 @@
         <el-row :gutter="5">
           <el-col :span="12"
             ><el-form-item label="咨询项目" prop="detail">
-              {{ selectedData.enquireProductNameOne }}
+              {{ selectedData&&selectedData.enquireProductNameOne }}
             </el-form-item></el-col
           >
           <el-col :span="12">
             <el-form-item label="咨询科目" prop="detail">
-              {{ selectedData.enquireSubjectNameOne }}
+              {{ selectedData&&selectedData.enquireSubjectNameOne }}
             </el-form-item>
           </el-col>
         </el-row>
         <el-form-item label="咨询班型" prop="detail">
               {{
-                selectedData.enquireClassOne
+                selectedData&&selectedData.enquireClassOne
               }}
             </el-form-item>
       </el-form>
@@ -128,6 +130,7 @@ export default {
               value: "campusQuery",
             },
           ],
+          initValue: "myQuery"
         },
         {
           prop: "enquireProductIdOne",
@@ -250,16 +253,25 @@ export default {
   },
   mounted() {
     this.getSelectList();
+    // 默认选中我成单的
+    this.searchForm = {
+      dataQueryType: "myQuery"
+    };
     this.getTableData();
   },
   methods: {
     onSearch(val) {
       this.searchForm = { 
         ...val,
-        updateAt: val.updateAt?val.updateAt.join(' ~ '):""
+        updateAt: val.updateAt?val.updateAt.join(' ~ '):"",
+        campusId: val.campusId?val.campusId.join(","):""
        };
       console.log(val, this.searchForm, "val---");
       this.getTableData();
+    },
+    onReset(){
+      this.formOptions[0].initValue = "myQuery";
+      this.$refs.searchForm.addInitValue();
     },
     pageChange(val) {
       console.log(val, "pagechange");
@@ -299,6 +311,7 @@ export default {
             prop: "dataQueryType",
             element: "el-select",
             placeholder: "查看类型",
+            unClearable: true,
             options: [
               {
                 label: "我成单的",
@@ -357,10 +370,6 @@ export default {
       });
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch("chance_order_list", {
         ...this.pageConfig,
         ...this.searchForm,
@@ -377,14 +386,11 @@ export default {
           return item;
         });
         this.pageConfig.totalCount = res.data.count;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
      openDrawer(data){
        console.log(data,'data---  ')
-      this.drawerId = data.id;
+      this.drawerId = data.idStr;
       this.drawerPhone = data.phone;
       console.log(this.drawerPhone,'99')
       this.drawerVisible = true;

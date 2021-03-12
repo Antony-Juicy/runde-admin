@@ -9,7 +9,7 @@
         :fixedTwoRow="fixedTwoRow"
         :pageConfig.sync="pageConfig"
         :filterColumn="true"
-        :tbodyHeight="600"
+        :tbodyHeight="650"
         @select="handleSelect"
         @pageChange="pageChange"
       >
@@ -104,7 +104,7 @@ export default {
       emptyText: '暂无数据',
       fixedTwoRow: true,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         currentPage: 1,
         showCount: 10,
       },
@@ -117,7 +117,7 @@ export default {
   },
   methods: {
     openDrawer(data){
-      this.drawerId = data.id;
+      this.drawerId = data.idStr;
       this.drawerPhone = data.phone;
       this.drawerTitle = data.studentName || "";
       this.drawerVisible = true;
@@ -149,10 +149,6 @@ export default {
       this.getTableData();
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch("chance_list", {
         ...this.pageConfig,
         ...this.searchForm,
@@ -170,9 +166,6 @@ export default {
           return item;
         });
         this.pageConfig.totalCount = res.data.count;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
     getSelectList(){

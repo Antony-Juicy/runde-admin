@@ -34,7 +34,7 @@
         </template>
         <template slot="visit" slot-scope="scope">
           <span class="visit-container" @click.stop="openDrawer(scope.row)">{{
-            scope.row.visit || 0
+            scope.row.feedbackCount || 0
           }}</span>
         </template>
       </rd-table>
@@ -58,7 +58,7 @@
       :width="'990px'"
       @handleClose="distributeVisible = false"
     >
-      <distribution :opportunityIds="opportunityIds" @close="distributeVisible = false" v-if="distributeVisible"/>
+      <distribution :opportunityIds="opportunityIds" @refresh="getTableData" @close="distributeVisible = false" v-if="distributeVisible"/>
     </rd-dialog>
   </div>
 </template>
@@ -223,25 +223,11 @@ export default {
         },
       ],
       tableData: [
-        {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-        },
-        {
-          id: 2,
-          name: "飞翔的荷兰人2",
-          cutdown: new Date().getTime(),
-          phone: "17092026183",
-        },
-        { id: 3, name: "飞翔的荷兰人1", phone: "18892026183" },
       ],
       tableKey: [
         {
           name: "机会ID",
-          value: "id",
+          value: "idStr",
         },
         {
           name: "姓名",
@@ -320,7 +306,7 @@ export default {
         },
       ],
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         currentPage: 1,
         showCount: 10,
       },
@@ -437,7 +423,7 @@ export default {
       });
     },
     openDrawer(data) {
-      this.drawerId = data.id;
+      this.drawerId = data.idStr;
       this.drawerPhone = data.phone;
       this.drawerTitle = data.studentName || "";
       this.drawerVisible = true;
@@ -497,10 +483,6 @@ export default {
       this.distributeVisible = true;
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch("chance_campus_list", {
         ...this.pageConfig,
         ...this.searchForm,
@@ -519,9 +501,6 @@ export default {
           return item;
         });
         this.pageConfig.totalCount = res.data.count;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
     getSelectList() {

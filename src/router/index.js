@@ -50,67 +50,11 @@ export const constantRoutes = [
       component: () => import('@/views/redirect')
     }]
   },
-  // --------静态路由本地用-----------
   {
-    path: '/my-chance',
-    component: Layout,
-    redirect: '/my-chance',
-    hidden: true,
-    children: [{
-      path: '/my-chance',
-      name: 'my-chance',
-      component: () => import('@/views/crm-module/chance/my-chance'),
-      meta: { title: '欢迎页' }
-    }]
+    path: '/live-redirect', // 直播跳转中间页
+    component: () => import('@/views/live-redirect'),
+    hidden: true
   },
-  {
-    path: '/branch-school',
-    component: Layout,
-    redirect: '/branch-school',
-    hidden: true,
-    children: [{
-      path: '/branch-school',
-      name: 'branch-school',
-      component: () => import('@/views/crm-module/chance/branch-school'),
-      meta: { title: '欢迎页' }
-    }]
-  },
-  {
-    path: '/province-school',
-    component: Layout,
-    redirect: '/province-school',
-    hidden: true,
-    children: [{
-      path: '/province-school',
-      name: 'province-school',
-      component: () => import('@/views/crm-module/chance/province-school'),
-      meta: { title: '欢迎页' }
-    }]
-  },
-  {
-    path: '/activity-manage',
-    component: Layout,
-    redirect: '/activity-manage',
-    hidden: true,
-    children: [{
-      path: '/activity-manage',
-      name: 'activity-manage',
-      component: () => import('@/views/activity-module/marketing/activity-manage'),
-      meta: { title: '欢迎页' }
-    }]
-  },
-  {
-    path: '/call-records',
-    component: Layout,
-    redirect: '/call-records',
-    hidden: true,
-    children: [{
-      path: '/call-records',
-      name: 'call-records',
-      component: () => import('@/views/crm-module/chance/call-records'),
-      meta: { title: '欢迎页' }
-    }]
-  }
 ]
 
 const createRouter = () => new Router({
@@ -142,22 +86,7 @@ export let asyncRoutes0 = [
       component: () => import('@/views/dashboard/index'),
       meta: { title: '欢迎页' }
     }]
-  },
-  // {
-  //   path: '/img-management',
-  //   component: Layout,
-  //   redirect: '/img-management',
-  //   meta: {
-  //     icon:'',
-  //     title:'test'
-  //   },
-  //   children: [{
-  //     path: '/img-management',
-  //     name: '/img-management',
-  //     component: () => import('@/views/test'),
-  //     meta: { title: 'test'}
-  //   }]
-  // }
+  }
 ];
 
 

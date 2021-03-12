@@ -3,7 +3,7 @@
     <search-form :formOptions="formOptions" :showNum="showNum" @onSearch="onSearch"></search-form>
     <div class="w-container">
       <div class="btn-wrapper">
-        <el-button type="primary" size="small" @click="handleAdd">添加规则组</el-button>
+        <el-button type="primary" size="small" @click="handleAdd">添加规格组</el-button>
       </div>
       <rd-table
         :tableData="tableData"
@@ -19,25 +19,30 @@
         <template slot="edit" slot-scope="scope">
           <el-button @click="openConfig(scope.row)" type="text" size="small">管理</el-button>
           <el-divider direction="vertical"></el-divider>
-          <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑规则组</el-button>
+          <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑规格组</el-button>
         </template>
       </rd-table>
-      <!-- 添加规则组 -->
+      <!-- 添加规格组 -->
       <rd-dialog
-        :title="groupVisibleStatus ? '添加规则组' : '编辑规则组'"
+        :title="groupVisibleStatus ? '添加规格组' : '编辑规格组'"
         :dialogVisible="groupVisible"
         :width="widthNew"
         @handleClose="closeGroup('dataForm')"
         @submitForm="submitForm('dataForm')">
         <el-form ref="dataForm" :model="groupForm" :rules="rules" label-width="100px">
-          <el-form-item label="规则组名称" prop="goodsGroupName">
-            <el-input v-model.trim="groupForm.goodsGroupName" autocomplete="off" placeholder="请输入规则组名称" />
+          <el-form-item label="规格组名称" prop="goodsGroupName">
+            <el-input v-model.trim="groupForm.goodsGroupName" autocomplete="off" placeholder="请输入规格组名称" />
           </el-form-item>
           <el-form-item label="项目类型" prop="typeId">
-            <!-- <el-input v-model.trim="groupForm.typeId" autocomplete="off" placeholder="请选择项目类型" /> -->
-            <el-select v-model="groupForm.typeId" :disabled="groupVisibleStatus ? false : true" placeholder="请选择">
-              <el-option v-for="item in typeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
-            </el-select>
+            <el-cascader
+              style="width:100%;"
+              v-model.trim="groupForm.typeId"
+              :disabled="groupVisibleStatus ? false : true"
+              :options="typeOptions"
+              :props="{ checkStrictly: true }"
+              :placeholder="groupVisibleStatus ? '请选择项目类型' : '暂无'"
+              clearable>
+            </el-cascader>
           </el-form-item>
           <el-form-item label="备注" prop="remark">
             <el-input v-model.trim="groupForm.remark" autocomplete="off" placeholder="请输入备注" />
@@ -48,7 +53,7 @@
           </el-form-item>
         </el-form>
       </rd-dialog>
-      <!-- 添加规则组 -->
+      <!-- 添加规格组 -->
       <!-- 管理规格 -->
       <fullDialog v-model="showGroup" :title="showGroupTitle" @change="closeConfig">
         <div class="btn-wrapper">
@@ -78,7 +83,7 @@
           @submitForm="submitRuleForm('dataRuleForm')">
           <el-form ref="dataRuleForm" :model="ruleForm" :rules="gzRules" label-width="120px">
             <el-form-item label="规格名称" prop="goodsItemName">
-              <el-input v-model.trim="ruleForm.goodsItemName" autocomplete="off" placeholder="请输入规则组名称" />
+              <el-input v-model.trim="ruleForm.goodsItemName" autocomplete="off" placeholder="请输入规格组名称" />
             </el-form-item>
             <el-form-item label="价格" prop="salesPrice">
               <el-input-number controls-position="right" v-model.trim ="ruleForm.salesPrice" autocomplete="off" :min="0" placeholder="" />
@@ -135,8 +140,8 @@ export default {
       showNum: 6,
       searchForm: {},
       formOptions: [
-        { prop: 'goodsGroupName', element: 'el-input', placeholder: '规则组名称' },
-        { prop: 'typeId', element: 'el-select', placeholder: '选择项目' },
+        { prop: 'goodsGroupName', element: 'el-input', placeholder: '规格组名称' },
+        { prop: 'typeId', element: 'el-cascader', placeholder: '选择项目类型', props: { checkStrictly: true } },
         { 
           prop: 'goodsGroupStatus',
           element: 'el-select',
@@ -154,16 +159,16 @@ export default {
         }
       ],
       tableData: [
-        {
-          goodsGroupName: "中药",
-          typeName: "执业药师",
-          goodsGroupStatus: "正常",
-          itemCount: 4,
-          remark: "备注备注备注金牌通过班"
-        }
+        // {
+        //   goodsGroupName: "中药",
+        //   typeName: "执业药师",
+        //   goodsGroupStatus: "正常",
+        //   itemCount: 4,
+        //   remark: "备注备注备注金牌通过班"
+        // }
       ],
       tableKey: [
-        { name: '规则组名称',value: 'goodsGroupName' },
+        { name: '规格组名称',value: 'goodsGroupName' },
         { name: '项目类型',value: 'typeName' },
         { name: '规格数',value: 'itemCount' },
         { name: '状态',value: 'goodsGroupStatus',operate: true },
@@ -173,13 +178,13 @@ export default {
       emptyText: '暂无数据',
       fixedTwoRow: true,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
       loading: false,
 
-      // 添加规则组弹窗
+      // 添加规格组弹窗
       widthNew: "600px",
       groupVisible: false,
       groupVisibleStatus: true,
@@ -192,7 +197,7 @@ export default {
       typeOptions: [], // 项目类型
       rules: {
         goodsGroupName: [
-          { required: true, message: "请输入规则组名称", trigger: "blur" },
+          { required: true, message: "请输入规格组名称", trigger: "blur" },
           {  max: 25, message: '长度不多于25个字符', trigger: 'blur' }
         ],
         typeId: [
@@ -264,18 +269,18 @@ export default {
         originalPrice: [
           { required: true, message: "请输入划线价(原价)", trigger: "blur" }
         ],
-        openClassId: [
-          { required: true, message: "请输入班型id", trigger: "blur" }
-        ],
-        openClassName: [
-          { required: true, message: "请输入班型名称", trigger: "blur" }
-        ],
-        openSubjectId: [
-          { required: true, message: "请输入课程id", trigger: "blur" }
-        ],
-        openSubjectName: [
-          { required: true, message: "请输入课程名称", trigger: "blur" }
-        ],
+        // openClassId: [
+        //   { required: true, message: "请输入班型id", trigger: "blur" }
+        // ],
+        // openClassName: [
+        //   { required: true, message: "请输入班型名称", trigger: "blur" }
+        // ],
+        // openSubjectId: [
+        //   { required: true, message: "请输入课程id", trigger: "blur" }
+        // ],
+        // openSubjectName: [
+        //   { required: true, message: "请输入课程名称", trigger: "blur" }
+        // ],
         goodsItemStatus: [
           { required: true, message: "请选择状态", trigger: "blur" }
         ]
@@ -296,25 +301,25 @@ export default {
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
-    // 获取规则组列表数据
-    getTableData(params) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
-      this.$fetch(
-        "goods_item_list",
-        params || {
-          ...this.pageConfig,
-          ...this.searchForm
+    // 获取规格组列表数据
+    getTableData(params={}) {
+      return new Promise((resolve,reject)=>{
+        if(this.searchForm.typeId) {
+          this.searchForm.typeId = this.searchForm.typeId.pop()
         }
-      ).then((res) => {
-        this.tableData = res.data.records;
-        this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      });
+        this.$fetch(
+          "goods_item_list",
+          {
+            ...this.pageConfig,
+            ...this.searchForm,
+            ...params
+          }
+        ).then((res) => {
+          this.tableData = res.data.records;
+          this.pageConfig.totalCount = res.data.totalCount;
+          resolve();
+        })
+      })
     },
     pageChange(val) {
       console.log(val,'pagechange')
@@ -323,7 +328,7 @@ export default {
       this.getTableData();
     },
     
-    // 添加规则组弹窗
+    // 添加规格组弹窗
     handleAdd() {
       this.groupVisible = true;
       this.groupVisibleStatus = true;
@@ -352,35 +357,14 @@ export default {
     // 获取项目类型
     getTypeData() {
       this.$fetch(
-        "projectType_normalList",
-        {
-          loginUserId: this.$common.getUserId()
-        }
+        "projectType_select",
       ).then((res) => {
-        this.typeOptions = res.data.map((item) => ({
-          label: item.typeName,
-          value: item.typeId,
-        }));
-        // this.formOptions = [
-        //   { prop: 'goodsGroupName', element: 'el-input', placeholder: '规则组名称' },
-        //   { prop: 'typeId', element: 'el-select', placeholder: '选择项目', options: this.typeOptions },
-        //   { 
-        //     prop: 'goodsGroupStatus',
-        //     element: 'el-select',
-        //     placeholder: '选择状态',
-        //     options: [
-        //       {
-        //         label: "正常",
-        //         value: "Normal",
-        //       },
-        //       {
-        //         label: "停用",
-        //         value: "Disable",
-        //       },
-        //     ],
-        //   }
-        // ]
-        this.formOptions.splice(1,1,{ prop: 'typeId', element: 'el-select', placeholder: '选择项目', options: this.typeOptions })
+        // this.typeOptions = res.data.map((item) => ({
+        //   label: item.typeName,
+        //   value: item.typeId,
+        // }));
+        this.typeOptions = this.$common.getTypeTree((res.data))
+        this.formOptions.splice(1,1,{ prop: 'typeId', element: 'el-cascader', placeholder: '选择项目类型',props: { checkStrictly: true }, options: this.typeOptions })
       });
     },
     submitForm(formName) {
@@ -388,6 +372,11 @@ export default {
         if(valid) {
           if(this.groupVisibleStatus) {
             // 新增
+            if (this.groupForm.typeId != 0) {
+              this.groupForm.typeId = this.groupForm.typeId.pop()
+            } else {
+              this.groupForm.typeId = 0
+            }
             this.$fetch("goods_item_add", {
               ...this.groupForm,
             }).then((res) => {
@@ -427,21 +416,17 @@ export default {
     },
     // 获取规则列表数据
     gitRuletableData(goodsGroupId) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
-      this.$fetch(
-        "goods_rule_list",
-        {
-          goodsItemGroupId: goodsGroupId
-        }
-      ).then((res) => {
-        this.tableRuleData = res.data;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      });
+      return new Promise((resolve,reject)=>{
+        this.$fetch(
+          "goods_rule_list",
+          {
+            goodsItemGroupId: goodsGroupId
+          }
+        ).then((res) => {
+          this.tableRuleData = res.data;
+          resolve();
+        })
+      })
     },
     
     // 新增规格
@@ -449,7 +434,7 @@ export default {
       this.ruleVisible = true;
       this.ruleStatus = true;
     },
-    // 编辑规则组
+    // 编辑规格组
     handleEditRule(row) {
       this.ruleVisible = true;
       this.ruleStatus = false;

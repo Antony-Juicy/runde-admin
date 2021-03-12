@@ -130,6 +130,38 @@ const $common = {
                 resolve()
             }, time)
         })
+    },
+
+    // 获取当天日期
+    getCurrentDate(){
+        let time = new Date()
+        let year = time.getFullYear();
+        let month = time.getMonth() + 1;
+        let day = time.getDate();
+        if (month < 10) month = `0${month}`;
+        if (day < 10) day = `0${day}`
+        return `${year}${month}${day}`;
+        
+    },
+
+    // 配置图片缩略图
+    setThumbnail(pic){
+        return pic + '?x-oss-process=image/auto-orient,1/resize,m_lfit,w_550/quality,q_100'
+    },
+
+    // 多级分类下拉
+    getTypeTree(val) {
+        val.forEach(item => {
+          item.label = item.typeName;
+          item.value = item.typeId;
+          item.nodes = item.children
+          if(item.children == []) {
+            item.nodes = []
+          } else {
+            this.getTypeTree(item.nodes)
+          }
+        })
+        return val
     }
 }
 

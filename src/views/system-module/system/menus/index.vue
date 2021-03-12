@@ -75,7 +75,7 @@
           :label-width="formLabelWidth"
         >
           <el-form-item
-            label="父级菜单"
+            :label="selectedTree.menuType=='1'?'父级接口':'父级菜单'"
             prop="parentId"
             :label-width="formLabelWidth"
             v-if="dialogStatus"
@@ -193,7 +193,7 @@
           >
             <Upload-oss
               v-if="uploadOssElem"
-              :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }"
+             :objConfig="{module: 'system', project: 'icon_'}"
               :src.sync="basicInfo.menuIcon"
               @srcChangeFun="
                 (data) => {
@@ -267,6 +267,7 @@ export default {
           name: "类型",
           value: "menuType",
           operate: true,
+          width: 80
         },
         {
           name: "路径",
@@ -277,12 +278,13 @@ export default {
         {
           name: "状态",
           value: "status",
-          operate: true
+          operate: true,
+           width: 80
         },
         {
           name: "排序",
           value: "menuOrder",
-          // width: 100
+          width: 60
         },
         {
           name: "备注",
@@ -299,7 +301,7 @@ export default {
       ],
       fixedTwoRow: true,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         currentPage: 1,
         pageSize: 10,
       },
@@ -472,10 +474,6 @@ export default {
       });
     },
     getTableData(params) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch(
         "getMenuList",
         params || {
@@ -487,9 +485,6 @@ export default {
       ).then((res) => {
         this.tableData = res.data.records;
         this.pageConfig.totalCount = res.data.total;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
     // 打开新增弹窗
@@ -501,9 +496,9 @@ export default {
           type: "warning",
         });
         return;
-      } else if (this.selectedTree.menuType != "0") {
+      } else if (this.selectedTree.menuType == "2") {
         this.$message({
-          message: "请选择正确的菜单",
+          message: "请选择正确的菜单或接口",
           type: "warning",
         });
         return;
@@ -532,10 +527,8 @@ export default {
     // 提交
     submitForm(formName) {
       this.$forceUpdate();
-      console.log(this.basicInfo, "提交前");
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log(this.basicInfo, "提交");
 
           if (this.dialogStatus) {
             // 新增

@@ -80,7 +80,7 @@ export default {
       userLogoUrl: require('@/assets/userlogo.png'),
       emptyText: '暂无数据',
       pageCommentConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
@@ -118,10 +118,6 @@ export default {
       console.log(rows, "rows---");
     },
     getCommentData(params) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch(
         "comment_list",
         params || {
@@ -131,9 +127,6 @@ export default {
       ).then((res) => {
         this.tableCommentData = res.data.records;
         this.pageCommentConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
     handleAdd() {

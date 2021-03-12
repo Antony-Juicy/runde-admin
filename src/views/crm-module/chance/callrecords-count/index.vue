@@ -157,7 +157,7 @@ export default {
       emptyText: '暂无数据',
       fixedTwoRow: true,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         currentPage: 1,
         showCount: 10,
       },
@@ -273,10 +273,6 @@ export default {
       // this.$refs[formName].resetFields();
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch("chance_records_count", {
         token: getToken(),
         loginUserId: this.$common.getUserId(),
@@ -294,9 +290,6 @@ export default {
         });
         this.totalObj = res.data;
         this.pageConfig.totalCount = res.data.count;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
     getSelectList(){

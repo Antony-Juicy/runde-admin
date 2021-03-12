@@ -31,7 +31,7 @@ export default {
     chance_getStaffListByStatus: {url: '/crm/crmopportunity/getStaffListByStatus', method: 'post'},
     chance_campus_receive: {url: '/crm/crmopportunity/updateReceiveOpps', method: 'post'}, //领取
     chance_distrube_list: {url: '/crm/crmopportunity/listMarketJson', method: 'post'}, //分配机会列表
-    chance_campus_distrubute: {url: '/crm/crmopportunity/updateAllotOppByProvince', method: 'get'},//分配
+    chance_campus_distrubute: {url: '/crm/crmopportunity/updateAllotOpp', method: 'post'},//分配
 
     // 省校/网校公海
     chance_province_list: {url: '/crm/crmopportunity/listProvinceCampusJson', method: 'post'},
@@ -72,7 +72,7 @@ export default {
     chance_import_phone: {url: '/crm/crmopportunitylog/queryOrderInfoByPhone', method: 'post'},
 
     // 通话记录统计
-    chance_records_count: {url: '/crm/crmopportunity/opportunityNumListJson', method: 'get'},
+    chance_records_count: {url: '/crm/crmopportunity/opportunityNumListJson', method: 'post'},
 
     // 组织架构
     chance_config_campusList: {url: '/crm/crmopportunityconfig/configCampusList', method: 'post'},
@@ -90,10 +90,10 @@ export default {
     // 客户分类
     chance_customer_list: {url: '/crm/crmopportunity/customerLevelList', method: 'post'},
     // 项目
-    chance_product_list: {url: '/crm/crmopportunity/productList', method: 'post'},
-    chance_subject_list: {url: '/crm/crmopportunity/subjectList', method: 'post'},
-    chance_course_list: {url: '/crm/crmopportunity/courseListOne', method: 'get'},
-    chance_class_list: {url: '/crm/crmopportunity/classTypeList', method: 'post'},
+    chance_product_list: {url: '/crm/crmopportunity/productList', method: 'post', hideLoading: true},
+    chance_subject_list: {url: '/crm/crmopportunity/subjectList', method: 'post', hideLoading: true },
+    chance_course_list: {url: '/crm/crmopportunity/courseListOne', method: 'get', hideLoading: true},
+    chance_class_list: {url: '/crm/crmopportunity/classTypeList', method: 'post', hideLoading: true},
     // 呼叫状态
     chance_call_status:  {url: '/crm/crmopportunity/callStatusList', method: 'post'},
 

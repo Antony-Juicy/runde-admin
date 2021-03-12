@@ -56,7 +56,7 @@ export default {
       emptyText: '暂无数据，请选择相应的组织架构',
       fixedTwoRow: true,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         currentPage: 1,
         showCount: 10,
       },
@@ -145,25 +145,18 @@ export default {
       });
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch("chance_call_qimo", {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
         // token:'123'
       }).then((res) => {
-        this.tableData = res.data.data.map((item) => {
+        this.tableData =  res.data.data&&res.data.data.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
           item.updateAt = this.$common._formatDates(item.updateAt);
           return item;
         });
         this.pageConfig.totalCount = res.data.count;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
   }

@@ -10,6 +10,7 @@
         fixedTwoRow
         highlight-current-row
         :pageConfig.sync="pageConfig"
+        :emptyText="emptyText"
         @pageChange="pageChange"
       >
         <template slot="couponType" slot-scope="scope">
@@ -86,10 +87,11 @@ export default {
       drawerVisible1: false,
       liveCouponId: 0,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
+      emptyText:"暂无数据"
     };
   },
   components:{
@@ -133,10 +135,6 @@ export default {
       this.getTableData();
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".coupons .el-table",
-      });
       this.$fetch("live_coupon_related_list", {
         ...params,
         ...this.pageConfig,
@@ -144,10 +142,7 @@ export default {
       }).then((res) => {
         this.tableData = res.data.records;
         this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      });
+      })
     },
     handleEdit(val){
       this.liveCouponId = val.liveCouponId;

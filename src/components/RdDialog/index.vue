@@ -8,6 +8,7 @@
       :before-close="beforeClose"
       :destroy-on-close="true"
       :append-to-body="appendToBody"
+      :top="top"
     >
       <slot></slot>
       <div slot="footer" class="dialog-footer" v-if="showFooter">
@@ -51,6 +52,10 @@ export default {
     submitText:{
       type: String,
       default: "保存"
+    },
+    top: {
+      type: String,
+      default: "15vh"
     }
   },
   data() {

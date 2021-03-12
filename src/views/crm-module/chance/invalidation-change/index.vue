@@ -36,10 +36,15 @@
         :dialogVisible="detectVisible"
         :width="widthNew"
         :showFooter="detectStatus"
-        @handleClose="closeDetect('dataForm')"
-        @submitForm="submitForm('dataForm')"
+        @handleClose="closeDetect('detectForm')"
+        @submitForm="submitForm('detectForm')"
       >
-        <el-form ref="dataForm" :model="detectForm" label-width="100px">
+        <el-form
+          ref="detectForm"
+          :rules="rules"
+          :model="detectForm"
+          label-width="100px"
+        >
           <el-form-item
             label="机会失效"
             v-if="detectStatus"
@@ -50,8 +55,12 @@
               <el-radio label="Potential">否</el-radio>
             </el-radio-group>
           </el-form-item>
-          <!-- v-if="detectForm.invalidStatus == 'Invalid'" -->
-          <el-form-item label="失效原因" prop="invalidReason">
+          <!--  -->
+          <el-form-item
+            label="失效原因"
+            prop="invalidReason"
+            v-if="detectForm.invalidStatus == 'Invalid'"
+          >
             <el-select
               v-model="detectForm.invalidReason"
               placeholder="请选择失效原因"
@@ -113,7 +122,7 @@ export default {
           placeholder: "请输入学员手机",
         },
         {
-          prop: "project",
+          prop: "enquireProductIdOne",
           element: "el-select",
           initValue: "",
           placeholder: "请选择项目",
@@ -131,7 +140,7 @@ export default {
           placeholder: "请选择失效原因",
         },
         {
-          prop: "zjstatus",
+          prop: "checked",
           element: "el-select",
           initValue: "",
           placeholder: "请选择是否质检",
@@ -143,7 +152,7 @@ export default {
           placeholder: "请选择归属销售",
         },
         {
-          prop: "campusName",
+          prop: "campusId",
           element: "el-select",
           initValue: "",
           placeholder: "请选择组织架构",
@@ -157,7 +166,13 @@ export default {
       ],
       tableData: [],
       tableKey: [
-        { name: "机会ID", value: "id", sortable: true, width: 100 },
+        {
+          name: "机会ID",
+          value: "idStr",
+          sortable: true,
+          width: 100,
+          fixed: "left",
+        },
         { name: "姓名", value: "studentName" },
         { name: "手机号码", value: "phone", width: 100 },
         { name: "跟进次数", value: "feedbackCount" },
@@ -168,12 +183,12 @@ export default {
         { name: "机会状态", value: "status" },
         { name: "归属销售", value: "marketName" },
         { name: "分校/战队", value: "campusName", width: 132 },
-        { name: "质检状态", value: "checked", operate: true },
+        { name: "质检状态", value: "checked", operate: true, fixed: "right" },
       ],
       emptyText: "暂无数据",
       fixedTwoRow: true,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
@@ -193,6 +208,12 @@ export default {
       dialogVisible: false,
       drawerSize: "50%",
       selectedRows: [],
+
+      rules: {
+        invalidStatus: [{ required: true, message: "请选择", trigger: "blur" }],
+        invalidReason: [{ required: true, message: "请输入", trigger: "blur" }],
+        checkedDetail: [{ required: true, message: "请输入", trigger: "blur" }],
+      },
     };
   },
   mounted() {
@@ -201,9 +222,9 @@ export default {
   },
   methods: {
     onSearch(val) {
-      this.searchForm = { 
-        ...val ,
-        updateAt: val.updateAt?val.updateAt.join(' ~ '):""
+      this.searchForm = {
+        ...val,
+        updateAt: val.updateAt ? val.updateAt.join(" ~ ") : "",
       };
       this.getTableData();
       console.log(val, this.searchForm, "val---");
@@ -241,16 +262,19 @@ export default {
       this.$refs[formName].resetFields();
     },
     submitForm(formName) {
-      console.log(this.detectForm, 666);
-
-      this.$fetch("chance_invalid_update", {
-        ids: this.selectedRows.map((item) => item.id).join(","),
-        ...this.detectForm,
-      }).then((res) => {
-        if (res.code == 200) {
-          this.$message.success("操作成功");
-          this.closeDetect("dataForm");
-          this.getTableData();
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          console.log(this.detectForm, 666);
+          this.$fetch("chance_invalid_update", {
+            ids: this.selectedRows.map((item) => item.idStr).join(","),
+            ...this.detectForm,
+          }).then((res) => {
+            if (res.code == 200) {
+              this.$message.success("操作成功");
+              this.closeDetect("detectForm");
+              this.getTableData();
+            }
+          });
         }
       });
     },
@@ -266,10 +290,6 @@ export default {
     },
 
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch("chance_invalid_list", {
         invalidStatus: "Invalid",
         // stayModule:"Lost",
@@ -284,9 +304,6 @@ export default {
           return item;
         });
         this.pageConfig.totalCount = res.data.count;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
     getSelectList() {
@@ -300,48 +317,53 @@ export default {
           return p.catch((error) => error);
         })
       ).then((result) => {
+        console.log(result, "result---------------");
         let eduOptions = result[0].data.map((item) => ({
           label: item.value,
           value: item.key,
         }));
-        let staffOptions = JSON.parse(result[1].msg).map((item) => ({
-          label: item.staffName,
-          value: item.id,
-        }));
+        let staffOptions = result[1].msg
+          ? JSON.parse(result[1].msg).map((item) => ({
+              label: item.staffName,
+              value: item.id,
+            }))
+          : [];
         let campusOptions = result[2].data.data.map((item) => ({
           label: item.campusName,
           value: item.id,
         }));
-        let productOptions = JSON.parse(result[3].msg).map((item) => ({
-          value: item.id,
-          label: item.productName,
-        }));
+        let productOptions = result[3].msg
+          ? JSON.parse(result[3].msg).map((item) => ({
+              value: item.id,
+              label: item.productName,
+            }))
+          : [];
         let reasonOptions = [
           {
             label: "无法核实",
-            value: "UnableToVerify"
+            value: "UnableToVerify",
           },
           {
             label: "无法联系",
-            value: "UnableToReached"
+            value: "UnableToReached",
           },
           {
             label: "否认咨询",
-            value: "DenyConsulting"
+            value: "DenyConsulting",
           },
           {
             label: "已报名",
-            value: "AlreadySign"
+            value: "AlreadySign",
           },
           {
             label: "公司内部人员",
-            value: "CompanyInsider"
+            value: "CompanyInsider",
           },
           {
             label: "已从支线成交",
-            value: "SignBranch"
+            value: "SignBranch",
           },
-        ]
+        ];
         this.formOptions = [
           {
             prop: "studentName",
@@ -356,7 +378,7 @@ export default {
             placeholder: "请输入学员手机",
           },
           {
-            prop: "project",
+            prop: "enquireProductIdOne",
             element: "el-select",
             initValue: "",
             placeholder: "请选择项目",
@@ -375,34 +397,34 @@ export default {
             element: "el-select",
             initValue: "",
             placeholder: "请选择失效原因",
-            options: reasonOptions
+            options: reasonOptions,
           },
           {
-            prop: "zjstatus",
+            prop: "checked",
             element: "el-select",
             initValue: "",
             placeholder: "请选择是否质检",
             options: [
               {
                 label: "是",
-                value: 1
+                value: 1,
               },
               {
                 label: "否",
-                value: 0
-              }
-            ]
+                value: 0,
+              },
+            ],
           },
           {
             prop: "marketName",
-            element: "el-select",
+            element: "el-input",
             initValue: "",
-            placeholder: "请选择归属销售",
-            filterable: true,
-            options: staffOptions,
+            placeholder: "归属销售",
+            // filterable: true,
+            // options: staffOptions,
           },
           {
-            prop: "campusName",
+            prop: "campusId",
             element: "el-select",
             initValue: "",
             placeholder: "请选择组织架构",

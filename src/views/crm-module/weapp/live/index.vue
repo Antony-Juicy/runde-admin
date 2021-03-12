@@ -22,6 +22,7 @@
           <el-image
             style="width: 100px; height: 100px"
             :src="scope.row.liveCover"
+            fit="cover"
           ></el-image>
         </template>
         <template slot="edit" slot-scope="scope">
@@ -46,6 +47,14 @@
           >
           <el-divider direction="vertical"></el-divider>
           <el-button
+            @click="handleAnalysis(scope.row)"
+            type="text"
+            size="small"
+            style="color:#73777d;margin-left:12px"
+            >数据分析</el-button
+          >
+          <el-divider direction="vertical"></el-divider>
+          <el-button
             @click="handleDelete(scope.row)"
             type="text"
             size="small"
@@ -61,7 +70,12 @@
         title="创建直播"
         @change="addVisible = false"
       >
-        <addLive ref="addLive" @close="addVisible = false" @refresh="refresh" v-if="addVisible" />
+        <addLive
+          ref="addLive"
+          @close="addVisible = false"
+          @refresh="refresh"
+          v-if="addVisible"
+        />
       </fullDialog>
 
       <!-- 管理直播 -->
@@ -70,7 +84,14 @@
         :title="'直播间名称：' + liveName"
         @change="editVisible = false"
       >
-        <editLive ref="editLive" :liveName="liveName" :liveId="liveId" @close="editVisible = false" @refresh="refresh" v-if="editVisible"/>
+        <editLive
+          ref="editLive"
+          :liveName="liveName"
+          :liveId="liveId"
+          @close="editVisible = false"
+          @refresh="refresh"
+          v-if="editVisible"
+        />
       </fullDialog>
 
       <!-- 链接 -->
@@ -81,7 +102,7 @@
         :width="'900px'"
         @handleClose="linkVisible = false"
       >
-        <manageLink :liveId="liveId" v-if="linkVisible"/>
+        <manageLink :liveId="liveId" v-if="linkVisible" />
       </rd-dialog>
 
       <!-- 分享-小程序二维码 -->
@@ -92,8 +113,21 @@
         :width="'480px'"
         @handleClose="shareVisible = false"
       >
-        <manageShare :liveId="liveId" v-if="shareVisible"/>
+        <manageShare :liveId="liveId" v-if="shareVisible" />
       </rd-dialog>
+
+      <!-- 数据分析 -->
+      <fullDialog
+        v-model="analysisVisible"
+        :title="liveName+' - 数据分析'"
+        @change="analysisVisible = false"
+      >
+        <analysis
+          :liveId="liveId" 
+          :liveName="liveName"
+          v-if="analysisVisible"
+        />
+      </fullDialog>
     </div>
   </div>
 </template>
@@ -104,6 +138,7 @@ import addLive from "./addLive";
 import manageLink from "./manageLink";
 import manageShare from "./manageShare";
 import editLive from "./editLive/index.vue";
+import analysis from './editLive/analysis/index.vue';
 export default {
   name: "live",
   data() {
@@ -123,75 +158,75 @@ export default {
           prop: "typeId",
           element: "el-select",
           placeholder: "项目类型",
-          options: []
+          options: [],
         },
         {
           prop: "liveChargeMode",
           element: "el-select",
           placeholder: "收费类型",
-          options:[
+          options: [
             {
-              label:"公开",
-              value: "Open"
+              label: "公开",
+              value: "Open",
             },
-             {
-              label:"付费",
-              value: "Charge"
+            {
+              label: "付费",
+              value: "Charge",
             },
-             {
-              label:"加密",
-              value: "Encryption"
-            }
-          ]
+            {
+              label: "加密",
+              value: "Encryption",
+            },
+          ],
         },
         {
           prop: "liveMode",
           element: "el-select",
           placeholder: "直播模式",
-          options:[
+          options: [
             {
-              label:"横屏",
-              value: "Landscape"
+              label: "横屏",
+              value: "Landscape",
             },
-             {
-              label:"竖屏",
-              value: "Vertical"
-            }
-          ]
+            {
+              label: "竖屏",
+              value: "Vertical",
+            },
+          ],
         },
         {
           prop: "liveStatus",
           element: "el-select",
           placeholder: "直播状态",
-           options:[
+          options: [
             {
-              label:"未开始",
-              value: "NotStart"
+              label: "未开始",
+              value: "NotStart",
             },
-             {
-              label:"直播中",
-              value: "Live"
+            {
+              label: "直播中",
+              value: "Live",
             },
-             {
-              label:"已结束",
-              value: "End"
-            }
-          ]
+            {
+              label: "已结束",
+              value: "End",
+            },
+          ],
         },
         {
           prop: "liveShowStatus",
           element: "el-select",
           placeholder: "显示状态",
-           options:[
+          options: [
             {
-              label:"上架",
-              value: "Show"
+              label: "上架",
+              value: "Show",
             },
-             {
-              label:"隐藏",
-              value: "Hidden"
-            }
-          ]
+            {
+              label: "隐藏",
+              value: "Hidden",
+            },
+          ],
         },
       ],
       tableData: [],
@@ -199,7 +234,7 @@ export default {
         {
           name: "直播id",
           value: "liveId",
-          width: 80
+          width: 70,
         },
         {
           name: "直播名称",
@@ -209,13 +244,13 @@ export default {
           name: "直播展示图",
           value: "liveCover",
           operate: true,
-          width: 120
+          width: 120,
         },
         {
           name: "项目类型",
           value: "typeName",
         },
-        
+
         {
           name: "收费类型",
           value: "liveChargeMode",
@@ -231,22 +266,22 @@ export default {
         {
           name: "开始时间",
           value: "liveStartTime",
-          width: 160,
+          // width: 160,
         },
         {
           name: "直播模式",
-          value: "liveMode"
+          value: "liveMode",
         },
         {
           name: "浏览量",
           value: "liveRealNumber",
-          width: 80
+           width: 70,
         },
         {
           name: "操作",
           value: "edit",
           operate: true,
-          width: 200,
+          width: 180,
         },
       ],
       pageConfig: {
@@ -262,10 +297,13 @@ export default {
       linkVisible: false,
       // 分享弹窗
       shareVisible: false,
+      // 数据分析弹窗
+      analysisVisible: false,
       showAdd: true,
       searchForm: {}, //搜索栏信息
-      liveId:"",
-      liveName:""
+      liveId: "",
+      liveName: "",
+      
     };
   },
   components: {
@@ -273,25 +311,20 @@ export default {
     addLive,
     editLive,
     manageLink,
-    manageShare
+    manageShare,
+    analysis
   },
   async mounted() {
-    
     this.getSubjectList();
-    await this.getTableData();
-    const {liveId,flag} = this.$route.query;
-    if(flag == 'analysis'){
-      const data = this.tableData.find(item => item.liveId)
-      this.handleEdit(data)
-      setTimeout(() => {
-        this.$refs.editLive.changeTab()
-      }, 10);
-    }
-    
+    this.getTableData();
   },
   methods: {
     onSearch(data) {
       this.searchForm = { ...data };
+      if (this.searchForm.liveId && isNaN(this.searchForm.liveId)) {
+        this.$message.warning("请输入正确的直播id");
+        return;
+      }
       this.pageConfig.pageNum = 1;
       this.getTableData();
     },
@@ -308,26 +341,35 @@ export default {
     },
     handleEdit(data) {
       this.editVisible = true;
+      
       this.$nextTick(() => {
         this.$refs.editLive.$refs.editForm.initGetConfig = true;
+        // 如果是从直播统计跳过来的，就让回放管理的搜索栏晚点出现，要不会报错
+        if(data.flag == 'analysis'){
+        this.$refs.editLive.$refs.playback.showSearchForm = false;
+        setTimeout(() => {
+          this.$refs.editLive.$refs.playback.showSearchForm = true;
+        },500);
+      }
       });
       this.liveId = data.liveId;
       this.liveName = data.liveName;
-      sessionStorage.setItem('chatAudit',data.chatAudit)
-      sessionStorage.setItem('mute',data.mute)
+      sessionStorage.setItem("chatAudit", data.chatAudit);
+      sessionStorage.setItem("mute", data.mute);
+      sessionStorage.setItem("chatHistorySwitch", data.chatHistorySwitch);
     },
     handleLink(data) {
       this.linkVisible = true;
       this.liveId = data.liveId;
       this.liveName = data.liveName;
     },
-    handleShare(data){
+    handleShare(data) {
       this.shareVisible = true;
       this.liveId = data.liveId;
       this.liveName = data.liveName;
     },
     handleDelete(data) {
-      let info = "直播"
+      let info = "直播";
       this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -351,43 +393,35 @@ export default {
         })
         .catch(() => {});
     },
-    getTableData(params={}) {
-      return new Promise((resolve,reject)=>{
-        const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
-      this.$fetch(
-        "live_list",
-        {
+    getTableData(params = {}) {
+      return new Promise((resolve, reject) => {
+        this.$fetch("live_list", {
           loginUserId: this.$common.getUserId(),
           ...this.pageConfig,
           ...this.searchForm,
-          ...params
-        }
-      ).then((res) => {
-        this.tableData = res.data.records.map((item) => {
-          item.liveMode = item.liveMode == "Vertical" ? "竖屏" : "横屏";
-          item.liveStatus = this.changeLiveStatus(item.liveStatus)
-          item.liveChargeMode = this.changeChargeMode(item.liveChargeMode)
-          item.liveShowStatus = this.changeShowStatus(item.liveShowStatus)
-          return item;
-        });
-        this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-        resolve();
-      }).catch(err=>{
-        loading.close();
-        console.log(err)
-        reject();
+          ...params,
+        })
+          .then((res) => {
+            this.tableData = res.data.records.map((item) => {
+              item.liveMode = item.liveMode == "Vertical" ? "竖屏" : "横屏";
+              item.liveStatus = this.changeLiveStatus(item.liveStatus);
+              item.liveChargeMode = this.changeChargeMode(item.liveChargeMode);
+              item.liveCover = this.$common.setThumbnail(item.liveCover);
+              item.liveShowStatus = this.changeShowStatus(item.liveShowStatus);
+              return item;
+            });
+            this.pageConfig.totalCount = res.data.totalCount;
+            resolve();
+          })
+          .catch((err) => {
+            console.log(err);
+            reject();
+          });
       });
-      })
     },
-    refresh(val){
+    refresh(val) {
       this.getTableData({
-        pageNum: val || this.pageConfig.pageNum
+        pageNum: val || this.pageConfig.pageNum,
       });
     },
     changeLiveStatus(val) {
@@ -399,7 +433,7 @@ export default {
         return "已结束";
       }
     },
-    changeChargeMode(val){
+    changeChargeMode(val) {
       if (val == "Open") {
         return "公开";
       } else if (val == "Encryption") {
@@ -408,22 +442,34 @@ export default {
         return "加密";
       }
     },
-    changeShowStatus(val){
+    changeShowStatus(val) {
       if (val == "Show") {
         return "上架";
       } else if (val == "Hidden") {
         return "隐藏";
       }
     },
-    getSubjectList(){
+    getSubjectList() {
       this.$fetch("projectType_normalList").then((res) => {
-      let typeList = res.data.map((item) => ({
-        label: item.typeName,
-        value: item.typeId,
-      }));
-      this.formOptions[2].options = typeList;
-      this.formOptions =[...this.formOptions];
-    });
+        let typeList = res.data.map((item) => ({
+          label: item.typeName,
+          value: item.typeId,
+        }));
+        this.formOptions[2].options = typeList;
+        this.formOptions = [...this.formOptions];
+      });
+    },
+
+    getLiveInfo(liveId){
+      return this.$fetch("live_getInfo",{
+        liveId
+      })
+    },
+
+    handleAnalysis(data){
+      this.liveId = data.liveId;
+      this.liveName = data.liveName;
+      this.analysisVisible = true;
     }
   },
 };
@@ -436,7 +482,7 @@ export default {
       width: 495px;
     }
   }
-  .full-dialog-container .top-title{
+  .full-dialog-container .top-title {
     padding-left: 50px;
   }
 }

@@ -1,6 +1,6 @@
 <template>
   <div class="invitecount-container">
-    <search-form :formOptions = "formOptions" :showNum="showNum" @onSearch = onSearch></search-form>
+    <search-form :formOptions = "formOptions" :showNum="showNum" @onSearch = onSearch ref="searchForm" ></search-form>
     <div class="w-container">
       <rd-table
         :tableData="tableData"
@@ -30,14 +30,6 @@ export default {
         { prop: 'liveName', element: 'el-input', placeholder: '直播名称' }
       ],
       tableData: [
-        {
-          provincialSchoolName: "广东校区",
-          branchSchoolName: "广州校区",
-          teacherName: "王伯伯",
-          inviteeName: "张三",
-          inviteePhone: 13800138000,
-          liveName: "2021药师终极包过班"
-        }
       ],
       tableKey: [
         { name: '校区',value: 'provincialSchoolName' },
@@ -50,7 +42,7 @@ export default {
       emptyText: '暂无数据',
       fixedTwoRow: true,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
@@ -58,7 +50,35 @@ export default {
     }
   },
   mounted () {
-    this.getTableData()
+    const { liveName,teacherName } = this.$route.params;
+    if(liveName){
+      this.formOptions[3].initValue = decodeURIComponent(liveName) 
+    }
+    if(teacherName){
+      this.formOptions[2].initValue = decodeURIComponent(teacherName) 
+    }
+
+    this.$refs.searchForm.addInitValue()
+    this.$refs.searchForm.onSearch()
+    
+  },
+  watch:{
+    "$route.params.liveName"(newVal){
+       if(!newVal){
+        return
+      }
+      this.formOptions[3].initValue = decodeURIComponent(newVal)
+      this.$refs.searchForm.addInitValue()
+      this.$refs.searchForm.onSearch()
+    },
+    "$route.params.teacherName"(newVal){
+       if(!newVal){
+        return
+      }
+      this.formOptions[2].initValue = decodeURIComponent(newVal)
+      this.$refs.searchForm.addInitValue()
+      this.$refs.searchForm.onSearch()
+    }
   },
   methods: {
     onSearch(val) {
@@ -70,31 +90,26 @@ export default {
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
-    getTableData(params) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
-      this.$fetch(
-        "invite_count_list",
-        params || {
-          ...this.pageConfig,
-          ...this.searchForm
-        }
-      ).then((res) => {
-        this.tableData = res.data.records;
-        this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      });
+    getTableData(params={}) {
+      return new Promise((resolve,reject)=>{
+        this.$fetch(
+          "invite_count_list",
+          {
+            ...this.pageConfig,
+            ...this.searchForm,
+            ...params
+          }
+        ).then((res) => {
+          this.tableData = res.data.records;
+          this.pageConfig.totalCount = res.data.totalCount;
+          resolve();
+        })
+      })
     },
     pageChange(val) {
-      console.log(val,'pagechange')
-      this.getTableData({
-        pageNum: (val && val.page) || 1,
-        pageSize: (val && val.limit) || 10,
-      });
+      this.pageConfig.pageNum = val.page;
+      this.pageConfig.pageSize = val.limit;
+      this.getTableData();
     }
   }
 }

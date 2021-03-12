@@ -128,12 +128,12 @@ export default {
         }
       ],
       tableData: [
-        {
-          couponName: "测试优惠券",
-          couponType: "立减优惠",
-          denomination: "5元",
-          couponStatus: "上架"
-        }
+        // {
+        //   couponName: "测试优惠券",
+        //   couponType: "立减优惠",
+        //   denomination: "5元",
+        //   couponStatus: "上架"
+        // }
       ],
       tableKey: [
         { name: '优惠券名称',value: 'couponName' },
@@ -145,7 +145,7 @@ export default {
       emptyText: '暂无数据',
       fixedTwoRow: true,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
@@ -202,32 +202,28 @@ export default {
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
-    getTableData(params) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
-      this.$fetch(
-        "coupon_list",
-        params || {
-          loginUserId: this.$common.getUserId(),
-          ...this.pageConfig,
-          ...this.searchForm
-        }
-      ).then((res) => {
-        this.tableData = res.data.records;
-        this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      });
+    getTableData(params={}) {
+      return new Promise((resolve,reject)=>{
+        this.$fetch(
+          "coupon_list",
+          {
+            loginUserId: this.$common.getUserId(),
+            ...this.pageConfig,
+            ...this.searchForm,
+            ...params
+          }
+        ).then((res) => {
+          this.tableData = res.data.records;
+          this.pageConfig.totalCount = res.data.totalCount;
+          resolve();
+        })
+      })
     },
     pageChange(val) {
       console.log(val,'pagechange')
       // this.currentPageInfo = val;
       this.pageConfig.pageNum = val.page;
       this.pageConfig.pageSize = val.limit;
-      loginUserId: this.$common.getUserId()
       this.getTableData();
     },
     
@@ -252,8 +248,20 @@ export default {
           couponId: row.couponId
         }
       ).then((res) => {
-        console.log(res, 998877665544332211)
-        this.couponForm = res.data
+        if(res.data.couponType == "Discount") {
+          this.couponForm = {
+            ...res.data,
+            discount:res.data.denomination
+          }
+        } else if(res.data.couponType == "InstantDecrease") {
+          this.couponForm = {
+            ...res.data,
+            minus:res.data.denomination
+          }
+        } else {
+          this.couponForm = res.data
+        }
+        console.log(this.couponForm,'this.couponForm--------')
       });
     },
     // 删除

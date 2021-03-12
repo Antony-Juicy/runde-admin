@@ -44,6 +44,7 @@ export default {
           startPlaceholder: "领取时间(开始)",
           endPlaceholder: "领取时间(结束)",
           initWidth: true,
+          popperClass: "coupon-date"
         },
       ],
       tableData: [
@@ -63,11 +64,16 @@ export default {
         },
         {
           name: "使用时间",
-          value: "updateAt"
+          value: "usageTime"
+        },
+        {
+          name: "是否使用",
+          value: "used",
+          width: 100
         }
       ],
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         pageNum: 1,
         pageSize: 10,
       },
@@ -107,21 +113,17 @@ export default {
       console.log(val,'valll')
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".coupon-detail .el-table",
-      });
       this.$fetch("live_page_coupon_receive_record", {
         ...this.pageConfig,
         ...params,
         ...this.searchForm,
         liveCouponId: this.liveCouponId
       }).then((res) => {
-        this.tableData = res.data.records;
+        this.tableData = res.data.records.map(item => {
+          item.used = item.used?'是':'否'
+          return item
+        });
         this.pageConfig.totalCount = res.data.totalCount;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
   }
@@ -133,5 +135,13 @@ export default {
     padding-left: 20px;
     padding-right: 20px;
     border-top: 1px solid #eee;
+}
+</style>
+
+<style lang="scss">
+.coupon-date {
+  .el-time-panel {
+    left: -33px;
+  }
 }
 </style>

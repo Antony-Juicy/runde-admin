@@ -21,6 +21,7 @@
               :pageConfig.sync="pageConfig"
               @select="handleSelect"
               @pageChange="pageChange"
+              :emptyText="emptyText"
             >
               <template slot="type" slot-scope="scope">
                 {{scope.row.type | CallTypeFilter}}
@@ -100,10 +101,9 @@ export default {
         { name: '结束时间',value: 'end_time' },
         { name: '录音',value: '10' },
       ],
-      emptyText: '暂无数据，请选择相应的组织架构',
       fixedTwoRow: true,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         currentPage: 1,
         showCount: 10,
       },
@@ -115,7 +115,8 @@ export default {
 
       // 下拉
       staffOptions:[],
-      campusOptions:[]
+      campusOptions:[],
+      emptyText:"暂无数据"
     }
   },
   mounted(){
@@ -177,10 +178,6 @@ export default {
       });
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch("chance_call_phone", {
         ...this.pageConfig,
         ...this.searchForm,
@@ -193,10 +190,7 @@ export default {
           return item;
         });
         this.pageConfig.totalCount = res.data.dataJson.pager.totalRows;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
-      });
+      })
     },
     getSelectList(){
       Promise.all([

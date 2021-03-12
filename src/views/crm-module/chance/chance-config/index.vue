@@ -65,7 +65,7 @@
             </el-select>
           </el-form-item>
           <el-divider></el-divider>
-          <el-form-item label="参数名：" :label-width="formLabelWidth2">
+          <el-form-item label="参数名：" :label-width="formLabelWidth2" style="width:100%; border: 1px solid #cccccc;">
             <div>
               设置<a
                 href="javascript:;"
@@ -79,12 +79,14 @@
             label="注册人保护天数："
             prop="day"
             :label-width="formLabelWidth2"
+            class="form-item"
           >
             <el-input-number
               controls-position="right"
               v-model.trim="formInline.createrProtectDay"
               autocomplete="off"
               :min="0"
+              size="small"
             />
             天
           </el-form-item>
@@ -92,12 +94,14 @@
             label="机会上限总数量："
             prop="day"
             :label-width="formLabelWidth2"
+            class="form-item"
           >
             <el-input-number
               controls-position="right"
               v-model.trim="formInline.opportunityLimit"
               autocomplete="off"
               :min="0"
+              size="small"
             />
             个
           </el-form-item>
@@ -105,12 +109,14 @@
             label="锁定客户上限数量："
             prop="day"
             :label-width="formLabelWidth2"
+            class="form-item"
           >
             <el-input-number
               controls-position="right"
               v-model.trim="formInline.lockLimit"
               autocomplete="off"
               :min="0"
+              size="small"
             />
             个
           </el-form-item>
@@ -118,12 +124,14 @@
             label="延长锁定次数："
             prop="day"
             :label-width="formLabelWidth2"
+            class="form-item"
           >
             <el-input-number
               controls-position="right"
               v-model.trim="formInline.extendLockTimes"
               autocomplete="off"
               :min="0"
+              size="small"
             />
             次
           </el-form-item>
@@ -131,12 +139,14 @@
             label="延长锁定天数："
             prop="day"
             :label-width="formLabelWidth2"
+            class="form-item"
           >
             <el-input-number
               controls-position="right"
               v-model.trim="formInline.extendLockDay"
               autocomplete="off"
               :min="0"
+              size="small"
             />
             天
           </el-form-item>
@@ -144,12 +154,14 @@
             label="销售机会未跟进超期天数："
             prop="day"
             :label-width="formLabelWidth2"
+            class="form-item"
           >
             <el-input-number
               controls-position="right"
               v-model.trim="formInline.seaNewWcdOverDay"
               autocomplete="off"
               :min="0"
+              size="small"
             />
             天
           </el-form-item>
@@ -157,12 +169,14 @@
             label="销售机会未成单超期天数："
             prop="day"
             :label-width="formLabelWidth2"
+            class="form-item"
           >
             <el-input-number
               controls-position="right"
               v-model.trim="formInline.seaOldWcdOverDay"
               autocomplete="off"
               :min="0"
+              size="small"
             />
             天
           </el-form-item>
@@ -170,12 +184,14 @@
             label="机会公海（分校/战队）新机会超期未成单天数："
             prop="day"
             :label-width="formLabelWidth2"
+            class="form-item"
           >
             <el-input-number
               controls-position="right"
               v-model.trim="formInline.opportunityWgjOverDay"
               autocomplete="off"
               :min="0"
+              size="small"
             />
             天
           </el-form-item>
@@ -183,12 +199,14 @@
             label="机会公海（分校/战队）旧机会超期未成单天数："
             prop="day"
             :label-width="formLabelWidth2"
+            class="form-item"
           >
             <el-input-number
               controls-position="right"
               v-model.trim="formInline.opportunityWcdOverDay"
               autocomplete="off"
               :min="0"
+              size="small"
             />
             天
           </el-form-item>
@@ -196,12 +214,14 @@
             label="机会公海（省校/部长）主线公海超期未成单天数："
             prop="day"
             :label-width="formLabelWidth2"
+            class="form-item"
           >
             <el-input-number
               controls-position="right"
               v-model.trim="formInline.seaProvinceTrunkWcdOverDay"
               autocomplete="off"
               :min="0"
+              size="small"
             />
             天
           </el-form-item>
@@ -226,7 +246,7 @@ export default {
       searchForm: {},
       formOptions: [
         {
-          prop: "campusName",
+          prop: "campusId",
           element: "el-select",
           filterable: true,
           initValue: "",
@@ -252,7 +272,7 @@ export default {
       emptyText: "暂无数据",
       fixedTwoRow: true,
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         currentPage: 1,
         showCount: 10,
       },
@@ -338,6 +358,9 @@ export default {
       console.log(666);
       this.dialogVisible = true;
       this.dialogStatus = true;
+      for (const key in this.formInline) {
+        this.formInline[key] = "";
+      }
     },
     // 打开编辑弹窗
     handleEdit(row) {
@@ -399,10 +422,6 @@ export default {
       this.formInline.seaProvinceTrunkWcdOverDay = 15;
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".el-table",
-      });
       this.$fetch("chance_config_list", {
         ...this.pageConfig,
         ...this.searchForm,
@@ -414,9 +433,6 @@ export default {
           return item;
         });
         this.pageConfig.totalCount = res.data.pager.totalRows;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
     getCampusList() {
@@ -427,7 +443,7 @@ export default {
         }));
         this.formOptions = [
           {
-          prop: "campusName",
+          prop: "campusId",
           element: "el-select",
           filterable: true,
           initValue: "",
@@ -465,7 +481,13 @@ export default {
     margin: 10px 0 10px;
   }
   .el-form--inline .el-form-item {
-    margin: 0 0 5px 0;
+    margin: 0 0 0 0;
+  }
+  .form-item {
+    width: 100%;
+    padding: 4px 0;
+    border: 1px solid #cccccc;
+    border-top: none;
   }
   /deep/ {
     .el-dialog {

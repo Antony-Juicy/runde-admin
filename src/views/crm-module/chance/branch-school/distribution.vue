@@ -97,7 +97,7 @@ export default {
         },
       ],
       pageConfig: {
-        totalCount: 100,
+        totalCount: 0,
         currentPage: 1,
         showCount: 10,
       },
@@ -131,12 +131,13 @@ export default {
   methods: {
     handleEdit(data){
       this.$fetch("chance_campus_distrubute",{
-        id: data.id,
+        staffId: data.id,
         opportunityIds: this.opportunityIds
       }).then(res => {
         if(res.code == 200){
           this.$message.success("操作成功")
           this.$emit("close");
+          this.$emit("refresh");
         }
       })
     },
@@ -151,10 +152,6 @@ export default {
       this.getTableData();
     },
     getTableData(params = {}) {
-      const loading = this.$loading({
-        lock: true,
-        target: ".distribution .el-table",
-      });
       this.$fetch("chance_distrube_list", {
         ...this.pageConfig,
         ...this.formInline,
@@ -162,9 +159,6 @@ export default {
       }).then((res) => {
         this.tableData = res.data.data;
         this.pageConfig.totalCount = res.data.count;
-        setTimeout(() => {
-          loading.close();
-        }, 200);
       });
     },
   },
