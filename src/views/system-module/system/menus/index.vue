@@ -192,15 +192,8 @@
             class="icon-wrapper"
           >
             <Upload-oss
-              v-if="uploadOssElem"
              :objConfig="{module: 'system', project: 'icon_'}"
               :src.sync="basicInfo.menuIcon"
-              @srcChangeFun="
-                (data) => {
-                  basicInfo.menuIcon = data;
-                  reloadElem('uploadOssElem');
-                }
-              "
             />
           </el-form-item>
           <el-form-item

@@ -16,8 +16,8 @@
       <el-button type="danger" size="small" @click="handleInvalid"
         >失效</el-button
       >
-      <el-button type="primary" size="small" @click="handleAdd">添加</el-button>
       <el-button size="small" type="info" @click="handleImport">导入</el-button>
+      <el-button type="primary" size="small" @click="handleAdd">添加</el-button>
       <el-button size="small" @click="handleAICall">AI呼叫</el-button>
     </div>
     <rd-table
@@ -697,7 +697,7 @@ export default {
         if (res.msg == "没有相关数据") {
           nodes = [];
         } else {
-          let data = res.data;
+          let data = res.data.list;
           nodes = data.map((item) => ({
             value: item.id,
             label: item.subjectName,
@@ -715,7 +715,7 @@ export default {
         if (res.msg == "没有相关数据") {
           nodes = [];
         } else {
-          let data = res.data;
+          let data = res.data.list;
           nodes = data.map((item) => ({
             value: item.id,
             label: item.subjectName,
@@ -994,6 +994,7 @@ export default {
             this.$message.error("学员姓名不能超过20个字数")
             return
           }
+          // campusName enquireProductNameOne enquireSubjectNameOne
           this.$fetch("chance_my_add", {
             ...formData,
             productId: this.productId,
@@ -1003,7 +1004,10 @@ export default {
               name: item.name,
               val: item.value
             }))),
-            undefined: this.classId.join(","),
+            undefined: this.classId.map(item => (item.value)).join(","),
+            campusName: this.campusArr.find(item => (item.value == formData.campusId)).label,
+            enquireProductNameOne: this.productArr.find(item => (item.value == this.productId)).label,
+            enquireSubjectNameOne: this.subjectArr.find(item => (item.value == this.subjectId)).label,
           }).then((res) => {
             if (res.code == 200) {
               this.$message.success("添加成功");
@@ -1044,8 +1048,11 @@ export default {
           let obj = new FormData();
           obj.append("file", this.importFile);
           obj.append("campusId", this.importCampusId);
+          obj.append("campusName", this.campusArr.find(item => (item.value == this.importCampusId)).label);
           obj.append("enquireProductIdOne", this.productOne);
+          obj.append("enquireProductNameOne", this.productArr.find(item => (item.value == this.productOne)).label);
           obj.append("enquireSubjectIdOne", this.subjectOne);
+          obj.append("enquireSubjectNameOne", this.importSubjectArr.find(item => (item.value == this.subjectOne)).label);
           this.$fetch("chance_my_import", obj).then((res) => {
             if(res.code == 200){
               this.$message.success("操作成功")

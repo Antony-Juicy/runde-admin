@@ -57,7 +57,7 @@ export default {
       pageConfig: {
         totalCount: 0,
         pageNum: 1,
-        pageSize: 10,
+        showCount: 10,
       },
       loading: false
     }
@@ -98,7 +98,7 @@ export default {
     },
     pageChange(val) {
       this.pageConfig.pageNum = val.page;
-      this.pageConfig.pageSize = val.limit;
+      this.pageConfig.showCount = val.limit;
       // this.getTableData();
     },
   },

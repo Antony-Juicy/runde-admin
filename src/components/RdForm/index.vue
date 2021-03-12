@@ -74,6 +74,10 @@ export default {
     inline:{
       type: Boolean ,
       default: false
+    },
+    changeInitValue: {
+      type: Number,
+      default: 0
     }
   },
 
@@ -89,7 +93,12 @@ export default {
     this.addInitValue();
   },
 
-
+  watch: {
+    changeInitValue(val){
+      this.addInitValue();
+    }
+  },
+  
   methods: {
     // 校验
     validate(callback) {

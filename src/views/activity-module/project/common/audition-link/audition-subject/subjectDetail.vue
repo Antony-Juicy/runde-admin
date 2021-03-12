@@ -9,10 +9,8 @@
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
-        :pageConfig.sync="pageConfig"
-        :tbodyHeight="600"
+        :tbodyHeight="800"
         fixedTwoRow
-        @pageChange="pageChange"
       >
        <template slot="edit" slot-scope="scope">
           <el-button @click="handleDetail(scope.row)" type="text" size="small"
@@ -30,7 +28,7 @@
       </rd-table>
     </div>
     <!-- 编辑题目详情 -->
-       <rd-dialog
+      <rd-dialog
         :title="'编辑'"
         :dialogVisible="editVisible"
         :width="'700px'"
@@ -40,7 +38,7 @@
         @handleClose="editVisible = false"
         @submitForm="submitAddForm('dataForm3')"
       >
-        <editSubject/>
+        <editSubject :id="id" :issuseId="issuseId" v-if="editVisible"/>
       </rd-dialog>
   </div>
 </template>
@@ -53,28 +51,28 @@ export default {
   data(){
     return {
       tableData:[
-         {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-        },
+        //  {
+        //   id: 1,
+        //   name: "飞翔的荷兰人3",
+        //   cutdown: 1608897351706,
+        //   visit: 2,
+        //   phone: "15692026183",
+        // },
       ],
       tableKey: [
         {
           name: "题目序号",
-          value: "staffName",
+          value: "issuseId",
           width: 60
         },
         {
           name: "题目类型",
-          value: "goodsName",
-          width: 60
+          value: "issuesType",
+          width: 80
         },
         {
           name: "题目",
-          value: "activityName",
+          value: "issuse1",
         },
          {
           name: "操作",
@@ -84,17 +82,26 @@ export default {
         },
        
       ],
-       pageConfig: {
-        totalCount: 0,
-        currentPage: 1,
-        pageSize: 10,
-      },
-      editVisible: false
+      editVisible: false,
+      issuseId:""
+    }
+  },
+  props:{
+    id: {
+      type: Number || String
     }
   },
   components:{
     RdForm,
     editSubject
+  },
+  mounted(){
+    this.getTableData();
+  },
+  watch:{
+    id(newVal){
+      this.getTableData();
+    }
   },
    methods: {
      onSearch(val){
@@ -104,15 +111,18 @@ export default {
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
      },
-     getTableData(){
-
+     getTableData(params = {}){
+       this.$fetch("lookpicture_details", {
+        ...this.searchForm,
+        ...params,
+        id: this.id
+      }).then((res) => {
+        this.tableData = res.data.varList.map(item => {
+          item.issuse1 = item.issue&&item.issue.issuse;
+          return item;
+        });
+      })
      },
-     pageChange(val) {
-      console.log(val,'pagechange')
-      this.pageConfig.currentPage = val.page;
-      this.pageConfig.showCount = val.limit;
-      this.getTableData();
-    },
      handleDelete(row) {
       let info = '项';
       this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
@@ -139,6 +149,7 @@ export default {
         .catch(() => {});
     },
     handleDetail(data){
+      this.issuseId = data.issuseId;
       this.editVisible = true;
     }
   }

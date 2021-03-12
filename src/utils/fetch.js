@@ -62,7 +62,7 @@ service.interceptors.response.use(
       hideLoading()
     const res = response.data
     // if the custom code is not 1, it is judged as an error.
-    if (res.code !== 200 && res.code !== 1) {
+    if (res.code !== 200 && res.code !== 1 && res.code !== "Success") {
 
 
       // 4: Illegal token;
@@ -198,8 +198,8 @@ const $fetch = async (apiName, params, config) => {
   }
 
   if (getToken()) {
-    newConfig.headers["Authorization"] = getToken();
-    // newConfig.headers["Authorization"] = 'rd_superadmin';
+    // newConfig.headers["Authorization"] = getToken();
+    newConfig.headers["Authorization"] = 'rd_superadmin';
   }
 
   if (params) {

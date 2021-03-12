@@ -91,7 +91,7 @@ export default {
     chance_customer_list: {url: '/crm/crmopportunity/customerLevelList', method: 'post'},
     // 项目
     chance_product_list: {url: '/crm/crmopportunity/productList', method: 'post', hideLoading: true},
-    chance_subject_list: {url: '/crm/crmopportunity/subjectList', method: 'post', hideLoading: true },
+    chance_subject_list: {url: '/crm/coursesubject/subjectList', method: 'post', hideLoading: true },
     chance_course_list: {url: '/crm/crmopportunity/courseListOne', method: 'get', hideLoading: true},
     chance_class_list: {url: '/crm/crmopportunity/classTypeList', method: 'post', hideLoading: true},
     // 呼叫状态
