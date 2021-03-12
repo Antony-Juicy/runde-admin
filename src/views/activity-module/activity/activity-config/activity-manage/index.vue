@@ -206,7 +206,7 @@ export default {
       pageConfig: {
         totalCount: 0,
         currentPage: 1,
-        pageSize: 10,
+        showCount: 10,
       },
       addVisible: false,
       editVisible: false,
@@ -261,11 +261,11 @@ export default {
     handleAdd() {},
     pageChange(val) {
       // this.pageConfig.currentPage = val.page;
-      // this.pageConfig.pageSize = val.limit;
+      // this.pageConfig.showCount = val.limit;
       // console.log(this.searchForm,'this.searchForm--')
       // this.getTableData({
       //   currentPage: (val && val.page) || 1,
-      //   pageSize: (val && val.limit) || 10,
+      //   showCount: (val && val.limit) || 10,
       //   loginUserId,
       //   ...this.searchForm,
       //   parentId: this.parentId

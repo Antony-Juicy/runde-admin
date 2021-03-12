@@ -17,7 +17,7 @@
         >
           <div class="param-label">排序</div>
           <span style="margin-right: 5px;font-weight:bold">:</span>
-           <el-input v-model="dynamicValidateForm.issuseId" size="small" style="width: 300px"></el-input>
+           <el-input v-model="dynamicValidateForm.issuseId" readonly size="small" style="width: 300px"></el-input>
         </el-form-item>
       </div>
       <div class="param-item">
@@ -30,7 +30,7 @@
         >
           <div class="param-label">试题类型</div>
           <span style="margin-right: 5px;font-weight:bold">:</span>
-           <el-input v-model="dynamicValidateForm.issuesType" size="small" style="width: 300px"></el-input>
+           <el-input v-model="dynamicValidateForm.issuesType" readonly size="small" style="width: 300px"></el-input>
         </el-form-item>
       </div>
       <div class="param-item">
@@ -53,41 +53,41 @@
             />
         </el-form-item>
       </div>
-      <div class="param-item" v-for="(domain, index) in dynamicValidateForm.domains" :key="domain.key">
+      <div class="param-item" v-for="(domain, index) in dynamicValidateForm.option" :key="domain.key">
         <el-form-item
-          :prop="'domains.' + index + '.paramName'"
+          :prop="'option.' + index + '.name'"
           :rules="{
             required: true,
             message: '不能为空',
             trigger: 'blur',
           }"
         >
-          <el-input v-model="domain.paramName" size="small" style="width: 60px"></el-input>
+          <el-input v-model="domain.name" size="small" style="width: 60px"></el-input>
           <span style="font-weight:bold">:</span>
         </el-form-item>
         <el-form-item
-          :prop="'domains.' + index + '.paramVal'"
+          :prop="'option.' + index + '.value'"
           :rules="{
             required: true,
             message: '不能为空',
             trigger: 'blur',
           }"
         >
-          <el-input v-model="domain.paramVal" size="small" style="width: 300px"></el-input>
+          <el-input v-model="domain.value" size="small" style="width: 300px"></el-input>
         </el-form-item>
         <el-form-item
-          :prop="'domains.' + index + '.paramImg'"
+          :prop="'option.' + index + '.image'"
         >
           <Upload-oss
               :objConfig="{module: 'activity'}"
-              :src.sync="domain.paramImg"
+              :src.sync="domain.image"
             />
         </el-form-item>
         <el-button :key="domain.key + '4'" @click.prevent="removeDomain(domain)"  v-if="index != 0"
         type="danger" size="small"
           >删除</el-button
         >
-         <el-button type="primary" size="small" @click="addDomain" v-if="index == dynamicValidateForm.domains.length-1"
+         <el-button type="primary" size="small" @click="addDomain" v-if="index == dynamicValidateForm.option.length-1"
           >添加选项</el-button
         >
       </div>
@@ -143,11 +143,11 @@ export default {
   data(){
     return {
        dynamicValidateForm: {
-        domains: [
+        option: [
           {
-            paramName: "",
-            paramVal: "",
-            paramImg: ""
+            name: "",
+            value: "",
+            image: ""
           },
         ],
         issuseId:"",
@@ -190,16 +190,16 @@ export default {
       this.$refs[formName].resetFields();
     },
     removeDomain(item) {
-      var index = this.dynamicValidateForm.domains.indexOf(item);
+      var index = this.dynamicValidateForm.option.indexOf(item);
       if (index !== -1) {
-        this.dynamicValidateForm.domains.splice(index, 1);
+        this.dynamicValidateForm.option.splice(index, 1);
       }
     },
     addDomain() {
-      this.dynamicValidateForm.domains.push({
-        paramName: "",
-        paramVal: "",
-        paramImg: "",
+      this.dynamicValidateForm.option.push({
+        name: "",
+        value: "",
+        image: "",
         key: Date.now(),
       });
     },
@@ -210,20 +210,14 @@ export default {
       }).then(res => {
         let { issuseId,issue,issuesType } = res.data.pd;
         this.dynamicValidateForm = {
-        domains: [
-          {
-            paramName: "",
-            paramVal: "",
-            paramImg: ""
-          },
-        ],
-        issuseId,
-        issuesType,
-        issuse: issue.issuse,
-        imageIssuse: "https://rdimg.rundejy.com/web/runde_jiaowu/activity/20210312/8Fxz5jDR7bkZJnwzmmST4XJbkKeExWbz.png",
-        textAnalysis: issue.textAnalysis,
-        imageAnalysis: issue.imageAnalysis,
-        answer: issue.answer
+          option: [...issue.option],
+          issuseId,
+          issuesType,
+          issuse: issue.issuse,
+          imageIssuse: issue.imageIssuse,
+          textAnalysis: issue.textAnalysis,
+          imageAnalysis: issue.imageAnalysis,
+          answer: issue.answer
         }
       })
     } 

@@ -192,15 +192,8 @@
             class="icon-wrapper"
           >
             <Upload-oss
-              v-if="uploadOssElem"
              :objConfig="{module: 'system', project: 'icon_'}"
               :src.sync="basicInfo.menuIcon"
-              @srcChangeFun="
-                (data) => {
-                  basicInfo.menuIcon = data;
-                  reloadElem('uploadOssElem');
-                }
-              "
             />
           </el-form-item>
           <el-form-item
@@ -237,7 +230,7 @@
 
 <script>
 import RdTree from "@/components/RdTree";
-import UploadOss from "@/components/UploadOss";
+import UploadOss from "@/components/UploadOss2";
 let loginUserId = JSON.parse(localStorage.getItem("userInfo")).userId;
 export default {
   inject: ["reload"],

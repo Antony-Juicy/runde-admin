@@ -41,12 +41,18 @@ export default {
       uploader: {}
     };
   },
+  created(){
+    this.uploadConfig = this.src;
+  },
   mounted() {
       this.getAliyunOssConfig();
   },
   watch: {
     uploadConfig(newVal){
       this.$emit("update:src", newVal);
+    },
+    src(newVal){
+      this.uploadConfig = newVal;
     }
   },
   methods: {

@@ -38,7 +38,7 @@
         @handleClose="editVisible = false"
         @submitForm="submitAddForm('dataForm3')"
       >
-        <editSubject :id="id" :issuseId="issuseId"/>
+        <editSubject :id="id" :issuseId="issuseId" v-if="editVisible"/>
       </rd-dialog>
   </div>
 </template>
