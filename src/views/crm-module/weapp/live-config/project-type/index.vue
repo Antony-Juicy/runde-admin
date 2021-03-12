@@ -39,6 +39,7 @@
               :disabled="projectStatus ? false : true"
               :options="typeOptions"
               :props="{ checkStrictly: true }"
+              :placeholder="projectStatus ? '请选择项目分类' : '暂无'"
               clearable>
             </el-cascader>
           </el-form-item>
