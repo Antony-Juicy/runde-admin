@@ -266,18 +266,21 @@ export default {
   },
   mounted() {
     scrollTo(0, 800);
-    this.$fetch("projectType_normalList", {
+    this.$fetch("projectType_select", {
       loginUserId: this.$common.getUserId(),
     }).then((res) => {
-      let typeList = res.data.map((item) => ({
-        label: item.typeName,
-        value: item.typeId,
-      }));
+      // let typeList = res.data.map((item) => ({
+      //   label: item.typeName,
+      //   value: item.typeId,
+      // }));
+      let typeList = this.$common.getTypeTree(res.data)
       this.addFormOptions.unshift({
         prop: "typeId",
-        element: "el-select",
+        element: "el-cascader",
         placeholder: "请选择项目类型",
         label: "项目类型",
+        disabled: true,
+        props: { checkStrictly: true },
         options: typeList,
       });
       this.setInitVal();
@@ -392,6 +395,9 @@ export default {
       height: 100px;
     }
     .el-input-number--small {
+      width: 100%;
+    }
+    .el-cascader {
       width: 100%;
     }
   }

@@ -2,19 +2,26 @@
   <div class="add-goods">
     <el-form :inline="true" :model="formInline" class="demo-form-inline">
       <el-form-item label="">
-        <el-select
+        <!-- <el-select
           v-model="formInline.typeId"
           placeholder="选择项目"
           size="small"
         >
           <el-option :label="item.label" :value="item.value" v-for="item in productList" :key="item.value"></el-option>
-        </el-select>
+        </el-select> -->
+        <el-cascader
+          style="width:100%;"
+          v-model.trim="formInline.typeId"
+          :options="productList"
+          :props="{ checkStrictly: true }"
+          placeholder="选择项目"
+          clearable>
+        </el-cascader>
       </el-form-item>
       <el-form-item label="">
         <el-input
           v-model="formInline.goodsName"
           placeholder="请输入商品名称"
-          size="small"
         ></el-input>
       </el-form-item>
 
@@ -107,11 +114,12 @@ export default {
     }
   },
   mounted(){
-    this.$fetch("projectType_normalList").then(res => {
-      this.productList = res.data.map(item => ({
-        label: item.typeName,
-        value: item.typeId
-      }))
+    this.$fetch("projectType_select").then(res => {
+      // this.productList = res.data.map(item => ({
+      //   label: item.typeName,
+      //   value: item.typeId
+      // }))
+      this.productList = this.$common.getTypeTree(res.data)
     })
     this.getTableData();
   },
@@ -131,6 +139,11 @@ export default {
       this.selectedData = val;
     },
     getTableData(params = {}) {
+      console.log(this.formInline.typeId,'this.formInline.typeId----1')
+      if(this.formInline.typeId.constructor == Array) {
+        this.formInline.typeId = this.formInline.typeId.pop()
+      }
+      console.log(this.formInline.typeId,'this.formInline.typeId----2')
       this.$fetch("live_get_live_add_goods_list", {
         ...this.pageConfig,
         ...this.formInline,

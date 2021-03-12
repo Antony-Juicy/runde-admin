@@ -115,6 +115,7 @@
       v-model="currentVal"
       v-bind="bindProps"
       v-on="bindEvents"
+      :disabled="itemOptions.disabled"
       size="small"
       :props="itemOptions.props"
       clearable>
