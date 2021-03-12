@@ -230,7 +230,7 @@
 
 <script>
 import RdTree from "@/components/RdTree";
-import UploadOss from "@/components/UploadOss2";
+import UploadOss from "@/components/UploadOss";
 let loginUserId = JSON.parse(localStorage.getItem("userInfo")).userId;
 export default {
   inject: ["reload"],

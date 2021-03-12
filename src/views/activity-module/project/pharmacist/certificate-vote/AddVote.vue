@@ -113,7 +113,7 @@
 </template>
 
 <script>
-import UploadOss from "@/components/UploadOss2";
+import UploadOss from "@/components/UploadOss";
 export default {
   name:"AddVote",
   data(){
