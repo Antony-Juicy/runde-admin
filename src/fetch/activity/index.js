@@ -13,6 +13,7 @@ export default {
     // 晒证作品管理
     cmscertificateinfo_list: {url: '/h5/cmscertificateinfo/listJsp', method: 'get'}, //列表
     cmscertificateinfo_add: {url: '/h5/cmscertificateinfo/save', method: 'post'}, //新增
+    cmscertificateinfo_export: {url: '/h5/cmscertificateinfo/excelJsp', method: 'get'}, //导出
     cmscertificateinfo_getActivityList: {url: '/h5/cmscertificateinfo/getActivityList', method: 'get'}, //列表
     cmscertificateinfo_getProductList: {url: '/h5/cmscertificateinfo/getProductList', method: 'get'}, //列表
     cmscertificateinfo_wchatList: {url: '/h5/cmscertificateinfo/wchatList', method: 'get'}, //列表

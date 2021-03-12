@@ -219,7 +219,6 @@ export default {
           label: item.nickName,
           value: item.id
         }))
-        console.log(this.formOptions,'formoptions')
       })
     },
   }
