@@ -13,6 +13,7 @@ export default {
   projectType_list: { url: '/live/console/type/page_list', method: 'post' },
   projectType_add: { url: '/live/console/type/add', method: 'post' },
   projectType_normalList: { url: '/live/console/type/normal_list', method: 'post' },
+  projectType_select: { url: '/live/console/type/get_select_types', method: 'post' },
 
   white_word_getList: { url: '/live/console/im_whitelist_word/get', method: 'post' },
   white_word_delete: { url: '/live/console/im_whitelist_word/delete', method: 'post' },

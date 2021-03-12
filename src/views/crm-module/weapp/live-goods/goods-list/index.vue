@@ -38,9 +38,17 @@
               <el-input v-model.trim="goodsForm.goodsName" autocomplete="off" placeholder="请输入商品名称" />
             </el-form-item>
             <el-form-item label="项目类型" prop="typeId">
-              <el-select v-model="goodsForm.typeId" :disabled="goodsStatusVisible ? false : true" clearable placeholder="请选择">
+              <!-- <el-select v-model="goodsForm.typeId" :disabled="goodsStatusVisible ? false : true" clearable placeholder="请选择">
                 <el-option v-for="item in typeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
-              </el-select>
+              </el-select> -->
+              <el-cascader
+                style="width:100%;"
+                v-model.trim="goodsForm.typeId"
+                :disabled="goodsStatusVisible ? false : true"
+                :options="typeOptions"
+                :props="{ checkStrictly: true }"
+                clearable>
+              </el-cascader>
             </el-form-item>
             <el-form-item label="商品标签" prop="goodsLabels">
               <el-select v-model.trim="goodsForm.goodsLabels" multiple filterable allow-create default-first-option placeholder="请选择标签，也可自行添加标签">
@@ -107,43 +115,6 @@
         </div>
       </fullDialog>
       <fullDialog v-model="showGroup" :title="showGroupTitle" @change="showGroup = false">
-        <!-- <el-button type="primary" size="small" @click="openAddGroup">选择规格组</el-button>
-        <div class="w-container">
-          <div v-for="item in 2" :key="item" style="margin-bottom:10px;">
-            <div style="padding: 0 20px;height: 40px; border: 1px solid #EBEEF5; line-height:40px;background-color: rgb(242, 242, 242);">
-              标题栏
-              <span style="float:right;padding-right:20px;">
-                共1个规格
-                <el-button @click="handleDelete()" type="text" size="small" style="margin-left:20px; color: #ec5b56" >删除</el-button>
-              </span>
-            </div>
-            <rd-table
-              :tableData="tableData"
-              :tableKey="tableKey"
-              :loading="loading"
-              :fixedTwoRow="fixedTwoRow">
-            </rd-table>
-          </div>
-        </div>
-        <rd-dialog
-          title="选择规格组"
-          :dialogVisible="showAddGroup"
-          :width="widthGroup"
-          append-to-body
-          @handleClose="closeAddGroup('dataForm')"
-          @submitForm="submitGroupForm('dataForm')">
-          <search-form :formOptions="optionsGroup" @onSearch="onGroupSearch"></search-form>
-          <rd-table
-            :tableData="tableGroupData"
-            :tableKey="tableGroupKey"
-            :loading="loading"
-            :fixedTwoRow="fixedTwoRow"
-            :multiple="true"
-            :pageConfig.sync="pageGroupConfig"
-            @select="handleGroupSelect"
-            @pageChange="pageGroupChange">
-          </rd-table>
-        </rd-dialog> -->
         <Rule-Group ref="rulegroup" :goodsId="goodsId"  @close="showGroup = false" @refresh="refresh" v-if="showGroup"></Rule-Group>
       </fullDialog>
       <fullDialog v-model="commentVisible" title="评论管理" @change="commentVisible = false">
@@ -174,7 +145,7 @@ export default {
       searchForm: {},
       formOptions: [
         { prop: 'goodsId', element: 'el-input', placeholder: '请输入商品id' },
-        { prop: 'typeId', element: 'el-select', placeholder: '请选择项目' },
+        { prop: 'typeId', element: 'el-cascader', placeholder: '请选择项目', props: { checkStrictly: true } },
         { prop: 'goodsName', element: 'el-input', placeholder: '请输入商品名称' },
         { 
           prop: 'goodsStatus',
@@ -240,18 +211,7 @@ export default {
       quillContent: "uuuu",
       typeOptions: [], // 项目类型
       couponOptions: [], // 商品优惠券
-      labelOptions: [
-        // {
-        //   value: 'HTML',
-        //   label: 'HTML'
-        // }, {
-        //   value: 'CSS',
-        //   label: 'CSS'
-        // }, {
-        //   value: 'JavaScript',
-        //   label: 'JavaScript'
-        // }
-      ], // 商品标签
+      labelOptions: [], // 商品标签
       rules: {
         goodsName: [
           { required: true, message: "请输入商品名称", trigger: "blur" },
@@ -280,30 +240,6 @@ export default {
       // 关联规格组弹窗
       showGroup: false,
       showGroupTitle: '',
-      // showAddGroup: false,
-      // widthGroup: "800px",
-      // searchGroupForm: {},
-      // optionsGroup: [
-      //   { prop: 'groupName', element: 'el-input', placeholder: '请输入规格组名称' },
-      //   { prop: 'groupRemark', element: 'el-input', placeholder: '请输入备注内容' },
-      // ],
-      // tableGroupData: [
-      //   {
-      //     groupName: "中药",
-      //     groupCount: 4,
-      //     groupRemark: '备注备注金牌通过班',
-      //   }
-      // ],
-      // tableGroupKey: [
-      //   { name: '规格组',value: 'groupName' },
-      //   { name: '规格数量',value: 'groupCount' },
-      //   { name: '备注',value: 'groupRemark' },
-      // ],
-      // pageGroupConfig: {
-      //   totalCount: 20,
-      //   pageNum: 1,
-      //   pageSize: 10,
-      // },
 
       // 评论弹窗
       commentVisible: false,
@@ -316,6 +252,8 @@ export default {
   },
   methods: {
     onSearch(val) {
+      // console.log(val,'val---')
+      // return;
       this.searchForm = {...val};
       if(this.searchForm.goodsId && isNaN(this.searchForm.goodsId) ){
         this.$message.warning("请输入正确的商品id")
@@ -331,6 +269,10 @@ export default {
     // 获取商品列表数据
     getTableData(params={}) {
       return new Promise((resolve,reject)=>{
+        console.log(this.searchForm,'this.searchForm----')
+        if(this.searchForm.typeId) {
+          this.searchForm.typeId = this.searchForm.typeId.pop()
+        }
         this.$fetch(
           "goods_list",
           {
@@ -432,16 +374,17 @@ export default {
     // 获取项目类型
     getTypeData() {
       this.$fetch(
-        "projectType_normalList",
+        "projectType_select",
         {
           loginUserId: this.$common.getUserId()
         }
       ).then((res) => {
-        this.typeOptions = res.data.map((item) => ({
-          label: item.typeName,
-          value: item.typeId,
-        }));
-        this.formOptions.splice(1,1,{ prop: 'typeId', element: 'el-select', placeholder: '选择项目', options: this.typeOptions })
+        // this.typeOptions = res.data.map((item) => ({
+        //   label: item.typeName,
+        //   value: item.typeId,
+        // }));
+        this.typeOptions = this.$common.getTypeTree((res.data))
+        this.formOptions.splice(1,1,{ prop: 'typeId', element: 'el-cascader', placeholder: '选择项目',props: { checkStrictly: true }, options: this.typeOptions })
       });
     },
     // 获取优惠券
@@ -466,6 +409,11 @@ export default {
           this.goodsForm.goodsLabels = JSON.stringify(this.goodsForm.goodsLabels)
           if(this.goodsStatusVisible) {
             // 新增
+            if (this.goodsForm.typeId != 0) {
+              this.goodsForm.typeId = this.goodsForm.typeId.pop()
+            } else {
+              this.goodsForm.typeId = 0
+            }
             this.$fetch("goods_add", {
               ...this.goodsForm,
               loginUserId: this.$common.getUserId()
