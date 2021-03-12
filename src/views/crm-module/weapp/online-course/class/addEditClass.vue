@@ -219,11 +219,17 @@ export default {
 					if (this.teacherArray.length == 0) {
 						this.$message.error("请选择授课讲师");
 						return;
-					} else {
+					}
+					// else if (this.teacherArray.length > 5) {
+					// 	this.$message.error("授课老师不能多于5个");
+					// 	return;
+					// }
+					else {
 						// 由于某种问题，需要多做一次格式化成对象
 						// 后台保存的数据是用字符串，所以要格式化数组成字符串
 						data.teacherArray = JSON.stringify(this.teacherArray.map(v => JSON.parse(v)));
 					}
+
 					data.classType = this.classType;
 					this.$fetch("online_course_add_class", {
 						...data,
@@ -325,7 +331,12 @@ export default {
 					if (this.teacherArray.length == 0) {
 						this.$message.error("请选择授课讲师");
 						return;
-					} else {
+					} 
+					// else if (this.teacherArray.length > 5) {
+					// 	this.$message.error("授课老师不能多于5个");
+					// 	return;
+					// }
+					else {
 						// 由于某种问题，需要多做一次格式化成对象
 						// 后台保存的数据是用字符串，所以要格式化数组成字符串
 						data.teacherArray = JSON.stringify(this.teacherArray.map(v => JSON.parse(v)));

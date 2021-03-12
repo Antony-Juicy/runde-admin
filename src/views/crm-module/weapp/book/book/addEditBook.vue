@@ -254,14 +254,27 @@ export default {
 					} else {
 						data.bookDetail = this.bookDetail
 					}
+					if (this.bookTeacherArray.length == 0) {
+						this.$message.error("请选择授课讲师");
+						return;
+					}
+					// else if (this.bookTeacherArray.length > 5) {
+					// 	this.$message.error("授课老师不能多于5个");
+					// 	return;
+					// }
+					else {
+						// 由于某种问题，需要多做一次格式化成对象
+						// 后台保存的数据是用字符串，所以要格式化数组成字符串
+						data.bookTeacherArray = JSON.stringify(this.bookTeacherArray.map(v => JSON.parse(v)));
+					}
 
 					data.bookType = this.bookType
 					// 标签转化成 , 隔开的字符串
 					data.bookLabel = data.bookLabel.join(',')
-					// 由于某种问题，需要多做一次格式化成对象
-					data.bookTeacherArray = data.bookTeacherArray.map((v) =>
-						JSON.parse(v)
-					)
+					// // 由于某种问题，需要多做一次格式化成对象
+					// data.bookTeacherArray = data.bookTeacherArray.map((v) =>
+					// 	JSON.parse(v)
+					// )
 					// 后台保存的数据是用字符串，所以要格式化数组成字符串
 					data.bookTeacherArray = JSON.stringify(data.bookTeacherArray)
 					this.$fetch('book_add_book', {
@@ -369,7 +382,12 @@ export default {
 					if (this.bookTeacherArray.length == 0) {
 						this.$message.error('请选择授课老师')
 						return
-					} else {
+					}
+					// else if (this.teacherArray.length > 5) {
+					// 	this.$message.error("授课老师不能多于5个");
+					// 	return;
+					// }
+					else {
 						// 由于某种问题，需要多做一次格式化成对象
 						// 后台保存的数据是用字符串，所以要格式化数组成字符串
 						data.bookTeacherArray = JSON.stringify(
@@ -481,6 +499,9 @@ export default {
 			width: 100%;
 		}
 		.el-input--small .el-input__inner {
+			min-height: 32px;
+		}
+		.el-select .el-input__inner {
 			min-height: 32px;
 		}
 		.el-tag.el-tag--info {

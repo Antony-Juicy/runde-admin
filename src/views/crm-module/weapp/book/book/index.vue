@@ -79,7 +79,7 @@ export default {
                     options: [
                         {
                             label: "上架",
-                            value: "Show"
+                            value: "Open"
                         },
                         {
                             label: "下架",

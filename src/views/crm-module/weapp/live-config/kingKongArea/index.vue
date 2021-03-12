@@ -41,7 +41,7 @@ export default {
 				{
 					prop: "iconStatus",
 					element: "el-select",
-					placeholder: "教师状态",
+					placeholder: "图标状态",
 					options: [
 						{
 							label: "上架",
