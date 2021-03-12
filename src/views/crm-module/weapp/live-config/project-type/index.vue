@@ -21,8 +21,8 @@
         </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑</el-button>
-          <!-- <el-divider direction="vertical"></el-divider>
-          <el-button @click="handleDelete(scope.row)" type="text" size="small" style="color: #ec5b56">删除</el-button> -->
+          <el-divider direction="vertical"></el-divider>
+          <el-button @click="handleDelete(scope.row)" type="text" size="small" style="color: #ec5b56">删除</el-button>
         </template>
       </rd-table>
       <rd-dialog
@@ -32,8 +32,27 @@
         @handleClose="closeProject('dataForm')"
         @submitForm="submitForm('dataForm')">
         <el-form ref="dataForm" :model="projectForm" label-width="100px">
+          <el-form-item label="项目分类" prop="parentId">
+            <el-cascader
+              style="width:100%;"
+              v-model.trim="projectForm.parentId"
+              :disabled="projectStatus ? false : true"
+              :options="typeOptions"
+              :props="{ checkStrictly: true }"
+              :placeholder="projectStatus ? '请选择项目分类' : '暂无'"
+              clearable>
+            </el-cascader>
+          </el-form-item>
           <el-form-item label="项目名称" prop="typeName">
             <el-input v-model.trim="projectForm.typeName" autocomplete="off" placeholder="请输入项目名称" />
+          </el-form-item>
+          <el-form-item label="APP类型" prop="appType">
+            <el-select v-model.trim="projectForm.appType" placeholder="请选择类型">
+              <el-option label="药师" value="pharmacist"></el-option>
+              <el-option label="医师" value="doctor"></el-option>
+              <el-option label="护师" value="nurse"></el-option>
+              <el-option label="药店大学" value="yaodian"></el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="分类图标" prop="typeIcon" class="icon-wrapper">
             <Upload-oss
@@ -128,9 +147,12 @@ export default {
       widthNew: "600px",
       projectVisible: false,
       projectStatus: true,
+      typeOptions: [],
       projectForm: {
+        parentId: 0,
         typeId: '',
         typeName: '',
+        appType: '',
         typeIcon: '',
         orderValue: '',
         typeStatus: ''
@@ -138,11 +160,20 @@ export default {
     }
   },
   mounted () {
-    this.getTableData()
+    this.getTableData();
+    this.getTypeData();
   },
   methods: {
     handleSelect(rows) {
       console.log(rows, "rows---");
+    },
+    // 获取项目类型
+    getTypeData() {
+      this.$fetch(
+        "projectType_select",
+      ).then((res) => {
+        this.typeOptions = this.$common.getTypeTree((res.data))
+      });
     },
     getTableData(params={}) {
       return new Promise((resolve,reject)=>{
@@ -218,6 +249,11 @@ export default {
         if(valid) {
           if(this.projectStatus) {
             // 新增
+            if (this.projectForm.parentId != 0) {
+              this.projectForm.parentId = this.projectForm.parentId.pop()
+            } else {
+              this.projectForm.parentId = 0
+            }
             this.$fetch("projectType_add", {
               ...this.projectForm,
               loginUserId,

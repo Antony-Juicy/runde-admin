@@ -34,10 +34,15 @@
             <el-input v-model.trim="groupForm.goodsGroupName" autocomplete="off" placeholder="请输入规格组名称" />
           </el-form-item>
           <el-form-item label="项目类型" prop="typeId">
-            <!-- <el-input v-model.trim="groupForm.typeId" autocomplete="off" placeholder="请选择项目类型" /> -->
-            <el-select v-model="groupForm.typeId" :disabled="groupVisibleStatus ? false : true" placeholder="请选择">
-              <el-option v-for="item in typeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
-            </el-select>
+            <el-cascader
+              style="width:100%;"
+              v-model.trim="groupForm.typeId"
+              :disabled="groupVisibleStatus ? false : true"
+              :options="typeOptions"
+              :props="{ checkStrictly: true }"
+              :placeholder="groupVisibleStatus ? '请选择项目类型' : '暂无'"
+              clearable>
+            </el-cascader>
           </el-form-item>
           <el-form-item label="备注" prop="remark">
             <el-input v-model.trim="groupForm.remark" autocomplete="off" placeholder="请输入备注" />
@@ -136,7 +141,7 @@ export default {
       searchForm: {},
       formOptions: [
         { prop: 'goodsGroupName', element: 'el-input', placeholder: '规格组名称' },
-        { prop: 'typeId', element: 'el-select', placeholder: '选择项目' },
+        { prop: 'typeId', element: 'el-cascader', placeholder: '选择项目类型', props: { checkStrictly: true } },
         { 
           prop: 'goodsGroupStatus',
           element: 'el-select',
@@ -299,6 +304,9 @@ export default {
     // 获取规格组列表数据
     getTableData(params={}) {
       return new Promise((resolve,reject)=>{
+        if(this.searchForm.typeId) {
+          this.searchForm.typeId = this.searchForm.typeId.pop()
+        }
         this.$fetch(
           "goods_item_list",
           {
@@ -349,35 +357,14 @@ export default {
     // 获取项目类型
     getTypeData() {
       this.$fetch(
-        "projectType_normalList",
-        {
-          loginUserId: this.$common.getUserId()
-        }
+        "projectType_select",
       ).then((res) => {
-        this.typeOptions = res.data.map((item) => ({
-          label: item.typeName,
-          value: item.typeId,
-        }));
-        // this.formOptions = [
-        //   { prop: 'goodsGroupName', element: 'el-input', placeholder: '规格组名称' },
-        //   { prop: 'typeId', element: 'el-select', placeholder: '选择项目', options: this.typeOptions },
-        //   { 
-        //     prop: 'goodsGroupStatus',
-        //     element: 'el-select',
-        //     placeholder: '选择状态',
-        //     options: [
-        //       {
-        //         label: "正常",
-        //         value: "Normal",
-        //       },
-        //       {
-        //         label: "停用",
-        //         value: "Disable",
-        //       },
-        //     ],
-        //   }
-        // ]
-        this.formOptions.splice(1,1,{ prop: 'typeId', element: 'el-select', placeholder: '选择项目', options: this.typeOptions })
+        // this.typeOptions = res.data.map((item) => ({
+        //   label: item.typeName,
+        //   value: item.typeId,
+        // }));
+        this.typeOptions = this.$common.getTypeTree((res.data))
+        this.formOptions.splice(1,1,{ prop: 'typeId', element: 'el-cascader', placeholder: '选择项目类型',props: { checkStrictly: true }, options: this.typeOptions })
       });
     },
     submitForm(formName) {
@@ -385,6 +372,11 @@ export default {
         if(valid) {
           if(this.groupVisibleStatus) {
             // 新增
+            if (this.groupForm.typeId != 0) {
+              this.groupForm.typeId = this.groupForm.typeId.pop()
+            } else {
+              this.groupForm.typeId = 0
+            }
             this.$fetch("goods_item_add", {
               ...this.groupForm,
             }).then((res) => {

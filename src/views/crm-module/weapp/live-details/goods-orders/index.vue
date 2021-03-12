@@ -148,7 +148,7 @@ export default {
         { prop: 'sourceName', element: 'el-input', placeholder: '直播名称' },
         { prop: 'teacherName', element: 'el-input', placeholder: '推广老师' },
         { prop: 'phone', element: 'el-input', placeholder: '用户手机号' },
-        { prop: 'typeId', element: 'el-select', placeholder: '项目分类' },
+        { prop: 'typeId', element: 'el-cascader', placeholder: '项目分类', props: { checkStrictly: true } },
         { 
           prop: 'orderStatus',
           element: 'el-select',
@@ -269,20 +269,21 @@ export default {
     // 获取项目类型
     getTypeData() {
       this.$fetch(
-        "projectType_normalList",
-        {
-          loginUserId: this.$common.getUserId()
-        }
+        "projectType_select",
       ).then((res) => {
-        this.typeOptions = res.data.map((item) => ({
-          label: item.typeName,
-          value: item.typeId,
-        }));
-        this.formOptions.splice(5,1,{ prop: 'typeId', element: 'el-select', placeholder: '项目分类', options: this.typeOptions })
+        // this.typeOptions = res.data.map((item) => ({
+        //   label: item.typeName,
+        //   value: item.typeId,
+        // }));
+        this.typeOptions = this.$common.getTypeTree((res.data))
+        this.formOptions.splice(5,1,{ prop: 'typeId', element: 'el-cascader', placeholder: '项目分类',props: { checkStrictly: true }, options: this.typeOptions })
       });
     },
     getTableData(params={}) {
       return new Promise((resolve,reject)=>{
+        if(this.searchForm.typeId) {
+          this.searchForm.typeId = this.searchForm.typeId.pop()
+        }
         this.$fetch(
           "orders_list",
           {

@@ -141,7 +141,20 @@ const $common = {
         return pic + '?x-oss-process=image/auto-orient,1/resize,m_lfit,w_550/quality,q_100'
     },
 
-    
+    // 多级分类下拉
+    getTypeTree(val) {
+        val.forEach(item => {
+          item.label = item.typeName;
+          item.value = item.typeId;
+          item.nodes = item.children
+          if(item.children == []) {
+            item.nodes = []
+          } else {
+            this.getTypeTree(item.nodes)
+          }
+        })
+        return val
+    }
 }
 
 export default $common
