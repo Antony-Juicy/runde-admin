@@ -73,6 +73,7 @@
         :formOptions="orderFormOptions"
         :rules="orderRules"
         ref="dataForm"
+        v-if="orderVisible"
       />
     </rd-dialog>
 
@@ -764,9 +765,9 @@ export default {
       }
 
       
-      if(this.orderFlag){
-        this.orderVisible = true;
-      }else{
+      // if(this.orderFlag){
+      //   this.orderVisible = true;
+      // }else{
       // 赋值
       const { idStr,campusName,campusId,studentName,phone,saleSource,marketStaffId ,marketName} = this.selectedData[0];
       this.$fetch("chance_staff_list").then(res => {
@@ -784,9 +785,9 @@ export default {
           this.orderFormOptions[4].initValue = marketStaffId;
           this.orderVisible = true;
       })
-      }
+      // }
 
-      this.orderFlag = true;
+      // this.orderFlag = true;
       
     },
     // 成单弹窗关闭

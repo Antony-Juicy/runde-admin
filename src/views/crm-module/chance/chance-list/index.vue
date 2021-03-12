@@ -95,7 +95,7 @@ export default {
         { name: '备注',value: 'remark' },
         { name: '最近回访内容',value: 'recentFeedbackContent'},
         { name: '最近回访时间',value: 'recentFeedbackTime',width:132 },
-        { name: '下次回访时间',value: 'nextFeedBackTime',width:132 },
+        { name: '下次回访时间',value: 'nextDate',width:132 },
         { name: '分配时间',value: 'allotTime',width:132 },
         { name: '状态',value: 'invalidStatus' },
         { name: '跟进状态',value: 'status' },
@@ -159,7 +159,7 @@ export default {
           item.createAt = this.$common._formatDates(item.createAt);
           item.recoveryTime = item.recoveryTime&&this.$common._formatDates(item.recoveryTime);
           item.recentFeedbackTime = item.recentFeedbackTime&&this.$common._formatDates(item.recentFeedbackTime);
-          item.nextFeedBackTime = item.nextFeedBackTime&&this.$common._formatDates(item.nextFeedBackTime);
+          item.nextDate = item.nextDate&&this.$common._formatDates(item.nextDate);
           item.allotTime = item.allotTime&&this.$common._formatDates(item.allotTime);
           if(item.enquireClassOne){
             item.enquireClassOne = item.enquireClassOne.map(ele=>(ele.name)).join(",")

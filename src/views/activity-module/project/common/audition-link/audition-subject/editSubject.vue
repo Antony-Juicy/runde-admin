@@ -17,7 +17,7 @@
         >
           <div class="param-label">排序</div>
           <span style="margin-right: 5px;font-weight:bold">:</span>
-           <el-input v-model="dynamicValidateForm.name" size="small" style="width: 300px"></el-input>
+           <el-input v-model="dynamicValidateForm.issuseId" size="small" style="width: 300px"></el-input>
         </el-form-item>
       </div>
       <div class="param-item">
@@ -30,7 +30,7 @@
         >
           <div class="param-label">试题类型</div>
           <span style="margin-right: 5px;font-weight:bold">:</span>
-           <el-input v-model="dynamicValidateForm.name" size="small" style="width: 300px"></el-input>
+           <el-input v-model="dynamicValidateForm.issuesType" size="small" style="width: 300px"></el-input>
         </el-form-item>
       </div>
       <div class="param-item">
@@ -43,13 +43,13 @@
         >
           <div class="param-label" style="line-height: 68px">题目内容</div>
           <span style="margin-right: 5px;font-weight:bold">:</span>
-           <el-input v-model="dynamicValidateForm.name" size="small" style="width: 300px" type="textarea" rows="3"></el-input>
+           <el-input v-model="dynamicValidateForm.issuse" size="small" style="width: 300px" type="textarea" rows="3"></el-input>
         </el-form-item>
          <el-form-item
         >
           <Upload-oss
               :objConfig="{module: 'activity'}"
-              :src.sync="dynamicValidateForm.paramImg"
+              :src.sync="dynamicValidateForm.imageIssuse"
             />
         </el-form-item>
       </div>
@@ -83,7 +83,7 @@
               :src.sync="domain.paramImg"
             />
         </el-form-item>
-        <el-button :key="domain.key + '4'" @click.prevent="removeDomain(domain)" 
+        <el-button :key="domain.key + '4'" @click.prevent="removeDomain(domain)"  v-if="index != 0"
         type="danger" size="small"
           >删除</el-button
         >
@@ -91,11 +91,6 @@
           >添加选项</el-button
         >
       </div>
-       <!-- <div class="btn-wrapper">
-         <el-button type="primary" size="small" @click="addDomain"
-          >点击添加选项</el-button
-        >
-       </div> -->
        <div class="param-item">
         <el-form-item
           :rules="{
@@ -106,13 +101,13 @@
         >
           <div class="param-label" style="line-height: 68px">答案解释</div>
           <span style="margin-right: 5px;font-weight:bold">:</span>
-           <el-input v-model="dynamicValidateForm.name" size="small" style="width: 300px" type="textarea" rows="3"></el-input>
+           <el-input v-model="dynamicValidateForm.textAnalysis" size="small" style="width: 300px" type="textarea" rows="3"></el-input>
         </el-form-item>
          <el-form-item
         >
           <Upload-oss
               :objConfig="{module: 'activity'}"
-              :src.sync="dynamicValidateForm.paramImg"
+              :src.sync="dynamicValidateForm.imageAnalysis"
             />
         </el-form-item>
       </div>
@@ -126,7 +121,7 @@
         >
           <div class="param-label">正确答案</div>
           <span style="margin-right: 5px;font-weight:bold">:</span>
-           <el-input v-model="dynamicValidateForm.name" size="small" style="width: 300px"></el-input>
+           <el-input v-model="dynamicValidateForm.answer" size="small" style="width: 300px"></el-input>
         </el-form-item>
       </div>
       <div class="btn-wrapper">
@@ -155,12 +150,29 @@ export default {
             paramImg: ""
           },
         ],
-        name:""
+        issuseId:"",
+        issuesType:"",
+        issuse:"",
+        imageIssuse:"",
+        textAnalysis:"",
+        imageAnalysis:"",
+        answer:""
       },
     }
   },
   components: {
     UploadOss
+  },
+  props:{
+    id: {
+      type: Number || String
+    },
+    issuseId: {
+      type: Number || String
+    }
+  },
+  mounted(){
+    this.getData();
   },
    methods: {
      // 动态添加
@@ -190,6 +202,30 @@ export default {
         paramImg: "",
         key: Date.now(),
       });
+    },
+    getData(){
+      this.$fetch("lookpicture_goEditDetails",{
+        id: this.id,
+        issuseId: this.issuseId
+      }).then(res => {
+        let { issuseId,issue,issuesType } = res.data.pd;
+        this.dynamicValidateForm = {
+        domains: [
+          {
+            paramName: "",
+            paramVal: "",
+            paramImg: ""
+          },
+        ],
+        issuseId,
+        issuesType,
+        issuse: issue.issuse,
+        imageIssuse: "https://rdimg.rundejy.com/web/runde_jiaowu/activity/20210312/8Fxz5jDR7bkZJnwzmmST4XJbkKeExWbz.png",
+        textAnalysis: issue.textAnalysis,
+        imageAnalysis: issue.imageAnalysis,
+        answer: issue.answer
+        }
+      })
     } 
   }
 }

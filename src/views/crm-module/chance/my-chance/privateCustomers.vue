@@ -16,8 +16,8 @@
       <el-button type="danger" size="small" @click="handleInvalid"
         >失效</el-button
       >
-      <el-button type="primary" size="small" @click="handleAdd">添加</el-button>
       <el-button size="small" type="info" @click="handleImport">导入</el-button>
+      <el-button type="primary" size="small" @click="handleAdd">添加</el-button>
       <el-button size="small" @click="handleAICall">AI呼叫</el-button>
     </div>
     <rd-table
@@ -994,6 +994,7 @@ export default {
             this.$message.error("学员姓名不能超过20个字数")
             return
           }
+          // campusName enquireProductNameOne enquireSubjectNameOne
           this.$fetch("chance_my_add", {
             ...formData,
             productId: this.productId,
@@ -1003,7 +1004,10 @@ export default {
               name: item.name,
               val: item.value
             }))),
-            undefined: this.classId.join(","),
+            undefined: this.classId.map(item => (item.value)).join(","),
+            campusName: this.campusArr.find(item => (item.value == formData.campusId)).label,
+            enquireProductNameOne: this.productArr.find(item => (item.value == this.productId)).label,
+            enquireSubjectNameOne: this.subjectArr.find(item => (item.value == this.subjectId)).label,
           }).then((res) => {
             if (res.code == 200) {
               this.$message.success("添加成功");
