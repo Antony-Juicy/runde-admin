@@ -304,14 +304,15 @@ export default {
     // 获取规格组列表数据
     getTableData(params={}) {
       return new Promise((resolve,reject)=>{
+        let searchForm = JSON.parse(JSON.stringify(this.searchForm))
         if(this.searchForm.typeId) {
-          this.searchForm.typeId = this.searchForm.typeId.pop()
+          searchForm.typeId = searchForm.typeId.pop()
         }
         this.$fetch(
           "goods_item_list",
           {
             ...this.pageConfig,
-            ...this.searchForm,
+            ...searchForm,
             ...params
           }
         ).then((res) => {

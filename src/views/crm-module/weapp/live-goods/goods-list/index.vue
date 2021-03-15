@@ -271,15 +271,16 @@ export default {
     getTableData(params={}) {
       return new Promise((resolve,reject)=>{
         console.log(this.searchForm,'this.searchForm----')
+        let searchForm = JSON.parse(JSON.stringify(this.searchForm))
         if(this.searchForm.typeId) {
-          this.searchForm.typeId = this.searchForm.typeId.pop()
+          searchForm.typeId = searchForm.typeId.pop()
         }
         this.$fetch(
           "goods_list",
           {
             loginUserId: this.$common.getUserId(),
             ...this.pageConfig,
-            ...this.searchForm,
+            ...searchForm,
             ...params
           }
         ).then((res) => {

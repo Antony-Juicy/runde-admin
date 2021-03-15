@@ -198,14 +198,15 @@ export default {
     },
     getTableData(params={}) {
       return new Promise((resolve,reject)=>{
+        let searchForm = JSON.parse(JSON.stringify(this.searchForm))
         if(this.searchForm.typeId) {
-          this.searchForm.typeId = this.searchForm.typeId.pop()
+          searchForm.typeId = searchForm.typeId.pop()
         }
         this.$fetch(
           "live_detail_list",
           {
             ...this.pageConfig,
-            ...this.searchForm,
+            ...searchForm,
             ...params
           }
         ).then((res) => {
