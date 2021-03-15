@@ -400,11 +400,7 @@ export default {
 					// 标签转化成 , 隔开的字符串
 					data.bookLabel = data.bookLabel.join(',')
 
-					if (
-						!this.oldBookTeacherArray.every((v) =>
-							this.bookTeacherArray.includes(v)
-						)
-					) {
+					if (!this.oldBookTeacherArray.every((v) => this.bookTeacherArray.includes(v))) {
 						this.$confirm(
 							`检测到删除授课老师，会同时修改科目数据, 是否继续?`,
 							'提示',
@@ -419,6 +415,7 @@ export default {
 					} else {
 						doUpdate.call(this)
 					}
+					data.bookLabel = data.bookLabel.split(',')
 
 					function doUpdate() {
 						this.$fetch('book_update_book', {
@@ -428,6 +425,7 @@ export default {
 							.then((res) => {
 								if (res.code == 200) {
 									this.btnLoading = false
+
 									// todo 无感保存处理
 									if (Imperceptible != true) {
 										this.$message.success("保存成功");
@@ -455,21 +453,19 @@ export default {
 		// 不知道为什么黑化，所以加一点点延时暂时解决
 		await this.$common.sleep(100)
 		// 项目类型 选项来源后台数据，使用请求返回的数值组装表单内容
-		await this.$fetch('projectType_normalList', {
-			loginUserId: this.$common.getUserId(),
-		}).then((res) => {
-			let typeList = res.data.map((item) => ({
-				label: item.typeName,
-				value: item.typeId,
-			}))
+
+		await this.$fetch(
+			"projectType_select",
+		).then((res) => {
 			this.addFormOptions.unshift({
-				prop: 'typeId',
-				element: 'el-select',
-				placeholder: '请选择项目类型',
-				label: '项目类型',
-				options: typeList,
-			})
-		})
+				prop: "typeId",
+				element: "el-cascader",
+				placeholder: "请选择项目类型",
+				label: "项目类型",
+				props: { checkStrictly: true },
+				options: this.$common.getTypeTree(res.data),
+			});
+		});
 		await this.$fetch('config_get_teachers_list', {
 			loginUserId: this.$common.getUserId(),
 		})
@@ -495,6 +491,7 @@ export default {
 			width: 100px;
 			height: 100px;
 		}
+		.el-cascader--small,
 		.el-input-number--small {
 			width: 100%;
 		}

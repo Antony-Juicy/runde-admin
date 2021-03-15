@@ -27,15 +27,15 @@ export default {
 	data() {
 		return {
 			addFormOptions: [
-				{
-					prop: "typeName",
-					element: "el-input",
-					placeholder: "",
-					label: "项目分类",
-					disabled: true,
-					// ! 数据来源 1：班级打开时来自班级信息 2：科目打开时来自所选科目信息
-					initValue: this.book.typeName,
-				},
+				// {
+				// 	prop: "typeName",
+				// 	element: "el-input",
+				// 	placeholder: "",
+				// 	label: "项目分类",
+				// 	disabled: true,
+				// 	// ! 数据来源 1：班级打开时来自班级信息 2：科目打开时来自所选科目信息
+				// 	initValue: this.book.typeName,
+				// },
 				{
 					prop: "bookSubjectName",
 					element: "el-input",
@@ -148,7 +148,7 @@ export default {
 				}
 			})
 		},
-		handleSave(Imperceptible ) {
+		handleSave(Imperceptible) {
 			this.$refs.dataForm.validate((val, data) => {
 				if (val) {
 					data.bookId = this.book.bookId
@@ -238,6 +238,21 @@ export default {
 			lock: true,
 		});
 		scrollTo(0, 800);
+		await this.$fetch(
+			"projectType_select",
+		).then((res) => {
+			this.addFormOptions.unshift({
+				prop: "typeId",
+				element: "el-cascader",
+				placeholder: "请选择项目类型",
+				label: "项目分类",
+				disabled: true,
+				props: { checkStrictly: true },
+				initValue: this.book.typeId,
+				options: this.$common.getTypeTree(res.data),
+			});
+			this.$refs.dataForm.addInitValue();
+		});
 		await this.$fetch("book_subject_get_teachers", {
 			loginUserId: this.$common.getUserId(),
 			bookId: this.book.bookId
@@ -266,6 +281,7 @@ export default {
 <style lang='scss' scoped>
 .addEditCourse {
 	/deep/ {
+		.el-cascader--small,
 		.el-input-number--small {
 			width: 100%;
 		}
