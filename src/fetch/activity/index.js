@@ -17,7 +17,7 @@ export default {
     cmscertificateinfo_wchatList: {url: '/h5/cmscertificateinfo/wchatList', method: 'get'}, //微信用户列表
     cmscertificateinfo_list: {url: '/h5/cmscertificateinfo/listJsp', method: 'get'}, //列表
     cmscertificateinfo_add: {url: '/h5/cmscertificateinfo/save', method: 'post'}, //新增
-    cmscertificateinfo_export: {url: '/h5/cmscertificateinfo/excelJsp', method: 'get'}, //导出
+    cmscertificateinfo_export: {url: '/h5/cmscertificateinfo/excelJsp', method: 'get', responseType: "arraybuffer"}, //导出
     cmscertificateinfo_getAllColumnNamesCertificateInfo: {url: '/h5/exportexcelcolumnname/getAllColumnNamesCertificateInfo', method: 'post'}, //获取导出详情
     cmscertificateinfo_goEdit: {url: '/h5/cmscertificateinfo/goEdit', method: 'get'}, //获取编辑详情
     cmscertificateinfo_batchChange: {url: '/h5/cmscertificateinfo/batchChange', method: 'post'}, //批量暂停、恢复操作
@@ -39,6 +39,9 @@ export default {
     // 密押考点
     secretexamsubject_list:  {url: '/h5/secretexamsubject/listJsp', method: 'get'}, //列表
     secretexamsubject_add:  {url: '/h5/secretexamsubject/save', method: 'post'}, //新增
+    secretexamsubject_editJsp:  {url: '/h5/secretexamsubject/editJsp', method: 'post'}, //编辑
     secretexamsubject_goEdit:  {url: '/h5/secretexamsubject/goEdit', method: 'get'}, //去编辑页面
-    secretexamsubject_delete:  {url: '/h5/secretexamsubject/deleteJsp', method: 'post'}, //去编辑页面
+    secretexamsubject_delete:  {url: '/h5/secretexamsubject/deleteJsp', method: 'post'}, //删除
+    secretexamsubject_deleteTk:  {url: '/h5/secretexamsubject/deleteTk', method: 'post'}, //删除题库
+    secretexamsubject_importIssueExcel:  {url: '/h5/secretexamsubject/importIssueExcel', method: 'post'}, //导入题目
 }

@@ -170,7 +170,7 @@ export default {
     onSearch(val) {
       this.searchForm = { 
         ...val ,
-         endTime: val.endTime?val.endTime.join(' ~ '):""
+         endTime: val.endTime?val.endTime.join('~'):""
       };
       console.log(val, this.searchForm, "val---");
       this.getTableData();

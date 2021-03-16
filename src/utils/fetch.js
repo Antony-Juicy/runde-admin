@@ -66,6 +66,10 @@ service.interceptors.response.use(
   response => {
       hideLoading()
     const res = response.data
+    // 文件流直接返回
+    if(res.code == undefined){
+      return res
+    }
     // if the custom code is not 1, it is judged as an error.
     if (res.code !== 200 && res.code !== 1 && res.code !== "Success") {
 

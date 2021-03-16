@@ -224,7 +224,7 @@ export default {
     onSearch(val) {
       this.searchForm = {
         ...val,
-        updateAt: val.updateAt ? val.updateAt.join(" ~ ") : "",
+        updateAt: val.updateAt ? val.updateAt.join("~") : "",
       };
       this.getTableData();
       console.log(val, this.searchForm, "val---");

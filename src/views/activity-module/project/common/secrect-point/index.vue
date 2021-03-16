@@ -15,7 +15,6 @@
         :tableData="tableData"
         :tableKey="tableKey"
         :pageConfig.sync="pageConfig"
-        :tbodyHeight="600"
         fixedTwoRow
         @pageChange="pageChange"
         :emptyText="emptyText"
@@ -158,13 +157,13 @@ export default {
       searchForm:{},
       emptyText:"暂无数据",
       tableData:[
-         {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-        },
+        //  {
+        //   id: 1,
+        //   name: "飞翔的荷兰人3",
+        //   cutdown: 1608897351706,
+        //   visit: 2,
+        //   phone: "15692026183",
+        // },
       ],
       tableKey: [
         {
@@ -386,7 +385,10 @@ export default {
       addRules:{
         productType: [
           { required: true, message: "请选择", trigger: "blur" },
-        ]
+        ],
+        subjectName: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
       },
       addStatus: true,
       uploadVisible: false,
@@ -394,7 +396,8 @@ export default {
       previewVisible: false,
       answerVisible: false,
       productList: [],
-      subjectUnitList:[]
+      subjectUnitList:[],
+      editId:""
     }
   },
   components:{
@@ -464,11 +467,12 @@ export default {
       this.$refs[formName].validate((valid, formData) => {
         if(valid){
           console.log(formData, "提交");
-          this.$fetch("secretexamsubject_add",{
+          this.$fetch(this.addStatus?"secretexamsubject_add":"secretexamsubject_editJsp",{
             ...formData,
             time:"",
             startTime: formData.time?formData.time[0]:"",
             endTime: formData.time?formData.time[1]:"",
+            id: this.addStatus?"": this.editId
           }).then(res =>{ 
             this.$message.success("操作成功")
             this.addVisible = false;
@@ -481,10 +485,15 @@ export default {
     handleEdit(data){
       this.addStatus = false;
       this.addVisible = true;
+      this.editId = data.id;
       this.$fetch("secretexamsubject_goEdit",{
         id: data.id
       }).then(res => {
-
+        this.addFormOptions.forEach((item) => {
+          item.initValue = res.data.pd[item.prop];
+        });
+        this.$refs.dataForm3.addInitValue();
+        console.log(this.addFormOptions,'this.addFormOptions---')
       })
     },
     handleDelete(row) {
@@ -519,9 +528,8 @@ export default {
         type: "warning",
       })
         .then(async () => {
-          const res = await this.$fetch("projectType_delete", {
-            typeId: row.typeId,
-            loginUserId,
+          const res = await this.$fetch("secretexamsubject_deleteTk", {
+            id: row.id
           }).then((res) => {
             if (res) {
               this.$message({
