@@ -89,7 +89,7 @@ export default {
 				{
 					name: "跳转类型",
 					value: "bannerType",
-					width:80,
+					width: 80,
 				},
 				{
 					name: "跳转目标",
@@ -160,7 +160,7 @@ export default {
 				).then((res) => {
 					this.tableData = res.data.records.map((item) => {
 						item.bannerStatus = this.bannerStatus2Zh(item.bannerStatus)
-						if(item.bannerType == 'None'){
+						if (item.bannerType == 'None') {
 							item.bannerTarget = "/"
 						}
 						item.bannerType = this.bannerType2Zh(item.bannerType)
@@ -236,9 +236,8 @@ export default {
 			switch (type) {
 				case 'None': return '无目标';
 				case 'H5': return '网页';
-				case 'Live': return '站内直播';
-				case 'Book': return '站内图书';
-				case 'Onlinecourse': return '站内网课';
+				case 'InnerXcx': return '小程序页面';
+				case 'OutSideXcx': return '小程序外';
 			}
 		}
 

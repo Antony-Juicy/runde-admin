@@ -1,6 +1,11 @@
 <template>
 	<div class='addEditIcon' id="addEditIcon">
 		<RdForm :formOptions="addFormOptions" :rules="addRules" :formLabelWidth="'150px'" ref="dataForm">
+			<template slot="linkType">
+				<el-select v-model="linkType">
+					<el-option v-for="(item,index) in linkTypeOptions" :key="index" :label="item.label" :value="item.value"></el-option>
+				</el-select>
+			</template>
 			<template slot="iconImageUrl">
 				<Upload-oss v-if="uploadOssElem" :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }" :src.sync="iconImageUrl" :initGetConfig="initGetConfig" @srcChangeFun="
                     (data) => {
@@ -33,35 +38,18 @@ export default {
 					label: "图标标题",
 				},
 				{
+					prop: "linkType",
+					element: "el-input",
+					placeholder: "请选择",
+					label: "跳转类型",
+					operate: true,
+					initValue: 0,
+				},
+				{
 					prop: "iconLink",
 					element: "el-input",
 					placeholder: "请输入",
 					label: "图标连接",
-				},
-				{
-					prop: "linkType",
-					element: "el-select",
-					placeholder: "请选择",
-					label: "跳转类型",
-					options: [
-						{
-							label: "不跳转",
-							value: "None"
-						},
-						{
-							label: "网页",
-							value: "H5"
-						},
-						{
-							label: "小程序页面",
-							value: "InnerXcx"
-						},
-						// {
-						// 	label: "小程序外",
-						// 	value: "OutSideXcx"
-						// }
-					],
-					initValue: "None",
 				},
 				{
 					prop: "iconImageUrl",
@@ -113,10 +101,47 @@ export default {
 			linkId: "",
 			iconImageUrl: "",
 			btnLoading: false,
+			linkType: "",
+			linkTypeOptions: [
+				{
+					label: "不跳转",
+					value: "None"
+				},
+				{
+					label: "网页",
+					value: "H5"
+				},
+				{
+					label: "小程序页面",
+					value: "InnerXcx"
+				},
+				// {
+				// 	label: "小程序外",
+				// 	value: "OutSideXcx"
+				// }
+			],
 			mode: "add",// add 新增 edit 修改
 		}
 	},
 	components: { RdForm, UploadOss },
+	watch: {
+		linkType: function (n, o) {
+			// 如果选择不跳转，就不要用户输入跳转目标
+			if (n == 'None') {
+				this.addFormOptions.splice(3, 1)
+			} else {
+				if (this.addFormOptions[3].label != '图标连接') {
+					this.addFormOptions.splice(3, 0, {
+						prop: "iconLink",
+						element: "el-input",
+						placeholder: "请输入",
+						label: "图标连接",
+					})
+				}
+
+			}
+		}
+	},
 	methods: {
 		// 上传组件
 		reloadElem(dataElem) {
@@ -140,11 +165,19 @@ export default {
 						data.iconImageUrl = this.iconImageUrl;
 					}
 
+					if (this.linkType == "") {
+						this.$message.error("请选择跳转类型");
+						return;
+					} else {
+						data.linkType = this.linkType;
+					}
+
+
 					// 提取最后一层的类型id
 					if (data.typeId.length >= 0) {
 						data.typeId = data.typeId.pop()
 					}
-					
+
 					this.btnLoading = true;
 					this.$fetch("config_add_icon", {
 						...data,
@@ -171,6 +204,13 @@ export default {
 						return;
 					} else {
 						data.iconImageUrl = this.iconImageUrl;
+					}
+
+					if (this.linkType == "") {
+						this.$message.error("请选择跳转类型");
+						return;
+					} else {
+						data.linkType = this.linkType;
 					}
 
 					// 提取最后一层的类型id
@@ -217,6 +257,9 @@ export default {
 						if (item.prop == "iconImageUrl") {
 							this.iconImageUrl = res.data.iconImageUrl;
 						}
+						if (item.prop == "linkType") {
+							this.linkType = res.data.linkType;
+						}
 					})
 					this.$refs.dataForm.addInitValue();
 				})
@@ -254,6 +297,9 @@ export default {
 		.el-cascader--small,
 		.el-input-number--small {
 			width: 100%;
+		}
+		.el-input__inner {
+			height: 32px;
 		}
 	}
 	.btn-wrapper {

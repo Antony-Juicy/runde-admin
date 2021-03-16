@@ -56,7 +56,7 @@ export default {
                     placeholder: "请输入关键字",
                 },
                 {
-                    prop: "courseChargeMode",
+                    prop: "classType",
                     element: "el-select",
                     placeholder: "收费状态",
                     options: [

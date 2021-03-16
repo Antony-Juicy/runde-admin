@@ -34,7 +34,7 @@ export default {
 				{
 					prop: "bannerImageUrl",
 					element: "el-input",
-					label: "图标图片",
+					label: "轮播图",
 					operate: true,
 					initValue: 0,
 				},
