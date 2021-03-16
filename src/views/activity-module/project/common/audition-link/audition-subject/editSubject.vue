@@ -180,6 +180,14 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log(this.dynamicValidateForm,'99')
+          this.$fetch("lookpicture_selectIssue",{
+            ...this.dynamicValidateForm,
+            id: this.id,
+          }).then(res => {
+            this.$message.success("操作成功")
+            this.$emit("close")
+            this.$emit("refresh")
+          })
         } else {
           console.log("error submit!!");
           return false;

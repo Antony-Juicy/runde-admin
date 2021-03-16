@@ -9,12 +9,36 @@ export default {
     lookpicture_getProductTypeList: {url: '/h5/lookpictureitem/getProductTypeList', method: 'get'},//获取一级项目类型
     lookpicture_getProductList: {url: '/h5/lookpictureitem/getProductList', method: 'get'},//获取二级项目类型
     lookpicture_goEditDetails: {url: '/h5/lookpictureitem/goEditDetails', method: 'get'}, //获取题目编辑详情
+    lookpicture_selectIssue: {url: '/h5/lookpictureitem/updateSingleAndMultipleChoiceIssuse', method: 'post', paramType: "body"}, //修改单选/多选题
 
     // 晒证作品管理
+    cmscertificateinfo_getActivityList: {url: '/h5/cmscertificateinfo/getActivityList', method: 'get'}, //活动名称列表
+    cmscertificateinfo_getProductList: {url: '/h5/cmscertificateinfo/getProductList', method: 'get'}, //项目类型列表
+    cmscertificateinfo_wchatList: {url: '/h5/cmscertificateinfo/wchatList', method: 'get'}, //微信用户列表
     cmscertificateinfo_list: {url: '/h5/cmscertificateinfo/listJsp', method: 'get'}, //列表
     cmscertificateinfo_add: {url: '/h5/cmscertificateinfo/save', method: 'post'}, //新增
     cmscertificateinfo_export: {url: '/h5/cmscertificateinfo/excelJsp', method: 'get'}, //导出
-    cmscertificateinfo_getActivityList: {url: '/h5/cmscertificateinfo/getActivityList', method: 'get'}, //列表
-    cmscertificateinfo_getProductList: {url: '/h5/cmscertificateinfo/getProductList', method: 'get'}, //列表
-    cmscertificateinfo_wchatList: {url: '/h5/cmscertificateinfo/wchatList', method: 'get'}, //列表
+    cmscertificateinfo_getAllColumnNamesCertificateInfo: {url: '/h5/exportexcelcolumnname/getAllColumnNamesCertificateInfo', method: 'post'}, //获取导出详情
+    cmscertificateinfo_goEdit: {url: '/h5/cmscertificateinfo/goEdit', method: 'get'}, //获取编辑详情
+    cmscertificateinfo_batchChange: {url: '/h5/cmscertificateinfo/batchChange', method: 'post'}, //批量暂停、恢复操作
+    cmscertificateinfo_editStatus: {url: '/h5/cmscertificateinfo/editStatus', method: 'post'}, //单个暂停、恢复操作
+    cmscertificateinfo_toExcelPic: {url: '/h5/cmscertificateinfo/toExcelPic', method: 'post'}, //批量导出作品图片
+    
+    // 晒证投票记录
+    cmscertificatevotes_getActivityInfo: {url: '/h5/cmscertificatevotes/getActivityInfo', method: 'get'}, //列表
+    cmscertificatevotes_getCertificate: {url: '/h5/cmscertificatevotes/getCertificate', method: 'get'}, //列表
+    cmscertificatevotes_getProductList: {url: '/h5/cmscertificatevotes/getProductList', method: 'get'}, //列表
+    cmscertificatevotes_getStatusList: {url: '/h5/cmscertificatevotes/getStatusList', method: 'get'}, //列表
+    cmscertificatevotes_getVoteTypeList: {url: '/h5/cmscertificatevotes/getVoteTypeList', method: 'get'}, //列表
+    cmscertificatevotes_getWechat: {url: '/h5/cmscertificatevotes/getWechat', method: 'get'}, //列表
+    cmscertificatevotes_list: {url: '/h5/cmscertificatevotes/listJsp', method: 'get'}, //列表
+    cmscertificatevotes_add: {url: '/h5/cmscertificatevotes/save', method: 'post'}, //新增
+    cmscertificatevotes_edit: {url: '/h5/cmscertificatevotes/editJsp', method: 'post'}, //修改
+    cmscertificatevotes_goEdit: {url: '/h5/cmscertificatevotes/goEdit', method: 'get'}, //获取编辑详情
+
+    // 密押考点
+    secretexamsubject_list:  {url: '/h5/secretexamsubject/listJsp', method: 'get'}, //列表
+    secretexamsubject_add:  {url: '/h5/secretexamsubject/save', method: 'post'}, //新增
+    secretexamsubject_goEdit:  {url: '/h5/secretexamsubject/goEdit', method: 'get'}, //去编辑页面
+    secretexamsubject_delete:  {url: '/h5/secretexamsubject/deleteJsp', method: 'post'}, //去编辑页面
 }

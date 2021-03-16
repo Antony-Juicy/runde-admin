@@ -38,7 +38,7 @@
         @handleClose="editVisible = false"
         @submitForm="submitAddForm('dataForm3')"
       >
-        <editSubject :id="id" :issuseId="issuseId" v-if="editVisible"/>
+        <editSubject :id="id" :issuseId="issuseId" v-if="editVisible" @close="editVisible = false" @refresh="refresh"/>
       </rd-dialog>
   </div>
 </template>
@@ -151,6 +151,9 @@ export default {
     handleDetail(data){
       this.issuseId = data.issuseId;
       this.editVisible = true;
+    },
+    refresh(){
+      this.getTableData();
     }
   }
 }

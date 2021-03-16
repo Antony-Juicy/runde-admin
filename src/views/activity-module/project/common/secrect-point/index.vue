@@ -139,17 +139,18 @@ export default {
     return {
       formOptions: [
         {
-          prop: "menuName",
-          element: "el-input",
+          prop: "productType",
+          element: "el-select",
           placeholder: "活动名称",
+          options: []
         },
         {
-          prop: "menuName",
+          prop: "productName",
           element: "el-input",
           placeholder: "项目名称",
         },
         {
-          prop: "menuName",
+          prop: "subjectName",
           element: "el-input",
           placeholder: "科目名称",
         }
@@ -174,67 +175,68 @@ export default {
         },
         {
           name: "活动名称",
-          value: "staffName",
+          value: "productType1",
+          width: 120
         },
         {
           name: "项目名称",
-          value: "goodsName",
+          value: "productName",
         },
         {
           name: "科目名称",
-          value: "activityName",
+          value: "subjectName",
         },
         {
           name: "课程名称",
-          value: "posterName",
+          value: "courseName",
         },
         {
           name: "科目单元",
-          value: "posterPic",
+          value: "subjectUnit1",
         },
         {
           name: "项目科目和课程ID",
-          value: "posterCopyFirst",
+          value: "productInfo",
         },
         {
           name: "科目启动时间",
-          value: "posterCopySecond",
+          value: "startTime",
         },
         {
           name: "科目结束时间",
-          value: "posterCopyThird",
+          value: "endTime",
         },
         {
           name: "是否关注",
-          value: "posterCopyFourth",
+          value: "focusStatus",
         },
         {
           name: "题库版本号",
-          value: "posterCopyFifth",
+          value: "itemVersion",
         },
         {
           name: "总题数",
-          value: "createAt",
+          value: "totalExercisesNum",
         },
         {
           name: "压中的题数",
-          value: "updateAt",
+          value: "correctExercisesNum",
         },
            {
           name: "视频答案",
-          value: "updateAt",
+          value: "videoUrl",
         },
            {
           name: "数据状态",
-          value: "updateAt",
+          value: "status",
         },
            {
           name: "排序",
-          value: "updateAt",
+          value: "orderValue",
         },
            {
           name: "创建时间",
-          value: "updateAt",
+          value: "createAt",
         },
            {
           name: "更新时间",
@@ -257,7 +259,7 @@ export default {
       addFormOptions: [
           
         {
-          prop: "menuName",
+          prop: "productType",
           element: "el-select",
           placeholder: "请选择",
           label: "活动名称",
@@ -265,25 +267,25 @@ export default {
           ]
         },
         {
-          prop: "post",
+          prop: "productName",
           element: "el-input",
           placeholder: "请输入",
           label: "项目名称"
         },
         {
-          prop: "roleName",
-          element: "el-select",
+          prop: "subjectName",
+          element: "el-input",
           placeholder: "请输入",
           label: "科目名称"
         },
         {
-          prop: "roleName",
-          element: "el-select",
+          prop: "courseName",
+          element: "el-input",
           placeholder: "请输入",
           label: "课程名称"
         },
         {
-          prop: "roleName",
+          prop: "subjectUnit",
           element: "el-select",
           placeholder: "请选择",
           label: "科目单元",
@@ -291,7 +293,7 @@ export default {
           ]
         },
         {
-          prop: "menuName3",
+          prop: "productInfo",
           element: "el-input",
           placeholder: "请使用逗号隔开",
           label: "项目科目和课程ID",
@@ -305,7 +307,7 @@ export default {
           label: "科目起止时间"
         },
          {
-           prop: "roleName",
+           prop: "focusStatus",
           element: "el-select",
           placeholder: "请选择",
           label: "是否关注公众号",
@@ -318,32 +320,34 @@ export default {
               label:"不关注",
               value: "Notattention"
             }
-          ]
+          ],
+          initValue: "Notattention"
         },
          {
-           prop: "roleName",
+           prop: "shareStatus",
           element: "el-select",
           placeholder: "请选择",
           label: "是否强制分享",
           options: [
              {
-              label:"关注",
-              value: "Alreadyattention"
+              label:"分享",
+              value: "yes"
             },
             {
-              label:"不关注",
-              value: "Notattention"
+              label:"不分享",
+              value: "no"
             }
-          ]
+          ],
+          initValue: "no"
         },
         {
-          prop: "menuName3",
+          prop: "totalExercisesNum",
           element: "el-input",
           placeholder: "请输入",
           label: "总题数"
         },
          {
-          prop: "menuName3",
+          prop: "answerImgUrl",
           element: "el-input",
           placeholder: '请按此格式录入["http://qnyimg.kaoyaoshi.net/zhongyaomiyakaodian198186.png","http://qnyimg.kaoyaoshi.net/zhongyaomiyakaodian198187.png"]',
           label: "答案图片",
@@ -351,13 +355,13 @@ export default {
           rows: 2
         },
         {
-          prop: "menuName3",
+          prop: "correctExercisesNum",
           element: "el-input",
           placeholder: "请输入",
           label: "压中的题数"
         },
          {
-          prop: "menuName3",
+          prop: "correctImgUrl",
           element: "el-input",
           placeholder: '请按此格式录入["http://qnyimg.kaoyaoshi.net/zhongyaomiyakaodian198186.png","http://qnyimg.kaoyaoshi.net/zhongyaomiyakaodian198187.png"]',
           label: "压中的题目答案图片",
@@ -365,7 +369,7 @@ export default {
           rows: 2
         },
          {
-          prop: "menuName3",
+          prop: "videoUrl",
           element: "el-input",
           placeholder: "请输入",
           label: "视频答案",
@@ -373,22 +377,24 @@ export default {
           rows: 2
         },
          {
-          prop: "menuName3",
+          prop: "orderValue",
           element: "el-input",
           placeholder: "请输入",
           label: "排序"
         },
       ],
       addRules:{
-        updateReason: [
-          { required: true, message: "请输入修改事由", trigger: "blur" },
+        productType: [
+          { required: true, message: "请选择", trigger: "blur" },
         ]
       },
       addStatus: true,
       uploadVisible: false,
       detailVisible: false,
       previewVisible: false,
-      answerVisible: false
+      answerVisible: false,
+      productList: [],
+      subjectUnitList:[]
     }
   },
   components:{
@@ -396,6 +402,9 @@ export default {
     fullDialog,
     subjectDetail,
     checkAnswer
+  },
+  mounted(){
+    this.getTableData();
   },
    methods: {
      onSearch(val){
@@ -405,9 +414,42 @@ export default {
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
      },
-     getTableData(){
+     getTableData(params = {}) {
+      this.$fetch("secretexamsubject_list", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.varList.map((item) => {
+          item.picUrl = this.$common.setThumbnail(item.picUrl);
+          item.startTime = this.$common._formatDates(item.startTime);
+          item.endTime = this.$common._formatDates(item.endTime);
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          let obj1 = res.data.productList.find(ele => (ele.key == item.productType));
+          item.productType1 = obj1&&obj1.value;
+          let obj2 = res.data.subjectUnitList.find(ele => (ele.key == item.subjectUnit));
+          item.subjectUnit1 = obj2&&obj2.value;
+          return item;
+        });
+        this.subjectUnitList = res.data.subjectUnitList.map(item => ({
+          label: item.value,
+          value: item.key
+        }));
+        this.productList = res.data.productList.map(item => ({
+          label: item.value,
+          value: item.key
+        }));
+        this.pageConfig.totalCount = res.data.page.totalResult;
 
-     },
+        // 给添加弹窗的下拉赋值
+        this.addFormOptions[0].options = this.productList;
+        this.addFormOptions[4].options = this.subjectUnitList;
+        // 给搜索栏下拉赋值
+        this.formOptions[0].options = this.productList;
+
+      });
+    },
      pageChange(val) {
       console.log(val,'pagechange')
       this.pageConfig.currentPage = val.page;
@@ -416,11 +458,22 @@ export default {
     },
     handleAdd(){
       this.addVisible = true;
+      this.addStatus = true;
     },
     submitAddForm(formName){
       this.$refs[formName].validate((valid, formData) => {
         if(valid){
           console.log(formData, "提交");
+          this.$fetch("secretexamsubject_add",{
+            ...formData,
+            time:"",
+            startTime: formData.time?formData.time[0]:"",
+            endTime: formData.time?formData.time[1]:"",
+          }).then(res =>{ 
+            this.$message.success("操作成功")
+            this.addVisible = false;
+            this.getTableData();
+          })
         }
           
       });
@@ -428,6 +481,11 @@ export default {
     handleEdit(data){
       this.addStatus = false;
       this.addVisible = true;
+      this.$fetch("secretexamsubject_goEdit",{
+        id: data.id
+      }).then(res => {
+
+      })
     },
     handleDelete(row) {
       let info = '项';
@@ -437,9 +495,8 @@ export default {
         type: "warning",
       })
         .then(async () => {
-          const res = await this.$fetch("projectType_delete", {
-            typeId: row.typeId,
-            loginUserId,
+          const res = await this.$fetch("secretexamsubject_delete", {
+            id: row.id
           }).then((res) => {
             if (res) {
               this.$message({

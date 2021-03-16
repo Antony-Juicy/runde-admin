@@ -102,6 +102,9 @@ export default {
         ...params,
         studentPhone: this.phone
       }).then((res) => {
+        if(res.msg == "数据为空！"){
+          return;
+        }
         let data = JSON.parse(res.msg);
         this.tableData = data.data.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);

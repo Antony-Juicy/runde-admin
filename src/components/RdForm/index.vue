@@ -113,6 +113,20 @@ export default {
       });
     },
 
+    onReset() {
+      // this.$refs.boxId.resetFields();
+      const obj = {};
+      this.formOptions.forEach((v) => {
+          // if (v.initValue !== undefined) {
+          //   obj[v.prop] = v.initValue;
+          // }else {
+          obj[v.prop] = undefined;
+        // }
+      });
+      this.formData = obj;
+      this.$emit('onReset')
+    },
+
     // 重置表单
     resetFields(){
       this.$refs.formRef.resetFields();

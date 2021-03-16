@@ -208,7 +208,6 @@ export default {
     };
   },
   created() {
-    console.log(this.rowKey,'this.rowKey----')
     this.tableKey.forEach((item) => {
       item.show = true;
     });

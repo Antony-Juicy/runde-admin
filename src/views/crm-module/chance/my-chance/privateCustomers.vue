@@ -50,7 +50,7 @@
       </template>
     </rd-table>
     <!-- 回访抽屉 -->
-    <template v-if="drawerVisible">
+    <!-- <template v-if="drawerVisible"> -->
       <rd-drawer
         :dialogVisible="drawerVisible"
         :size="drawerSize"
@@ -59,7 +59,7 @@
         :title="drawerTitle"
         @handleClose="drawerVisible = false"
       ></rd-drawer>
-    </template>
+    <!-- </template> -->
 
     <!-- 成单弹窗 -->
     <rd-dialog
