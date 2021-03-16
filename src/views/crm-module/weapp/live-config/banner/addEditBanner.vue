@@ -1,13 +1,18 @@
 <template>
 	<div class='addEditIcon' id="addEditIcon">
 		<RdForm :formOptions="addFormOptions" :rules="addRules" :formLabelWidth="'150px'" ref="dataForm">
-			<template slot="iconImageUrl">
-				<Upload-oss v-if="uploadOssElem" :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }" :src.sync="iconImageUrl" :initGetConfig="initGetConfig" @srcChangeFun="
+			<template slot="bannerImageUrl">
+				<Upload-oss v-if="uploadOssElem" :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }" :src.sync="bannerImageUrl" :initGetConfig="initGetConfig" @srcChangeFun="
                     (data) => {
-                    iconImageUrl = data;
+                    bannerImageUrl = data;
                     reloadElem('uploadOssElem');
                     }
                 " />
+			</template>
+			<template slot="bannerType">
+				<el-select v-model="bannerType">
+					<el-option v-for="(item,index) in bannerTypeOptions" :key="index" :label="item.label" :value="item.value"></el-option>
+				</el-select>
 			</template>
 		</RdForm>
 		<div class="btn-wrapper">
@@ -27,51 +32,28 @@ export default {
 		return {
 			addFormOptions: [
 				{
-					prop: "iconTitle",
-					element: "el-input",
-					placeholder: "请输入",
-					label: "图标标题",
-				},
-				{
-					prop: "iconLink",
-					element: "el-input",
-					placeholder: "请输入",
-					label: "图标连接",
-				},
-				{
-					prop: "linkType",
-					element: "el-select",
-					placeholder: "请选择",
-					label: "跳转类型",
-					options: [
-						{
-							label: "不跳转",
-							value: "None"
-						},
-						{
-							label: "网页",
-							value: "H5"
-						},
-						{
-							label: "小程序页面",
-							value: "InnerXcx"
-						},
-						// {
-						// 	label: "小程序外",
-						// 	value: "OutSideXcx"
-						// }
-					],
-					initValue: "None",
-				},
-				{
-					prop: "iconImageUrl",
+					prop: "bannerImageUrl",
 					element: "el-input",
 					label: "图标图片",
 					operate: true,
 					initValue: 0,
 				},
 				{
-					prop: "iconStatus",
+					prop: "bannerType",
+					element: "el-input",
+					placeholder: "请选择",
+					label: "跳转类型",
+					operate: true,
+					initValue: 0,
+				},
+				{
+					prop: "bannerTarget",
+					element: "el-input",
+					placeholder: "请输入",
+					label: "跳转目标",
+				},
+				{
+					prop: "bannerStatus",
 					element: "el-radio",
 					placeholder: "请选择",
 					label: "显示状态",
@@ -91,7 +73,6 @@ export default {
 					],
 					initValue: "Open",
 				},
-
 				{
 					prop: "orderValue",
 					element: "el-input-number",
@@ -101,22 +82,58 @@ export default {
 			],
 			addRules: {
 				typeId: [{ required: true, message: "请选择项目名类型", trigger: "blur" },],
-				iconImageUrl: [{ required: true, message: "请上传图标图片", trigger: "blur" },],
-				iconTitle: [{ required: true, message: "请输入图标标题", trigger: "blur" },],
-				linkType: [{ required: true, message: "请输入图标链接", trigger: "blur" },],
-				iconLink: [{ required: true, message: "请输入图标链接", trigger: "blur" },],
-				iconStatus: [{ required: true, message: "请选择图标状态", trigger: "blur" },],
+				bannerImageUrl: [{ required: true, message: "请上传图标图片", trigger: "blur" },],
+				bannerType: [{ required: true, message: "请选择跳转类型", trigger: "blur" },],
+				bannerTarget: [{ required: true, message: "请输入跳转目标", trigger: "blur" },],
+				bannerStatus: [{ required: true, message: "请选择图标状态", trigger: "blur" },],
 				orderValue: [{ required: true, message: "请输入排序值", trigger: "blur" },],
 			},
 			uploadOssElem: true,
 			initGetConfig: true,
-			linkId: "",
-			iconImageUrl: "",
+			bannerId: "",
+			bannerImageUrl: "",
 			btnLoading: false,
+			bannerType: "",
+			bannerTypeOptions: [
+				{
+					label: "不跳转",
+					value: "None"
+				},
+				{
+					label: "网页",
+					value: "H5"
+				},
+				{
+					label: "小程序页面",
+					value: "InnerXcx"
+				},
+				// {
+				// 	label: "小程序外",
+				// 	value: "OutSideXcx"
+				// }
+			],
 			mode: "add",// add 新增 edit 修改
 		}
 	},
 	components: { RdForm, UploadOss },
+	watch: {
+		bannerType: function (n, o) {
+			// 如果选择不跳转，就不要用户输入跳转目标
+			if (n == 'None') {
+				this.addFormOptions.splice(3, 1)
+			} else {
+				if (this.addFormOptions[3].label != '跳转目标') {
+					this.addFormOptions.splice(3, 0, {
+						prop: "bannerTarget",
+						element: "el-input",
+						placeholder: "请输入",
+						label: "跳转目标",
+					})
+				}
+
+			}
+		}
+	},
 	methods: {
 		// 上传组件
 		reloadElem(dataElem) {
@@ -133,20 +150,28 @@ export default {
 		handleAdd() {
 			this.$refs.dataForm.validate((val, data) => {
 				if (val) {
-					if (this.iconImageUrl == "") {
+					if (this.bannerImageUrl == "") {
 						this.$message.error("请上传封面图");
 						return;
 					} else {
-						data.iconImageUrl = this.iconImageUrl;
+						data.bannerImageUrl = this.bannerImageUrl;
 					}
+
+					if (this.bannerType == "") {
+						this.$message.error("请选择跳转类型");
+						return;
+					} else {
+						data.bannerType = this.bannerType;
+					}
+
 
 					// 提取最后一层的类型id
 					if (data.typeId.length >= 0) {
 						data.typeId = data.typeId.pop()
 					}
-					
+
 					this.btnLoading = true;
-					this.$fetch("config_add_icon", {
+					this.$fetch("config_add_banner", {
 						...data,
 						loginUserId: this.$common.getUserId(),
 					}).then((res) => {
@@ -165,12 +190,20 @@ export default {
 		},
 		handleSave() {
 			this.$refs.dataForm.validate((val, data) => {
+				console.log(data)
 				if (val) {
-					if (this.iconImageUrl == "") {
+					if (this.bannerImageUrl == "") {
 						this.$message.error("请上传封面图");
 						return;
 					} else {
-						data.iconImageUrl = this.iconImageUrl;
+						data.bannerImageUrl = this.bannerImageUrl;
+					}
+
+					if (this.bannerType == "") {
+						this.$message.error("请选择跳转类型");
+						return;
+					} else {
+						data.bannerType = this.bannerType;
 					}
 
 					// 提取最后一层的类型id
@@ -178,9 +211,9 @@ export default {
 						data.typeId = data.typeId.pop()
 					}
 
-					data.linkId = this.linkId;
+					data.bannerId = this.bannerId;
 					this.btnLoading = true;
-					this.$fetch("config_update_icon", {
+					this.$fetch("config_update_banner", {
 						...data,
 						loginUserId: this.$common.getUserId(),
 					}).then((res) => {
@@ -201,27 +234,29 @@ export default {
 			this.$refs[formName].resetFields();
 			this.$emit("close");
 		},
-		initFormData(linkId) {
+		initFormData(bannerId) {
 			this.mode = 'save';
-			this.linkId = linkId;
+			this.bannerId = bannerId;
 
 		},
-		getIconInfo() {
+		getBannerInfo() {
 			if (this.mode == 'save') {
-				this.$fetch("config_icon_getInfo", {
-					linkId: this.linkId,
+				this.$fetch("config_banner_getInfo", {
+					bannerId: this.bannerId,
 					loginUserId: this.$common.getUserId(),
 				}).then((res) => {
 					this.addFormOptions.forEach((item) => {
 						item.initValue = res.data[item.prop];
-						if (item.prop == "iconImageUrl") {
-							this.iconImageUrl = res.data.iconImageUrl;
+						if (item.prop == "bannerImageUrl") {
+							this.bannerImageUrl = res.data.bannerImageUrl;
+						}
+						if (item.prop == 'bannerType') {
+							this.bannerType = res.data.bannerType;
 						}
 					})
 					this.$refs.dataForm.addInitValue();
 				})
 			}
-
 		}
 	},
 
@@ -239,7 +274,7 @@ export default {
 				options: this.$common.getTypeTree(res.data),
 			});
 		});
-		this.getIconInfo();
+		this.getBannerInfo()
 	},
 }
 </script>
@@ -254,6 +289,9 @@ export default {
 		.el-cascader--small,
 		.el-input-number--small {
 			width: 100%;
+		}
+		.el-input__inner {
+			height: 32px;
 		}
 	}
 	.btn-wrapper {

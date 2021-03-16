@@ -4,13 +4,13 @@
 		<search-form :formOptions="formOptions" :showNum="3" @onSearch="onSearch"></search-form>
 		<div class="w-container">
 			<div class="btn-wrapper">
-				<el-button type="primary" size="small" @click="handleAdd">创建图标</el-button>
+				<el-button type="primary" size="small" @click="handleAdd">创建轮播图</el-button>
 			</div>
 			<!-- 表格主体 -->
 			<rd-table :tableData="tableData" :tableKey="tableKey" :pageConfig.sync="pageConfig" fixedTwoRow @pageChange="pageChange">
 
-				<template slot="iconImageUrl" slot-scope="scope">
-					<el-image style="width: 100px; height: 100px" :src="scope.row.iconImageUrl" fit="contain"></el-image>
+				<template slot="bannerImageUrl" slot-scope="scope">
+					<el-image style="width: 100px; height: 100px" :src="scope.row.bannerImageUrl" fit="contain"></el-image>
 				</template>
 				<template slot="edit" slot-scope="scope">
 					<el-button @click="handleEdit(scope.row)" type="text" size="small">查阅/编辑</el-button>
@@ -18,7 +18,7 @@
 				</template>
 			</rd-table>
 			<fullDialog :title="`${titleAddOrEdit}`" v-model="addEditVisible" @change="addEditVisible = false">
-				<addEditIcon ref="addEditIcon" v-if="addEditVisible" @close="addEditVisible = false" @refresh="refresh"></addEditIcon>
+				<addEditBanner ref="addEditBanner" v-if="addEditVisible" @close="addEditVisible = false" @refresh="refresh"></addEditBanner>
 			</fullDialog>
 		</div>
 
@@ -28,20 +28,15 @@
 
 <script>
 import fullDialog from "@/components/FullDialog";
-import addEditIcon from './addEditIcon'
+import addEditBanner from './addEditBanner'
 export default {
 	data() {
 		return {
 			formOptions: [
 				{
-					prop: "iconTitle",
-					element: "el-input",
-					placeholder: "请输入图标名",
-				},
-				{
-					prop: "iconStatus",
+					prop: "bannerStatus",
 					element: "el-select",
-					placeholder: "图标状态",
+					placeholder: "轮播图状态",
 					options: [
 						{
 							label: "上架",
@@ -57,6 +52,29 @@ export default {
 						}
 					]
 				},
+				{
+					prop: "bannerType",
+					element: "el-select",
+					placeholder: "跳转类型",
+					options: [
+						{
+							label: "不跳转",
+							value: "None"
+						},
+						{
+							label: "网页",
+							value: "H5"
+						},
+						{
+							label: "小程序页面",
+							value: "InnerXcx"
+						},
+						// {
+						// 	label: "小程序外",
+						// 	value: "OutSideXcx"
+						// }
+					]
+				},
 
 			],
 			tableData: [
@@ -65,34 +83,31 @@ export default {
 			tableKey: [
 				{
 					name: "ID主键",
-					value: "linkId",
+					value: "bannerId",
 					width: 80
 				},
 				{
-					name: "图标标题",
-					value: "iconTitle",
+					name: "跳转类型",
+					value: "bannerType",
+					width:80,
+				},
+				{
+					name: "跳转目标",
+					value: "bannerTarget",
 				},
 				{
 					name: "项目分类",
 					value: "typeName",
 				},
 				{
-					name: "图标图片",
-					value: "iconImageUrl",
+					name: "轮播图片",
+					value: "bannerImageUrl",
 					operate: true,
 					width: 120
 				},
 				{
-					name: "跳转类型",
-					value: "linkType",
-				},
-				{
-					name: "跳转链接",
-					value: "iconLink",
-				},
-				{
 					name: "状态",
-					value: "iconStatus",
+					value: "bannerStatus",
 				},
 				{
 					name: "排序值",
@@ -110,22 +125,19 @@ export default {
 				pageNum: 1,
 				pageSize: 10,
 			},
-			titleAddOrEdit: "创建讲师",
+			titleAddOrEdit: "创建轮播图",
 			searchForm: {}, //搜索栏信息
 			addEditVisible: false,
 		}
 	},
-	components: { fullDialog, addEditIcon },
+	components: { fullDialog, addEditBanner },
 	methods: {
-		onSearch(data) {
-			this.searchForm = { ...data };
-			this.pageConfig.pageNum = 1;
-			this.getTableData();
-		},
-		pageChange(val) {
-			this.pageConfig.pageNum = val.page;
-			this.pageConfig.pageSize = val.limit;
-			this.getTableData();
+		handleAdd() {
+			this.titleAddOrEdit = "创建轮播图"
+			this.addEditVisible = true;
+			this.$nextTick(() => {
+				this.$refs.addEditBanner.initGetConfig = true;
+			});
 		},
 		getTableData(params = {}) {
 			return new Promise((resolve, reject) => {
@@ -138,7 +150,7 @@ export default {
 					searchForm.typeId = searchForm.typeId.pop()
 				}
 				this.$fetch(
-					"config_get_icons",
+					"config_get_banners",
 					{
 						loginUserId: this.$common.getUserId(),
 						...this.pageConfig,
@@ -147,12 +159,11 @@ export default {
 					}
 				).then((res) => {
 					this.tableData = res.data.records.map((item) => {
-						item.iconStatus = this.iconStatus2Zh(item.iconStatus)
-						if(item.linkType == 'None'){
-							item.iconLink = '/'
+						item.bannerStatus = this.bannerStatus2Zh(item.bannerStatus)
+						if(item.bannerType == 'None'){
+							item.bannerTarget = "/"
 						}
-						item.linkType = this.linkType2Zh(item.linkType)
-						
+						item.bannerType = this.bannerType2Zh(item.bannerType)
 						return item;
 					});
 					this.pageConfig.totalCount = res.data.totalCount;
@@ -167,24 +178,28 @@ export default {
 				});
 			})
 		},
+		onSearch(data) {
+			this.searchForm = { ...data };
+			this.pageConfig.pageNum = 1;
+			this.getTableData();
+		},
+		pageChange(val) {
+			this.pageConfig.pageNum = val.page;
+			this.pageConfig.pageSize = val.limit;
+			this.getTableData();
+		},
+
 		refresh(val) {
 			this.getTableData({
 				pageNum: val || this.pageConfig.pageNum
 			});
 		},
-		handleAdd() {
-			this.titleAddOrEdit = "创建图标"
-			this.addEditVisible = true;
-			this.$nextTick(() => {
-				this.$refs.addEditIcon.initGetConfig = true;
-			});
-		},
 		handleEdit(data) {
-			this.titleAddOrEdit = "编辑图标"
+			this.titleAddOrEdit = "编辑轮播图"
 			this.addEditVisible = true;
 			this.$nextTick(() => {
-				this.$refs.addEditIcon.initGetConfig = true;
-				this.$refs.addEditIcon.initFormData(data.linkId);
+				this.$refs.addEditBanner.initGetConfig = true;
+				this.$refs.addEditBanner.initFormData(data.bannerId);
 			});
 		},
 		handleDelete(data) {
@@ -194,8 +209,8 @@ export default {
 				cancelButtonText: "取消",
 				type: "warning",
 			}).then(async () => {
-				await this.$fetch("config_delete_icon", {
-					linkId: data.linkId,
+				await this.$fetch("config_delete_banner", {
+					bannerId: data.bannerId,
 					loginUserId: this.$common.getUserId(),
 				}).then((res) => {
 					if (res) {
@@ -210,23 +225,25 @@ export default {
 				});
 			})
 		},
-		iconStatus2Zh(status) {
+		bannerStatus2Zh(status) {
 			switch (status) {
 				case 'Open': return '上架';
 				case "Close": return '下架';
 				case "Hidden": return '隐藏';
 			}
 		},
-		linkType2Zh(status) {
-			switch (status) {
-				case 'None': return '不跳转';
-				case "H5": return '网页';
-				case "InnerXcx": return '小程序内';
-				case "OutSideXcx": return '小程序外';
+		bannerType2Zh(type) {
+			switch (type) {
+				case 'None': return '无目标';
+				case 'H5': return '网页';
+				case 'Live': return '站内直播';
+				case 'Book': return '站内图书';
+				case 'Onlinecourse': return '站内网课';
 			}
-		},
+		}
+
 	},
-	created() {
+	async created() {
 		// 按分类搜索
 		this.$fetch(
 			"projectType_select",
@@ -239,7 +256,7 @@ export default {
 				options: this.$common.getTypeTree(res.data),
 			})
 		});
-		this.getTableData()
+		await this.getTableData()
 	},
 }
 </script>

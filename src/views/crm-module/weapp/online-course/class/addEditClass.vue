@@ -230,12 +230,11 @@ export default {
 						data.teacherArray = JSON.stringify(this.teacherArray.map(v => JSON.parse(v)));
 					}
 					// 提取最后一层的类型id
-					let mark_typeId = JSON.parse(JSON.stringify(data.typeId))
-					if (data.typeId != 0) {
+					if (data.typeId.length >= 0) {
 						data.typeId = data.typeId.pop()
-					} else {
-						data.typeId == 0
 					}
+
+					let mark_typeId = JSON.parse(JSON.stringify(data.typeId))
 
 					data.classType = this.classType;
 					this.$fetch("online_course_add_class", {

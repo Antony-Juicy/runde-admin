@@ -182,12 +182,17 @@ export default {
 					lock: true,
 					target: ".el-table",
 				});
+				// 深拷贝
+				let searchForm = JSON.parse(JSON.stringify(this.searchForm))
+				if (searchForm.typeId && searchForm.typeId.constructor == Array) {
+					searchForm.typeId = searchForm.typeId.pop()
+				}
 				this.$fetch(
 					"online_course_get_courses",
 					{
 						loginUserId: this.$common.getUserId(),
 						...this.pageConfig,
-						...this.searchForm,
+						...searchForm,
 						...params,
 						courseClassId: this.courseClass.courseClassId
 					}
@@ -295,8 +300,8 @@ export default {
 	},
 
 	async mounted() {
-        scrollTo(0, 800);
-        // 获取项目三级分类
+		scrollTo(0, 800);
+		// 获取项目三级分类
 		let projectType_select_res = await this.$fetch(
 			"projectType_select",
 		);
@@ -308,14 +313,14 @@ export default {
 			options: this.$common.getTypeTree(projectType_select_res.data),
 		}
 		if (this.mode == 'fromClass') {
-			
+
 			this.formOptions[0].initValue = this.courseClass.courseClassName
 			this.formOptions[0].disabled = true
 			typeId_select.initValue = this.courseClass.typeId
 			typeId_select.disabled = true
 		}
 		this.formOptions.push(typeId_select);
-        this.$refs.searchForm.addInitValue()
+		this.$refs.searchForm.addInitValue()
 		this.getTableData();
 	},
 

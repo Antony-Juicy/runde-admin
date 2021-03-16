@@ -175,12 +175,17 @@ export default {
 					lock: true,
 					target: ".el-table",
 				});
+                // 深拷贝
+				let searchForm = JSON.parse(JSON.stringify(this.searchForm))
+				if (searchForm.typeId && searchForm.typeId.constructor == Array) {
+					searchForm.typeId = searchForm.typeId.pop()
+				}
 				this.$fetch(
 					"book_get_subjects",
 					{
 						loginUserId: this.$common.getUserId(),
 						...this.pageConfig,
-						...this.searchForm,
+						...searchForm,
 						...params,
 						bookId: this.book.bookId
 					}

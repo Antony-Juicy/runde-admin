@@ -268,13 +268,13 @@ export default {
 						data.bookTeacherArray = JSON.stringify(this.bookTeacherArray.map(v => JSON.parse(v)));
 					}
 
-					data.bookType = this.bookType
+					// 提取最后一层的类型id
+					if (data.typeId.length >= 0) {
+						data.typeId = data.typeId.pop()
+					}
 					// 标签转化成 , 隔开的字符串
 					data.bookLabel = data.bookLabel.join(',')
-					// // 由于某种问题，需要多做一次格式化成对象
-					// data.bookTeacherArray = data.bookTeacherArray.map((v) =>
-					// 	JSON.parse(v)
-					// )
+
 					// 后台保存的数据是用字符串，所以要格式化数组成字符串
 					data.bookTeacherArray = JSON.stringify(data.bookTeacherArray)
 					this.$fetch('book_add_book', {
@@ -396,7 +396,12 @@ export default {
 					}
 
 					data.bookId = this.bookId
-					data.bookType = this.bookType
+					
+					// 提取最后一层的类型id
+					if (data.typeId.length >= 0) {
+						data.typeId = data.typeId.pop()
+					}
+
 					// 标签转化成 , 隔开的字符串
 					data.bookLabel = data.bookLabel.join(',')
 

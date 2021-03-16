@@ -29,6 +29,12 @@ export default {
   config_icon_getInfo: { url: '/live/console/live/icon/link/get', method: 'post' },
   config_delete_icon: { url: '/live/console/live/icon/link/delete', method: 'post' },
 
+  // 轮播图
+  config_get_banners: { url: '/live/console/banner/page_list', method: 'post' },
+  config_add_banner: { url: '/live/console/banner/add', method: 'post' },
+  config_update_banner: { url: '/live/console/banner/update', method: 'post' },
+  config_delete_banner: { url: '/live/console/banner/delete', method: 'post' },
+  config_banner_getInfo: { url: '/live/console/banner/get', method: 'post' },
 
 
   projectType_select: { url: '/live/console/type/get_select_types', method: 'post' },
