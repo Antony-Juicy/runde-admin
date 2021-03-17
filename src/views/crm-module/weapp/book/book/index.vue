@@ -90,7 +90,6 @@ export default {
 							value: "Hidden"
 						},
 					],
-					initValue:"Open"
 				},
 			],
 			tableData: [],
@@ -149,7 +148,7 @@ export default {
 				pageNum: 1,
 				pageSize: 10,
 			},
-			searchForm: {bookStatus:"Open"}, //搜索栏信息
+			searchForm: {}, //搜索栏信息
 			titleAddOrEdit: "创建图书",
 			subjectVisiable: false,
 			book: {}

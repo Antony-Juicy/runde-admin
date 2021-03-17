@@ -56,7 +56,6 @@ export default {
 							value: "Hidden"
 						}
 					],
-					initValue:"Open"
 				},
 
 			],
@@ -112,7 +111,7 @@ export default {
 				pageSize: 10,
 			},
 			titleAddOrEdit: "创建讲师",
-			searchForm: {iconStatus:'Open'}, //搜索栏信息
+			searchForm: {}, //搜索栏信息
 			addEditVisible: false,
 		}
 	},

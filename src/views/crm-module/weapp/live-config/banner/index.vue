@@ -51,7 +51,6 @@ export default {
 							value: "Hidden"
 						}
 					],
-					initValue:"Open"
 				},
 				{
 					prop: "bannerType",
@@ -127,7 +126,7 @@ export default {
 				pageSize: 10,
 			},
 			titleAddOrEdit: "创建轮播图",
-			searchForm: {bannerStatus:"Open"}, //搜索栏信息
+			searchForm: {}, //搜索栏信息
 			addEditVisible: false,
 		}
 	},
