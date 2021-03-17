@@ -75,14 +75,14 @@
       </rd-dialog>
 
       <!-- 上传 -->
-      <rd-dialog
+      <!-- <rd-dialog
         :title="'上传题目'"
         :dialogVisible="uploadVisible"
         @handleClose="uploadVisible = false"
         @submitForm="submitAddForm('dataForm4')"
       >
         <el-button type="primary">点击上传</el-button>
-      </rd-dialog>
+      </rd-dialog> -->
 
       <!-- 查看题目详情 -->
       <fullDialog
@@ -107,7 +107,18 @@
         @handleClose="previewVisible = false"
         @submitForm="submitAddForm('dataForm4')"
       >
-        预览答案图片
+        <div>
+           <el-divider content-position="left">题目答案</el-divider>
+           <el-image
+            style="width: 100%"
+            :src="previewInfo.varList"
+            ></el-image>
+           <el-divider content-position="left">压中的题目答案</el-divider>
+           <el-image
+            style="width: 100%"
+            :src="previewInfo.correctImgList"
+            ></el-image>
+        </div>
       </rd-dialog>
 
       <!-- 考后对答案 -->
@@ -124,6 +135,13 @@
           v-if="answerVisible"
         />
       </fullDialog>
+
+      <!-- 上传文件 -->
+      <uploadFile 
+        :importVisible.sync="uploadVisible" 
+        :importId="importId"
+        url="secretexamsubject_importIssueExcel"  
+        @refresh="getTableData"/>
   </div>
 </template>
 
@@ -131,11 +149,15 @@
 import RdForm from "@/components/RdForm";
 import fullDialog from "@/components/FullDialog";
 import subjectDetail from './subjectDetail';
+import uploadFile from '@/components/Activity/uploadFile';
 import checkAnswer from './checkAnswer';
 export default {
   name:"secrect-point",
   data(){
     return {
+      previewInfo:{},
+      importVisible: false,
+      importId:"",
       formOptions: [
         {
           prop: "productType",
@@ -404,7 +426,8 @@ export default {
     RdForm,
     fullDialog,
     subjectDetail,
-    checkAnswer
+    checkAnswer,
+    uploadFile
   },
   mounted(){
     this.getTableData();
@@ -546,12 +569,18 @@ export default {
     },
     uploadSubject(data){
       this.uploadVisible = true;
+      this.importId = data.id;
     },
     handleDetail(data){
       this.detailVisible = true;
     },
     handlePreview(data){
       this.previewVisible = true;
+      this.$fetch("secretexamsubject_viewExercises",{
+        id: data.id
+      }).then(res => {
+        this.previewInfo = res.data;
+      })
     },
     handleAnswer(data){
       this.answerVisible = true;

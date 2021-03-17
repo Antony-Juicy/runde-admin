@@ -26,8 +26,8 @@
         :title="addStatus?'添加省份':'编辑省份'"
         :dialogVisible="addVisible"
         @handleClose="addVisible = false"
-        @submitForm="submitAddForm('dataForm')">
-        <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm"></RdForm>
+        @submitForm="submitAddForm('dataForm3')">
+        <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3"></RdForm>
       </rd-dialog>
     </div>
     
@@ -47,19 +47,30 @@ export default {
       tabIndex: "0",
       formOptions: [
         {
-          prop: "menuName",
+          prop: "productName",
           element: "el-select",
           placeholder: "请选择项目",
+          options:[]
         },
         {
-          prop: "menuName",
+          prop: "provinceName",
           element: "el-input",
           placeholder: "请输入省份名称",
         },
         {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "请选择状态",
+          prop: "status",
+          element: "el-select",
+          placeholder: "请选择开放状态",
+           options:[
+             {
+               label: "开放",
+               value:"Open"
+             },
+             {
+               label: "未开放",
+               value:"Close"
+             }
+           ]
         }
       ],
       searchForm:{},
@@ -77,35 +88,35 @@ export default {
         },
         {
           name: "项目",
-          value: "staffName",
+          value: "productName1",
         },
         {
           name: "省份/学历名称",
-          value: "goodsName",
+          value: "provinceName",
         },
         {
           name: "类型",
-          value: "activityName",
+          value: "provinceType1",
         },
         {
           name: "级别",
-          value: "posterName",
+          value: "level",
         },
         {
           name: "排序",
-          value: "posterPic",
+          value: "orderValue",
         },
         {
           name: "状态",
-          value: "posterCopyFirst",
+          value: "status",
         },
         {
           name: "创建时间",
-          value: "posterCopySecond",
+          value: "createAt",
         },
         {
           name: "更新时间",
-          value: "posterCopyThird",
+          value: "updateAt",
         },
         {
           name: "操作",
@@ -126,78 +137,99 @@ export default {
       addVisible: false,
       addFormOptions: [
         {
-          prop: "menuName",
+          prop: "productName",
           element: "el-select",
           placeholder: "请选择项目",
           label: "项目",
           options: [
-            {
-              label: "2019执业药师",
-              value: 0,
-            },
-            {
-              label: "2020执业医师",
-              value: 1,
-            },
-            {
-              label: "2020执业医师(新)",
-              value: 2,
-            },
           ],
         },
         {
-          prop: "roleName",
+          prop: "level",
           element: "el-select",
           placeholder: "请选择级别",
           label: "级别",
           options: [
             {
               label: "一级",
-              value: 0,
+              value: 1,
             },
             {
               label: "二级",
-              value: 1,
+              value: 2,
             },
           ],
         },
         {
-          prop: "roleName",
+          prop: "provinceType",
           element: "el-select",
           placeholder: "请选择",
           label: "省份/学历",
           options: [
             {
               label: "省份",
-              value: 0,
+              value: "province",
             },
             {
               label: "学历",
-              value: 1,
+              value: "education",
             },
           ],
         },
         {
-          prop: "menuName3",
+          prop: "provinceName",
           element: "el-input",
           placeholder: "请输入省份名称",
           label: "省份/学历名称"
         },
         {
-          prop: "menuName3",
+          prop: "orderValue",
           element: "el-input-number",
           placeholder: "请输入排序",
           label: "排序"
         },
-        {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入备注",
-          label: "备注"
-        }
+         {
+          prop: "status",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "状态",
+          options: [
+            {
+               label: "已开放",
+               value:"Open"
+             },
+             {
+               label: "未开放",
+               value:"Close"
+             }
+          ],
+        },
       ],
-      addRules: {},
+      addRules: {
+        productName: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ],
+        level: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ],
+        provinceType: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ],
+        provinceName: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+        orderValue: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+        status: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ],
+      },
+      editId:""
     }
+  },
+  mounted(){
+    this.getTableData();
   },
   methods: {
     onSearch(val){
@@ -207,8 +239,33 @@ export default {
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
     },
-    getTableData(){
+    getTableData(params = {}) {
+      this.$fetch("cmsexamprovince_listJsp", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.varList.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          let obj1 = res.data.productList.find(ele => ele.key == item.productName);
+          item.productName1 = obj1&&obj1.value;
+          item.provinceType1 = item.provinceType == "province" ? "省份" : "学历";
+          return item;
+        });
 
+        this.productList = res.data.productList.map(item => ({
+          label: item.value,
+          value: item.key
+        }));
+        this.pageConfig.totalCount = res.data.page.totalResult;
+
+        // 给添加弹窗的下拉赋值
+        this.addFormOptions[0].options = this.productList;
+        // 给搜索栏下拉赋值
+        this.formOptions[0].options = this.productList;
+
+      });
     },
     pageChange(val) {
       console.log(val,'pagechange')
@@ -217,12 +274,28 @@ export default {
       this.getTableData();
     },
     handleAdd(){
+      this.addStatus = true;
       this.addVisible = true;
+      this.addFormOptions.forEach(item => {
+        item.initValue = "";
+      })
+      setTimeout(() => {
+        this.$refs.dataForm3.addInitValue();
+      }, 0);
     },
     submitAddForm(formName){
       this.$refs[formName].validate((valid, formData) => {
         if(valid){
           console.log(formData, "提交");
+          this.$fetch(this.addStatus?"cmsexamprovince_save":"cmsexamprovince_editJsp",{
+            ...formData,
+            id: this.addStatus?"":this.editId
+          }).then(res => {
+            this.$message.success("操作成功")
+            this.addVisible = false;
+            this.getTableData();
+          })
+          
         }
           
       });
@@ -230,18 +303,24 @@ export default {
     handleEdit(data){
       this.addStatus = false;
       this.addVisible = true;
+      this.editId = data.id;
+      this.addFormOptions.forEach(item => {
+        item.initValue = data[item.prop];
+      })
+      setTimeout(() => {
+        this.$refs.dataForm3.addInitValue();
+      }, 0);
     },
     handleDelete(row) {
-      let info = '省份';
+      let info = '项';
       this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
-        .then(async () => {
-          const res = await this.$fetch("projectType_delete", {
-            typeId: row.typeId,
-            loginUserId,
+        .then(() => {
+          this.$fetch("cmsexamprovince_deleteJsp", {
+            id: row.id
           }).then((res) => {
             if (res) {
               this.$message({

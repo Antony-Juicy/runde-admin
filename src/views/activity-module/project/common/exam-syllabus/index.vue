@@ -88,13 +88,13 @@ export default {
       searchForm:{},
       emptyText:"暂无数据",
       tableData:[
-         {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-        },
+        //  {
+        //   id: 1,
+        //   name: "飞翔的荷兰人3",
+        //   cutdown: 1608897351706,
+        //   visit: 2,
+        //   phone: "15692026183",
+        // },
       ],
       tableKey: [
         {
@@ -257,6 +257,9 @@ export default {
   components:{
     RdForm
   },
+  mounted(){
+    this.getTableData();
+  },
    methods: {
      onSearch(val){
        this.searchForm = {
@@ -265,9 +268,38 @@ export default {
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
      },
-     getTableData(){
+     getTableData(params = {}) {
+      this.$fetch("secretexamsubject_listExamJsp", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.varList.map((item) => {
+          item.picUrl = this.$common.setThumbnail(item.picUrl);
+          item.startTime = this.$common._formatDates(item.startTime);
+          item.endTime = this.$common._formatDates(item.endTime);
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          let obj1 = res.data.productList.find(ele => (ele.key == item.productType));
+          item.productType1 = obj1&&obj1.value;
+          let obj2 = res.data.subjectUnitList.find(ele => (ele.key == item.subjectUnit));
+          item.subjectUnit1 = obj2&&obj2.value;
+          return item;
+        });
 
-     },
+        this.productList = res.data.productList.map(item => ({
+          label: item.value,
+          value: item.key
+        }));
+        this.pageConfig.totalCount = res.data.page.totalResult;
+
+        // 给添加弹窗的下拉赋值
+        this.addFormOptions[0].options = this.productList;
+        // 给搜索栏下拉赋值
+        this.formOptions[0].options = this.productList;
+
+      });
+    },
      pageChange(val) {
       console.log(val,'pagechange')
       this.pageConfig.currentPage = val.page;
@@ -281,6 +313,17 @@ export default {
       this.$refs[formName].validate((valid, formData) => {
         if(valid){
           console.log(formData, "提交");
+          this.$fetch(this.addStatus?"secretexamsubject_add":"secretexamsubject_editJsp",{
+            ...formData,
+            time:"",
+            startTime: formData.time?formData.time[0]:"",
+            endTime: formData.time?formData.time[1]:"",
+            id: this.addStatus?"": this.editId
+          }).then(res =>{ 
+            this.$message.success("操作成功")
+            this.addVisible = false;
+            this.getTableData();
+          })
         }
           
       });

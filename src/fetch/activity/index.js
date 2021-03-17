@@ -44,4 +44,28 @@ export default {
     secretexamsubject_delete:  {url: '/h5/secretexamsubject/deleteJsp', method: 'post'}, //删除
     secretexamsubject_deleteTk:  {url: '/h5/secretexamsubject/deleteTk', method: 'post'}, //删除题库
     secretexamsubject_importIssueExcel:  {url: '/h5/secretexamsubject/importIssueExcel', method: 'post'}, //导入题目
+    secretexamsubject_viewExercises:  {url: '/h5/secretexamsubject/viewExercises', method: 'get'}, //预览题目图片
+
+    // 考试大纲-作废
+    secretexamsubject_listExamJsp:  {url: '/h5/secretexamsubject/listExamJsp', method: 'get'}, //列表
+
+    // 报考省份
+    cmsexamprovince_listJsp:  {url: '/h5/cmsexamprovince/listJsp', method: 'get'}, //列表
+    cmsexamprovince_save:  {url: '/h5/cmsexamprovince/save', method: 'post'}, //新增
+    cmsexamprovince_editJsp:  {url: '/h5/cmsexamprovince/editJsp', method: 'post'}, //编辑
+    cmsexamprovince_deleteJsp:  {url: '/h5/cmsexamprovince/deleteJsp', method: 'post'}, //删除
+    // 报考信息
+    cmsexamguideinfo_listJsp:  {url: '/h5/cmsexamguideinfo/listJsp', method: 'get'}, //列表
+    cmsexamguideinfo_save:  {url: '/h5/cmsexamguideinfo/save', method: 'post'}, //新增
+    cmsexamguideinfo_editJsp:  {url: '/h5/cmsexamguideinfo/editJsp', method: 'post'}, //编辑
+    cmsexamguideinfo_deleteJsp:  {url: '/h5/cmsexamguideinfo/deleteJsp', method: 'post'}, //删除
+    // 报考专业
+    cmsexamprofession_listJsp:  {url: '/h5/cmsexamprofession/listJsp', method: 'get'}, //列表
+    cmsexamprofession_save:  {url: '/h5/cmsexamprofession/save', method: 'post'}, //新增
+    cmsexamprofession_editJsp:  {url: '/h5/cmsexamprofession/editJsp', method: 'post'}, //编辑
+    cmsexamprofession_deleteJsp:  {url: '/h5/cmsexamprofession/deleteJsp', method: 'post'}, //删除
+    cmsexamprofession_getOneLinkage:  {url: '/h5/cmsexamprofession/getOneLinkage', method: 'post'}, //获取一级分类
+    cmsexamprofession_linkage:  {url: '/h5/cmsexamprofession/linkage', method: 'post'}, //获取二级分类
+    // 审核通知
+    cmsexamchecknotification_listJsp:  {url: '/h5/cmsexamchecknotification/listJsp', method: 'get'}, //列表
 }
