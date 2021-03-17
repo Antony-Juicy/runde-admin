@@ -347,9 +347,9 @@ export default {
             width: 100px;
             height: 100px;
         }
-        .el-input-number--small {
-            width: 100%;
-        }
+        // .el-input-number--small {
+        //     width: 100%;
+        // }
     }
     .btn-wrapper {
         margin-left: 400px;

@@ -198,9 +198,9 @@ export default {
 <style lang='scss' scoped>
 .addEditChapter {
 	/deep/ {
-		.el-input-number--small {
-			width: 100%;
-		}
+		// .el-input-number--small {
+		// 	width: 100%;
+		// }
 	}
 	.btn-wrapper {
 		margin-left: 400px;

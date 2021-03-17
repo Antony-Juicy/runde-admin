@@ -281,11 +281,13 @@ export default {
 <style lang='scss' scoped>
 .addEditCourse {
 	/deep/ {
-		.el-cascader--small,
-		.el-input-number--small {
+		.el-cascader--small {
 			width: 100%;
 		}
 		.el-input--small .el-input__inner {
+			min-height: 32px;
+		}
+		.el-input--suffix .el-input__inner {
 			min-height: 32px;
 		}
 		.el-tag.el-tag--info {

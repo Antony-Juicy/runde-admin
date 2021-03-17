@@ -349,8 +349,7 @@ export default {
 			width: 100px;
 			height: 100px;
 		}
-		.el-cascader--small,
-		.el-input-number--small {
+		.el-cascader--small {
 			width: 100%;
 		}
 		.el-input__inner {
