@@ -108,6 +108,10 @@ service.interceptors.response.use(
           })
         })
       } else {
+        // 如果是账号注销失败 不用提示
+        if(res.msg == "账号注销失败"){
+          return
+        }
         Message.closeAll()
         Message({
           message: res.msg || 'Error',
