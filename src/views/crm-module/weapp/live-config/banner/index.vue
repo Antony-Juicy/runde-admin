@@ -50,7 +50,8 @@ export default {
 							label: "隐藏",
 							value: "Hidden"
 						}
-					]
+					],
+					initValue:"Open"
 				},
 				{
 					prop: "bannerType",
@@ -87,15 +88,6 @@ export default {
 					width: 80
 				},
 				{
-					name: "跳转类型",
-					value: "bannerType",
-					width: 80,
-				},
-				{
-					name: "跳转目标",
-					value: "bannerTarget",
-				},
-				{
 					name: "项目分类",
 					value: "typeName",
 				},
@@ -104,6 +96,15 @@ export default {
 					value: "bannerImageUrl",
 					operate: true,
 					width: 120
+				},
+				{
+					name: "跳转类型",
+					value: "bannerType",
+					width: 80,
+				},
+				{
+					name: "跳转目标",
+					value: "bannerTarget",
 				},
 				{
 					name: "状态",
@@ -126,7 +127,7 @@ export default {
 				pageSize: 10,
 			},
 			titleAddOrEdit: "创建轮播图",
-			searchForm: {}, //搜索栏信息
+			searchForm: {bannerStatus:"Open"}, //搜索栏信息
 			addEditVisible: false,
 		}
 	},
@@ -163,7 +164,8 @@ export default {
 						if (item.bannerType == 'None') {
 							item.bannerTarget = "/"
 						}
-						item.bannerType = this.bannerType2Zh(item.bannerType)
+						Object.assign(item, this.bannerType2Zh(item))
+						// item.bannerType = this.bannerType2Zh(item.bannerType)
 						return item;
 					});
 					this.pageConfig.totalCount = res.data.totalCount;
@@ -232,13 +234,34 @@ export default {
 				case "Hidden": return '隐藏';
 			}
 		},
-		bannerType2Zh(type) {
-			switch (type) {
-				case 'None': return '无目标';
-				case 'H5': return '网页';
-				case 'InnerXcx': return '小程序页面';
-				case 'OutSideXcx': return '小程序外';
+		bannerType2Zh(data) {
+			let type = {
+				bannerType: "",
+				bannerTarget: "",
 			}
+			let xcxPage = {
+				"InnerXcxLive": "/pagesLive/pages/index/index?liveId=",
+				"InnerXcxCourse": "pages/Course/Play/Play?id=",
+				"InnerXcxBook": "/pages/Book/Book?id=",
+			}
+			if (data.bannerType == 'InnerXcx') {
+				for (const key in xcxPage) {
+					if (data.bannerTarget.indexOf(xcxPage[key]) > -1) {
+						data.bannerType = key
+						type.bannerTarget = data.bannerTarget.split('=')[1]
+						break
+					}
+				}
+			}
+			switch (data.bannerType) {
+				case 'None': type.bannerType = '无目标'; type.bannerTarget = '/'; break;
+				case 'H5': type.bannerType = '网页'; type.bannerTarget = data.bannerTarget; break;
+				case 'InnerXcxLive': type.bannerType = '直播'; break;
+				case 'InnerXcxCourse': type.bannerType = '科目'; break;
+				case 'InnerXcxBook': type.bannerType = '图书'; break;
+				case 'OutSideXcx': type.bannerType = '小程序外'; break;
+			}
+			return type
 		}
 
 	},

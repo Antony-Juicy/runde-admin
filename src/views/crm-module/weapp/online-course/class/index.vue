@@ -41,7 +41,7 @@ import addEditClass from './addEditClass'
 import course from '@/views/crm-module/weapp/online-course/course/course'
 import { scrollTo } from "@/utils/scroll-to";
 export default {
-
+    name:"onlineClassIndex",
     data() {
         return {
             formOptions: [

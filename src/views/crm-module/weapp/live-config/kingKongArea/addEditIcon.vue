@@ -45,12 +45,12 @@ export default {
 					operate: true,
 					initValue: 0,
 				},
-				{
-					prop: "iconLink",
-					element: "el-input",
-					placeholder: "请输入",
-					label: "图标连接",
-				},
+				// {
+				// 	prop: "iconLink",
+				// 	element: "el-input",
+				// 	placeholder: "请输入",
+				// 	label: "图标连接",
+				// },
 				{
 					prop: "iconImageUrl",
 					element: "el-input",
@@ -92,7 +92,8 @@ export default {
 				iconImageUrl: [{ required: true, message: "请上传图标图片", trigger: "blur" },],
 				iconTitle: [{ required: true, message: "请输入图标标题", trigger: "blur" },],
 				linkType: [{ required: true, message: "请输入图标链接", trigger: "blur" },],
-				iconLink: [{ required: true, message: "请输入图标链接", trigger: "blur" },],
+				link: [{ required: true, message: "请选择跳转链接", trigger: "blur" },],
+				param: [{ required: true, message: "请输入跳转参数", trigger: "blur" },],
 				iconStatus: [{ required: true, message: "请选择图标状态", trigger: "blur" },],
 				orderValue: [{ required: true, message: "请输入排序值", trigger: "blur" },],
 			},
@@ -112,14 +113,27 @@ export default {
 					value: "H5"
 				},
 				{
-					label: "小程序页面",
-					value: "InnerXcx"
+					label: "直播",
+					value: "InnerXcxLive"
+				},
+				{
+					label: "科目",
+					value: "InnerXcxCourse"
+				},
+				{
+					label: "图书",
+					value: "InnerXcxBook",
 				},
 				// {
 				// 	label: "小程序外",
 				// 	value: "OutSideXcx"
 				// }
 			],
+			xcxPage: {
+				"InnerXcxLive": "/pagesLive/pages/index/index?liveId=",
+				"InnerXcxCourse": "pages/Course/Play/Play?id=",
+				"InnerXcxBook": "/pages/Book/Book?id=",
+			},
 			mode: "add",// add 新增 edit 修改
 		}
 	},
@@ -127,18 +141,25 @@ export default {
 	watch: {
 		linkType: function (n, o) {
 			// 如果选择不跳转，就不要用户输入跳转目标
-			if (n == 'None') {
+			if (['跳转链接', '跳转参数'].includes(this.addFormOptions[3].label)) {
 				this.addFormOptions.splice(3, 1)
-			} else {
-				if (this.addFormOptions[3].label != '图标连接') {
-					this.addFormOptions.splice(3, 0, {
-						prop: "iconLink",
-						element: "el-input",
-						placeholder: "请输入",
-						label: "图标连接",
-					})
-				}
+			}
 
+			if (n == 'H5' && this.addFormOptions[3].label != '跳转链接') {
+				this.addFormOptions.splice(3, 0, {
+					prop: "link",
+					element: "el-input",
+					placeholder: "请输入",
+					label: "跳转链接",
+				})
+			}
+			if (n.indexOf('InnerXcx') > -1 && this.addFormOptions[3].label != '跳转参数') {
+				this.addFormOptions.splice(3, 0, {
+					prop: "param",
+					element: "el-input",
+					placeholder: "请输入",
+					label: "跳转参数",
+				})
 			}
 		}
 	},
@@ -170,6 +191,15 @@ export default {
 						return;
 					} else {
 						data.linkType = this.linkType;
+						if (this.linkType.indexOf('InnerXcx') > -1) {
+							data.iconLink = this.xcxPage[this.linkType] + data.param
+							data.linkType = "InnerXcx"
+							delete data.param
+						}
+						if (this.linkType == 'H5') {
+							data.iconLink = data.link
+							delete data.link
+						}
 					}
 
 
@@ -211,6 +241,15 @@ export default {
 						return;
 					} else {
 						data.linkType = this.linkType;
+						if (this.linkType.indexOf('InnerXcx') > -1) {
+							data.iconLink = this.xcxPage[this.linkType] + data.param
+							data.linkType = "InnerXcx"
+							delete data.param
+						}
+						if (this.linkType == 'H5') {
+							data.iconLink = data.link
+							delete data.link
+						}
 					}
 
 					// 提取最后一层的类型id
@@ -257,10 +296,31 @@ export default {
 						if (item.prop == "iconImageUrl") {
 							this.iconImageUrl = res.data.iconImageUrl;
 						}
-						if (item.prop == "linkType") {
-							this.linkType = res.data.linkType;
-						}
 					})
+					let exLabel = {
+						element: "el-input",
+						placeholder: "请输入",
+					}
+					// 链接类型特殊处理
+					if (res.data.linkType == 'InnerXcx') {
+						for (const key in this.xcxPage) {
+							if (res.data.iconLink.indexOf(this.xcxPage[key]) > -1) {
+								this.linkType = key
+								break
+							}
+						}
+						exLabel.prop = "param";
+						exLabel.label = "跳转参数";
+						exLabel.initValue = res.data.iconLink.split('=')[1]
+						this.addFormOptions.splice(3, 0, exLabel)
+					}
+					if (res.data.linkType == 'H5') {
+						exLabel.prop = "link";
+						exLabel.label = "跳转参数";
+						exLabel.initValue = res.data.iconLink
+						this.addFormOptions.splice(3, 0, exLabel)
+					}
+
 					this.$refs.dataForm.addInitValue();
 				})
 			}

@@ -133,8 +133,8 @@ export default {
 			],
 			addRules: {
 				courseName: [{ required: true, message: "请输入科目名称", trigger: "blur" },],
-				courseKeywords: [{ required: true, message: "请输入课程自编号", trigger: "blur" },],
-				courseCode: [{ required: true, message: "请输入关键字", trigger: "blur" },],
+				courseCode: [{ required: true, message: "请输入课程自编号", trigger: "blur" },],
+				courseKeywords: [{ required: true, message: "请输入关键字", trigger: "blur" },],
 				defaultImageUrl: [{ required: true, message: "请上传封面图", trigger: "blur" },],
 				introducesImageUrl: [{ required: true, message: "请上传介绍图", trigger: "blur" },],
 				teacherArray: [{ required: true, message: "请选择授课讲师", trigger: "blur" }],

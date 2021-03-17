@@ -268,6 +268,7 @@ export default {
 						data.bookTeacherArray = JSON.stringify(this.bookTeacherArray.map(v => JSON.parse(v)));
 					}
 
+					data.bookType = this.bookType
 					// 提取最后一层的类型id
 					if (data.typeId.length >= 0) {
 						data.typeId = data.typeId.pop()
@@ -293,6 +294,97 @@ export default {
 							console.log(err)
 							this.btnLoading = false
 						})
+				}
+			})
+		},
+		handleSave(Imperceptible) {
+			this.$refs.dataForm.validate((val, data) => {
+				if (val) {
+					if (this.bookImageUrl == '') {
+						this.$message.error('请上传封面图')
+						return
+					} else {
+						data.bookImageUrl = this.bookImageUrl
+					}
+					if (this.bookDetailImageUrl == '') {
+						this.$message.error('请上传详情轮播图')
+						return
+					} else {
+						data.bookDetailImageUrl = this.bookDetailImageUrl
+					}
+					if (this.bookDetail == '') {
+						this.$message.error('请上传详情介绍')
+						return
+					} else {
+						data.bookDetail = this.bookDetail
+					}
+					if (this.bookTeacherArray.length == 0) {
+						this.$message.error('请选择授课老师')
+						return
+					}
+					// else if (this.teacherArray.length > 5) {
+					// 	this.$message.error("授课老师不能多于5个");
+					// 	return;
+					// }
+					else {
+						// 由于某种问题，需要多做一次格式化成对象
+						// 后台保存的数据是用字符串，所以要格式化数组成字符串
+						data.bookTeacherArray = JSON.stringify(
+							this.bookTeacherArray.map((v) => JSON.parse(v))
+						)
+					}
+					data.bookType = this.bookType
+
+					data.bookId = this.bookId
+
+					// 提取最后一层的类型id
+					if (data.typeId.length >= 0) {
+						data.typeId = data.typeId.pop()
+					}
+
+					// 标签转化成 , 隔开的字符串
+					data.bookLabel = data.bookLabel.join(',')
+
+
+					if (!this.oldBookTeacherArray.every((v) => this.bookTeacherArray.includes(v))) {
+						this.$confirm(
+							`检测到删除授课老师，会同时修改科目数据, 是否继续?`,
+							'提示',
+							{
+								confirmButtonText: '确定',
+								cancelButtonText: '取消',
+								type: 'warning',
+							}
+						).then(async () => {
+							doUpdate.call(this)
+						})
+					} else {
+						doUpdate.call(this)
+					}
+					data.bookLabel = data.bookLabel.split(',')
+
+					function doUpdate() {
+						this.$fetch('book_update_book', {
+							...data,
+							loginUserId: this.$common.getUserId(),
+						})
+							.then((res) => {
+								if (res.code == 200) {
+									this.btnLoading = false
+
+									// todo 无感保存处理
+									if (Imperceptible != true) {
+										this.$message.success("保存成功");
+										this.$emit("close");
+									}
+									this.$emit("refresh");
+								}
+							})
+							.catch((err) => {
+								console.log(err)
+								this.btnLoading = false
+							})
+					}
 				}
 			})
 		},
@@ -358,95 +450,7 @@ export default {
 				})
 			}
 		},
-		handleSave(Imperceptible) {
-			this.$refs.dataForm.validate((val, data) => {
-				if (val) {
-					if (this.bookImageUrl == '') {
-						this.$message.error('请上传封面图')
-						return
-					} else {
-						data.bookImageUrl = this.bookImageUrl
-					}
-					if (this.bookDetailImageUrl == '') {
-						this.$message.error('请上传详情轮播图')
-						return
-					} else {
-						data.bookDetailImageUrl = this.bookDetailImageUrl
-					}
-					if (this.bookDetail == '') {
-						this.$message.error('请上传详情介绍')
-						return
-					} else {
-						data.bookDetail = this.bookDetail
-					}
-					if (this.bookTeacherArray.length == 0) {
-						this.$message.error('请选择授课老师')
-						return
-					}
-					// else if (this.teacherArray.length > 5) {
-					// 	this.$message.error("授课老师不能多于5个");
-					// 	return;
-					// }
-					else {
-						// 由于某种问题，需要多做一次格式化成对象
-						// 后台保存的数据是用字符串，所以要格式化数组成字符串
-						data.bookTeacherArray = JSON.stringify(
-							this.bookTeacherArray.map((v) => JSON.parse(v))
-						)
-					}
 
-					data.bookId = this.bookId
-					
-					// 提取最后一层的类型id
-					if (data.typeId.length >= 0) {
-						data.typeId = data.typeId.pop()
-					}
-
-					// 标签转化成 , 隔开的字符串
-					data.bookLabel = data.bookLabel.join(',')
-
-					if (!this.oldBookTeacherArray.every((v) => this.bookTeacherArray.includes(v))) {
-						this.$confirm(
-							`检测到删除授课老师，会同时修改科目数据, 是否继续?`,
-							'提示',
-							{
-								confirmButtonText: '确定',
-								cancelButtonText: '取消',
-								type: 'warning',
-							}
-						).then(async () => {
-							doUpdate.call(this)
-						})
-					} else {
-						doUpdate.call(this)
-					}
-					data.bookLabel = data.bookLabel.split(',')
-
-					function doUpdate() {
-						this.$fetch('book_update_book', {
-							...data,
-							loginUserId: this.$common.getUserId(),
-						})
-							.then((res) => {
-								if (res.code == 200) {
-									this.btnLoading = false
-
-									// todo 无感保存处理
-									if (Imperceptible != true) {
-										this.$message.success("保存成功");
-										this.$emit("close");
-									}
-									this.$emit("refresh");
-								}
-							})
-							.catch((err) => {
-								console.log(err)
-								this.btnLoading = false
-							})
-					}
-				}
-			})
-		},
 	},
 
 	async mounted() {

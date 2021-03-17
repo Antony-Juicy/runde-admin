@@ -55,7 +55,8 @@ export default {
 							label: "隐藏",
 							value: "Hidden"
 						}
-					]
+					],
+					initValue:"Open"
 				},
 
 			],
@@ -111,7 +112,7 @@ export default {
 				pageSize: 10,
 			},
 			titleAddOrEdit: "创建讲师",
-			searchForm: {}, //搜索栏信息
+			searchForm: {iconStatus:'Open'}, //搜索栏信息
 			addEditVisible: false,
 		}
 	},
@@ -151,8 +152,7 @@ export default {
 						if(item.linkType == 'None'){
 							item.iconLink = '/'
 						}
-						item.linkType = this.linkType2Zh(item.linkType)
-						
+						Object.assign(item,this.linkType2Zh(item))
 						return item;
 					});
 					this.pageConfig.totalCount = res.data.totalCount;
@@ -217,13 +217,34 @@ export default {
 				case "Hidden": return '隐藏';
 			}
 		},
-		linkType2Zh(status) {
-			switch (status) {
-				case 'None': return '不跳转';
-				case "H5": return '网页';
-				case "InnerXcx": return '小程序内';
-				case "OutSideXcx": return '小程序外';
+		linkType2Zh(data) {
+			let type = {
+				linkType: "",
+				iconLink: "",
 			}
+			let xcxPage = {
+				"InnerXcxLive": "/pagesLive/pages/index/index?liveId=",
+				"InnerXcxCourse": "pages/Course/Play/Play?id=",
+				"InnerXcxBook": "/pages/Book/Book?id=",
+			}
+			if (data.linkType == 'InnerXcx') {
+				for (const key in xcxPage) {
+					if (data.iconLink.indexOf(xcxPage[key]) > -1) {
+						data.linkType = key
+						type.iconLink = data.iconLink.split('=')[1]
+						break
+					}
+				}
+			}
+			switch (data.linkType) {
+				case 'None': type.linkType = '无目标'; type.iconLink = '/'; break;
+				case 'H5': type.linkType = '网页'; type.iconLink = data.iconLink; break;
+				case 'InnerXcxLive': type.linkType = '直播'; break;
+				case 'InnerXcxCourse': type.linkType = '科目'; break;
+				case 'InnerXcxBook': type.linkType = '图书'; break;
+				case 'OutSideXcx': type.linkType = '小程序外'; break;
+			}
+			return type
 		},
 	},
 	created() {

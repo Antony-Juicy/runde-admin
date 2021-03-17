@@ -46,12 +46,12 @@ export default {
 					operate: true,
 					initValue: 0,
 				},
-				{
-					prop: "bannerTarget",
-					element: "el-input",
-					placeholder: "请输入",
-					label: "跳转目标",
-				},
+				// {
+				// 	prop: "link",
+				// 	element: "el-input",
+				// 	placeholder: "请输入",
+				// 	label: "跳转链接",
+				// },
 				{
 					prop: "bannerStatus",
 					element: "el-radio",
@@ -84,7 +84,8 @@ export default {
 				typeId: [{ required: true, message: "请选择项目名类型", trigger: "blur" },],
 				bannerImageUrl: [{ required: true, message: "请上传图标图片", trigger: "blur" },],
 				bannerType: [{ required: true, message: "请选择跳转类型", trigger: "blur" },],
-				bannerTarget: [{ required: true, message: "请输入跳转目标", trigger: "blur" },],
+				link: [{ required: true, message: "请选择跳转链接", trigger: "blur" },],
+				param: [{ required: true, message: "请输入跳转参数", trigger: "blur" },],
 				bannerStatus: [{ required: true, message: "请选择图标状态", trigger: "blur" },],
 				orderValue: [{ required: true, message: "请输入排序值", trigger: "blur" },],
 			},
@@ -104,14 +105,27 @@ export default {
 					value: "H5"
 				},
 				{
-					label: "小程序页面",
-					value: "InnerXcx"
+					label: "直播",
+					value: "InnerXcxLive"
+				},
+				{
+					label: "科目",
+					value: "InnerXcxCourse"
+				},
+				{
+					label: "图书",
+					value: "InnerXcxBook",
 				},
 				// {
 				// 	label: "小程序外",
 				// 	value: "OutSideXcx"
 				// }
 			],
+			xcxPage: {
+				"InnerXcxLive": "/pagesLive/pages/index/index?liveId=",
+				"InnerXcxCourse": "pages/Course/Play/Play?id=",
+				"InnerXcxBook": "/pages/Book/Book?id=",
+			},
 			mode: "add",// add 新增 edit 修改
 		}
 	},
@@ -119,19 +133,27 @@ export default {
 	watch: {
 		bannerType: function (n, o) {
 			// 如果选择不跳转，就不要用户输入跳转目标
-			if (n == 'None') {
+			if (['跳转链接', '跳转参数'].includes(this.addFormOptions[3].label)) {
 				this.addFormOptions.splice(3, 1)
-			} else {
-				if (this.addFormOptions[3].label != '跳转目标') {
-					this.addFormOptions.splice(3, 0, {
-						prop: "bannerTarget",
-						element: "el-input",
-						placeholder: "请输入",
-						label: "跳转目标",
-					})
-				}
-
 			}
+
+			if (n == 'H5' && this.addFormOptions[3].label != '跳转链接') {
+				this.addFormOptions.splice(3, 0, {
+					prop: "link",
+					element: "el-input",
+					placeholder: "请输入",
+					label: "跳转链接",
+				})
+			}
+			if (n.indexOf('InnerXcx') > -1 && this.addFormOptions[3].label != '跳转参数') {
+				this.addFormOptions.splice(3, 0, {
+					prop: "param",
+					element: "el-input",
+					placeholder: "请输入",
+					label: "跳转参数",
+				})
+			}
+
 		}
 	},
 	methods: {
@@ -162,13 +184,23 @@ export default {
 						return;
 					} else {
 						data.bannerType = this.bannerType;
+						if (this.bannerType.indexOf('InnerXcx') > -1) {
+							data.bannerTarget = this.xcxPage[this.bannerType] + data.param
+							data.bannerType = "InnerXcx"
+							delete data.param
+						}
+						if (this.bannerType == 'H5') {
+							data.bannerTarget = data.link
+							delete data.link
+						}
 					}
-
 
 					// 提取最后一层的类型id
 					if (data.typeId.length >= 0) {
 						data.typeId = data.typeId.pop()
 					}
+
+
 
 					this.btnLoading = true;
 					this.$fetch("config_add_banner", {
@@ -204,6 +236,15 @@ export default {
 						return;
 					} else {
 						data.bannerType = this.bannerType;
+						if (this.bannerType.indexOf('InnerXcx') > -1) {
+							data.bannerTarget = this.xcxPage[this.bannerType] + data.param
+							data.bannerType = "InnerXcx"
+							delete data.param
+						}
+						if (this.bannerType == 'H5') {
+							data.bannerTarget = data.link
+							delete data.link
+						}
 					}
 
 					// 提取最后一层的类型id
@@ -250,10 +291,32 @@ export default {
 						if (item.prop == "bannerImageUrl") {
 							this.bannerImageUrl = res.data.bannerImageUrl;
 						}
-						if (item.prop == 'bannerType') {
-							this.bannerType = res.data.bannerType;
-						}
 					})
+
+					let exLabel = {
+						element: "el-input",
+						placeholder: "请输入",
+					}
+					// 链接类型特殊处理
+					if (res.data.bannerType == 'InnerXcx') {
+						for (const key in this.xcxPage) {
+							if (res.data.bannerTarget.indexOf(this.xcxPage[key]) > -1) {
+								this.bannerType = key
+								break
+							}
+						}
+						exLabel.prop = "param";
+						exLabel.label = "跳转参数";
+						exLabel.initValue = res.data.bannerTarget.split('=')[1]
+						this.addFormOptions.splice(3, 0, exLabel)
+					}
+					if (res.data.bannerType == 'H5') {
+						exLabel.prop = "link";
+						exLabel.label = "跳转参数";
+						exLabel.initValue = res.data.bannerTarget
+						this.addFormOptions.splice(3, 0, exLabel)
+					}
+
 					this.$refs.dataForm.addInitValue();
 				})
 			}
