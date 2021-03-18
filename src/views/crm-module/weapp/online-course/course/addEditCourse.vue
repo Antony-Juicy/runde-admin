@@ -43,9 +43,24 @@ export default {
 		courseClass: {
 			type: Object,
 			default: () => { return {} }
+		},
+		fromWhere: {
+			type: String,
 		}
 	},
 	data() {
+		var checkCode = async (rule, value, callback) => {
+			let res = await this.$fetch("online_course_check_code", {
+				checkCode: value,
+				courseId: this.courseId,
+				checkType: "Subject"
+			})
+			if (res.msg != "操作成功") {
+				callback(new Error(res.msg));
+			} else {
+				callback();
+			}
+		};
 		return {
 			addFormOptions: [
 				// {
@@ -133,7 +148,7 @@ export default {
 			],
 			addRules: {
 				courseName: [{ required: true, message: "请输入科目名称", trigger: "blur" },],
-				courseCode: [{ required: true, message: "请输入课程自编号", trigger: "blur" },],
+				courseCode: [{ required: true, message: "请输入课程自编号", trigger: "blur" },{ validator: checkCode, trigger: "blur" }],
 				courseKeywords: [{ required: true, message: "请输入关键字", trigger: "blur" },],
 				defaultImageUrl: [{ required: true, message: "请上传封面图", trigger: "blur" },],
 				introducesImageUrl: [{ required: true, message: "请上传介绍图", trigger: "blur" },],
@@ -151,6 +166,7 @@ export default {
 			courseDetail: "",
 			courseDetailByEdit: "",
 			btnLoading: false,
+			courseId:"",
 			mode: "add",// add 新增 edit 修改
 		};
 	},
@@ -325,7 +341,7 @@ export default {
 					}
 				})
 			}
-		}
+		},
 
 	},
 
@@ -336,7 +352,10 @@ export default {
 			lock: true,
 		});
 		scrollTo(0, 800);
-
+		if (this.fromWhere == 'root') {
+			loadingInstance.close()
+			return
+		}
 		await this.$fetch(
 			"projectType_select",
 		).then((res) => {
@@ -347,12 +366,11 @@ export default {
 				label: "项目分类",
 				disabled: true,
 				props: { checkStrictly: true },
-				initValue:this.courseClass.typeId,
+				initValue: this.courseClass.typeId,
 				options: this.$common.getTypeTree(res.data),
 			});
 			this.$refs.dataForm.addInitValue();
 		});
-
 
 		await this.$fetch("online_course_get_course_teacher", {
 			loginUserId: this.$common.getUserId(),
@@ -383,13 +401,13 @@ export default {
 <style lang='scss' scoped>
 .addEditCourse {
 	/deep/ {
-		// .el-cascader--small,.el-input-number--small {
-		// 	width: 100%;
-		// }
+		.el-cascader--small {
+			width: 100%;
+		}
 		.el-input--small .el-input__inner {
 			min-height: 32px;
 		}
-		.el-input--suffix .el-input__inner{
+		.el-input--suffix .el-input__inner {
 			min-height: 32px;
 		}
 		.el-tag.el-tag--info {

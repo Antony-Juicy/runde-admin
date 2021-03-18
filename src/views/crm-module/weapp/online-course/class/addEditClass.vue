@@ -43,10 +43,19 @@ import RdEditor from "@/components/RdEditor";
 import { scrollTo } from "@/utils/scroll-to";
 import { Loading } from 'element-ui';
 export default {
-
-
 	data() {
-
+		var checkCode = async (rule, value, callback) => {
+			let res = await this.$fetch("online_course_check_code", {
+				checkCode: value,
+				courseClassId:this.courseClassId,
+				checkType: "Class"
+			})
+			if (res.msg != "操作成功") {
+				callback(new Error(res.msg));
+			} else {
+				callback();
+			}
+		};
 		return {
 			addFormOptions: [
 				{
@@ -66,6 +75,9 @@ export default {
 					element: "el-input",
 					placeholder: "请输入",
 					label: "班次代号",
+					// events: {
+					// 	blur: this.checkCodeRepeated
+					// }
 				},
 				{
 					prop: "imageUrl",
@@ -143,7 +155,7 @@ export default {
 				typeId: [{ required: true, message: "请选择项目名类型", trigger: "blur" },],
 				courseClassName: [{ required: true, message: "请输入班级名称", trigger: "blur" },],
 				courseClassKeywords: [{ required: true, message: "请输入班级关键字", trigger: "blur" },],
-				courseClassCode: [{ required: true, message: "请输入班级代号", trigger: "blur" },],
+				courseClassCode: [{ required: true, message: "请输入班级代号", trigger: "blur" }, { validator: checkCode, trigger: "blur" }],
 				imageUrl: [{ required: true, message: "请上传封面图", trigger: "blur" },],
 				classType: [{ required: true, message: "请选择班级类型", trigger: "blur" },],
 				enrollFee: [{ required: true, message: "请输入班级价格", trigger: "blur" },],
@@ -163,6 +175,7 @@ export default {
 			teacherArray: [],
 			teacherArrayOptions: [],
 			btnLoading: false,
+			courseClassId:"",
 			mode: "add",// add 新增 edit 修改
 
 		};
@@ -391,6 +404,19 @@ export default {
 			}
 
 		},
+		async checkCodeRepeated() {
+			// console.log(this.$refs.dataForm.formData)
+			if (this.$refs.dataForm.formData.courseClassCode) {
+				await this.$fetch("online_course_check_code", {
+					checkCode: this.$refs.dataForm.formData.courseClassCode,
+					checkType: "Class"
+				}).then(async (res) => {
+					console.log(res)
+				})
+			}
+			// console.log("checkCodeRepeated")
+
+		}
 	},
 
 	async mounted() {
@@ -436,13 +462,13 @@ export default {
 			width: 100px;
 			height: 100px;
 		}
-		.el-cascader--small{
+		.el-cascader--small {
 			width: 100%;
 		}
 		.el-input--small .el-input__inner {
 			min-height: 32px;
 		}
-		.el-input--suffix .el-input__inner{
+		.el-input--suffix .el-input__inner {
 			min-height: 32px;
 		}
 		.el-tag.el-tag--info {
