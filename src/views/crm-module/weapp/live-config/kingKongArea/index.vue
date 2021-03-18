@@ -223,7 +223,7 @@ export default {
 			}
 			let xcxPage = {
 				"InnerXcxLive": "/pagesLive/pages/index/index?liveId=",
-				"InnerXcxCourse": "pages/Course/Play/Play?id=",
+				"InnerXcxCourse": "/pages/Course/Play/Play?id=",
 				"InnerXcxBook": "/pages/Book/Book?id=",
 			}
 			if (data.linkType == 'InnerXcx') {

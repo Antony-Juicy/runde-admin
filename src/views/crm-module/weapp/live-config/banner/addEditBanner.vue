@@ -123,7 +123,7 @@ export default {
 			],
 			xcxPage: {
 				"InnerXcxLive": "/pagesLive/pages/index/index?liveId=",
-				"InnerXcxCourse": "pages/Course/Play/Play?id=",
+				"InnerXcxCourse": "/pages/Course/Play/Play?id=",
 				"InnerXcxBook": "/pages/Book/Book?id=",
 			},
 			mode: "add",// add 新增 edit 修改
