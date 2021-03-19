@@ -396,7 +396,6 @@ export default {
 					placeholder: "请选择项目类型",
 					label: "项目分类",
 					disabled: true,
-					props: { checkStrictly: true },
 					initValue: data.typeId,
 					options: this.$common.getTypeTree(res.data),
 				}

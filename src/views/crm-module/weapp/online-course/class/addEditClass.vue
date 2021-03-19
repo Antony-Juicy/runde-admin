@@ -434,7 +434,6 @@ export default {
 				element: "el-cascader",
 				placeholder: "请选择项目类型",
 				label: "项目类型",
-				props: { checkStrictly: true },
 				options: this.$common.getTypeTree(res.data),
 			});
 		});

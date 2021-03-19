@@ -296,13 +296,9 @@ export default {
 			prop: "typeId",
 			element: "el-cascader",
 			placeholder: "请选择项目类型",
-			props: { checkStrictly: true },
 			options: this.$common.getTypeTree(projectType_select_res.data),
 		}
-
-
 		if (this.mode == 'fromClass') {
-
 			this.formOptions[0].initValue = this.book.bookName
 			this.formOptions[0].disabled = true
 			typeId_select.initValue = this.book.typeId

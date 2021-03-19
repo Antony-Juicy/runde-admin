@@ -308,7 +308,6 @@ export default {
 			prop: "typeId",
 			element: "el-cascader",
 			placeholder: "请选择项目类型",
-			props: { checkStrictly: true },
 			options: this.$common.getTypeTree(projectType_select_res.data),
 		}
 		if (this.mode == 'fromClass') {
