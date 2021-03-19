@@ -92,9 +92,12 @@ export default {
     id(newVal){
       console.log(newVal,'-newVal--')
       this.newId = newVal;
+      this.activeName = "second";
     },
     phone(newVal){
       this.newPhone = newVal;
+      this.activeName = "second";
+
     }
   },
   mounted () {

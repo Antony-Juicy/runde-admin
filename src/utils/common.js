@@ -91,15 +91,7 @@ const $common = {
             return ""
         }
         let str = String(phone)
-        let len = str.length;
-        if (len >= 7) {
-            let reg = str.slice(-8, -4)
-            return str.replace(reg, "****")
-        } else if (len < 7 && len >= 6) {
-            //1234567
-            let reg = str.slice(-4, -2)
-            return str.replace(reg, "**")
-        }
+        return str.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
     },
 
     // 重新加载组件

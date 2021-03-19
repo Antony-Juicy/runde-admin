@@ -488,7 +488,7 @@ export default {
         enquireProductIdOne,
         enquireSubjectIdOne,
         enquireCourseIdOne,
-        enquireClassOne: enquireClassOne&&enquireClassOne.map(item => Number((item.val)))
+        enquireClassOne: enquireClassOne&&enquireClassOne.map(item => Number((item.val || item.value)))
       };
       
     },
