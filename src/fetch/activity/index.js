@@ -45,6 +45,8 @@ export default {
     secretexamsubject_deleteTk:  {url: '/h5/secretexamsubject/deleteTk', method: 'post'}, //删除题库
     secretexamsubject_importIssueExcel:  {url: '/h5/secretexamsubject/importIssueExcel', method: 'post'}, //导入题目
     secretexamsubject_viewExercises:  {url: '/h5/secretexamsubject/viewExercises', method: 'get'}, //预览题目图片
+    // 考后
+    practicingExamSiteItem_list: {url: '/h5/practicingExamSiteItem/custodyListNewJsp', method: 'get'}, //列表
 
     // 考试大纲-作废
     secretexamsubject_listExamJsp:  {url: '/h5/secretexamsubject/listExamJsp', method: 'get'}, //列表
@@ -64,8 +66,18 @@ export default {
     cmsexamprofession_save:  {url: '/h5/cmsexamprofession/save', method: 'post'}, //新增
     cmsexamprofession_editJsp:  {url: '/h5/cmsexamprofession/editJsp', method: 'post'}, //编辑
     cmsexamprofession_deleteJsp:  {url: '/h5/cmsexamprofession/deleteJsp', method: 'post'}, //删除
-    cmsexamprofession_getOneLinkage:  {url: '/h5/cmsexamprofession/getOneLinkage', method: 'post'}, //获取一级分类
-    cmsexamprofession_linkage:  {url: '/h5/cmsexamprofession/linkage', method: 'post'}, //获取二级分类
+    cmsexamprofession_goEdit:  {url: '/h5/cmsexamprofession/goEdit', method: 'get'}, //获取详情 
+    cmsexamprofession_getOneLinkage:  {url: '/h5/cmsexamprofession/getOneLinkage', method: 'post', hideLoading: true}, //获取一级分类
+    cmsexamprofession_linkage:  {url: '/h5/cmsexamprofession/linkage', method: 'post', hideLoading: true}, //获取二级分类
     // 审核通知
     cmsexamchecknotification_listJsp:  {url: '/h5/cmsexamchecknotification/listJsp', method: 'get'}, //列表
+    cmsexamchecknotification_save:  {url: '/h5/cmsexamchecknotification/save', method: 'post',paramType: "body"}, //新增
+    cmsexamchecknotification_editJsp:  {url: '/h5/cmsexamchecknotification/editJsp', method: 'post',paramType: "body"}, //编辑
+    cmsexamchecknotification_deleteJsp:  {url: '/h5/cmsexamchecknotification/deleteJsp', method: 'post'}, //删除
+    cmsexamchecknotification_goEdit:  {url: '/h5/cmsexamchecknotification/goEdit', method: 'get'}, //详情
+
+    // 地推卡领取统计
+    groundPush_statisticslistJsp:  {url: '/h5/cms/groundPush/statisticslistJsp', method: 'get'}, //列表
+    // 地推卡领取管理
+    groundPush_listJsp:  {url: '/h5/cms/groundPush/listJsp', method: 'get'}, //列表
 }

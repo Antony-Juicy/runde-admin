@@ -136,7 +136,7 @@ export default {
         },
         {
           prop: "orderValue",
-          element: "el-input-number",
+          element: "el-input",
           placeholder: "请输入排序",
           label: "排序"
         },
@@ -166,6 +166,7 @@ export default {
         ],
         orderValue: [
           { required: true, message: "请输入", trigger: "blur" },
+          { type: 'number', message: '必须为数字值', trigger: 'blur' },
         ],
         status: [
           { required: true, message: "请选择", trigger: "blur" },
@@ -198,7 +199,8 @@ export default {
         this.tableData = res.data.varList.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
           item.updateAt = this.$common._formatDates(item.updateAt);
-          item.productName1 = res.data.productList.find(ele => ele.key == item.productName).value;
+          let obj1 = res.data.productList.find(ele => ele.key == item.productName);
+          item.productName1 = obj1&&obj1.value;
           item.provinceType1 = item.provinceType == "province" ? "省份" : "学历";
           return item;
         });

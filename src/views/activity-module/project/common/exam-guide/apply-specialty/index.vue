@@ -24,7 +24,38 @@
         :dialogVisible="addVisible"
         @handleClose="addVisible = false"
         @submitForm="submitAddForm('dataForm3')">
-        <RdForm :formOptions="addFormOptions" formLabelWidth="140px" :rules="addRules" ref="dataForm3"></RdForm>
+        <RdForm :formOptions="addFormOptions" formLabelWidth="140px" :rules="addRules" ref="dataForm3">
+          <template slot="productName">
+            <el-select v-model="productName" placeholder="请选择" @change="productNameChange">
+              <el-option
+                v-for="item in productNameArr"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </template>
+          <template slot="parentId">
+            <el-select v-model="parentId" placeholder="请选择" @change="parentIdChange">
+              <el-option
+                v-for="item in parentIdArr"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </template>
+          <template slot="twoParentId">
+            <el-select v-model="twoParentId" placeholder="请选择">
+              <el-option
+                v-for="item in twoParentIdArr"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </template>
+        </RdForm>
       </rd-dialog>
     </div>
   </div>
@@ -155,69 +186,75 @@ export default {
           element: "el-select",
           placeholder: "请选择项目",
           label: "项目",
-          options: [
-          ],
+          operate: true,
+          // options: [{
+          //   lable: 1,
+          //   value:"1"
+          // }],
+          initValue: "1"
         },
         {
-          prop: "roleName",
+          prop: "parentId",
           element: "el-select",
           placeholder: "请选择",
-          label: "一级分类"
+          label: "一级分类",
+           operate: true,
         },
         {
-          prop: "menuName3",
+          prop: "twoParentId",
           element: "el-select",
           placeholder: "请选择",
-          label: "二级分类"
+          label: "二级分类",
+           operate: true,
         },
         {
-          prop: "menuName3",
+          prop: "professionName",
           element: "el-input",
           placeholder: "请输入专业名称",
           label: "专业名称"
         },
         {
-          prop: "menuName3",
+          prop: "needWorkYear",
           element: "el-select",
           placeholder: "请选择",
           label: "工作年限",
           options: [
             {
               label: "1",
-              value: 0,
-            },
-            {
-              label: "2",
               value: 1,
             },
             {
-              label: "3",
+              label: "2",
               value: 2,
             },
             {
-              label: "4",
+              label: "3",
               value: 3,
             },
             {
-              label: "5",
+              label: "4",
               value: 4,
             },
             {
-              label: "6",
+              label: "5",
               value: 5,
             },
             {
-              label: "7",
+              label: "6",
               value: 6,
             },
             {
-              label: "8",
+              label: "7",
               value: 7,
+            },
+            {
+              label: "8",
+              value: 8,
             }
           ],
         },
         {
-          prop: "menuName3",
+          prop: "zlysStatus",
           element: "el-select",
           placeholder: "请选择",
           label: "是否能报助理医师",
@@ -233,7 +270,7 @@ export default {
           ],
         },
         {
-          prop: "menuName3",
+          prop: "zyysStatus",
           element: "el-select",
           placeholder: "请选择",
           label: "是否能报执业医师",
@@ -249,7 +286,7 @@ export default {
           ],
         },
         {
-          prop: "menuName3",
+          prop: "orderValue",
           element: "el-input-number",
           placeholder: "请输入排序",
           label: "排序"
@@ -261,18 +298,35 @@ export default {
           label: "开放状态",
           options: [
             {
-              label: "已开放",
-              value: 0,
+              label: "开放",
+              value: "Open",
             },
             {
               label: "未开放",
-              value: 1,
+              value: "Close",
             }
           ],
         },
       ],
-      addRules: {},
-      editId:""
+      addRules: {
+        productName: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ],
+        professionName: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+        orderValue: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+      },
+      editId:"",
+      // 新增编辑弹窗的下拉
+      productName:"",
+      productNameArr:[],
+      parentId:"",
+      parentIdArr: [],
+      twoParentId:"",
+      twoParentIdArr: []
     }
   },
   mounted () {
@@ -299,7 +353,8 @@ export default {
         this.tableData = res.data.varList.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
           item.updateAt = this.$common._formatDates(item.updateAt);
-          item.productName1 = res.data.productList.find(ele => ele.key == item.productName).value;
+          let obj1 = res.data.productList.find(ele => ele.key == item.productName);
+          item.productName1 = obj1&&obj1.value;
           item.zlysStatus1 = item.zlysStatus == 0 ? "是" :  (item.zlysStatus == 1 ?"否": "")
           item.zyysStatus1 = item.zyysStatus == 0 ? "是" :  (item.zyysStatus == 1 ?"否": "")
           return item;
@@ -312,7 +367,7 @@ export default {
         this.pageConfig.totalCount = res.data.page.totalResult;
 
         // 给添加弹窗的下拉赋值
-        this.addFormOptions[0].options = this.productList;
+        this.productNameArr = this.productList;
         // 给搜索栏下拉赋值
         this.formOptions[0].options = this.productList;
 
@@ -327,24 +382,27 @@ export default {
     handleAdd(){
       this.addStatus = true;
       this.addVisible = true;
-      this.addFormOptions.forEach(item => {
-        item.initValue = "";
-      })
-      setTimeout(() => {
-        this.$refs.dataForm3.addInitValue();
-      }, 0);
+      this.resetForm();
     },
     submitAddForm(formName){
+      if(!this.productName){
+        this.$message.error("请选择项目")
+        return
+      }
       this.$refs[formName].validate((valid, formData) => {
         if(valid){
           console.log(formData, "提交");
           this.$fetch(this.addStatus?"cmsexamprofession_save":"cmsexamprofession_editJsp",{
             ...formData,
-            id: this.addStatus?"":this.editId
+            id: this.addStatus?"":this.editId,
+            productName: this.productName,
+            parentId: this.parentId,
+            twoParentId: this.twoParentId,
           }).then(res => {
             this.$message.success("操作成功")
             this.addVisible = false;
             this.getTableData();
+            
           })
           
         }
@@ -355,12 +413,21 @@ export default {
       this.addStatus = false;
       this.addVisible = true;
       this.editId = data.id;
-      this.addFormOptions.forEach(item => {
-        item.initValue = data[item.prop];
+      this.$fetch("cmsexamprofession_goEdit",{
+        id: data.id
+      }).then(res => {
+        this.addFormOptions.forEach(item => {
+          item.initValue = data[item.prop];
+        })
+        setTimeout(() => {
+          this.$refs.dataForm3.addInitValue();
+        }, 0);
       })
-      setTimeout(() => {
-        this.$refs.dataForm3.addInitValue();
-      }, 0);
+      
+      this.productName = data.productName;
+      this.productNameChange(this.productName,res.data.oneParentId);
+      this.parentIdChange(this.parentId,res.data.twoParentId);
+      
     },
     handleDelete(row) {
       let info = '项';
@@ -385,6 +452,50 @@ export default {
           });
         })
         .catch(() => {});
+    },
+    productNameChange(data,val){
+      this.$fetch("cmsexamprofession_getOneLinkage",{
+        productName: data
+      }).then(res => {
+        this.parentIdArr = res.data.list?res.data.list.map(item => ({
+          label: item.professionName,
+          value: item.id
+        })):[]
+        if(val) {
+          this.parentId = val;
+          console.log(this.parentId,'this.parentId---')
+        }
+      })
+    },
+    parentIdChange(data,val){
+      this.$fetch("cmsexamprofession_linkage",{
+        productName: this.productName,
+        parentId: data
+      }).then(res => {
+        console.log(res.data,'res.data--')
+        this.twoParentIdArr = res.data.list?res.data.list.map(item => ({
+          label: item.professionName,
+          value: item.id
+        })):[]
+        if(val){
+          this.twoParentId = val;
+          console.log(this.twoParentId,'this.twoParentId---')
+        }
+      })
+    },
+    resetForm(){
+      this.productName = "";
+      this.parentId = "";
+      this.twoParentId = "";
+      this.parentIdArr = [];
+      this.twoParentIdArr = [];
+      this.addFormOptions.forEach(item => {
+        item.initValue = "";
+      })
+      this.addFormOptions[0].initValue = 0;
+      setTimeout(() => {
+        this.$refs.dataForm3.addInitValue();
+      }, 0);
     }
   }
 }
