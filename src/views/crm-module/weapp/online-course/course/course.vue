@@ -4,7 +4,7 @@
 		<!-- 搜索栏 -->
 		<search-form ref="searchForm" :formOptions="formOptions" :showNum="4" @onSearch="onSearch"></search-form>
 		<div class="w-container">
-			<div class="btn-wrapper" v-if="mode=='fromClass'">
+			<div class="btn-wrapper">
 				<el-button type="primary" size="small" @click="handleAdd">创建科目</el-button>
 			</div>
 			<!-- 表格主体 -->
@@ -27,7 +27,8 @@
 			</rd-table>
 		</div>
 		<fullDialog class="addEditCourse" :title="`${titleAddOrEdit}`" :inner="true" v-model="addEditVisible" @change="addEditVisible = false">
-			<addEditCourse ref="addEditCourse" :courseClass="nextCourseClass" v-if="addEditVisible" @close="addEditVisible = false" @refresh="refresh"></addEditCourse>
+			<addEditCourse ref="addEditCourse" :fromWhere="mode" :courseClass="nextCourseClass" v-if="addEditVisible" @close="addEditVisible = false" @refresh="refresh">
+			</addEditCourse>
 		</fullDialog>
 		<fullDialog class="chapter" title="科目管理 > 章节目录" v-model="chapterVisible" @change="handleChapterClose">
 			<chapter v-if="chapterVisible" @close="handleChapterClose" :courseClass="nextCourseClass" :course="course"></chapter>
@@ -148,20 +149,11 @@ export default {
 			addEditVisible: false,
 			chapterVisible: false,
 			course: {},
-			nextCourseClass: {}
+			nextCourseClass: {},
+			mode: 'root'
 		};
 	},
 	components: { fullDialog, chapter, addEditCourse },
-	computed: {
-		mode() {
-			if (Object.keys(this.courseClass).length > 0) {
-				return 'fromClass'; // 意思是班级管理那边打开的
-			}
-			else {
-				return 'root'; // 意思是从左侧菜单打开的
-			}
-		}
-	},
 
 	watch: {},
 
@@ -227,6 +219,11 @@ export default {
 			}
 		},
 		handleAdd() {
+			if (Object.keys(this.courseClass).length > 0) {
+				this.mode = 'fromClass'
+			} else {
+				this.mode = 'root'
+			}
 			this.titleAddOrEdit = '创建科目';
 			this.addEditVisible = true
 			// 设置创建科目的一些额外信息
@@ -241,6 +238,7 @@ export default {
 			})
 		},
 		handleEdit(data) {
+			this.mode = 'edit'
 			this.titleAddOrEdit = '编辑科目';
 			this.addEditVisible = true
 			this.nextCourseClass = {
@@ -301,6 +299,7 @@ export default {
 
 	async mounted() {
 		scrollTo(0, 800);
+
 		// 获取项目三级分类
 		let projectType_select_res = await this.$fetch(
 			"projectType_select",

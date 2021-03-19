@@ -2,6 +2,11 @@
 <template>
 	<div class='addEditCourse' id="addEditCourse">
 		<RdForm :formOptions="addFormOptions" :rules="addRules" :formLabelWidth="'150px'" ref="dataForm">
+			<template slot="courseClass">
+				<SelectPop v-bind="SelectPopOptions" @select="handle_selectClass">
+					<el-button style="width:100%;text-align:left" size="small">{{courseClassName}}</el-button>
+				</SelectPop>
+			</template>
 			<template slot="defaultImageUrl">
 				<Upload-oss v-if="uploadOssElem" :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }" :src.sync="defaultImageUrl" :initGetConfig="initGetConfig" @srcChangeFun="
                     (data) => {
@@ -37,7 +42,7 @@ import RdForm from "@/components/RdForm";
 import UploadOss from "@/components/UploadOss";
 import RdEditor from "@/components/RdEditor";
 import { scrollTo } from "@/utils/scroll-to";
-import { Loading } from 'element-ui';
+import SelectPop from '@/components/SelectPop'
 export default {
 	props: {
 		courseClass: {
@@ -63,15 +68,6 @@ export default {
 		};
 		return {
 			addFormOptions: [
-				// {
-				// 	prop: "typeName",
-				// 	element: "el-input",
-				// 	placeholder: "",
-				// 	label: "项目分类",
-				// 	disabled: true,
-				// 	// ! 数据来源 1：班级打开时来自班级信息 2：科目打开时来自所选科目信息
-				// 	initValue: this.courseClass.typeName,
-				// },
 				{
 					prop: "courseName",
 					element: "el-input",
@@ -147,8 +143,10 @@ export default {
 				},
 			],
 			addRules: {
+				courseClass: [{ required: true, message: "请选择班级", trigger: "blur" },],
+				typeId: [{ required: true, message: "请选择项目类型", trigger: "blur" },],
 				courseName: [{ required: true, message: "请输入科目名称", trigger: "blur" },],
-				courseCode: [{ required: true, message: "请输入课程自编号", trigger: "blur" },{ validator: checkCode, trigger: "blur" }],
+				courseCode: [{ required: true, message: "请输入课程自编号", trigger: "blur" }, { validator: checkCode, trigger: "blur" }],
 				courseKeywords: [{ required: true, message: "请输入关键字", trigger: "blur" },],
 				defaultImageUrl: [{ required: true, message: "请上传封面图", trigger: "blur" },],
 				introducesImageUrl: [{ required: true, message: "请上传介绍图", trigger: "blur" },],
@@ -166,14 +164,51 @@ export default {
 			courseDetail: "",
 			courseDetailByEdit: "",
 			btnLoading: false,
-			courseId:"",
+			courseId: "",
 			mode: "add",// add 新增 edit 修改
+			courseClassId: "",
+			courseClassName: "请选择班级",
+			SelectPopOptions: {
+				searchObj: {
+					api: "online_course_get_classes",
+					formOptions: [
+						{
+							prop: "courseClassName",
+							element: "el-input",
+							placeholder: "请输入班级名称",
+							disabled: false
+						},
+					],
+					needType: false,
+					showNum: 2,
+					params: {
+						classStatus: "Open"
+					}
+				},
+				tableObj: {
+					tableKey: [
+						{
+							name: "ID主键",
+							value: "courseClassId",
+							width: 80
+						},
+						{
+							name: "班级名称",
+							value: "courseClassName",
+						},
+						{
+							name: "项目分类",
+							value: "typeName",
+						},
+					],
+					transItem: (item) => {
+						return item
+					}
+				}
+			}
 		};
 	},
-	components: { RdForm, UploadOss, RdEditor },
-	computed: {
-
-	},
+	components: { RdForm, UploadOss, RdEditor, SelectPop },
 
 	watch: {},
 
@@ -216,7 +251,12 @@ export default {
 					data.teacherArray = data.teacherArray.map(v => JSON.parse(v))
 					// 后台保存的数据是用字符串，所以要格式化数组成字符串
 					data.teacherArray = JSON.stringify(data.teacherArray);
-					data.courseClassId = this.courseClass.courseClassId
+					if (this.fromWhere == 'root') {
+						data.courseClassId = this.courseClassId
+					} else {
+						data.courseClassId = this.courseClass.courseClassId
+					}
+
 					this.$fetch("online_course_add_course", {
 						...data,
 						loginUserId: this.$common.getUserId(),
@@ -333,7 +373,8 @@ export default {
 							}
 						}
 					})
-					this.$refs.dataForm.addInitValue();
+
+
 					if (autoSave) {
 						this.$nextTick(() => {
 							this.handleSave(true)
@@ -342,58 +383,143 @@ export default {
 				})
 			}
 		},
+		async handle_selectClass(data) {
+			// console.log(data)
+			this.courseClassId = data.courseClassId
+			this.courseClassName = data.courseClassName
+			await this.$fetch(
+				"projectType_select",
+			).then((res) => {
+				this.addFormOptions[1] = {
+					prop: "typeId",
+					element: "el-cascader",
+					placeholder: "请选择项目类型",
+					label: "项目分类",
+					disabled: true,
+					props: { checkStrictly: true },
+					initValue: data.typeId,
+					options: this.$common.getTypeTree(res.data),
+				}
+			})
 
+			await this.$fetch("online_course_get_course_teacher", {
+				loginUserId: this.$common.getUserId(),
+				courseClassId: this.courseClassId
+			}).then(async (res) => {
+				this.addFormOptions[6] = {
+					prop: "teacherArray",
+					element: "el-select",
+					placeholder: "请选择",
+					label: "授课讲师",
+					filterable: true,
+					multiple: true,
+					options: res.data.map((item) => ({
+						label: item.teacherName,
+						value: JSON.stringify(item)
+					}))
+				};
+			})
+			this.$refs.dataForm.addInitValue();
+
+		},
+		initWhenRoot() {
+			// 需要先选择班级 然后在加载老师列表，然后项目分类就直接用所选班级的typeId就可以了
+			setTimeout(() => {
+				this.addFormOptions.unshift({
+					prop: "typeId",
+					element: "el-cascader",
+					placeholder: "请选择项目类型",
+					label: "项目分类",
+					disabled: true,
+					props: { checkStrictly: true },
+				});
+				this.addFormOptions.unshift({
+					prop: "courseClass",
+					element: "el-input",
+					placeholder: "",
+					label: "所属班级",
+					operate: true,
+					initValue: "0"
+				})
+				this.addFormOptions.splice(6, 0, {
+					prop: "teacherArray",
+					element: "el-select",
+					placeholder: "请选择",
+					label: "授课讲师",
+					disabled: true,
+					filterable: true,
+					multiple: true,
+				});
+				this.$refs.dataForm.addInitValue();
+			}, 100)
+		},
+
+		async initWhenOther() {
+
+			await this.$fetch(
+				"projectType_select",
+			).then((res) => {
+				this.addFormOptions.unshift({
+					prop: "typeId",
+					element: "el-cascader",
+					placeholder: "请选择项目类型",
+					label: "项目分类",
+					disabled: true,
+					props: { checkStrictly: true },
+					initValue: this.courseClass.typeId,
+					options: this.$common.getTypeTree(res.data),
+				});
+
+				this.$refs.dataForm.addInitValue();
+			});
+
+			await this.$fetch("online_course_get_course_teacher", {
+				loginUserId: this.$common.getUserId(),
+				courseClassId: this.courseClass.courseClassId
+			}).then(async (res) => {
+				this.addFormOptions.splice(6, 0, {
+					prop: "teacherArray",
+					element: "el-select",
+					placeholder: "请选择",
+					label: "授课讲师",
+					filterable: true,
+					multiple: true,
+					options: res.data.map((item) => ({
+						label: item.teacherName,
+						value: JSON.stringify(item)
+					}))
+				});
+
+				await this.getCourseInfo()
+
+			})
+			// 新增一个提示所属班级字段
+			this.addFormOptions.unshift({
+				prop: "courseClass",
+				element: "el-input",
+				placeholder: "",
+				label: "所属班级",
+				disabled: true,
+				initValue: this.courseClass.courseClassName
+			});
+			this.$refs.dataForm.addInitValue();
+		}
 	},
 
 
 	async mounted() {
-		let loadingInstance = Loading.service({
-			target: document.querySelector('#addEditCourse'),
-			lock: true,
-		});
-		scrollTo(0, 800);
+
 		if (this.fromWhere == 'root') {
-			loadingInstance.close()
-			return
+			this.initWhenRoot()
 		}
-		await this.$fetch(
-			"projectType_select",
-		).then((res) => {
-			this.addFormOptions.unshift({
-				prop: "typeId",
-				element: "el-cascader",
-				placeholder: "请选择项目类型",
-				label: "项目分类",
-				disabled: true,
-				props: { checkStrictly: true },
-				initValue: this.courseClass.typeId,
-				options: this.$common.getTypeTree(res.data),
-			});
-			this.$refs.dataForm.addInitValue();
-		});
+		else if (this.fromWhere == 'fromClass' || this.fromWhere == 'edit') {
+			try {
+				await this.initWhenOther()
+			} catch (error) {
 
-		await this.$fetch("online_course_get_course_teacher", {
-			loginUserId: this.$common.getUserId(),
-			courseClassId: this.courseClass.courseClassId
-		}).then(async (res) => {
-			this.addFormOptions.splice(6, 0, {
-				prop: "teacherArray",
-				element: "el-select",
-				placeholder: "请选择",
-				label: "授课讲师",
-				filterable: true,
-				multiple: true,
-				options: res.data.map((item) => ({
-					label: item.teacherName,
-					value: JSON.stringify(item)
-				}))
-			});
-
-			await this.getCourseInfo()
-			loadingInstance.close()
-		}).catch(() => {
-			loadingInstance.close()
-		})
+			}
+		}
+		scrollTo(0, 800);
 	},
 
 }

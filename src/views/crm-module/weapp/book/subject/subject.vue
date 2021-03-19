@@ -4,7 +4,7 @@
 		<!-- 搜索栏 -->
 		<search-form ref="searchForm" :formOptions="formOptions" :showNum="4" @onSearch="onSearch"></search-form>
 		<div class="w-container">
-			<div class="btn-wrapper" v-if="mode=='fromClass'">
+			<div class="btn-wrapper">
 				<el-button type="primary" size="small" @click="handleAdd">创建科目</el-button>
 			</div>
 			<!-- 表格主体 -->
@@ -27,7 +27,7 @@
 			</rd-table>
 		</div>
 		<fullDialog class="addEditSubject" :title="`${titleAddOrEdit}`" :inner="true" v-model="addEditVisible" @change="addEditVisible = false">
-			<addEditSubject ref="addEditSubject" v-if="addEditVisible" @close="addEditVisible = false" @refresh="refresh" :book="nextBook"></addEditSubject>
+			<addEditSubject ref="addEditSubject" :fromWhere="mode" v-if="addEditVisible" @close="addEditVisible = false" @refresh="refresh" :book="nextBook"></addEditSubject>
 		</fullDialog>
 		<fullDialog class="chapter" title="科目管理 > 章节目录" v-model="chapterVisible" @change="handleChapterClose">
 			<chapter v-if="chapterVisible" @close="handleChapterClose" :book="nextBook" :subject="subject"></chapter>
@@ -141,20 +141,11 @@ export default {
 			addEditVisible: false,
 			chapterVisible: false,
 			subject: {},
-			nextBook: {}
+			nextBook: {},
+			mode:'root',
 		};
 	},
 	components: { fullDialog, chapter, addEditSubject },
-	computed: {
-		mode() {
-			if (Object.keys(this.book).length > 0) {
-				return 'fromClass'; // 意思是班级管理那边打开的
-			}
-			else {
-				return 'root'; // 意思是从左侧菜单打开的
-			}
-		}
-	},
 
 	watch: {},
 
@@ -220,6 +211,11 @@ export default {
 			}
 		},
 		handleAdd() {
+			if (Object.keys(this.book).length > 0) {
+				this.mode = 'fromClass'
+			} else {
+				this.mode = 'root'
+			}
 			this.titleAddOrEdit = '创建科目';
 			this.addEditVisible = true
 			this.nextBook = {
@@ -233,6 +229,7 @@ export default {
 			})
 		},
 		handleEdit(data) {
+			this.mode = 'edit'
 			this.titleAddOrEdit = '编辑科目';
 			this.addEditVisible = true
 			this.nextBook = {

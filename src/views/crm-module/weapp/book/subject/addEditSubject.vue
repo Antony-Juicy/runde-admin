@@ -1,7 +1,14 @@
 <!-- 创建|编辑 科目 -->
 <template>
 	<div class='addEditCourse' id="addEditCourse">
-		<RdForm :formOptions="addFormOptions" :rules="addRules" :formLabelWidth="'150px'" ref="dataForm"></RdForm>
+		<RdForm :formOptions="addFormOptions" :rules="addRules" :formLabelWidth="'150px'" ref="dataForm">
+			<template slot="book">
+				<SelectPop v-bind="SelectPopOptions" @select="handle_selectBook">
+					<el-button style="width:100%;text-align:left" size="small">{{bookName}}</el-button>
+				</SelectPop>
+			</template>
+		</RdForm>
+
 		<div class="btn-wrapper">
 			<el-button v-if="mode == 'add'" type="primary" size="small" :loading="btnLoading" @click="handleAdd" v-prevent-re-click="2000">立即创建</el-button>
 			<el-button v-if="mode == 'save'" type="primary" size="small" :loading="btnLoading" @click="handleSave" v-prevent-re-click="2000">保存</el-button>
@@ -16,26 +23,20 @@ import RdForm from "@/components/RdForm";
 import UploadOss from "@/components/UploadOss";
 import RdEditor from "@/components/RdEditor";
 import { scrollTo } from "@/utils/scroll-to";
-import { Loading } from 'element-ui';
+import SelectPop from '@/components/SelectPop'
 export default {
 	props: {
 		book: {
 			type: Object,
 			default: () => { return {} }
+		},
+		fromWhere: {
+			type: String,
 		}
 	},
 	data() {
 		return {
 			addFormOptions: [
-				// {
-				// 	prop: "typeName",
-				// 	element: "el-input",
-				// 	placeholder: "",
-				// 	label: "项目分类",
-				// 	disabled: true,
-				// 	// ! 数据来源 1：班级打开时来自班级信息 2：科目打开时来自所选科目信息
-				// 	initValue: this.book.typeName,
-				// },
 				{
 					prop: "bookSubjectName",
 					element: "el-input",
@@ -99,10 +100,50 @@ export default {
 			},
 			btnLoading: false,
 			mode: "add",// add 新增 edit 修改
-			bookSubjectId: ""
+			bookSubjectId: "",
+			bookId: "",
+			bookName: "请选择图书",
+			SelectPopOptions: {
+				searchObj: {
+					api: "book_get_books",
+					formOptions: [
+						{
+							prop: "bookName",
+							element: "el-input",
+							placeholder: "请输入图书名称",
+							disabled: false
+						},
+					],
+					needType: false,
+					showNum: 2,
+					params: {
+						classStatus: "Open"
+					}
+				},
+				tableObj: {
+					tableKey: [
+						{
+							name: "ID主键",
+							value: "bookId",
+							width: 80
+						},
+						{
+							name: "班级名称",
+							value: "bookName",
+						},
+						{
+							name: "项目分类",
+							value: "typeName",
+						},
+					],
+					transItem: (item) => {
+						return item
+					}
+				}
+			}
 		};
 	},
-	components: { RdForm, UploadOss, RdEditor },
+	components: { RdForm, UploadOss, RdEditor, SelectPop },
 	computed: {
 
 	},
@@ -126,11 +167,18 @@ export default {
 
 			this.$refs.dataForm.validate((val, data) => {
 				if (val) {
-					data.bookId = this.book.bookId
+					if (this.fromWhere == 'root') {
+						data.bookId = this.bookId
+					} else {
+						data.bookId = this.book.bookId
+					}
+
 					// 由于某种问题，需要多做一次格式化成对象
 					data.bookSubjectTeacherArray = data.bookSubjectTeacherArray.map(v => JSON.parse(v))
 					// 后台保存的数据是用字符串，所以要格式化数组成字符串
 					data.bookSubjectTeacherArray = JSON.stringify(data.bookSubjectTeacherArray);
+
+
 					this.$fetch("book_add_subject", {
 						...data,
 						loginUserId: this.$common.getUserId(),
@@ -188,7 +236,7 @@ export default {
 			this.mode = 'save';
 			this.bookSubjectId = bookSubjectId;
 		},
-		async getCourseInfo() {
+		async getSubjectInfo() {
 			if (this.mode == 'save') {
 				await this.$fetch("book_subject_getInfo", {
 					bookSubjectId: this.bookSubjectId,
@@ -215,12 +263,10 @@ export default {
 								}
 								item.initValue = teacherArray_d
 							} catch (error) {
-								console.log(error)
 								item.initValue = []
 							}
 						}
 					})
-					this.$refs.dataForm.addInitValue();
 					if (autoSave) {
 						this.$nextTick(() => {
 							this.handleSave(true)
@@ -228,53 +274,137 @@ export default {
 					}
 				})
 			}
+		},
+
+		async handle_selectBook(data) {
+			this.bookId = data.bookId
+			this.bookName = data.bookName
+			await this.$fetch(
+				"projectType_select",
+			).then((res) => {
+				this.addFormOptions[1] = {
+					prop: "typeId",
+					element: "el-cascader",
+					placeholder: "请选择项目类型",
+					label: "项目分类",
+					disabled: true,
+					props: { checkStrictly: true },
+					initValue: data.typeId,
+					options: this.$common.getTypeTree(res.data),
+				}
+			})
+			await this.$fetch("book_subject_get_teachers", {
+				loginUserId: this.$common.getUserId(),
+				bookId: this.bookId
+			}).then(async (res) => {
+				this.addFormOptions[7] = {
+					prop: "bookSubjectTeacherArray",
+					element: "el-select",
+					placeholder: "请选择",
+					label: "授课讲师",
+					filterable: true,
+					multiple: true,
+					options: res.data.map((item) => ({
+						label: item.teacherName,
+						value: JSON.stringify(item)
+					}))
+				};
+			})
+			this.$refs.dataForm.addInitValue();
+		},
+		initWhenRoot() {
+			// 需要先选择班级 然后在加载老师列表，然后项目分类就直接用所选班级的typeId就可以了
+			setTimeout(() => {
+				this.addFormOptions.unshift({
+					prop: "typeId",
+					element: "el-cascader",
+					placeholder: "请选择项目类型",
+					label: "项目分类",
+					disabled: true,
+					props: { checkStrictly: true },
+				});
+				this.addFormOptions.unshift({
+					prop: "book",
+					element: "el-input",
+					placeholder: "",
+					label: "所属图书",
+					operate: true,
+					initValue: "0"
+				})
+				this.addFormOptions.splice(7, 0, {
+					prop: "bookSubjectTeacherArray",
+					element: "el-select",
+					placeholder: "请选择",
+					label: "授课讲师",
+					disabled: true,
+					filterable: true,
+					multiple: true,
+				});
+				this.$refs.dataForm.addInitValue();
+			}, 100)
+		},
+
+		async initWhenOther() {
+			await this.$fetch(
+				"projectType_select",
+			).then((res) => {
+				this.addFormOptions.unshift({
+					prop: "typeId",
+					element: "el-cascader",
+					placeholder: "请选择项目类型",
+					label: "项目分类",
+					disabled: true,
+					props: { checkStrictly: true },
+					initValue: this.book.typeId,
+					options: this.$common.getTypeTree(res.data),
+				});
+				this.$refs.dataForm.addInitValue();
+			});
+			await this.$fetch("book_subject_get_teachers", {
+				loginUserId: this.$common.getUserId(),
+				bookId: this.book.bookId
+			}).then(async (res) => {
+				this.addFormOptions.splice(7, 0, {
+					prop: "bookSubjectTeacherArray",
+					element: "el-select",
+					placeholder: "请选择",
+					label: "授课讲师",
+					filterable: true,
+					multiple: true,
+					options: res.data.map((item) => ({
+						label: item.teacherName,
+						value: JSON.stringify(item)
+					}))
+				});
+			})
+			await this.getSubjectInfo()
+			this.addFormOptions.unshift({
+				prop: "book",
+				element: "el-input",
+				placeholder: "",
+				label: "所属图书",
+				disabled: true,
+				initValue: this.data.bookName
+			})
+			this.$refs.dataForm.addInitValue();
 		}
 
 	},
 
 	async mounted() {
-		let loadingInstance = Loading.service({
-			target: document.querySelector('#addEditCourse'),
-			lock: true,
-		});
-		scrollTo(0, 800);
-		await this.$fetch(
-			"projectType_select",
-		).then((res) => {
-			this.addFormOptions.unshift({
-				prop: "typeId",
-				element: "el-cascader",
-				placeholder: "请选择项目类型",
-				label: "项目分类",
-				disabled: true,
-				props: { checkStrictly: true },
-				initValue: this.book.typeId,
-				options: this.$common.getTypeTree(res.data),
-			});
-			this.$refs.dataForm.addInitValue();
-		});
-		await this.$fetch("book_subject_get_teachers", {
-			loginUserId: this.$common.getUserId(),
-			bookId: this.book.bookId
-		}).then(async (res) => {
-			this.addFormOptions.splice(6, 0, {
-				prop: "bookSubjectTeacherArray",
-				element: "el-select",
-				placeholder: "请选择",
-				label: "授课讲师",
-				filterable: true,
-				multiple: true,
-				options: res.data.map((item) => ({
-					label: item.teacherName,
-					value: JSON.stringify(item)
-				}))
-			});
+		if (this.fromWhere == 'root') {
+			this.initWhenRoot()
+		}
+		else if (this.fromWhere == 'fromClass' || this.fromWhere == 'edit') {
+			try {
+				await this.initWhenOther()
+			} catch (error) {
 
-			await this.getCourseInfo()
-			loadingInstance.close()
-		}).catch(() => {
-			loadingInstance.close()
-		})
+			}
+		}
+		scrollTo(0, 800);
+
+
 	},
 }
 </script>
