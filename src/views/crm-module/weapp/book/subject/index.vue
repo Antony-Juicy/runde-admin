@@ -1,17 +1,17 @@
 <!--  -->
 <template>
 	<div>
-		<subject></subject>
+		<subjectSuject></subjectSuject>
 	</div>
 </template>
 
 <script>
 
 
-import subject from './subject'
+import subjectSuject from './subject'
 export default {
-	name: "bookSubject",
-	components: { subject },
+	name: "subject",
+	components: { subjectSuject },
 
 }
 </script>

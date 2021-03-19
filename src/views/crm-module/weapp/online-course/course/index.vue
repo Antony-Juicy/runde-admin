@@ -1,17 +1,17 @@
 <!--  -->
 <template>
 	<div>
-		<course></course>
+		<courseCourse></courseCourse>
 	</div>
 </template>
 
 <script>
 
 
-import course from './course'
+import courseCourse from './course'
 export default {
 	name: "onlineCourseIndex",
-	components: { course },
+	components: { courseCourse },
 
 }
 </script>

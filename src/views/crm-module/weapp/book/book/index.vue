@@ -41,7 +41,7 @@ import fullDialog from "@/components/FullDialog";
 import { scrollTo } from "@/utils/scroll-to";
 import subject from '@/views/crm-module/weapp/book/subject/subject'
 export default {
-	name: "bookIndex",
+	name: "book",
 	components: { addEditBook, subject, fullDialog },
 	data() {
 
