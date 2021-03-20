@@ -76,7 +76,7 @@ export default {
 				{
 					prop: 'bookDetailImageUrl',
 					element: 'el-input',
-					label: '详情轮播图',
+					label: '详情轮播图(21:9)',
 					operate: true,
 					initValue: 0,
 				},
@@ -178,7 +178,7 @@ export default {
 				bookStatus: [{ required: true, message: '请选择图书状态', trigger: 'blur' },],
 				orderValue: [{ required: true, message: '请输入排序值', trigger: 'blur' },],
 				bookDescribe: [{ required: true, message: '请输入图书介绍', trigger: 'blur' },],
-				bookPurchaseUrl: [{ required: true, message: '请输入图书购买链接', trigger: 'blur' },],
+				// bookPurchaseUrl: [{ required: true, message: '请输入图书购买链接', trigger: 'blur' },],
 				bookDetail: [{ required: true, message: '请上传详情介绍', trigger: 'blur' },],
 			},
 			uploadOssElem: true,

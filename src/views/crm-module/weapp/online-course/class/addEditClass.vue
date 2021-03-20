@@ -233,8 +233,8 @@ export default {
 						this.$message.error("请选择授课讲师");
 						return;
 					}
-					// else if (this.teacherArray.length > 5) {
-					// 	this.$message.error("授课老师不能多于5个");
+					// else if (this.teacherArray.length > 4) {
+					// 	this.$message.error("授课老师不能多于4个");
 					// 	return;
 					// }
 					else {
@@ -287,8 +287,8 @@ export default {
 						this.$message.error("请选择授课讲师");
 						return;
 					}
-					// else if (this.teacherArray.length > 5) {
-					// 	this.$message.error("授课老师不能多于5个");
+					// else if (this.teacherArray.length > 4) {
+					// 	this.$message.error("授课老师不能多于4个");
 					// 	return;
 					// }
 					else {

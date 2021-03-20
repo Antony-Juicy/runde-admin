@@ -15,7 +15,7 @@
                     }
                 " />
 			</template>
-			<template slot="introducesImageUrl">
+			<!-- <template slot="introducesImageUrl">
 				<Upload-oss v-if="uploadOssElem2" :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }" :src.sync="introducesImageUrl" :initGetConfig="initGetConfig"
 					@srcChangeFun="
                     (data) => {
@@ -23,7 +23,7 @@
                     reloadElem('uploadOssElem2');
                     }
                 " />
-			</template>
+			</template> -->
 			<template slot="courseDetail">
 				<RdEditor placeholder="编辑详细介绍" :quillContent="courseDetailByEdit" @change="changeEditor" />
 			</template>
@@ -93,13 +93,13 @@ export default {
 					operate: true,
 					initValue: 0,
 				},
-				{
-					prop: "introducesImageUrl",
-					element: "el-input",
-					label: "介绍图(21:9)",
-					operate: true,
-					initValue: 0,
-				},
+				// {
+				// 	prop: "introducesImageUrl",
+				// 	element: "el-input",
+				// 	label: "介绍图(21:9)",
+				// 	operate: true,
+				// 	initValue: 0,
+				// },
 				{
 					prop: "totalEnrolment",
 					element: "el-input-number",
@@ -149,7 +149,7 @@ export default {
 				courseCode: [{ required: true, message: "请输入课程自编号", trigger: "blur" }, { validator: checkCode, trigger: "blur" }],
 				courseKeywords: [{ required: true, message: "请输入关键字", trigger: "blur" },],
 				defaultImageUrl: [{ required: true, message: "请上传封面图", trigger: "blur" },],
-				introducesImageUrl: [{ required: true, message: "请上传介绍图", trigger: "blur" },],
+				// introducesImageUrl: [{ required: true, message: "请上传介绍图", trigger: "blur" },],
 				teacherArray: [{ required: true, message: "请选择授课讲师", trigger: "blur" }],
 				totalEnrolment: [{ required: true, message: "请输入报名人数", trigger: "blur" },],
 				courseStatus: [{ required: true, message: "请输入", trigger: "blur" },],
@@ -235,12 +235,12 @@ export default {
 					} else {
 						data.defaultImageUrl = this.defaultImageUrl;
 					}
-					if (this.introducesImageUrl == "") {
-						this.$message.error("请上传介绍图");
-						return;
-					} else {
-						data.introducesImageUrl = this.introducesImageUrl;
-					}
+					// if (this.introducesImageUrl == "") {
+					// 	this.$message.error("请上传介绍图");
+					// 	return;
+					// } else {
+					// 	data.introducesImageUrl = this.introducesImageUrl;
+					// }
 					if (this.courseDetail == "") {
 						this.$message.error("请上传详细介绍");
 						return;
