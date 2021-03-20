@@ -179,7 +179,7 @@ export default {
 							disabled: false
 						},
 					],
-					needType: false,
+					needType: true,
 					showNum: 2,
 					params: {
 						classStatus: "Open"

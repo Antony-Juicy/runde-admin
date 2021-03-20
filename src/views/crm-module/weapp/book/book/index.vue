@@ -2,7 +2,7 @@
 <template>
 	<div class='book-container'>
 		<!-- 搜索栏 -->
-		<search-form :formOptions="formOptions" :showNum="4" @onSearch="onSearch"></search-form>
+		<search-form ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch"></search-form>
 		<div class="w-container">
 			<div class="btn-wrapper">
 				<el-button type="primary" size="small" @click="handleAdd">创建图书</el-button>
@@ -176,12 +176,17 @@ export default {
 					lock: true,
 					target: ".el-table",
 				});
+				// 深拷贝
+				let searchForm = JSON.parse(JSON.stringify(this.searchForm))
+				if (searchForm.typeId && searchForm.typeId.constructor == Array) {
+					searchForm.typeId = searchForm.typeId.pop()
+				}
 				this.$fetch(
 					"book_get_books",
 					{
 						loginUserId: this.$common.getUserId(),
 						...this.pageConfig,
-						...this.searchForm,
+						...searchForm,
 						...params
 					}
 				).then((res) => {
@@ -271,7 +276,19 @@ export default {
 			this.$store.dispatch('book/clearBook')
 		}
 	},
-	mounted() {
+	async mounted() {
+		// 获取项目三级分类
+		let projectType_select_res = await this.$fetch(
+			"projectType_select",
+		);
+		let typeId_select = {
+			prop: "typeId",
+			element: "el-cascader",
+			placeholder: "请选择项目类型",
+			options: this.$common.getTypeTree(projectType_select_res.data),
+		}
+		this.formOptions.push(typeId_select);
+		this.$refs.searchForm.addInitValue()
 		this.getTableData()
 	},
 }

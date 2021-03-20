@@ -1,9 +1,9 @@
 <template>
 
-	<el-popover v-model="show" class="select-pop" placement="bottom" width="500" trigger="click" :append-to-body="false">
+	<el-popover v-model="show" class="select-pop" placement="bottom-start" width="700" trigger="click" :append-to-body="false">
 		<search-form :formOptions="searchObj.formOptions" :showNum="searchObj.showNum" @onSearch="onSearch" ref="searchForm"></search-form>
 		<div class="scroll-box" v-infinite-scroll="getTableData">
-			<el-table :data="tableData">
+			<el-table :data="tableData" v-loading="tableLoad">
 				<template v-for="(item,index) in tableObj.tableKey">
 					<el-table-column v-if="!item.operate" :prop="item.value" :label="item.name" :width="item.width" :key="index"></el-table-column>
 				</template>
@@ -40,6 +40,7 @@ export default {
 	data() {
 		return {
 			tableData: [],
+			tableLoad: false,
 			searchForm: {},
 			pageConfig: {
 				totalCount: 0,
@@ -59,13 +60,15 @@ export default {
 			this.searchForm = { ...data };
 			this.pageConfig.pageNum = 1;
 			this.pageConfig.hasNext = true;
-			this.tableData = []
+			this.tableData = JSON.parse(JSON.stringify([]))
 			this.getTableData();
 		},
 		async getTableData() {
+
 			if (!this.pageConfig.hasNext) {
 				return
 			}
+			this.tableLoad = true
 			// 深拷贝
 			let searchForm = JSON.parse(JSON.stringify(this.searchForm))
 			if (searchForm.typeId && searchForm.typeId.constructor == Array) {
@@ -79,13 +82,13 @@ export default {
 					...searchForm,
 					...this.searchObj.params
 				}
-			)
-			this.pageConfig.hasNext = res.data.hasNext
-			console.log(this.tableData)
-			this.$nextTick(() => {
-				this.tableData = this.tableData.concat(res.data.records)
-			})
+			).catch(() => { this.tableLoad = false })
 
+			this.pageConfig.hasNext = res.data.hasNext
+			// console.log(this.tableData)
+			await this.$common.sleep(1000)
+			this.tableData = this.tableData.concat(res.data.records)
+			this.tableLoad = false
 			this.pageConfig.pageNum++
 			// console.log(res)
 		}
@@ -99,7 +102,7 @@ export default {
 				prop: "typeId",
 				element: "el-cascader",
 				placeholder: "请选择项目类型",
-				props: { checkStrictly: true },
+				// props: { checkStrictly: true },
 				options: this.$common.getTypeTree(projectType_select_res.data),
 			}
 			this.searchObj.formOptions.push(typeId_select);
