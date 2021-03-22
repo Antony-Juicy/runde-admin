@@ -159,6 +159,7 @@ export default {
 					}
 				).then((res) => {
 					this.tableData = res.data.records.map((item) => {
+						item.typeName = item.typeName.replace(/\\n/g,'')
 						item.bannerStatus = this.bannerStatus2Zh(item.bannerStatus)
 						if (item.bannerType == 'None') {
 							item.bannerTarget = "/"

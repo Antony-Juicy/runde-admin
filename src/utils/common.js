@@ -152,7 +152,7 @@ const $common = {
     // 多级分类下拉
     getTypeTree(val) {
         val.forEach(item => {
-          item.label = item.typeName;
+          item.label = item.typeName.replace(/\\n/g,'');
           item.value = item.typeId;
           item.nodes = item.children
           if(item.children && item.children.length == 0) {

@@ -110,9 +110,9 @@ export default {
 				courseChapterName: [
 					{ required: true, message: "请输入科目名称", trigger: "blur" }
 				],
-				courseVideoId: [
-					{ required: true, message: "请输入视频ID", trigger: "blur" }
-				],
+				// courseVideoId: [
+				// 	{ required: true, message: "请输入视频ID", trigger: "blur" }
+				// ],
 				courseChapterStatus: [
 					{ required: true, message: "请选择显示状态", trigger: "blur" }
 				],

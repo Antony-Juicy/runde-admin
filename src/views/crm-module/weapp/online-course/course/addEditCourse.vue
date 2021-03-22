@@ -25,7 +25,7 @@
                 " />
 			</template> -->
 			<template slot="courseDetail">
-				<RdEditor placeholder="编辑详细介绍" :quillContent="courseDetailByEdit" @change="changeEditor" />
+				<RdEditor height="600px" placeholder="编辑详细介绍" :quillContent="courseDetailByEdit" @change="changeEditor" />
 			</template>
 		</RdForm>
 		<div class="btn-wrapper">

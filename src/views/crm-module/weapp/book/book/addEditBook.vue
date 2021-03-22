@@ -29,7 +29,7 @@
 				</el-select>
 			</template>
 			<template slot="bookDetail">
-				<RdEditor placeholder="编辑班级详细介绍" :quillContent="bookDetailByEdit" @change="changeEditor" />
+				<RdEditor height="600px" placeholder="编辑班级详细介绍" :quillContent="bookDetailByEdit" @change="changeEditor" />
 			</template>
 		</RdForm>
 		<div class="btn-wrapper">
@@ -277,7 +277,7 @@ export default {
 					data.bookLabel = data.bookLabel.join(',')
 
 					// 后台保存的数据是用字符串，所以要格式化数组成字符串
-					data.bookTeacherArray = JSON.stringify(data.bookTeacherArray)
+					// data.bookTeacherArray = JSON.stringify(data.bookTeacherArray)
 					this.$fetch('book_add_book', {
 						...data,
 						loginUserId: this.$common.getUserId(),

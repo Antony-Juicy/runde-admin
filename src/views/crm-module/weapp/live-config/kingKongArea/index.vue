@@ -147,6 +147,7 @@ export default {
 					}
 				).then((res) => {
 					this.tableData = res.data.records.map((item) => {
+						item.typeName = item.typeName.replace(/\\n/g,'')
 						item.iconStatus = this.iconStatus2Zh(item.iconStatus)
 						if(item.linkType == 'None'){
 							item.iconLink = '/'

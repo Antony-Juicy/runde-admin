@@ -190,6 +190,7 @@ export default {
 					}
 				).then((res) => {
 					this.tableData = res.data.records.map((item) => {
+						item.typeName = item.typeName.replace(/\\n/g,'')
 						try {
 							item.teacherArray = JSON.parse(item.teacherArray)
 						} catch (error) {

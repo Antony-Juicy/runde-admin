@@ -110,9 +110,9 @@ export default {
 				bookChapterName: [
 					{ required: true, message: '请输入科目名称', trigger: 'blur' },
 				],
-				bookVideoId: [
-					{ required: true, message: '请输入视频ID', trigger: 'blur' },
-				],
+				// bookVideoId: [
+				// 	{ required: true, message: '请输入视频ID', trigger: 'blur' },
+				// ],
 				bookChapterStatus: [
 					{ required: true, message: '请选择显示状态', trigger: 'blur' },
 				],

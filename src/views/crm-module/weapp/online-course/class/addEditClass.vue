@@ -24,7 +24,7 @@
 				</el-select>
 			</template>
 			<template slot="courseClassDetail">
-				<RdEditor placeholder="编辑班级详细介绍" :quillContent="courseClassDetailByEdit" @change="changeEditor" />
+				<RdEditor height="600px" placeholder="编辑班级详细介绍" :quillContent="courseClassDetailByEdit" @change="changeEditor" />
 			</template>
 		</RdForm>
 		<div class="btn-wrapper">

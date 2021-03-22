@@ -192,6 +192,7 @@ export default {
 					this.tableData = res.data.records.map((item) => {
 						item.classStatus = this.classStatus2Zh(item.classStatus)
 						item.teacherArray = JSON.parse(item.teacherArray)
+						item.typeName = item.typeName.replace(/\\n/g,'')
 						return item;
 					});
 					this.pageConfig.totalCount = res.data.totalCount;

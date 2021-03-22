@@ -191,6 +191,7 @@ export default {
 					}
 				).then((res) => {
 					this.tableData = res.data.records.map((item) => {
+						item.typeName = item.typeName.replace(/\\n/g,'')
 						item.bookStatus = this.bookStatus2Zh(item.bookStatus)
 						try {
 							item.bookTeacherArray = JSON.parse(item.bookTeacherArray)
