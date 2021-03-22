@@ -296,7 +296,7 @@ export default {
 				loginUserId: this.$common.getUserId(),
 				bookId: this.bookId
 			}).then(async (res) => {
-				this.addFormOptions[7] = {
+				this.addFormOptions[6] = {
 					prop: "bookSubjectTeacherArray",
 					element: "el-select",
 					placeholder: "请选择",
@@ -330,7 +330,7 @@ export default {
 					operate: true,
 					initValue: "0"
 				})
-				this.addFormOptions.splice(7, 0, {
+				this.addFormOptions.splice(6, 0, {
 					prop: "bookSubjectTeacherArray",
 					element: "el-select",
 					placeholder: "请选择",
@@ -363,7 +363,7 @@ export default {
 				loginUserId: this.$common.getUserId(),
 				bookId: this.book.bookId
 			}).then(async (res) => {
-				this.addFormOptions.splice(7, 0, {
+				this.addFormOptions.splice(5, 0, {
 					prop: "bookSubjectTeacherArray",
 					element: "el-select",
 					placeholder: "请选择",
@@ -376,15 +376,16 @@ export default {
 					}))
 				});
 			})
-			await this.getSubjectInfo()
 			this.addFormOptions.unshift({
-				prop: "book",
+				prop: "bookName",
 				element: "el-input",
 				placeholder: "",
 				label: "所属图书",
 				disabled: true,
-				initValue: this.data.bookName
+				initValue: this.book.bookName
 			})
+			await this.getSubjectInfo()
+			
 			this.$refs.dataForm.addInitValue();
 		}
 
@@ -398,7 +399,7 @@ export default {
 			try {
 				await this.initWhenOther()
 			} catch (error) {
-
+				console.log(error)
 			}
 		}
 		scrollTo(0, 800);
