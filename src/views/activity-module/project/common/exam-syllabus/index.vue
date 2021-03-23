@@ -74,12 +74,13 @@ export default {
     return {
       formOptions: [
         {
-          prop: "menuName",
+          prop: "productType",
           element: "el-select",
           placeholder: "项目",
+          options: []
         },
         {
-          prop: "menuName",
+          prop: "subjectName",
           element: "el-input",
           placeholder: "科目名称",
         }
@@ -87,13 +88,13 @@ export default {
       searchForm:{},
       emptyText:"暂无数据",
       tableData:[
-         {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-        },
+        //  {
+        //   id: 1,
+        //   name: "飞翔的荷兰人3",
+        //   cutdown: 1608897351706,
+        //   visit: 2,
+        //   phone: "15692026183",
+        // },
       ],
       tableKey: [
         {
@@ -104,47 +105,47 @@ export default {
         },
         {
           name: "项目名称",
-          value: "staffName",
+          value: "productType",
         },
         {
           name: "科目名称",
-          value: "goodsName",
+          value: "subjectName",
         },
         {
           name: "科目启动时间",
-          value: "activityName",
+          value: "startTime",
         },
         {
           name: "科目结束时间",
-          value: "posterName",
+          value: "endTime",
         },
         {
           name: "是否分享",
-          value: "posterPic",
+          value: "shareStatus",
           width: 60
         },
         {
           name: "答案图片",
-          value: "posterCopyFirst",
+          value: "answerImgUrl",
         },
         {
           name: "题库版本号",
-          value: "posterCopySecond",
+          value: "itemVersion",
           width: 60
         },
         {
           name: "视频链接",
-          value: "posterCopyThird",
+          value: "videoUrl",
           width: 60
         },
         {
           name: "视频首页图",
-          value: "posterCopyFourth",
+          value: "loadingBgImg",
           width: 60
         },
         {
           name: "排序",
-          value: "posterCopyFifth",
+          value: "orderValue",
           width: 60
         },
         {
@@ -171,7 +172,7 @@ export default {
       addVisible: false,
       addFormOptions: [
          {
-          prop: "roleName",
+          prop: "productType",
           element: "el-select",
           placeholder: "请选择",
           label: "项目名称",
@@ -179,7 +180,7 @@ export default {
           ]
         },  
         {
-          prop: "menuName",
+          prop: "subjectName",
           element: "el-input",
           placeholder: "请输入",
           label: "科目名称"
@@ -193,30 +194,30 @@ export default {
           label: "科目启动时间",
         },
         {
-          prop: "roleName",
+          prop: "shareStatus",
           element: "el-select",
           placeholder: "请选择",
           label: "是否分享",
           options: [
             {
               label: "是",
-              value: "0",
+              value: "yes",
             },
             {
               label: "否",
-              value: 1,
+              value: "no",
             },
           ],
         },
          {
-          prop: "upload",
+          prop: "answerImgUrl",
           element: "el-input",
           placeholder: "请输入",
           label: "图片上传",
           operate: true
         },
          {
-          prop: "menuName",
+          prop: "videoUrl",
           element: "el-input",
           placeholder: "请输入",
           label: "视频链接",
@@ -224,7 +225,7 @@ export default {
           rows: 2
         },
          {
-          prop: "menuName",
+          prop: "loadingBgImg",
           element: "el-input",
           placeholder: "请输入",
           label: "视频首页图",
@@ -232,16 +233,22 @@ export default {
           rows: 2
         },
         {
-          prop: "menuName",
+          prop: "orderValue",
           element: "el-input",
           placeholder: "请输入",
           label: "排序"
         },
       ],
       addRules:{
-        updateReason: [
-          { required: true, message: "请输入修改事由", trigger: "blur" },
-        ]
+        productType: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ],
+        subjectName: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+        shareStatus: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ],
       },
       addStatus: true,
       previewVisible: false
@@ -249,6 +256,9 @@ export default {
   },
   components:{
     RdForm
+  },
+  mounted(){
+    this.getTableData();
   },
    methods: {
      onSearch(val){
@@ -258,9 +268,38 @@ export default {
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
      },
-     getTableData(){
+     getTableData(params = {}) {
+      this.$fetch("secretexamsubject_listExamJsp", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.varList.map((item) => {
+          item.picUrl = this.$common.setThumbnail(item.picUrl);
+          item.startTime = this.$common._formatDates(item.startTime);
+          item.endTime = this.$common._formatDates(item.endTime);
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          let obj1 = res.data.productList.find(ele => (ele.key == item.productType));
+          item.productType1 = obj1&&obj1.value;
+          let obj2 = res.data.subjectUnitList.find(ele => (ele.key == item.subjectUnit));
+          item.subjectUnit1 = obj2&&obj2.value;
+          return item;
+        });
 
-     },
+        this.productList = res.data.productList.map(item => ({
+          label: item.value,
+          value: item.key
+        }));
+        this.pageConfig.totalCount = res.data.page.totalResult;
+
+        // 给添加弹窗的下拉赋值
+        this.addFormOptions[0].options = this.productList;
+        // 给搜索栏下拉赋值
+        this.formOptions[0].options = this.productList;
+
+      });
+    },
      pageChange(val) {
       console.log(val,'pagechange')
       this.pageConfig.currentPage = val.page;
@@ -274,6 +313,17 @@ export default {
       this.$refs[formName].validate((valid, formData) => {
         if(valid){
           console.log(formData, "提交");
+          this.$fetch(this.addStatus?"secretexamsubject_add":"secretexamsubject_editJsp",{
+            ...formData,
+            time:"",
+            startTime: formData.time?formData.time[0]:"",
+            endTime: formData.time?formData.time[1]:"",
+            id: this.addStatus?"": this.editId
+          }).then(res =>{ 
+            this.$message.success("操作成功")
+            this.addVisible = false;
+            this.getTableData();
+          })
         }
           
       });

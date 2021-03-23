@@ -116,7 +116,15 @@ const actions = {
         const { msg } = res
         resolve(msg)
       }).catch(error => {
-        reject(error)
+        // reject(error)
+        //即使注销失败也照样清数据退出来
+        commit('SET_TOKEN', '')
+        removeToken()
+        resetRouter()
+        commit('SET_ROLES', '')
+        localStorage.clear()
+        dispatch('tagsView/delAllViews', null, { root: true })
+        resolve()
       })
     })
   },

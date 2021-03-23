@@ -10,14 +10,14 @@
         <el-button type="primary" size="small" @click="handleAdd"
           >添加</el-button
         >
-        <el-button type="info" size="small" @click="handleAdd">下载</el-button>
-        <el-button type="danger" size="small" @click="handleAdd"
+        <el-button type="info" size="small" @click="handleDownLoad">导出</el-button>
+        <el-button type="danger" size="small" @click="handleChange('Stop')"
           >全部暂停</el-button
         >
-        <el-button type="success" size="small" @click="handleAdd"
+        <el-button type="success" size="small" @click="handleChange('Normal')"
           >全部恢复</el-button
         >
-        <el-button type="warning" size="small" @click="handleAdd"
+        <el-button type="warning" size="small" @click="handleExportPic"
           >导出作品图片</el-button
         >
       </div>
@@ -140,12 +140,11 @@
             >编辑</el-button
           >
           <el-divider direction="vertical"></el-divider>
-          <el-button @click="handleDetail(scope.row)" type="text" size="small"
+          <el-button @click="downPic(scope.row)" type="text" size="small"
             >下载</el-button
           >
           <el-divider direction="vertical"></el-divider>
           <el-button
-            @click="handleDetail(scope.row)"
             type="text"
             size="small"
             style="color: #ffa500"
@@ -155,15 +154,27 @@
       </rd-table>
     </div>
 
-    <!-- 添加 -->
-    <fullDialog v-model="addVisible" title="添加" @change="addVisible = false">
+    <!-- 添加/编辑 -->
+    <fullDialog v-model="addVisible" :title="addStatus?'添加':'编辑'" @change="addVisible = false">
       <AddVote
         ref="AddAct"
+        :editDetail="editDetail"
         @close="addVisible = false"
         @refresh="refresh"
         v-if="addVisible"
       />
     </fullDialog>
+
+    <!-- 导出 -->
+    <rd-dialog
+        :title="'选择导出的列'"
+        submitText="导出"
+        :dialogVisible="downLoadVisible"
+        @handleClose="downLoadVisible = false"
+        @submitForm="submitExportForm('dataForm3')"
+      >
+         <el-transfer v-model="exportValue" :data="data"></el-transfer>
+      </rd-dialog>
   </div>
 </template>
 
@@ -171,6 +182,7 @@
 import RdForm from "@/components/RdForm";
 import fullDialog from "@/components/FullDialog";
 import AddVote from "./AddVote";
+ 
 export default {
   name: "vote-management",
   data() {
@@ -460,6 +472,12 @@ export default {
         ],
       },
       addStatus: true,
+      editDetail: {},
+      downLoadVisible: false,
+      exportValue: [],
+      data: [
+      ],
+      columnData:[]
     };
   },
   components: {
@@ -475,6 +493,7 @@ export default {
     onSearch(val) {
       this.searchForm = {
         ...val,
+        createAt: val.createAt?val.createAt.join('~'):""
       };
       console.log(val, this.searchForm, "val---");
       this.getTableData();
@@ -490,11 +509,6 @@ export default {
           item.picUrl = this.$common.setThumbnail(item.picUrl);
           item.startTime = this.$common._formatDates(item.startTime);
           item.endTime = this.$common._formatDates(item.endTime);
-          // let obj1 = res.data.productType.find(ele => (ele.key == item.oneProductType));
-          // let obj2 = res.data.ProductList.find(ele => (ele.key == item.productType));
-          // item.oneProductTypeId = obj1 && obj1.value;
-          // item.productTypeId = obj2 && obj2.value;
-          // item.medicineTypeId = item.medicineType == "Western" ? "西药" : "中药";
           return item;
         });
         this.pageConfig.totalCount = res.data.page.totalResult;
@@ -507,6 +521,7 @@ export default {
       this.getTableData();
     },
     handleAdd() {
+      this.addStatus = true;
       this.addVisible = true;
     },
     submitAddForm(formName) {
@@ -519,26 +534,30 @@ export default {
     handleEdit(data) {
       this.addStatus = false;
       this.addVisible = true;
+       this.$fetch("cmscertificateinfo_goEdit",{
+            id: data.id
+        }).then(res => {
+            // console.log(res,'res---')
+            this.editDetail = res.data;
+        })
     },
-    handleDelete(row) {
-      let info = "海报";
-      this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
+    handleChange(status) {
+      this.$confirm(`确认执行该操作吗？`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(async () => {
-          const res = await this.$fetch("projectType_delete", {
-            typeId: row.typeId,
-            loginUserId,
+          const res = await this.$fetch("cmscertificateinfo_batchChange", {
+            statusValue: status
           }).then((res) => {
             if (res) {
               this.$message({
-                message: "删除成功",
+                message: "操作成功",
                 type: "success",
               });
               setTimeout(() => {
-                this.getTableData();
+                this.refresh();
               }, 50);
             }
           });
@@ -553,8 +572,24 @@ export default {
         currentPage: 1
       })
     },
-    gotoInfo(data) {},
-    changeStatus(data) {},
+    gotoInfo(data) {
+      this.$router.push({
+        name: '/activity-module/project/pharmacist/certificate-vote/vote-record'  + '?' + sessionStorage.getItem("router-timeStamp"),
+        params: {
+          certificateId: data.wxId
+        } 
+      })
+    },
+    changeStatus(data) {
+      console.log(data,'changestatus')
+      this.$fetch("cmscertificateinfo_editStatus",{
+        statusValue: data.status_text=="Normal"?"Stop":"Normal",
+        id: data.id
+      }).then(res => {
+        this.$message.success("操作成功")
+        this.refresh();
+      })
+    },
     getSelectList() {
       Promise.all([
         this.$fetch("cmscertificateinfo_getActivityList"),
@@ -581,6 +616,59 @@ export default {
         console.log(this.formOptions,'formoptions')
       })
     },
+    handleDownLoad(){
+      this.exportValue = [];
+      this.downLoadVisible = true;
+      this.$fetch("cmscertificateinfo_getAllColumnNamesCertificateInfo").then(res => {
+        this.columnData = res.data.columnData;
+        this.data = res.data.columnData.map(item => ({
+          key: item.columnNames,
+          label: item.columnValues
+        }))
+      })
+    },
+    submitExportForm(){
+      console.log(this.exportValue,'exportValue')
+      let arr = [];
+      this.exportValue.forEach((item,index) => {
+        let obj = this.data.find(ele => (ele.key == item));
+        if(obj){
+          arr.push(obj)
+        }
+      })
+      let newArr = [];
+      arr.forEach(item => {
+        newArr.push(item.label)
+        newArr.push(item.key)
+      })
+      console.log(newArr,'newArr--')
+      this.$fetch("cmscertificateinfo_export",{
+        ...this.searchForm,
+        columnName: newArr.join(",")
+      }).then(res => {
+        this.$message.success("操作成功")
+        this.downLoadVisible = false;
+        let blob = new Blob([res], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"}),
+        Temp = document.createElement("a");
+        Temp.href = window.URL.createObjectURL(blob);
+        Temp.download =new Date().getTime();
+        document.querySelector("body").appendChild(Temp);
+        Temp.click();
+        document.body.removeChild(Temp); //下载完成移除元素
+        window.URL.revokeObjectURL(Temp.href); 
+      })
+    },
+    handleExportPic(){
+      this.$fetch("cmscertificateinfo_toExcelPic")
+    },
+    downPic(data){
+      if(!data.picUrl){
+        this.$message.error("该作品没有图片")
+        return;
+      }
+      // window.location.href = data.picUrl;
+      window.open(data.picUrl);
+    }
   },
 };
 </script>

@@ -58,7 +58,7 @@
       </rd-dialog>
 
       <!-- 上传 -->
-      <rd-dialog
+      <!-- <rd-dialog
         :title="'上传题目'"
         :dialogVisible="importVisible"
         @handleClose="importVisible = false"
@@ -78,7 +78,12 @@
           >
             <el-button size="small" type="primary">点击上传</el-button>
           </el-upload>
-      </rd-dialog>
+      </rd-dialog> -->
+      <uploadFile 
+        :importVisible.sync="importVisible" 
+        :importId="importId"
+        url="lookpicture_import" 
+        @refresh="getTableData"/>
 
       <!-- 题目详情 -->
       <el-drawer
@@ -97,9 +102,8 @@
 
 <script>
 import RdForm from "@/components/RdForm";
-import Fetch from '@/utils/fetch';
-import subjectDetail from "@/views/activity-module/project/common/audition-link/audition-subject/subjectDetail";
-import chanceSelect from '@/utils/chance-select'
+import subjectDetail from "@/components/Activity/subjectDetail";
+import uploadFile from '@/components/Activity/uploadFile'
 export default {
   name:"look-picture",
   data(){
@@ -265,12 +269,14 @@ export default {
       addStatus: true,
       detailVisible: false,
       editId:"",
-      drawerId:""
+      drawerId:"",
+      importId:""
     }
   },
   components:{
     RdForm,
-    subjectDetail
+    subjectDetail,
+    uploadFile
   },
   mounted(){
     this.getTableData();
@@ -343,24 +349,14 @@ export default {
       this.$refs[formName].validate((valid, formData) => {
         if(valid){
           console.log(formData, "提交");
-          if(this.addStatus){
-            // 新增
-            this.$fetch("lookpicture_add",formData).then(res => {
-              this.$message.success("操作成功")
-              this.addVisible = false;
-              this.getTableData();
-            })
-          }else {
-            // 编辑
-            this.$fetch("lookpicture_edit",{
-              ...formData,
-              id: this.editId
-            }).then(res => {
-              this.$message.success("操作成功")
-              this.addVisible = false;
-              this.getTableData();
-            })
-          }
+          this.$fetch(this.addStatus?"lookpicture_add":"lookpicture_edit",{
+            ...formData,
+            id: this.addStatus?"":this.editId
+          }).then(res => {
+            this.$message.success("操作成功")
+            this.addVisible = false;
+            this.getTableData();
+          })
           
         }
           
@@ -405,60 +401,9 @@ export default {
       this.detailVisible = true;
       this.drawerId = data.id;
     },
-    submitImportForm(){
-      if(!this.importFile){
-            this.$message.warning("请上传文件");
-            return;
-          }
-          let obj = new FormData();
-          obj.append("excel", this.importFile);
-          obj.append("id", 14);
-          this.$fetch("lookpicture_import", obj).then((res) => {
-            if(res.code == 200){
-              this.$message.success("操作成功")
-              this.getTableData();
-              this.importVisible = false;
-            }
-          });
-    },
-    handleUpload(){
+    handleUpload(data){
       this.importVisible = true;
-    },
-    // 上传文件
-    handleExceed(files, fileList) {
-      this.$message.warning(
-        `当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${
-          files.length + fileList.length
-        } 个文件`
-      );
-    },
-    beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${file.name}？`);
-    },
-    handleChange(file, fileList) {
-      this.importFile = file.raw;
-    },
-     // 导入上传之前的文件格式校验
-    beforeAvatarUpload(file) {
-      console.log(file)
-      let testmsg=file.name.substring(file.name.lastIndexOf('.')+1)
-      const extension = testmsg === 'xls'
-      const extension2 = testmsg === 'xlsx'
-      // const isLt2M = file.size / 1024 / 1024 < 10
-      if(!extension && !extension2) {
-          this.$message({
-              message: '上传文件只能是 xls、xlsx格式!',
-              type: 'warning'
-          });
-      }
-      // if(!isLt2M) {
-      //     this.$message({
-      //         message: '上传文件大小不能超过 10MB!',
-      //         type: 'warning'
-      //     });
-      // }
-      // return extension || extension2 && isLt2M
-      return extension || extension2
+      this.importId = data.id;
     },
     downloadTemp(){
       window.location.href = "/temp/kanyaoshitu.xlsx"

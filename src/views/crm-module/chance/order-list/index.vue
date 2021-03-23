@@ -263,7 +263,7 @@ export default {
     onSearch(val) {
       this.searchForm = { 
         ...val,
-        updateAt: val.updateAt?val.updateAt.join(' ~ '):"",
+        updateAt: val.updateAt?val.updateAt.join('~'):"",
         campusId: val.campusId?val.campusId.join(","):""
        };
       console.log(val, this.searchForm, "val---");

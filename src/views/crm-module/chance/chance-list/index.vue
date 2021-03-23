@@ -130,12 +130,12 @@ export default {
           enquireProductIdOne: val.product[0],
           enquireSubjectIdOne: val.product[1],
           enquireCourseIdOne: val.product[2],
-          createAt: val.createAt?val.createAt.join(' ~ '):""
+          createAt: val.createAt?val.createAt.join('~'):""
         };
       }else {
         this.searchForm = {
           ...val,
-          createAt: val.createAt?val.createAt.join(' ~ '):""
+          createAt: val.createAt?val.createAt.join('~'):""
         }
       }
       this.getTableData();

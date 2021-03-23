@@ -51,7 +51,7 @@
       </template>
     </rd-table>
     <!-- 回访抽屉 -->
-    <template v-if="drawerVisible">
+    <!-- <template v-if="drawerVisible"> -->
       <rd-drawer
         :dialogVisible="drawerVisible"
         :size="drawerSize"
@@ -60,7 +60,7 @@
         :title="drawerTitle"
         @handleClose="drawerVisible = false"
       ></rd-drawer>
-    </template>
+    <!-- </template> -->
 
     <!-- 成单弹窗 -->
     <rd-dialog
@@ -904,7 +904,11 @@ export default {
       this.$refs[formName].validate((valid, formData) => {
         if (valid) {
           console.log(formData, "提交");
-          this.$fetch("chance_my_invalid",formData).then(res=>{
+          this.$fetch("chance_my_invalid", {
+            ...formData,
+            phone: this.selectedData[0].phone,
+            enquireProductIdOne: this.selectedData[0].enquireProductIdOne,
+          }).then(res=>{
             if(res.code == 200){
               this.$message.success('操作成功')
               this.handleClose();

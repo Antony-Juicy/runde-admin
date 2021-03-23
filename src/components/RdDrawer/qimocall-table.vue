@@ -112,7 +112,7 @@ export default {
         ...params,
         calledNo: this.phone
       }).then((res) => {
-        this.tableData = res.data.data.map((item) => {
+        this.tableData = res.data.data&&res.data.data.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
           item.updateAt = this.$common._formatDates(item.updateAt);
           return item;

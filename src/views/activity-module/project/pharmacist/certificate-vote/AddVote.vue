@@ -172,6 +172,21 @@ export default {
   components: {
       UploadOss
   },
+  props: {
+      editDetail: {
+          type: Object
+      }
+  },
+  watch:{
+    editDetail(newVal){
+        console.log(newVal,'editDetail')
+        let data = newVal.pd;
+        this.formInline = {
+            ...data,
+            time: [data.startTime,data.endTime]
+        }
+    }
+  },
   created(){
       // 限制开始日期不能超过当前日期
     this.startDateDisabled.disabledDate = function (time) {

@@ -15,7 +15,7 @@ const service = axios.create({
   timeout: 20000 // request timeout
 })
 
-let loadingStatus = true;
+let totalNewConfig;
 
 const getParam = () => {
   const timestamp = parseInt(new Date().getTime() / 1000)
@@ -30,7 +30,7 @@ service.interceptors.request.use(
     if(!config.hideLoading){
       showLoading()
     }
-    
+
     if (config.data && config.data.append) {
       config.data.append('token', getToken())
       config.data.append('loginUserId', common.getUserId())
@@ -38,7 +38,11 @@ service.interceptors.request.use(
       for (const i in _param) {
         config.data.append(i, _param[i])
       }
-    } else {
+    } 
+    else if(totalNewConfig.headers["Content-Type"]&& totalNewConfig.headers["Content-Type"] == "application/json"){
+      
+    }
+    else{
       config.data = qs.stringify({
         token: getToken(),
         loginUserId: common.getUserId(),
@@ -50,6 +54,7 @@ service.interceptors.request.use(
     return config
   },
   error => {
+    
     // do something with request error
     console.log(error) // for debug
     return Promise.reject(error)
@@ -61,6 +66,10 @@ service.interceptors.response.use(
   response => {
       hideLoading()
     const res = response.data
+    // 文件流直接返回
+    if(res.code == undefined){
+      return res
+    }
     // if the custom code is not 1, it is judged as an error.
     if (res.code !== 200 && res.code !== 1 && res.code !== "Success") {
 
@@ -99,6 +108,10 @@ service.interceptors.response.use(
           })
         })
       } else {
+        // 如果是账号注销失败 不用提示
+        if(res.msg == "账号注销失败"){
+          return
+        }
         Message.closeAll()
         Message({
           message: res.msg || 'Error',
@@ -112,12 +125,13 @@ service.interceptors.response.use(
     }
   },
   error => {
+    hideLoading();
     if (!error.response) {
       console.log(error, 'error')
       return;
     }
     let status = error.response.status;
-    hideLoading();
+    
     if (status === 401) {
       Message.closeAll()
       Message({
@@ -188,7 +202,7 @@ const $fetch = async (apiName, params, config) => {
   }
 
   let newConfig = JSON.parse(JSON.stringify(apiConfig[apiName]));
-  const { headers = [], bodyParams, method } = newConfig;
+  const { headers = [], paramType , method } = newConfig;
   newConfig.headers = {};
 
   if (headers.length > 0) {
@@ -200,6 +214,10 @@ const $fetch = async (apiName, params, config) => {
   if (getToken()) {
     // newConfig.headers["Authorization"] = getToken();
     newConfig.headers["Authorization"] = 'rd_superadmin';
+  }
+
+  if(paramType == "body"){
+    newConfig.headers["Content-Type"] = 'application/json';
   }
 
   if (params) {
@@ -233,6 +251,8 @@ const $fetch = async (apiName, params, config) => {
     });
     newConfig.url = appendUrlParams(newConfig.url, urlParams);
   }
+
+  totalNewConfig = newConfig;
 
   return service(newConfig);
 }

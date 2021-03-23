@@ -124,7 +124,7 @@ export default {
     onSearch(val) {
       this.searchForm = {
         ...val,
-        End: val.End?val.End.join(' ~ '):""
+        End: val.End?val.End.join('~'):""
       };
       console.log(val,this.searchForm , 'val---')
       this.getTableData();

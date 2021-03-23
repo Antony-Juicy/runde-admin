@@ -138,6 +138,9 @@ const $common = {
 
     // 配置图片缩略图
     setThumbnail(pic){
+        if(!pic){
+            return;
+        }
         return pic + '?x-oss-process=image/auto-orient,1/resize,m_lfit,w_550/quality,q_100'
     },
 
