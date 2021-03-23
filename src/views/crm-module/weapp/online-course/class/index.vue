@@ -24,8 +24,8 @@
 			</rd-table>
 		</div>
 		<!-- 添加课程 -->
-		<fullDialog v-model="addEditVisible" :title="titleAddOrEdit" @change="addEditVisible = false">
-			<addEditClass ref="addEditClass" @close="addEditVisible = false" @refresh="refresh" v-if="addEditVisible" />
+		<fullDialog v-model="addEditVisible" :title="titleAddOrEdit" @change="handleEditClose">
+			<addEditClass ref="addEditClass" @close="handleEditClose" @refresh="refresh" v-if="addEditVisible" />
 		</fullDialog>
 		<fullDialog class="course" v-model="courseVisiable" title="科目管理" @change="handleCourseClose">
 			<course :courseClass="courseClass" @close="handleCourseClose" @refresh="refresh" v-if="courseVisiable"></course>
@@ -148,7 +148,8 @@ export default {
 			searchForm: {}, //搜索栏信息
 			titleAddOrEdit: "创建班级",
 			courseVisiable: false,
-			courseClass: {}
+			courseClass: {},
+			markScroll: 0,
 		};
 	},
 	components: { fullDialog, addEditClass, course },
@@ -175,7 +176,7 @@ export default {
 					lock: true,
 					target: ".el-table",
 				});
-                // 深拷贝
+				// 深拷贝
 				let searchForm = JSON.parse(JSON.stringify(this.searchForm))
 				if (searchForm.typeId && searchForm.typeId.constructor == Array) {
 					searchForm.typeId = searchForm.typeId.pop()
@@ -192,7 +193,7 @@ export default {
 					this.tableData = res.data.records.map((item) => {
 						item.classStatus = this.classStatus2Zh(item.classStatus)
 						item.teacherArray = JSON.parse(item.teacherArray)
-						item.typeName = item.typeName.replace(/\\n/g,'')
+						item.typeName = item.typeName.replace(/\\n/g, '')
 						return item;
 					});
 					this.pageConfig.totalCount = res.data.totalCount;
@@ -217,6 +218,7 @@ export default {
 		handleAdd() {
 			this.titleAddOrEdit = '创建班级';
 			this.addEditVisible = true;
+			this.markScroll = 0
 			this.$nextTick(() => {
 				this.$refs.addEditClass.initGetConfig = true
 			})
@@ -224,6 +226,7 @@ export default {
 		handleEdit(data) {
 			this.titleAddOrEdit = '编辑班级';
 			this.addEditVisible = true;
+			this.markScroll = document.documentElement.scrollTop
 			this.$nextTick(() => {
 				this.$refs.addEditClass.initGetConfig = true
 				this.$refs.addEditClass.initFormData(data.courseClassId);
@@ -235,6 +238,11 @@ export default {
 		},
 		handleCourseClose() {
 			this.courseVisiable = false
+			scrollTo(this.markScroll, 100)
+		},
+		handleEditClose() {
+			this.addEditVisible = false
+			scrollTo(this.markScroll,100)
 		},
 		handleDelete(data) {
 			let info = "班级"

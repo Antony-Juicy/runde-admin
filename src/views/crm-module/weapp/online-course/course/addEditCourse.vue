@@ -1,6 +1,6 @@
 <!-- 创建|编辑 科目 -->
 <template>
-	<div class='addEditCourse' id="addEditCourse">
+	<div class='addEditCourse' id="addEditCourse" v-show="isReady">
 		<RdForm :formOptions="addFormOptions" :rules="addRules" :formLabelWidth="'150px'" ref="dataForm">
 			<template slot="courseClass">
 				<SelectPop v-bind="SelectPopOptions" @select="handle_selectClass">
@@ -205,7 +205,8 @@ export default {
 						return item
 					}
 				}
-			}
+			},
+			isReady: false,
 		};
 	},
 	components: { RdForm, UploadOss, RdEditor, SelectPop },
@@ -283,12 +284,12 @@ export default {
 					} else {
 						data.defaultImageUrl = this.defaultImageUrl;
 					}
-					if (this.introducesImageUrl == "") {
-						this.$message.error("请上传介绍图");
-						return;
-					} else {
-						data.introducesImageUrl = this.introducesImageUrl;
-					}
+					// if (this.introducesImageUrl == "") {
+					// 	this.$message.error("请上传介绍图");
+					// 	return;
+					// } else {
+					// 	data.introducesImageUrl = this.introducesImageUrl;
+					// }
 					if (this.courseDetail == "") {
 						this.$message.error("请上传详细介绍");
 						return;
@@ -518,6 +519,11 @@ export default {
 
 			}
 		}
+		// await this.$common.sleep(300)
+		this.$nextTick(() => {
+			this.isReady = true
+		})
+
 		scrollTo(0, 800);
 	},
 

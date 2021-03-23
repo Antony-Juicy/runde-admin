@@ -26,8 +26,8 @@
 				</template>
 			</rd-table>
 		</div>
-		<fullDialog class="addEditCourse" :title="`${titleAddOrEdit}`" :inner="true" v-model="addEditVisible" @change="addEditVisible = false">
-			<addEditCourse ref="addEditCourse" :fromWhere="mode" :courseClass="nextCourseClass" v-if="addEditVisible" @close="addEditVisible = false" @refresh="refresh">
+		<fullDialog class="addEditCourse" :title="`${titleAddOrEdit}`" :inner="true" v-model="addEditVisible" @change="handleEditClose">
+			<addEditCourse ref="addEditCourse" :fromWhere="mode" :courseClass="nextCourseClass" v-if="addEditVisible" @close="handleEditClose" @refresh="refresh">
 			</addEditCourse>
 		</fullDialog>
 		<fullDialog class="chapter" title="科目管理 > 章节目录" v-model="chapterVisible" @change="handleChapterClose">
@@ -150,7 +150,8 @@ export default {
 			chapterVisible: false,
 			course: {},
 			nextCourseClass: {},
-			mode: 'root'
+			mode: 'root',
+			markScroll: 0,
 		};
 	},
 	components: { fullDialog, chapter, addEditCourse },
@@ -190,7 +191,7 @@ export default {
 					}
 				).then((res) => {
 					this.tableData = res.data.records.map((item) => {
-						item.typeName = item.typeName.replace(/\\n/g,'')
+						item.typeName = item.typeName.replace(/\\n/g, '')
 						try {
 							item.teacherArray = JSON.parse(item.teacherArray)
 						} catch (error) {
@@ -227,6 +228,7 @@ export default {
 			}
 			this.titleAddOrEdit = '创建科目';
 			this.addEditVisible = true
+			this.markScroll = 0
 			// 设置创建科目的一些额外信息
 			this.nextCourseClass = {
 				typeName: this.courseClass.typeName,
@@ -241,7 +243,8 @@ export default {
 		handleEdit(data) {
 			this.mode = 'edit'
 			this.titleAddOrEdit = '编辑科目';
-			this.addEditVisible = true
+			this.addEditVisible = true;
+			this.markScroll = document.documentElement.scrollTop
 			this.nextCourseClass = {
 				typeName: data.typeName,
 				typeId: data.typeId,
@@ -281,6 +284,7 @@ export default {
 		handleChapter(data) {
 			this.chapterVisible = true
 			this.course = data
+			this.markScroll = document.documentElement.scrollTop
 			this.nextCourseClass = {
 				typeName: data.typeName,
 				typeId: data.typeId,
@@ -290,6 +294,11 @@ export default {
 		},
 		handleChapterClose() {
 			this.chapterVisible = false
+			scrollTo(this.markScroll,100)
+		},
+		handleEditClose() {
+			this.addEditVisible = false
+			scrollTo(this.markScroll,100)
 		},
 		refresh(val) {
 			this.getTableData({

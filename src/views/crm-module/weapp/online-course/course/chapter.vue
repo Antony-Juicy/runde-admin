@@ -17,8 +17,8 @@
                 </template>
             </rd-table>
         </div>
-        <fullDialog class="addEditChapter" :title="`${titleAddOrEdit}`" v-model="addEditVisiable" @change="addEditVisiable = false">
-            <addEditChapter ref="addEditChapter" v-if="addEditVisiable" @close="addEditVisiable = false" @refresh="refresh" :courseClass="courseClass" :course="course"></addEditChapter>
+        <fullDialog class="addEditChapter" :title="`${titleAddOrEdit}`" v-model="addEditVisible" @change="handleEditClose">
+            <addEditChapter ref="addEditChapter" v-if="addEditVisible" @close="handleEditClose" @refresh="refresh" :courseClass="courseClass" :course="course"></addEditChapter>
         </fullDialog>
         <fullDialog class="chapterSection" title="科目管理 > 章节目录 > 查看小节" v-model="chapterSectionVisible" @change="handleSectionClose">
             <chapterSection v-if="chapterSectionVisible" @close="handleSectionClose" :courseClass="courseClass" :course="course" :chapter="chapter"></chapterSection>
@@ -115,9 +115,10 @@ export default {
             },
             titleAddOrEdit: "创建",
             searchForm: {}, //搜索栏信息
-            addEditVisiable: false,
+            addEditVisible: false,
             chapterSectionVisible: false,
-            chapter:{}
+            chapter:{},
+            markScroll:0
         };
     },
 
@@ -171,11 +172,13 @@ export default {
         },
         handleAdd() {
             this.titleAddOrEdit = "创建章节"
-            this.addEditVisiable = true
+            this.addEditVisible = true
+            this.markScroll = 0
         },
         handleEdit(data) {
             this.titleAddOrEdit = "编辑章节"
-            this.addEditVisiable = true
+            this.addEditVisible = true
+            this.markScroll = document.documentElement.scrollTop
             this.$nextTick(() => {
                 this.$refs.addEditChapter.initFormData(data.courseChapterId)
             })
@@ -184,10 +187,17 @@ export default {
         handleSection(data) {
             this.chapterSectionVisible = true
             this.chapter = data
+            this.markScroll = document.documentElement.scrollTop
         },
         handleSectionClose() {
             this.chapterSectionVisible = false;
+            scrollTo(this.markScroll,100)
         },
+        handleEditClose() {
+            console.log(12313)
+			this.addEditVisible = false
+			scrollTo(this.markScroll,100)
+		},
         handleDelete(data) {
             let info = "章节"
             this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {

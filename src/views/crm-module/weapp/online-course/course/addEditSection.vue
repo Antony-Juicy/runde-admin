@@ -191,10 +191,7 @@ export default {
 		},
 		getChapterInfo() {
 			if (this.mode == "save") {
-				let loadingInstance = Loading.service({
-					target: document.querySelector("#addEditSection"),
-					lock: true
-				});
+				
 				this.$fetch("online_course_chapter_getInfo", {
 					courseChapterId: this.courseChapterId,
 					loginUserId: this.$common.getUserId()
@@ -203,11 +200,10 @@ export default {
 						this.addFormOptions.forEach(item => {
 							item.initValue = res.data[item.prop];
 						});
-						loadingInstance.close();
+					
 						this.$refs.dataForm.addInitValue();
 					})
 					.catch(() => {
-						loadingInstance.close();
 					});
 			}
 		}
