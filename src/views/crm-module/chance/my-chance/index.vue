@@ -544,15 +544,14 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log(this.basicInfo2, "提交--basicInfo2");
-          const {enquireClassOne,enquireProductIdOne,enquireSubjectIdOne,enquireCourseIdOne,eduBackground } = this.basicInfo2;
+          const {enquireClassOne,enquireProductIdOne,enquireSubjectIdOne,enquireCourseIdOne,eduBackground,gender } = this.basicInfo2;
           const {
             idStr,
             feedbackCount,
             studentName,
             marketName,
             marketStaffId,
-            phone,
-            gender_text
+            phone
           } = this.currentData;
           let newEnquireClassOne = [];
           enquireClassOne.forEach(item => {
@@ -579,10 +578,10 @@ export default {
             phoneFlag: phone,
             enquireProductIdOneFlag: enquireProductIdOne,
             studentName,
-            gender:gender_text,
             eduBackground,
             productId: enquireProductIdOne,
-            undefined: enquireClassOne.join(",")
+            undefined: enquireClassOne.join(","),
+            gender
           }).then(res => {
             if(res.code == 200){
               this.$message.success("保存成功")

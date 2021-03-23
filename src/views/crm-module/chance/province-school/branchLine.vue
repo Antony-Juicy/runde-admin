@@ -166,7 +166,7 @@ export default {
       tableKey: [
           {
           name: "ID",
-          value: "id",
+          value: "idStr",
           width: 80
         },
         {

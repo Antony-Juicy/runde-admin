@@ -39,19 +39,6 @@
       </rd-table>
     </div>
     
-    <!-- 添加海报 -->
-    <rd-dialog
-        :title="addStatus?'添加海报':'编辑海报'"
-        :dialogVisible="addVisible"
-        @handleClose="addVisible = false"
-        @submitForm="submitAddForm('dataForm3')"
-      >
-        <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
-          <template slot="post">
-            <el-button size="small" type="primary">上传海报</el-button>
-          </template>
-        </RdForm>
-      </rd-dialog>
 
       <!-- 题目详情 -->
       <el-drawer
@@ -59,10 +46,10 @@
           title="题目详情"
           size="50%"
         >
-          <subjectDetail
+         <subjectDetail
             ref="subjectDetail"
             @close="detailVisible = false"
-            v-if="detailVisible"
+            :id="drawerId"
           />
       </el-drawer>
   </div>
@@ -70,38 +57,21 @@
 
 <script>
 import RdForm from "@/components/RdForm";
-import subjectDetail from "./audition-subject/subjectDetail";
+import subjectDetail from "@/components/Activity/subjectDetail";
 export default {
-  name:"link-manage",
+  name:"subject-title",
   data(){
     return {
       formOptions: [
         {
-          prop: "menuName",
+          prop: "subjectId",
           element: "el-input",
-          placeholder: "商品名称",
+          placeholder: "科目id",
         },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "活动名称",
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "海报名称",
-        }
       ],
       searchForm:{},
       emptyText:"暂无数据",
       tableData:[
-         {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-        },
       ],
       tableKey: [
         {
@@ -112,19 +82,20 @@ export default {
         },
         {
           name: "科目id",
-          value: "staffName",
+          value: "subjectId",
+          width: 80
         },
         {
           name: "科目名",
-          value: "goodsName",
+          value: "subjectName",
         },
         {
           name: "数据状态",
-          value: "activityName",
+          value: "status",
         },
         {
           name: "排序",
-          value: "posterName",
+          value: "orderValue",
           width: 80
         },
         {
@@ -149,107 +120,25 @@ export default {
         showCount: 10,
       },
       addVisible: false,
-      addFormOptions: [
-          
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "请输入海报名称",
-          label: "海报名称"
-        },
-        {
-          prop: "post",
-          element: "el-input",
-          placeholder: "",
-          label: "上传海报",
-          operate: true,
-          initValue: 0
-        },
-        {
-          prop: "roleName",
-          element: "el-select",
-          placeholder: "请选择",
-          label: "所属九块九包邮",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-        {
-          prop: "roleName",
-          element: "el-select",
-          placeholder: "请选择",
-          label: "所属活动",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-        {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案一",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案二",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案三",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案四",
-          type:"textarea",
-          rows: 2
-        },
-           {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案五",
-          type:"textarea",
-          rows: 2
-        }
-      ],
-      addRules:{
-        updateReason: [
-          { required: true, message: "请输入修改事由", trigger: "blur" },
-        ]
-      },
       addStatus: true,
-      detailVisible: false
+      detailVisible: false,
+      drawerId:""
     }
   },
   components:{
     RdForm,
     subjectDetail
+  },
+  mounted(){
+    this.getTableData();
+    
+  },
+  watch: {
+    "$route.params.subjectId"(newVal){
+      if(newVal){
+        this.getTableData();
+      }
+    }
   },
    methods: {
      onSearch(val){
@@ -259,8 +148,21 @@ export default {
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
      },
-     getTableData(){
-
+     getTableData(params = {}){
+       const { subjectId } = this.$route.params;
+       this.$fetch("auditionitem_listJsp", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+        subjectId: subjectId || ''
+      }).then((res) => {
+        this.tableData = res.data.varList.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          return item;
+        });;
+        this.pageConfig.totalCount = res.data.page.totalResult;
+      })
      },
      pageChange(val) {
       console.log(val,'pagechange')
@@ -282,18 +184,18 @@ export default {
     handleEdit(data){
       this.addStatus = false;
       this.addVisible = true;
+      
     },
     handleDelete(row) {
-      let info = '海报';
+      let info = '项';
       this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(async () => {
-          const res = await this.$fetch("projectType_delete", {
-            typeId: row.typeId,
-            loginUserId,
+          const res = await this.$fetch("auditionitem_deleteJsp", {
+            id: row.id
           }).then((res) => {
             if (res) {
               this.$message({
@@ -310,6 +212,7 @@ export default {
     },
     handleDetail(data){
       this.detailVisible = true;
+      this.drawerId = data.id;
     }
   }
 }

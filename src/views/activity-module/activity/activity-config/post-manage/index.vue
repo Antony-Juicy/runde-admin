@@ -60,17 +60,17 @@ export default {
     return {
       formOptions: [
         {
-          prop: "menuName",
+          prop: "goodsName",
           element: "el-input",
           placeholder: "商品名称",
         },
         {
-          prop: "menuName",
+          prop: "activityName",
           element: "el-input",
           placeholder: "活动名称",
         },
         {
-          prop: "menuName",
+          prop: "posterName",
           element: "el-input",
           placeholder: "海报名称",
         }
@@ -78,13 +78,13 @@ export default {
       searchForm:{},
       emptyText:"暂无数据",
       tableData:[
-         {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-        },
+        //  {
+        //   id: 1,
+        //   name: "飞翔的荷兰人3",
+        //   cutdown: 1608897351706,
+        //   visit: 2,
+        //   phone: "15692026183",
+        // },
       ],
       tableKey: [
         {
@@ -158,13 +158,13 @@ export default {
       addFormOptions: [
           
         {
-          prop: "menuName",
+          prop: "posterName",
           element: "el-input",
           placeholder: "请输入海报名称",
           label: "海报名称"
         },
         {
-          prop: "post",
+          prop: "posterPic",
           element: "el-input",
           placeholder: "",
           label: "上传海报",

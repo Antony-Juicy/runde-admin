@@ -648,14 +648,7 @@ export default {
       }).then(res => {
         this.$message.success("操作成功")
         this.downLoadVisible = false;
-        let blob = new Blob([res], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"}),
-        Temp = document.createElement("a");
-        Temp.href = window.URL.createObjectURL(blob);
-        Temp.download =new Date().getTime();
-        document.querySelector("body").appendChild(Temp);
-        Temp.click();
-        document.body.removeChild(Temp); //下载完成移除元素
-        window.URL.revokeObjectURL(Temp.href); 
+        this.$common.downLoadFile(res);
       })
     },
     handleExportPic(){

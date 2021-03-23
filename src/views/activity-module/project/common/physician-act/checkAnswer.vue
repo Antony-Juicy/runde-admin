@@ -9,7 +9,12 @@
         <el-button type="primary" size="small" @click="handleAdd"
           >添加</el-button
         >
-      </div>
+        <el-radio-group v-model="activePoint" size="small" @change="activePointChange">
+          <el-radio-button label="Pass">审核通过</el-radio-button>
+          <el-radio-button label="Audit">待审核</el-radio-button>
+          <el-radio-button label="NoPass">审核不通过</el-radio-button>
+        </el-radio-group>
+    </div>
     <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
@@ -29,7 +34,7 @@
             type="text"
             size="small"
             style="color: #ec5b56"
-            >删除</el-button
+            >下架</el-button
           >
         </template>
       </rd-table>
@@ -37,14 +42,21 @@
       <rd-dialog
         :title="addStatus?'添加':'编辑'"
         :dialogVisible="addVisible"
+        :top="'4vh'"
         width="1125px"
         @handleClose="addVisible = false"
         @submitForm="submitAddForm('dataForm3')"
         append-to-body
       >
-        <RdForm :formOptions="addFormOptions" :rules="addRules" ref="dataForm3">
+        <RdForm :formOptions="addFormOptions" :rules="addRules" ref="dataForm3" class="add-box">
           <template slot="content">
-            <RdEditor placeholder="编辑题目内容" height="400px" module="activity" @change="changeEditor" />
+            <RdEditor placeholder="编辑题目内容" height="400px" module="activity" :quillContent="content" @change="changeEditor" />
+        </template>
+        <template slot="answer">
+            <RdEditor placeholder="编辑题目答案" height="400px" module="activity" :quillContent="answer" @change="changeEditor2" />
+        </template>
+        <template slot="custodyAnswer">
+            <RdEditor placeholder="编辑押题对比" height="400px" module="activity" :quillContent="custodyAnswer" @change="changeEditor3" />
         </template>
         </RdForm>
       </rd-dialog>
@@ -68,7 +80,6 @@ export default {
       ],
       searchForm: {},
       tableData:[
-        {name: 123}
       ],
       tableKey: [
         {
@@ -77,20 +88,24 @@ export default {
           width: 60
         },
         {
-          name: "考试科目ID",
-          value: "examSubjectId",
+          name: "站点名称",
+          value: "siteName",
         },
         {
           name: "题目序号",
           value: "serialNum",
         },
         {
+          name: "点赞数量",
+          value: "agreeNum",
+        },
+        {
           name: "点赞基数",
           value: "agreeBase",
         },
-        {
-          name: "课程名称",
-          value: "courseName",
+         {
+          name: "审核状态",
+          value: "auditStatus",
         },
         {
           name: "题目内容",
@@ -103,6 +118,14 @@ export default {
         {
           name: "押题对比",
           value: "custodyAnswer",
+        },
+         {
+          name: "联系方式",
+          value: "",
+        },
+        {
+          name: "奖励金额",
+          value: "",
         },
         {
           name: "创建时间",
@@ -127,13 +150,13 @@ export default {
       addVisible: false,
       addFormOptions:[
         {
-          prop: "roleName",
+          prop: "serialNum",
           element: "el-input",
           placeholder: "请输入题目序号",
           label: "题目序号"
         },
          {
-          prop: "roleName",
+          prop: "agreeBase",
           element: "el-input",
           placeholder: "请输入点赞基数",
           label: "点赞基数"
@@ -144,7 +167,21 @@ export default {
           placeholder: "",
           label: "题目内容",
           operate: true
-        }
+        },
+          {
+          prop: "answer",
+          element: "el-input",
+          placeholder: "",
+          label: "题目答案",
+          operate: true
+        },
+          {
+          prop: "custodyAnswer",
+          element: "el-input",
+          placeholder: "",
+          label: "押题对比",
+          operate: true
+        },
       ],
       addRules:{
         updateReason: [
@@ -152,7 +189,11 @@ export default {
         ]
       },
       addStatus: true,
-      liveDetail: ""
+      content: "",
+      answer: "",
+      custodyAnswer: "",
+      activePoint: "Pass",
+      editId: ""
     }
   },
   components:{
@@ -162,7 +203,10 @@ export default {
   props: {
     id: {
       type: Number | String
-    }
+    },
+    detailData: {
+      type: Object
+    },
   },
   mounted(){
     this.getTableData();
@@ -181,11 +225,14 @@ export default {
         this.getTableData();
       },
       getTableData(params = {}) {
-      this.$fetch("practicingExamSiteItem_list", {
+      this.$fetch("practicingexamsite_custodyListJsp", {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
-        examSubjectId: this.id
+        auditStatus: this.activePoint,
+        // siteId:this.detailData.id,
+        // siteName:this.detailData.siteName,
+        // type:this.detailData.type
       }).then((res) => {
         this.tableData = res.data.varList.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
@@ -198,11 +245,35 @@ export default {
       handleEdit(data){
         this.addStatus = false;
         this.addVisible = true;
+        this.editId = data.id;
+        this.addFormOptions.forEach(item => {
+          item.initValue = data[item.prop];
+        })
+        setTimeout(() => {
+          this.$refs.dataForm3.addInitValue();
+        }, 0);
+        setTimeout(() => {
+        this.$refs.dataForm3.$el.scrollTop =0;
+      }, 10);
+        this.content = data.content;
+        console.log(this.content,'this.content---')
+        this.answer = data.answer;
+        this.custodyAnswer = data.custodyAnswer;
       },
       submitAddForm(formName){
       this.$refs[formName].validate((valid, formData) => {
         if(valid){
           console.log(formData, "提交");
+          this.$fetch("practicingexamsite_custodySave",{
+            ...formData,
+            content: this.content,
+            answer: this.answer,
+            custodyAnswer: this.custodyAnswer
+          }).then(res => {
+            this.$message.success("操作成功")
+            this.addVisible = false;
+            this.getTableData();
+          })
         }
           
       });
@@ -234,9 +305,34 @@ export default {
     handleAdd(){
       this.addStatus = true;
       this.addVisible = true;
+      this.addFormOptions.forEach(item => {
+          item.initValue = "";
+        })
+        setTimeout(() => {
+          this.$refs.dataForm3.addInitValue();
+        }, 0);
+      setTimeout(() => {
+        this.$refs.dataForm3.$el.scrollTop =0;
+      }, 10);
+      this.content = "";
+      this.answer = "";
+      this.custodyAnswer = "";
     },
     changeEditor(val) {
-      this.liveDetail = val;
+      this.content = val;
+    },
+    changeEditor2(val) {
+      this.answer = val;
+    },
+    changeEditor3(val) {
+      this.custodyAnswer = val;
+    },
+    activePointChange(val){
+      this.pageConfig.currentPage = 1;
+      this.pageConfig.showCount = 10;
+      this.getTableData({
+        auditStatus: val
+      })
     },
   }
 }
@@ -244,6 +340,14 @@ export default {
 
 <style lang="scss" scoped>
 .check-answer {
-
+  .btn-wrapper {
+    display: flex;
+    justify-content: space-between;
+  }
+  
 }
+.add-box {
+        max-height: 71vh;
+        overflow: auto;
+  }
 </style>

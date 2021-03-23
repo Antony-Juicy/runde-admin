@@ -45,8 +45,9 @@ export default {
     secretexamsubject_deleteTk:  {url: '/h5/secretexamsubject/deleteTk', method: 'post'}, //删除题库
     secretexamsubject_importIssueExcel:  {url: '/h5/secretexamsubject/importIssueExcel', method: 'post'}, //导入题目
     secretexamsubject_viewExercises:  {url: '/h5/secretexamsubject/viewExercises', method: 'get'}, //预览题目图片
-    // 考后
+    // 考后对答案
     practicingExamSiteItem_list: {url: '/h5/practicingExamSiteItem/custodyListNewJsp', method: 'get'}, //列表
+    practicingExamSiteItem_delete: {url: '/h5/practicingExamSiteItem/deleteCustodyNewJsp', method: 'post'}, //列表
 
     // 考试大纲-作废
     secretexamsubject_listExamJsp:  {url: '/h5/secretexamsubject/listExamJsp', method: 'get'}, //列表
@@ -76,8 +77,66 @@ export default {
     cmsexamchecknotification_deleteJsp:  {url: '/h5/cmsexamchecknotification/deleteJsp', method: 'post'}, //删除
     cmsexamchecknotification_goEdit:  {url: '/h5/cmsexamchecknotification/goEdit', method: 'get'}, //详情
 
-    // 地推卡领取统计
-    groundPush_statisticslistJsp:  {url: '/h5/cms/groundPush/statisticslistJsp', method: 'get'}, //列表
     // 地推卡领取管理
     groundPush_listJsp:  {url: '/h5/cms/groundPush/listJsp', method: 'get'}, //列表
+    groundPush_export:  {url: '/h5/cms/groundPush/export', method: 'get'}, //列表
+    // 地推卡领取统计
+    groundPush_statisticslistJsp:  {url: '/h5/cms/groundPush/statisticslistJsp', method: 'get'}, //列表
+    groundPush_exportExcelJsp:  {url: '/h5/cms/groundPush/exportExcelJsp', method: 'get'}, //列表
+
+    // 报考答疑
+    cmssignupanswer_listJsp:  {url: '/h5/cmssignupanswer/listJsp', method: 'get'}, //列表
+    cmssignupanswer_toExcel:  {url: '/h5/cmssignupanswer/toExcel', method: 'get'}, //导出
+
+    // 试听链接
+    auditionLink_listJsp:  {url: '/h5/cms/auditionLink/listJsp', method: 'get'}, //列表
+    auditionLink_export:  {url: '/h5/cms/auditionLink/export', method: 'get'}, //打包
+    auditionLink_userEvaluationRecordListJsp:  {url: '/h5/auditionuserrecord/userEvaluationRecordListJsp', method: 'get'}, //测评详情
+    auditionLink_userRecordListJsp:  {url: '/h5/auditionuserrecord/userRecordListJsp', method: 'get'}, //做题详情
+
+    // 试听科目
+    auditionitemsubject_listJsp:  {url: '/h5/auditionitemsubject/listJsp', method: 'get'}, //列表
+    auditionitemsubject_save:  {url: '/h5/auditionitemsubject/save', method: 'post'}, //新增
+    auditionitemsubject_editJsp:  {url: '/h5/auditionitemsubject/editJsp', method: 'post'}, //编辑
+    auditionitemsubject_deleteJsp:  {url: '/h5/auditionitemsubject/deleteJsp', method: 'post'}, //删除
+    auditionitemsubject_goEdit:  {url: '/h5/auditionitemsubject/goEdit', method: 'get'}, //详情
+    auditionitemsubject_importIssueExcel:  {url: '/h5/auditionitemsubject/importIssueExcel', method: 'post'}, //导入
+    auditionitemsubject_getProductName:  {url: '/h5/auditionproduct/getProductName', method: 'get', hideLoading: true}, //获取项目下拉列表
+    auditionitemsubject_getSubjectType:  {url: '/h5/auditionsubjecttype/getSubjectType', method: 'get', hideLoading: true}, //获取科目下拉列表
+
+    // 试听项目
+    auditionproduct_listJsp:  {url: '/h5/auditionproduct/listJsp', method: 'get'}, //列表
+    auditionproduct_deleteJsp:  {url: '/h5/auditionproduct/deleteJsp', method: 'post'}, //删除
+    auditionproduct_importIssueExcel:  {url: '/h5/auditionproduct/importIssueExcel', method: 'post'}, //导入
+    auditionproduct_editJsp:  {url: '/h5/auditionproduct/editJsp', method: 'post'}, //编辑
+
+    // 科目类型
+    auditionsubjecttype_listJsp:  {url: '/h5/auditionsubjecttype/listJsp', method: 'get'}, //列表
+
+    // 科目题目
+    auditionitem_listJsp:  {url: '/h5/auditionitem/listJsp', method: 'get'}, //列表
+    auditionitem_save:  {url: '/h5/auditionitem/save', method: 'post'}, //删除
+    auditionitem_editJsp:  {url: '/h5/auditionitem/editJsp', method: 'post'}, //删除
+    auditionitem_deleteJsp:  {url: '/h5/auditionitem/deleteJsp', method: 'post'}, //删除
+
+    // 推荐班型
+    auditionclass_listJsp:  {url: '/h5/auditionclass/listJsp', method: 'get'}, //列表
+    auditionclass_save:  {url: '/h5/auditionclass/save', method: 'post'}, //新增
+    auditionclass_editJsp:  {url: '/h5/auditionclass/editJsp', method: 'post'}, //编辑
+    auditionclass_deleteJsp:  {url: '/h5/auditionclass/deleteJsp', method: 'post'}, //删除
+
+    // 医师活动-站点管理
+    practicingexamsite_listJsp:  {url: '/h5/practicingexamsite/listJsp', method: 'get'}, //列表
+    practicingexamsite_save:  {url: '/h5/practicingexamsite/save', method: 'post'}, //列表
+    practicingexamsite_editJsp:  {url: '/h5/practicingexamsite/editJsp', method: 'post'}, //列表
+    practicingexamsite_goAdd:  {url: '/h5/practicingexamsite/goAdd', method: 'get'}, //编辑
+    practicingexamsite_deleteJsp:  {url: '/h5/practicingexamsite/deleteJsp', method: 'post'}, //列表
+    practicingexamsite_custodyListJsp:  {url: '/h5/practicingExamSiteItem/custodyListJsp', method: 'get'}, //考后对答案列表
+    practicingexamsite_custodySave:  {url: '/h5/practicingExamSiteItem/custodySave', method: 'post'}, //考后对答案列表
+
+    // 活动管理
+    cmsactivityinfo_listJsp:  {url: '/h5/cmsactivityinfo/listJsp', method: 'get'}, //列表
+    cmsactivityinfo_save:  {url: '/h5/cmsactivityinfo/save', method: 'post'}, //新增
+    cmsactivityinfo_editJsp:  {url: '/h5/cmsactivityinfo/editJsp', method: 'post'}, //编辑
+    cmsactivityinfo_deleteJsp:  {url: '/h5/cmsactivityinfo/deleteJsp', method: 'post'}, //删除
 }

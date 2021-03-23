@@ -149,6 +149,18 @@ const $common = {
           }
         })
         return val
+    },
+
+    // 下载文件流
+    downLoadFile(res){
+        let blob = new Blob([res], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"}),
+        Temp = document.createElement("a");
+        Temp.href = window.URL.createObjectURL(blob);
+        Temp.download =new Date().getTime();
+        document.querySelector("body").appendChild(Temp);
+        Temp.click();
+        document.body.removeChild(Temp); //下载完成移除元素
+        window.URL.revokeObjectURL(Temp.href); 
     }
 }
 

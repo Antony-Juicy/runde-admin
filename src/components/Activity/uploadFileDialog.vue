@@ -1,5 +1,11 @@
 <template>
   <div class="upload-file">
+    <rd-dialog
+      :title="title"
+      :dialogVisible="importVisible"
+      @handleClose="handleClose"
+      @submitForm="submitImportForm()"
+    >
       <el-upload
         class="upload-demo"
         action="#"
@@ -14,6 +20,7 @@
       >
         <el-button size="small" type="primary">点击上传</el-button>
       </el-upload>
+    </rd-dialog>
   </div>
 </template>
 
@@ -26,7 +33,22 @@ export default {
       fileList: []
     };
   },
-  props: ["file"],
+  props: {
+    importVisible: {
+      type: Boolean
+    },
+    importId: {
+      type: Number | String
+    },
+    title: {
+      type: String,
+      default: "上传题目"
+    },
+    url: {
+      type: String,
+      default: "lookpicture_import"
+    }
+  },
   methods: {
     submitImportForm() {
       if (!this.importFile) {
@@ -57,8 +79,6 @@ export default {
     },
     handleChange(file, fileList) {
       this.importFile = file.raw;
-      this.$emit("update:file",file.raw);
-
     },
      // 导入上传之前的文件格式校验
     beforeAvatarUpload(file) {
@@ -73,8 +93,19 @@ export default {
               type: 'warning'
           });
       }
+      // if(!isLt2M) {
+      //     this.$message({
+      //         message: '上传文件大小不能超过 10MB!',
+      //         type: 'warning'
+      //     });
+      // }
+      // return extension || extension2 && isLt2M
       return extension || extension2
     },
+    handleClose(){
+      // this.importVisible = false;
+      this.$emit("update:importVisible", false)
+    }
   },
 };
 </script>

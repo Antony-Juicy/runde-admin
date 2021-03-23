@@ -304,7 +304,8 @@ export default {
         campusId: [
           { required: true, message: "请选择组织架构", trigger: "blur" },
         ]
-      }
+      },
+      editId:""
     };
   },
   mounted() {
@@ -382,6 +383,7 @@ export default {
       };
       this.dialogVisible = true;
       this.dialogStatus = false;
+      this.editId = row.id;
     },
     // 关闭
     handleClose(formName) {
@@ -396,7 +398,10 @@ export default {
           console.log(this.formInline, "提交");
            // 新增
             this.$fetch("chance_config_add", {
-              ...this.formInline
+              ...this.formInline,
+              campusIdFlag: this.formInline.campusId,
+              productIdFlag: this.formInline.productId,
+              id: this.dialogStatus?"":this.editId
             }).then((res) => {
               this.$message({
                 message: "提交成功",

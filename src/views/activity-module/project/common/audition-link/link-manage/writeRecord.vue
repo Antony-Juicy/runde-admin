@@ -114,6 +114,14 @@ export default {
   components:{
     RdForm
   },
+  mounted(){
+    this.getTableData();
+  },
+  props: {
+    linkUserId: {
+      type: Number | String
+    }
+  },
    methods: {
      onSearch(val){
        this.searchForm = {
@@ -122,8 +130,20 @@ export default {
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
      },
-     getTableData(){
+     getTableData(params = {}){
+       this.$fetch("auditionLink_userRecordListJsp", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+        linkUserId: this.linkUserId
+      }).then((res) => {
+        this.tableData = res.data.varList?res.data.varList.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          return item;
+        }):[];
 
+      })
      },
      pageChange(val) {
       console.log(val,'pagechange')

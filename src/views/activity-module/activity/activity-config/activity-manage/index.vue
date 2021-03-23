@@ -14,6 +14,10 @@
         fixedTwoRow
         @pageChange="pageChange"
       >
+        <template slot="startTime" slot-scope="scope">
+          开始时间：{{scope.row.startTime}}
+          结束时间：{{scope.row.endTime}}
+        </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
             >编辑</el-button
@@ -110,91 +114,92 @@ export default {
     return {
       formOptions: [
         {
-          prop: "menuName",
+          prop: "activityName",
           element: "el-input",
           placeholder: "活动名称",
         },
         {
-          prop: "menuName",
+          prop: "appName",
           element: "el-input",
           placeholder: "公众号名称",
         },
         {
-          prop: "menuName",
+          prop: "hideStatus",
           element: "el-select",
           placeholder: "是否隐藏",
+          options: [
+            {
+              label:"不隐藏",
+              value:"0"
+            },
+            {
+              label:"隐藏",
+              value:"1"
+            },
+          ]
         },
         {
-          prop: "menuName",
+          prop: "status",
           element: "el-select",
           placeholder: "活动状态",
+          options:[]
         },
         {
-          prop: "menuName",
+          prop: "productType",
           element: "el-select",
           placeholder: "项目类型",
+          options: []
         },
       ],
       tableData: [
-        {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-        },
-        {
-          id: 2,
-          name: "飞翔的荷兰人2",
-          cutdown: new Date().getTime(),
-          phone: "17092026183",
-        },
-        { id: 3, name: "飞翔的荷兰人1", phone: "18892026183" },
+        
       ],
       tableKey: [
         {
           name: "ID",
-          value: "name",
+          value: "id",
         },
         {
           name: "项目类型",
-          value: "phone",
+          value: "productType",
         },
         {
           name: "活动名称",
-          value: "cutdown",
+          value: "activityName",
         },
         {
           name: "公众号名称",
-          value: "menuUrl",
+          value: "appName",
         },
         {
           name: "邀请码类型",
-          value: "visit",
+          value: "invitationType",
         },
         {
           name: "活动时间",
-          value: "menuOrder",
+          value: "startTime",
+          operate: true
         },
         {
           name: "是否强制关注",
-          value: "description1",
+          value: "attentionStatus",
         },
         {
           name: "是否强制分享",
-          value: "description2",
+          value: "shareStatus",
         },
         {
           name: "活动是否隐藏",
-          value: "description3",
+          value: "hideStatus",
         },
         {
           name: "活动状态",
-          value: "description4",
+          value: "status",
         },
         {
           name: "活动描述",
-          value: "description4",
+          value: "activityDesc",
+          showTooltip: true
         },
         {
           name: "操作",
@@ -256,20 +261,23 @@ export default {
     AddAct,
     EditAct
   },
+  mounted(){
+    this.getTableData();
+  },
   methods: {
-    onSearch() {},
+    onSearch(val){
+       this.searchForm = {
+        ...val
+      };
+      console.log(val,this.searchForm , 'val---')
+      this.getTableData();
+     },
     handleAdd() {},
     pageChange(val) {
-      // this.pageConfig.currentPage = val.page;
-      // this.pageConfig.showCount = val.limit;
-      // console.log(this.searchForm,'this.searchForm--')
-      // this.getTableData({
-      //   currentPage: (val && val.page) || 1,
-      //   showCount: (val && val.limit) || 10,
-      //   loginUserId,
-      //   ...this.searchForm,
-      //   parentId: this.parentId
-      // });
+      console.log(val,'pagechange')
+      this.pageConfig.currentPage = val.page;
+      this.pageConfig.showCount = val.limit;
+      this.getTableData();
     },
     refresh(){
 
@@ -277,6 +285,33 @@ export default {
     refresh2(){
 
     },
+    getTableData(params = {}){
+       this.$fetch("cmsactivityinfo_listJsp", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.varList.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          item.startTime = this.$common._formatDates(item.startTime);
+          item.endTime = this.$common._formatDates(item.endTime);
+          item.hideStatus = item.hideStatus?"隐藏":"不隐藏";
+          item.shareStatus = item.shareStatus?"是":"否";
+          item.attentionStatus = item.attentionStatus?"是":"否";
+          this.formOptions[3].options = res.data.activityStatusList.map(item => ({
+            label: item.value,
+            value: item.key
+          }));
+          this.formOptions[4].options = res.data.ProductTypeList.map(item => ({
+            label: item.value,
+            value: item.key
+          }));
+          return item;
+        });;
+        this.pageConfig.totalCount = res.data.page.totalResult;
+      })
+     },
     handleLink(data){
       this.linkVisible = true;
     },

@@ -3,7 +3,7 @@
     <search-form :formOptions="formOptions" :showNum="7" @onSearch="onSearch"></search-form>
     <div class="w-container">
       <div class="btn-wrapper">
-        <el-button type="primary" size="small">导出</el-button>
+        <el-button type="primary" size="small" @click="handleExport">导出</el-button>
       </div>
       <rd-table
         :tableData="tableData"
@@ -13,19 +13,6 @@
         fixedTwoRow
         @pageChange="pageChange"
         :emptyText="emptyText">
-        <!-- <template slot="edit" slot-scope="scope">
-          <el-button @click="handleEdit(scope.row)" type="text" size="small"
-            >查阅/编辑</el-button
-          >
-          <el-divider direction="vertical"></el-divider>
-          <el-button
-            @click="handleDelete(scope.row)"
-            type="text"
-            size="small"
-            style="color: #ec5b56"
-            >删除</el-button
-          >
-        </template> -->
       </rd-table>
     </div>
   </div>
@@ -38,17 +25,17 @@ export default {
     return {
       formOptions: [
         {
-          prop: "menuName",
+          prop: "studentName",
           element: "el-input",
           placeholder: "请输入学员姓名",
         },
         {
-          prop: "menuName",
+          prop: "studentPhone",
           element: "el-input",
           placeholder: "请输入学员手机号",
         },
         {
-          prop: "menuName",
+          prop: "subjectName",
           element: "el-input",
           placeholder: "请输入科目名称",
         }
@@ -67,31 +54,31 @@ export default {
         },
         {
           name: "学员名称",
-          value: "staffName",
+          value: "studentName",
         },
         {
           name: "学员手机号",
-          value: "goodsName",
+          value: "studentPhone",
         },
         {
           name: "员工名称",
-          value: "activityName",
+          value: "staffName",
         },
         {
           name: "校区名称",
-          value: "posterName",
+          value: "campusName",
         },
         {
           name: "科目名称",
-          value: "posterPic",
+          value: "subjectName",
         },
         {
           name: "遇见问题",
-          value: "posterCopyFirst",
+          value: "issue",
         },
         {
           name: "信息类型",
-          value: "posterCopySecond",
+          value: "informationType",
         }
       ],
       pageConfig: {
@@ -100,6 +87,9 @@ export default {
         showCount: 10,
       },
     }
+  },
+  mounted(){
+    this.getTableData();
   },
   methods: {
     onSearch(val){
@@ -110,9 +100,20 @@ export default {
       this.pageConfig.pageNum = 1;
       this.getTableData();
      },
-    getTableData(){
-
-    },
+    getTableData(params = {}){
+       this.$fetch("cmssignupanswer_listJsp", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.varList.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          return item;
+        });;
+        this.pageConfig.totalCount = res.data.page.totalResult;
+      })
+     },
     pageChange(val) {
       console.log(val,'pagechange')
       this.pageConfig.currentPage = val.page;
@@ -133,27 +134,19 @@ export default {
     handleEdit(data){
       
     },
-    handleDelete(row) {
-      let info = '海报';
-      this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
+    handleExport(row) {
+      this.$confirm(`
+      <p style="font-size:16px;font-weight:bold">1. 导出数据建议加上【条件筛选】,例如科目名称!</p>
+      <p style="font-size:16px;font-weight:bold">2. 当导出大量数据的时候，可能会比较慢，请耐心等待！请勿多次点击导出按钮!</p>`, "导出须知", {
+        confirmButtonText: "是的，这是第一次点击",
+        cancelButtonText: "不是，刚才已经点击一次了",
         type: "warning",
+        dangerouslyUseHTMLString: true,
+        customClass:"confirm-box"
       }).then(async () => {
-        const res = await this.$fetch("projectType_delete", {
-          typeId: row.typeId,
-          loginUserId,
-        }).then((res) => {
-          if (res) {
-            this.$message({
-              message: "删除成功",
-              type: "success",
-            });
-            setTimeout(() => {
-              this.getTableData();
-            }, 50);
-          }
-        });
+          this.$fetch("cmssignupanswer_toExcel",{
+            ...this.searchForm
+          })
       }).catch(() => {
 
       });
@@ -164,6 +157,13 @@ export default {
 
 <style lang="scss" scoped>
 .signupanswer-container {
-
+  /deep/ {
+    .confirm-box {
+      width: 439px;
+      .el-message-box__container {
+        padding: 38px 0;
+      }
+    }
+  }
 }
 </style>

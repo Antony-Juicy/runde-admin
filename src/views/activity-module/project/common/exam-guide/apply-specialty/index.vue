@@ -292,7 +292,7 @@ export default {
           label: "排序"
         },
         {
-          prop: "menuName3",
+          prop: "status",
           element: "el-select",
           placeholder: "请选择",
           label: "开放状态",
@@ -398,6 +398,8 @@ export default {
             productName: this.productName,
             parentId: this.parentId,
             twoParentId: this.twoParentId,
+            parentName: this.parentIdArr.find(item => (item.value == this.parentId)).label,
+            twoParentIdName: this.twoParentIdArr.find(item => (item.value == this.twoParentId)).label,
           }).then(res => {
             this.$message.success("操作成功")
             this.addVisible = false;
@@ -417,16 +419,17 @@ export default {
         id: data.id
       }).then(res => {
         this.addFormOptions.forEach(item => {
-          item.initValue = data[item.prop];
+          item.initValue = res.data.pd[item.prop];
         })
         setTimeout(() => {
           this.$refs.dataForm3.addInitValue();
         }, 0);
+        this.productName = data.productName;
+        this.productNameChange(this.productName,res.data.oneParentId);
+        this.parentIdChange(res.data.oneParentId,res.data.twoParentId);
       })
       
-      this.productName = data.productName;
-      this.productNameChange(this.productName,res.data.oneParentId);
-      this.parentIdChange(this.parentId,res.data.twoParentId);
+      
       
     },
     handleDelete(row) {

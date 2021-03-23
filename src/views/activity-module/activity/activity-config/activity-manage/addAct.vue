@@ -111,14 +111,6 @@ export default {
           placeholder: "微信公众号",
           label: "微信公众号",
           options: [
-            {
-              label: "博士",
-              value: 0,
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
           ],
         },
         {
@@ -127,14 +119,6 @@ export default {
           placeholder: "邀请码类型",
           label: "邀请码类型",
           options: [
-            {
-              label: "博士",
-              value: 0,
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
           ],
         },
         {
@@ -142,30 +126,40 @@ export default {
           element: "el-select",
           placeholder: "请选择",
           label: "活动状态",
+          options: [
+          ],
         },
         {
           prop: "menuName",
           element: "el-select",
           placeholder: "请选择",
           label: "项目类型",
+          options: [
+          ],
         },
         {
           prop: "menuName",
           element: "el-select",
           placeholder: "请选择",
           label: "是否强制关注",
+          options: [
+          ],
         },
         {
           prop: "menuName",
           element: "el-select",
           placeholder: "请选择",
           label: "是否强制分享",
+          options: [
+          ],
         },
         {
           prop: "menuName",
           element: "el-select",
           placeholder: "请选择",
           label: "是否隐藏",
+          options: [
+          ],
         },
         {
           prop: "menuName",

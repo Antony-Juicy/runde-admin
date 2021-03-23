@@ -94,7 +94,7 @@
           ref="subjectDetail"
           :id="detailId"
           @close="detailVisible = false"
-          @refresh="refresh"
+          @refresh="getTableData"
           v-if="detailVisible"
         />
       </fullDialog>
@@ -131,7 +131,7 @@
           ref="checkAnswer"
           :id="detailId"
           @close="answerVisible = false"
-          @refresh="refresh"
+          @refresh="getTableData"
           v-if="answerVisible"
         />
       </fullDialog>
@@ -149,7 +149,7 @@
 import RdForm from "@/components/RdForm";
 import fullDialog from "@/components/FullDialog";
 import subjectDetail from './subjectDetail';
-import uploadFile from '@/components/Activity/uploadFile';
+import uploadFile from '@/components/Activity/uploadFileDialog';
 import checkAnswer from './checkAnswer';
 export default {
   name:"secrect-point",
@@ -419,7 +419,8 @@ export default {
       answerVisible: false,
       productList: [],
       subjectUnitList:[],
-      editId:""
+      editId:"",
+      detailId:""
     }
   },
   components:{
@@ -584,6 +585,7 @@ export default {
     },
     handleAnswer(data){
       this.answerVisible = true;
+      this.detailId = data.id;
     }
   }
 }

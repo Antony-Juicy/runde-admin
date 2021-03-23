@@ -11,6 +11,7 @@
       :type="itemOptions.type"
       :rows="itemOptions.rows || 2"
       :disabled="itemOptions.disabled"
+      :readonly="itemOptions.readonly"
       size="small">
     </el-input>
 

@@ -103,7 +103,7 @@
 <script>
 import RdForm from "@/components/RdForm";
 import subjectDetail from "@/components/Activity/subjectDetail";
-import uploadFile from '@/components/Activity/uploadFile'
+import uploadFile from '@/components/Activity/uploadFileDialog'
 export default {
   name:"look-picture",
   data(){
