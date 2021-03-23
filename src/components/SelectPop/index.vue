@@ -84,6 +84,11 @@ export default {
 				}
 			).catch(() => { this.tableLoad = false })
 
+			if(typeof this.tableObj.transItem == 'function'){
+				res.data.records.map(v=>{
+					return this.tableObj.transItem(v)
+				})
+			}
 			this.pageConfig.hasNext = res.data.hasNext
 			// console.log(this.tableData)
 			await this.$common.sleep(1000)

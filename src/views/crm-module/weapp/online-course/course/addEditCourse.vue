@@ -202,6 +202,7 @@ export default {
 						},
 					],
 					transItem: (item) => {
+						item.typeName = item.typeName.replace(/\\n/g, '')
 						return item
 					}
 				}

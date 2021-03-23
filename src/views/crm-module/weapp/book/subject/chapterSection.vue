@@ -15,8 +15,8 @@
 				</template>
 			</rd-table>
 		</div>
-		<fullDialog class="addEditSection" :title="`${titleAddOrEdit}`" v-model="addEditVisiable" @change="addEditVisiable = false">
-			<addEditSection :book="book" :subject="subject" :chapter="chapter" ref="addEditSection" v-if="addEditVisiable" @close="addEditVisiable = false" @refresh="refresh">
+		<fullDialog class="addEditSection" :title="`${titleAddOrEdit}`" v-model="addEditVisible" @change="handleEditClose">
+			<addEditSection :book="book" :subject="subject" :chapter="chapter" ref="addEditSection" v-if="addEditVisible" @close="handleEditClose" @refresh="refresh">
 			</addEditSection>
 		</fullDialog>
 	</div>
@@ -112,8 +112,9 @@ export default {
 				pageSize: 10,
 			},
 			searchForm: {}, //搜索栏信息
-			addEditVisiable: false,
-			titleAddOrEdit: "创建"
+			addEditVisible: false,
+			titleAddOrEdit: "创建",
+			markScroll:0,
 		};
 	},
 
@@ -172,11 +173,13 @@ export default {
 			}
 		},
 		handleAdd() {
+			this.markScroll = 0
 			this.titleAddOrEdit = "创建节"
-			this.addEditVisiable = true
+			this.addEditVisible = true
 		},
 		handleEdit(data) {
-			this.addEditVisiable = true
+			this.markScroll = document.documentElement.scrollTop
+			this.addEditVisible = true
 			this.$nextTick(() => {
 				this.$refs.addEditSection.initFormData(data.bookChapterId)
 			})
@@ -206,6 +209,10 @@ export default {
 					}
 				});
 			})
+		},
+		handleEditClose() {
+			this.addEditVisible = false
+			scrollTo(this.markScroll, 100)
 		},
 		refresh(val) {
 			this.getTableData({

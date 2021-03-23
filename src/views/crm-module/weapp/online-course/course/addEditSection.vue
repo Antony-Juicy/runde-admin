@@ -13,7 +13,6 @@
 <script>
 import RdForm from "@/components/RdForm";
 import { scrollTo } from "@/utils/scroll-to";
-import { Loading } from "element-ui";
 export default {
 	props: {
 		courseClass: {
@@ -191,7 +190,7 @@ export default {
 		},
 		getChapterInfo() {
 			if (this.mode == "save") {
-				
+
 				this.$fetch("online_course_chapter_getInfo", {
 					courseChapterId: this.courseChapterId,
 					loginUserId: this.$common.getUserId()
@@ -200,7 +199,7 @@ export default {
 						this.addFormOptions.forEach(item => {
 							item.initValue = res.data[item.prop];
 						});
-					
+
 						this.$refs.dataForm.addInitValue();
 					})
 					.catch(() => {

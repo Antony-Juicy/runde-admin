@@ -24,8 +24,8 @@
 			</rd-table>
 		</div>
 		<!-- 添加课程 -->
-		<fullDialog v-model="addEditVisible" :title="titleAddOrEdit" @change="addEditVisible = false">
-			<addEditBook ref="addEditBook" @close="addEditVisible = false" @refresh="refresh" v-if="addEditVisible" />
+		<fullDialog v-model="addEditVisible" :title="titleAddOrEdit" @change="handleEditClose">
+			<addEditBook ref="addEditBook" @close="handleEditClose" @refresh="refresh" v-if="addEditVisible" />
 		</fullDialog>
 		<fullDialog class="subject" v-model="subjectVisiable" title="科目管理" @change="handleSubjectClose">
 			<subject :book="book" @close="handleSubjectClose" @refresh="refresh" v-if="subjectVisiable"></subject>
@@ -151,7 +151,8 @@ export default {
 			searchForm: {}, //搜索栏信息
 			titleAddOrEdit: "创建图书",
 			subjectVisiable: false,
-			book: {}
+			book: {},
+			markScroll: 0,
 		};
 	},
 
@@ -191,7 +192,7 @@ export default {
 					}
 				).then((res) => {
 					this.tableData = res.data.records.map((item) => {
-						item.typeName = item.typeName.replace(/\\n/g,'')
+						item.typeName = item.typeName.replace(/\\n/g, '')
 						item.bookStatus = this.bookStatus2Zh(item.bookStatus)
 						try {
 							item.bookTeacherArray = JSON.parse(item.bookTeacherArray)
@@ -221,6 +222,7 @@ export default {
 			}
 		},
 		handleAdd() {
+			this.markScroll = 0
 			this.titleAddOrEdit = '创建图书';
 			this.addEditVisible = true;
 			this.$nextTick(() => {
@@ -228,6 +230,7 @@ export default {
 			})
 		},
 		handleEdit(data) {
+			this.markScroll = document.documentElement.scrollTop
 			this.titleAddOrEdit = '编辑图书';
 			this.addEditVisible = true;
 			this.$nextTick(() => {
@@ -268,14 +271,20 @@ export default {
 		handleSubject(data) {
 			this.subjectVisiable = true
 			this.book = data
+			this.markScroll = document.documentElement.scrollTop
 			this.$store.commit("book/setBookType", { typeId: data.typeId, typeName: data.typeName })
 			this.$store.commit("book/setBookId", data.bookId)
 			scrollTo(0, 800);
 		},
 		handleSubjectClose() {
 			this.subjectVisiable = false
+			scrollTo(this.markScroll, 100)
 			this.$store.dispatch('book/clearBook')
-		}
+		},
+		handleEditClose() {
+			this.addEditVisible = false
+			scrollTo(this.markScroll, 100)
+		},
 	},
 	async mounted() {
 		// 获取项目三级分类

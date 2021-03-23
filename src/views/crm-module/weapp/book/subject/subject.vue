@@ -26,8 +26,8 @@
 				</template>
 			</rd-table>
 		</div>
-		<fullDialog class="addEditSubject" :title="`${titleAddOrEdit}`" :inner="true" v-model="addEditVisible" @change="addEditVisible = false">
-			<addEditSubject ref="addEditSubject" :fromWhere="mode" v-if="addEditVisible" @close="addEditVisible = false" @refresh="refresh" :book="nextBook"></addEditSubject>
+		<fullDialog class="addEditSubject" :title="`${titleAddOrEdit}`" :inner="true" v-model="addEditVisible" @change="handleEditClose">
+			<addEditSubject ref="addEditSubject" :fromWhere="mode" v-if="addEditVisible" @close="handleEditClose" @refresh="refresh" :book="nextBook"></addEditSubject>
 		</fullDialog>
 		<fullDialog class="chapter" title="科目管理 > 章节目录" v-model="chapterVisible" @change="handleChapterClose">
 			<chapter v-if="chapterVisible" @close="handleChapterClose" :book="nextBook" :subject="subject"></chapter>
@@ -219,6 +219,7 @@ export default {
 			}
 			this.titleAddOrEdit = '创建科目';
 			this.addEditVisible = true
+			this.markScroll = 0
 			this.nextBook = {
 				bookName: this.book.bookName,
 				bookId: this.book.bookId,
@@ -233,6 +234,7 @@ export default {
 			this.mode = 'edit'
 			this.titleAddOrEdit = '编辑科目';
 			this.addEditVisible = true
+			this.markScroll = document.documentElement.scrollTop
 			this.nextBook = {
 				bookName: data.bookName,
 				typeName: data.typeName,
@@ -272,6 +274,7 @@ export default {
 		handleChapter(data) {
 			this.chapterVisible = true
 			this.subject = data
+			this.markScroll = document.documentElement.scrollTop
 			this.nextBook = {
 				bookName: data.bookName,
 				typeName: data.typeName,
@@ -280,6 +283,11 @@ export default {
 		},
 		handleChapterClose() {
 			this.chapterVisible = false
+			scrollTo(this.markScroll, 100)
+		},
+		handleEditClose() {
+			this.addEditVisible = false
+			scrollTo(this.markScroll, 100)
 		},
 		refresh(val) {
 			this.getTableData({
