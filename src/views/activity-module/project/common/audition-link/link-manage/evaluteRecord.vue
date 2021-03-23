@@ -43,19 +43,19 @@ export default {
         },
         {
           name: "您的年龄在",
-          value: "issuse",
+          value: "ageRange",
         },
         {
           name: "是否考过执业药师",
-          value: "activityName",
+          value: "isTakeTest",
         },
         {
           name: "今年要考试的方向",
-          value: "posterName",
+          value: "pharmacist",
         },
         {
           name: "具体的科目有哪些",
-          value: "posterPic",
+          value: "subjects",
         }
        
       ],
@@ -87,11 +87,12 @@ export default {
         ...params,
         linkUserId: this.linkUserId
       }).then((res) => {
-        this.tableData = res.data.varList.map((item) => {
-          item.createAt = this.$common._formatDates(item.createAt);
-          item.updateAt = this.$common._formatDates(item.updateAt);
-          return item;
-        });;
+        let obj = {};
+        for(let key in res.data){
+          obj[key] = res.data[key].myAnswerText || res.data[key]
+        }
+        
+        this.tableData = [ obj ];
 
       })
      },

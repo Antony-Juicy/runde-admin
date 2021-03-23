@@ -6,9 +6,14 @@
       @onSearch="onSearch"
     ></search-form>
     <div class="btn-wrapper">
-        <el-button type="primary" size="small" @click="handleAdd"
-          >添加</el-button
-        >
+        <div>
+          <el-button type="primary" size="small" @click="handleAdd"
+            >添加</el-button
+          >
+          <el-button type="warning" size="small" @click="handleImport"
+            >导入题目</el-button
+          >
+        </div>
         <el-radio-group v-model="activePoint" size="small" @change="activePointChange">
           <el-radio-button label="Pass">审核通过</el-radio-button>
           <el-radio-button label="Audit">待审核</el-radio-button>
@@ -24,6 +29,15 @@
         @pageChange="pageChange"
         :emptyText="emptyText"
       >
+        <template slot="content" slot-scope="scope">
+          <div v-html="scope.row.content"></div>
+        </template>
+        <template slot="answer" slot-scope="scope">
+          <div v-html="scope.row.answer"></div>
+        </template>
+        <template slot="custodyAnswer" slot-scope="scope">
+          <div v-html="scope.row.custodyAnswer"></div>
+        </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
             >编辑</el-button
@@ -61,16 +75,27 @@
         </RdForm>
       </rd-dialog>
 
+      <!-- 导入题目 -->
+      <uploadFileDialog 
+        :importVisible.sync="uploadVisible" 
+        :importData="detailData"
+        fileParamName="file"
+        append-to-body
+        url="practicingexamsite_importItem" 
+        @refresh="getTableData"/>
   </div>
 </template>
 
 <script>
 import RdForm from "@/components/RdForm";
 import RdEditor from "@/components/RdEditor";
+import uploadFileDialog from './uploadFileDialog';
 export default {
   name:"temp",
   data(){
     return {
+      uploadVisible: false,
+      importId: "",
       formOptions: [
         {
           prop: "serialNum",
@@ -110,14 +135,17 @@ export default {
         {
           name: "题目内容",
           value: "content",
+          operate: true
         },
         {
           name: "题目答案",
           value: "answer",
+          operate: true
         },
         {
           name: "押题对比",
           value: "custodyAnswer",
+          operate: true
         },
          {
           name: "联系方式",
@@ -198,7 +226,8 @@ export default {
   },
   components:{
     RdForm,
-    RdEditor
+    RdEditor,
+    uploadFileDialog
   },
   props: {
     id: {
@@ -230,9 +259,9 @@ export default {
         ...this.searchForm,
         ...params,
         auditStatus: this.activePoint,
-        // siteId:this.detailData.id,
-        // siteName:this.detailData.siteName,
-        // type:this.detailData.type
+        siteId:this.detailData.id,
+        siteName:this.detailData.siteName,
+        type:this.detailData.type
       }).then((res) => {
         this.tableData = res.data.varList.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
@@ -264,11 +293,15 @@ export default {
       this.$refs[formName].validate((valid, formData) => {
         if(valid){
           console.log(formData, "提交");
-          this.$fetch("practicingexamsite_custodySave",{
+          this.$fetch(this.addStatus?"practicingexamsite_custodySave":"practicingexamsite_editCustodyJsp",{
             ...formData,
             content: this.content,
             answer: this.answer,
-            custodyAnswer: this.custodyAnswer
+            custodyAnswer: this.custodyAnswer,
+            siteId:this.detailData.id,
+            siteName:this.detailData.siteName,
+            type:this.detailData.type,
+            id: this.addStatus?"": this.editId
           }).then(res => {
             this.$message.success("操作成功")
             this.addVisible = false;
@@ -334,6 +367,10 @@ export default {
         auditStatus: val
       })
     },
+    handleImport(row){
+      this.uploadVisible = true;
+      this.importId = row.id;
+    }
   }
 }
 </script>

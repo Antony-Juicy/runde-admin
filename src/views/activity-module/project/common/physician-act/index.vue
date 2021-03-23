@@ -20,7 +20,6 @@
         :tableData="tableData"
         :tableKey="tableKey"
         :pageConfig.sync="pageConfig"
-        :tbodyHeight="600"
         fixedTwoRow
         @pageChange="pageChange"
         :emptyText="emptyText"
@@ -326,7 +325,8 @@ export default {
       addStatus: true,
       activePoint: "",
       editId:"",
-      detailData:{}
+      detailData:{},
+      productId:""
     }
   },
   components:{
@@ -338,6 +338,7 @@ export default {
     this.getTableData();
 
     this.$fetch("practicingexamsite_goAdd").then(res => {
+        this.productId = res.data.productId;
         this.addFormOptions[1].options = res.data.subjectNameArr.map(item => ({
           label: item,
           value: item
@@ -361,7 +362,7 @@ export default {
         this.tableData = res.data.varList.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
           item.updateAt = this.$common._formatDates(item.updateAt);
-          
+          item.status = item.status == "YES" ? "上架" : "下架"
           return item;
         });;
         this.pageConfig.totalCount = res.data.page.totalResult;
@@ -376,6 +377,14 @@ export default {
     handleAdd(){
       this.addStatus = true;
       this.addVisible = true;
+      this.addFormOptions.forEach(item => {
+        if(item.prop != "productName"){
+          item.initValue = "";
+        }
+      })
+      setTimeout(() => {
+        this.$refs.dataForm3.addInitValue();
+      }, 0);
     },
     submitAddForm(formName){
       this.$refs[formName].validate((valid, formData) => {
@@ -383,7 +392,8 @@ export default {
           console.log(formData, "提交");
           this.$fetch(this.addStatus?"practicingexamsite_save":"practicingexamsite_editJsp",{
             ...formData,
-            id: this.addStatus?"":this.editId
+            id: this.addStatus?"":this.editId,
+            productId: this.productId
           }).then(res => {
             this.$message.success("操作成功")
             this.getTableData()
@@ -397,12 +407,17 @@ export default {
       this.addStatus = false;
       this.addVisible = true;
       this.editId = data.id;
-      this.addFormOptions.forEach(item => {
-        item.initValue = data[item.prop];
+      this.$fetch("practicingexamsite_goEdit",{
+        id: data.id
+      }).then(res => {
+        this.addFormOptions.forEach(item => {
+          item.initValue = res.data.pd[item.prop];
+        })
+        setTimeout(() => {
+          this.$refs.dataForm3.addInitValue();
+        }, 0);
       })
-      setTimeout(() => {
-        this.$refs.dataForm3.addInitValue();
-      }, 0);
+      
     },
     handleDelete(row) {
       let info = '项';
@@ -413,8 +428,7 @@ export default {
       })
         .then(async () => {
           const res = await this.$fetch("practicingexamsite_deleteJsp", {
-            typeId: row.typeId,
-            loginUserId,
+            id: row.id
           }).then((res) => {
             if (res) {
               this.$message({

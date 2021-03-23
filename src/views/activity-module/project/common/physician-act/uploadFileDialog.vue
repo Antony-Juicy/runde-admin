@@ -7,20 +7,28 @@
       @handleClose="handleClose"
       @submitForm="submitImportForm()"
     >
-      <el-upload
-        class="upload-demo"
-        action="#"
-        :before-remove="beforeRemove"
-        :limit="1"
-        :on-exceed="handleExceed"
-        :on-change="handleChange"
-        :file-list="fileList"
-        :before-upload="beforeAvatarUpload"
-        :auto-upload="false"
-        accept=".xls, .xlsx"
-      >
-        <el-button size="small" type="primary">点击上传</el-button>
-      </el-upload>
+      <el-form ref="form" label-width="80px">
+        <el-form-item label="导入模板">
+          <el-button type="primary" @click="downLoad" size="small">点击下载模板</el-button>
+        </el-form-item>
+        <el-form-item label="文件">
+          <el-upload
+            class="upload-demo"
+            action="#"
+            :before-remove="beforeRemove"
+            :limit="1"
+            :on-exceed="handleExceed"
+            :on-change="handleChange"
+            :file-list="fileList"
+            :before-upload="beforeAvatarUpload"
+            :auto-upload="false"
+            accept=".xls, .xlsx"
+          >
+            <el-button size="small" type="primary">点击上传</el-button>
+          </el-upload>
+        </el-form-item>
+        <p style="margin-left: 13px;color: red;">特别提醒 &nbsp;导入模版中【排序，题目，答案】不能为空.否则会导入失败！！！</p>
+      </el-form>
     </rd-dialog>
   </div>
 </template>
@@ -56,6 +64,10 @@ export default {
     fileParamName: {
       type: String,
       default:"excel"
+    },
+    importData: {
+      type: Object,
+      default:{}
     }
   },
   methods: {
@@ -66,7 +78,10 @@ export default {
       }
       let obj = new FormData();
       obj.append(this.fileParamName, this.importFile);
-      obj.append("id", this.importId);
+      const { id,siteName,type } = this.importData;
+      obj.append("siteId", id);
+      obj.append("siteName", siteName);
+      obj.append("type", type);
       this.$fetch(this.url, obj).then((res) => {
         if (res.code == 200) {
           this.$message.success("操作成功");
@@ -114,6 +129,9 @@ export default {
     handleClose(){
       // this.importVisible = false;
       this.$emit("update:importVisible", false)
+    },
+    downLoad(){
+      window.location.href = "/temp/practicingexamsiteitem_import .xlsx"
     }
   },
 };
