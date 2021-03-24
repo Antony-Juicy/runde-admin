@@ -142,8 +142,10 @@ const $common = {
           item.label = item.typeName;
           item.value = item.typeId;
           item.nodes = item.children
-          if(item.children == []) {
-            item.nodes = []
+          if(item.children && item.children.length == 0) {
+            // item.nodes = []
+            delete item.nodes;
+            delete item.children;
           } else {
             this.getTypeTree(item.nodes)
           }

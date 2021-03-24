@@ -46,6 +46,12 @@
           <el-form-item label="项目名称" prop="typeName">
             <el-input v-model.trim="projectForm.typeName" autocomplete="off" placeholder="请输入项目名称" />
           </el-form-item>
+          <el-form-item label="教务项目id" prop="jwProductId">
+            <el-input v-model.trim="projectForm.jwProductId" autocomplete="off" @input="projectForm.jwProductId = String(projectForm.jwProductId).replace(/[^\d]/g,'')" placeholder="请输入教务项目id" />
+          </el-form-item>
+          <el-form-item label="教务科目id" prop="jwSubjectId">
+            <el-input v-model.trim="projectForm.jwSubjectId" autocomplete="off" @input="projectForm.jwSubjectId = String(projectForm.jwSubjectId).replace(/[^\d]/g,'')" placeholder="请输入教务科目id" />
+          </el-form-item>
           <el-form-item label="APP类型" prop="appType">
             <el-select v-model.trim="projectForm.appType" placeholder="请选择类型">
               <el-option label="药师" value="pharmacist"></el-option>
@@ -152,6 +158,8 @@ export default {
         parentId: 0,
         typeId: '',
         typeName: '',
+        jwProductId: '',
+        jwSubjectId: '',
         appType: '',
         typeIcon: '',
         orderValue: '',
