@@ -1,5 +1,5 @@
 const $common = {
-    _console(){
+    _console() {
         console.log(123)
     },
     _validatorPhone(rule, value, callback) {
@@ -20,9 +20,9 @@ const $common = {
     },
     // 年月日时分时间处理
     _formatDates(date) {
-        if(!date) {
+        if (!date) {
             return ''
-          }
+        }
         let time = new Date(date)
         let year = time.getFullYear();
         let month = time.getMonth() + 1;
@@ -39,9 +39,9 @@ const $common = {
     },
 
     _formatDates2(date) {
-        if(!date) {
+        if (!date) {
             return ''
-          }
+        }
         let time = new Date(date)
         let year = time.getFullYear();
         let month = time.getMonth() + 1;
@@ -60,34 +60,34 @@ const $common = {
     },
 
     // 30天倒计时功能
-    showtime(time){
+    showtime(time) {
         let nowtime = new Date();  //获取当前时间
         let endtime = new Date(time).setDate(new Date(time).getDate() + 30)
         let lefttime = endtime - nowtime.getTime(),  //距离结束时间的毫秒数
-        leftd = Math.floor(lefttime/(1000*60*60*24)),  //计算天数
-        lefth = Math.floor(lefttime/(1000*60*60)%24),  //计算小时数
-        leftm = Math.floor(lefttime/(1000*60)%60),  //计算分钟数
-        lefts = Math.floor(lefttime/1000%60);  //计算秒数
-        if(lefttime<0){
+            leftd = Math.floor(lefttime / (1000 * 60 * 60 * 24)),  //计算天数
+            lefth = Math.floor(lefttime / (1000 * 60 * 60) % 24),  //计算小时数
+            leftm = Math.floor(lefttime / (1000 * 60) % 60),  //计算分钟数
+            lefts = Math.floor(lefttime / 1000 % 60);  //计算秒数
+        if (lefttime < 0) {
             return ''
         }
         return leftd + "天" + lefth + "小时" + leftm + "分" + lefts + "秒";  //返回倒计时的字符串
     },
 
     // 传入结束时间的倒计时功能
-    showCutDown(endtime){
-        let nowtime = new Date(); 
+    showCutDown(endtime) {
+        let nowtime = new Date();
         let lefttime = endtime - nowtime.getTime(),  //距离结束时间的毫秒数
-        leftd = Math.floor(lefttime/(1000*60*60*24)),  //计算天数
-        lefth = Math.floor(lefttime/(1000*60*60)%24),  //计算小时数
-        leftm = Math.floor(lefttime/(1000*60)%60),  //计算分钟数
-        lefts = Math.floor(lefttime/1000%60);  //计算秒数
-        return leftd + "天" + lefth + "小时" + leftm + "分" + lefts + "秒"; 
+            leftd = Math.floor(lefttime / (1000 * 60 * 60 * 24)),  //计算天数
+            lefth = Math.floor(lefttime / (1000 * 60 * 60) % 24),  //计算小时数
+            leftm = Math.floor(lefttime / (1000 * 60) % 60),  //计算分钟数
+            lefts = Math.floor(lefttime / 1000 % 60);  //计算秒数
+        return leftd + "天" + lefth + "小时" + leftm + "分" + lefts + "秒";
     },
 
     // 隐藏手机号中间四位
-    hidePhone(phone){
-        if(!phone){
+    hidePhone(phone) {
+        if (!phone) {
             return ""
         }
         let str = String(phone)
@@ -98,22 +98,30 @@ const $common = {
     reloadElem(dataElem) {
         this[dataElem] = false;
         this.$nextTick(() => {
-          this[dataElem] = true;
+            this[dataElem] = true;
         });
     },
 
     // 获取用户userId
-    getUserId(){
+    getUserId() {
         return localStorage.getItem('loginUserId');
     },
 
     // 校验只要是数字（包含正负整数，0以及正负浮点数）就返回true
     isNumber(val) {
-        　　if (parseFloat(val).toString() == "NaN") {　
-        　　　　return false;
-        　　} else {
-        　　　　return true;
-        　　}
+        if (parseFloat(val).toString() == "NaN") {
+            return false;
+        } else {
+            return true;
+        }
+    },
+
+    async sleep(time) {
+        return new Promise(resolve => {
+            setTimeout(() => {
+                resolve()
+            }, time)
+        })
     },
 
     // 获取当天日期
@@ -139,7 +147,7 @@ const $common = {
     // 多级分类下拉
     getTypeTree(val) {
         val.forEach(item => {
-          item.label = item.typeName;
+          item.label = item.typeName.replace(/\\n/g,'');
           item.value = item.typeId;
           item.nodes = item.children
           if(item.children && item.children.length == 0) {
