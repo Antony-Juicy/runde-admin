@@ -51,11 +51,6 @@
 
       </template>
 
-      <!-- <div class="btn-wrapper">
-        <el-button type="primary" @click="submitForm('dynamicValidateForm')"
-          >提交</el-button
-        >
-      </div> -->
     </el-form>
     <div class="btn-wrapper">
       <el-button
@@ -79,7 +74,7 @@ export default {
     return {
       addFormOptions: [
         {
-          prop: "name",
+          prop: "activityName",
           element: "el-input",
           placeholder: "请输入活动名称",
           label: "活动名称",
@@ -94,19 +89,19 @@ export default {
           //   clearable: false
         },
         {
-          prop: "menuName",
+          prop: "fieldOne",
           element: "el-input",
           placeholder: "请输入字段一名称",
           label: "字段一名称",
         },
         {
-          prop: "menuName",
+          prop: "fieldTwo",
           element: "el-input",
           placeholder: "请输入字段二名称",
           label: "字段二名称",
         },
         {
-          prop: "menuName",
+          prop: "appId",
           element: "el-select",
           placeholder: "微信公众号",
           label: "微信公众号",
@@ -114,7 +109,7 @@ export default {
           ],
         },
         {
-          prop: "menuName",
+          prop: "invitationType",
           element: "el-select",
           placeholder: "邀请码类型",
           label: "邀请码类型",
@@ -122,7 +117,7 @@ export default {
           ],
         },
         {
-          prop: "menuName",
+          prop: "status",
           element: "el-select",
           placeholder: "请选择",
           label: "活动状态",
@@ -130,7 +125,7 @@ export default {
           ],
         },
         {
-          prop: "menuName",
+          prop: "productType",
           element: "el-select",
           placeholder: "请选择",
           label: "项目类型",
@@ -138,7 +133,7 @@ export default {
           ],
         },
         {
-          prop: "menuName",
+          prop: "attentionStatus",
           element: "el-select",
           placeholder: "请选择",
           label: "是否强制关注",
@@ -146,7 +141,7 @@ export default {
           ],
         },
         {
-          prop: "menuName",
+          prop: "shareStatus",
           element: "el-select",
           placeholder: "请选择",
           label: "是否强制分享",
@@ -154,7 +149,7 @@ export default {
           ],
         },
         {
-          prop: "menuName",
+          prop: "hideStatus",
           element: "el-select",
           placeholder: "请选择",
           label: "是否隐藏",
@@ -162,7 +157,7 @@ export default {
           ],
         },
         {
-          prop: "menuName",
+          prop: "activityDesc",
           element: "el-input",
           placeholder: "请输入",
           label: "活动描述",
@@ -205,24 +200,14 @@ export default {
       this.$refs.dataForm3.validate((val, data) => {
         if (val) {
           console.log(data, "data");
-          this.submitForm('dynamicValidateForm')
-          //   this.btnLoading = true;
-          //   this.$fetch("live_add", {
-          //     ...data,
-          //     loginUserId: this.$common.getUserId(),
-          //   })
-          //     .then((res) => {
-          //       if (res.code == 200) {
-          //         this.btnLoading = false;
-          //         this.$message.success("创建成功");
-          //         this.$emit("close");
-          //         this.$emit("refresh");
-          //       }
-          //     })
-          //     .catch((err) => {
-          //       console.log(err);
-          //       this.btnLoading = false;
-          //     });
+          this.$refs.dynamicValidateForm.validate((valid) => {
+            if (valid) {
+              console.log(this.dynamicValidateForm,'99')
+            } else {
+              console.log("error submit!!");
+              return false;
+            }
+          });
         }
       });
     },

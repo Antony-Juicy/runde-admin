@@ -255,6 +255,9 @@ export default {
   components:{
     RdForm
   },
+  mounted(){
+    this.getTableData();
+  },
    methods: {
      onSearch(val){
        this.searchForm = {
@@ -263,8 +266,21 @@ export default {
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
      },
-     getTableData(){
-
+     getTableData(params = {}){
+       this.$fetch("posterinfo_listJson", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.data.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          item.startTime = this.$common._formatDates(item.startTime);
+          item.endTime = this.$common._formatDates(item.endTime);
+          return item;
+        });;
+        this.pageConfig.totalCount = res.data.count;
+      })
      },
      pageChange(val) {
       console.log(val,'pagechange')
