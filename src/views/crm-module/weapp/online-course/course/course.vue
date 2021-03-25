@@ -22,7 +22,7 @@
 				<template slot="edit" slot-scope="scope">
 					<el-button @click="handleEdit(scope.row)" type="text" size="small">查阅/编辑</el-button>
 					<el-button @click="handleImport(scope.row)" type="text" size="small" style="color: rgb(255, 165, 0)">导入章</el-button>
-					<br/>
+					<br />
 					<el-button @click="handleChapter(scope.row)" type="text" style="color: #67c23a" size="small">章节目录</el-button>
 					<el-button @click="handleDelete(scope.row)" type="text" style="color: #ec5b56" size="small">删除</el-button>
 				</template>
@@ -159,11 +159,11 @@ export default {
 			nextCourseClass: {},
 			mode: 'root',
 			markScroll: 0,
-			importVisible:false,
-			importFileCourseId:"",
+			importVisible: false,
+			importFileCourseId: "",
 		};
 	},
-	components: { fullDialog, chapter, addEditCourse ,importFile},
+	components: { fullDialog, chapter, addEditCourse, importFile },
 
 	watch: {},
 
@@ -303,11 +303,11 @@ export default {
 		},
 		handleChapterClose() {
 			this.chapterVisible = false
-			scrollTo(this.markScroll,100)
+			scrollTo(this.markScroll, 100)
 		},
 		handleEditClose() {
 			this.addEditVisible = false
-			scrollTo(this.markScroll,100)
+			scrollTo(this.markScroll, 100)
 		},
 		handleImport(data) {
 			this.importFileCourseId = data.courseId
@@ -359,8 +359,15 @@ export default {
 		this.formOptions.push(typeId_select);
 		this.$refs.searchForm.addInitValue()
 		this.getTableData();
+		// 因为元素层级的原因，要把这个dialog放到body下才能正常显示在遮罩层上面
+		this.courseDialogId = `course-dialog-${Date.now()}`
+		document.querySelector('.course-container .dialog-wrapper').id = this.courseDialogId
+		document.body.append(document.querySelector('.course-container .dialog-wrapper'))
 	},
-
+	beforeDestroy() {
+		// 既然要离开页面了，就把这个dialog标签删掉，做好文档流管理
+		document.body.removeChild(document.body.querySelector(`#${this.courseDialogId}`))
+	}
 }
 </script>
 <style lang='scss' scoped>
