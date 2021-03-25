@@ -22,9 +22,11 @@ export default {
     book_update_chapter: { url: '/live/console/book/chapter/update_chapter', method: 'post' },
     book_update_section: { url: '/live/console/book/chapter/update_section', method: 'post' },
     book_chapter_getInfo: { url: '/live/console/book/chapter/get', method: 'post' },
-   
+
 
     // 导入文件
     book_import_chapter_or_section: { url: '/live/console/book/subject/import_chapter_or_section', method: 'post' },
     book_import_section: { url: '/live/console/book/chapter/import_section', method: 'post' },
+
+    book_check_chapter_name: { url: '/live/console/book/chapter/is_have_chapter_name', method: 'post' },
 }

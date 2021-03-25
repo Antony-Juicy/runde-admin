@@ -36,6 +36,19 @@ export default {
 	},
 	components: { RdForm },
 	data() {
+		var checkName = async (rule, value, callback) => {
+			let res = await this.$fetch("online_course_check_chapter_name", {
+				courseChapterName: value,
+				// bookSubjectId: this.subject.bookSubjectId,
+				parentId: this.chapter.courseChapterId,
+				courseChapterId: this.courseChapterId
+			})
+			if (res.msg != "操作成功") {
+				callback(new Error(res.msg));
+			} else {
+				callback();
+			}
+		};
 		return {
 			addFormOptions: [
 				{
@@ -107,7 +120,7 @@ export default {
 			],
 			addRules: {
 				courseChapterName: [
-					{ required: true, message: "请输入科目名称", trigger: "blur" }
+					{ required: true, message: "请输入科目名称", trigger: "blur" }, { validator: checkName, trigger: "blur" }
 				],
 				// courseVideoId: [
 				// 	{ required: true, message: "请输入视频ID", trigger: "blur" }

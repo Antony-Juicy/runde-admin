@@ -30,7 +30,19 @@ export default {
 		}
 	},
 	data() {
-
+		var checkName = async (rule, value, callback) => {
+			let res = await this.$fetch("book_check_chapter_name", {
+				bookChapterName: value,
+				bookSubjectId: this.subject.bookSubjectId,
+				parentId: 0,
+				bookChapterId:this.bookChapterId
+			})
+			if (res.msg != "操作成功") {
+				callback(new Error(res.msg));
+			} else {
+				callback();
+			}
+		};
 		return {
 			addFormOptions: [
 				{
@@ -86,7 +98,7 @@ export default {
 				},
 			],
 			addRules: {
-				bookChapterName: [{ required: true, message: "请输入科目名称", trigger: "blur" },],
+				bookChapterName: [{ required: true, message: "请输入章名称", trigger: "blur" }, { validator: checkName, trigger: "blur" }],
 				bookChapterStatus: [{ required: true, message: "请选择显示状态", trigger: "blur" },],
 				orderValue: [{ required: true, message: "请输入排序值", trigger: "blur" },],
 			},

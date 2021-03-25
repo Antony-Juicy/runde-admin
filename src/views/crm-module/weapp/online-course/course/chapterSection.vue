@@ -91,12 +91,18 @@ export default {
 					value: "courseName",
 				},
 				{
+					name: "视频ID",
+					value: "courseVideoId",
+				},
+				{
 					name: "状态",
 					value: "courseChapterStatus",
+					width: 80
 				},
 				{
 					name: "排序值",
 					value: "orderValue",
+					width: 80
 				},
 				{
 					name: "操作",

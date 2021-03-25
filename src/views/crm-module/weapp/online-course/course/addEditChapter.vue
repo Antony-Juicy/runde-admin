@@ -13,7 +13,6 @@
 <script>
 import RdForm from "@/components/RdForm";
 import { scrollTo } from "@/utils/scroll-to";
-import { Loading } from "element-ui";
 export default {
 	props: {
 		courseClass: {
@@ -31,6 +30,19 @@ export default {
 	},
 	components: { RdForm },
 	data() {
+		var checkName = async (rule, value, callback) => {
+			let res = await this.$fetch("online_course_check_chapter_name", {
+				courseChapterName: value,
+				courseId: this.course.courseId,
+				parentId: 0,
+				courseChapterId:this.courseChapterId
+			})
+			if (res.msg != "操作成功") {
+				callback(new Error(res.msg));
+			} else {
+				callback();
+			}
+		};
 		return {
 			addFormOptions: [
 				{
@@ -87,7 +99,7 @@ export default {
 			],
 			addRules: {
 				courseChapterName: [
-					{ required: true, message: "请输入科目名称", trigger: "blur" }
+					{ required: true, message: "请输入章名称", trigger: "blur" },{ validator: checkName, trigger: "blur" }
 				],
 				courseChapterStatus: [
 					{ required: true, message: "请选择显示状态", trigger: "blur" }
@@ -170,15 +182,13 @@ export default {
 				this.$fetch("online_course_chapter_getInfo", {
 					courseChapterId: this.courseChapterId,
 					loginUserId: this.$common.getUserId()
-				})
-					.then(res => {
-						this.addFormOptions.forEach(item => {
-							item.initValue = res.data[item.prop];
-						});
-						this.$refs.dataForm.addInitValue();
-					})
-					.catch(() => {
+				}).then(res => {
+					this.addFormOptions.forEach(item => {
+						item.initValue = res.data[item.prop];
 					});
+					this.$refs.dataForm.addInitValue();
+				}).catch(() => {
+				});
 			}
 		}
 	},
