@@ -21,6 +21,7 @@
 				</template>
 				<template slot="edit" slot-scope="scope">
 					<el-button @click="handleEdit(scope.row)" type="text" size="small">查阅/编辑</el-button>
+					<el-button @click="handleImport(scope.row)" type="text" size="small" style="color: rgb(255, 165, 0)">导入章节</el-button>
 					<el-button @click="handleChapter(scope.row)" type="text" style="color: #67c23a" size="small">章节目录</el-button>
 					<el-button @click="handleDelete(scope.row)" type="text" style="color: #ec5b56" size="small">删除</el-button>
 				</template>
@@ -33,6 +34,10 @@
 		<fullDialog class="chapter" title="科目管理 > 章节目录" v-model="chapterVisible" @change="handleChapterClose">
 			<chapter v-if="chapterVisible" @close="handleChapterClose" :courseClass="nextCourseClass" :course="course"></chapter>
 		</fullDialog>
+		<!-- 链接 -->
+		<rd-dialog :title="'EXCEL 导入到数据库'" :dialogVisible="importVisible" :showFooter="false" :width="'500px'" @handleClose="importVisible = false">
+			<importFile v-if="importVisible" @submit="handleImportExcel" @cancel="importVisible = false" @download="handleDownTemp"></importFile>
+		</rd-dialog>
 	</div>
 </template>
 
@@ -42,6 +47,7 @@ import fullDialog from "@/components/FullDialog";
 import chapter from './chapter'
 import addEditCourse from './addEditCourse'
 import { scrollTo } from "@/utils/scroll-to";
+import importFile from './importFile'
 export default {
 
 	props: {
@@ -152,9 +158,11 @@ export default {
 			nextCourseClass: {},
 			mode: 'root',
 			markScroll: 0,
+			importVisible:false,
+			importFileCourseId:"",
 		};
 	},
-	components: { fullDialog, chapter, addEditCourse },
+	components: { fullDialog, chapter, addEditCourse ,importFile},
 
 	watch: {},
 
@@ -299,6 +307,26 @@ export default {
 		handleEditClose() {
 			this.addEditVisible = false
 			scrollTo(this.markScroll,100)
+		},
+		handleImport(data) {
+			this.importFileCourseId = data.courseId
+			this.importVisible = true
+		},
+		// 上传文件 请求
+		handleImportExcel(data) {
+			let obj = new FormData();
+			obj.append("excel", data.file);
+			obj.append("courseId", this.importFileCourseId);
+			this.$fetch("online_course_import_chapter_or_section", obj).then((res) => {
+				if (res.code == 200) {
+					this.$message.success("操作成功")
+					this.importVisible = false
+					this.getTableData();
+				}
+			});
+		},
+		handleDownTemp() {
+			window.location.href = "/temp/import_chapter_or_section.xlsx"
 		},
 		refresh(val) {
 			this.getTableData({

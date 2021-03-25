@@ -25,5 +25,9 @@ export default {
    online_course_check_code: { url: '/live/console/onlinecourse/class/check_code', method: 'post' },
 
 
+   online_course_import_chapter_or_section: { url: '/live/console/onlinecourse/info/import_chapter_or_section', method: 'post' },
+   online_course_import_section: { url: '/live/console/onlinecourse/chapter/import_section', method: 'post' },
+
+
 
 }
