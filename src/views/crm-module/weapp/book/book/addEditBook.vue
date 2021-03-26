@@ -361,7 +361,7 @@ export default {
 					} else {
 						doUpdate.call(this)
 					}
-					data.bookLabel = data.bookLabel.split(',')
+
 
 					function doUpdate() {
 						this.$fetch('book_update_book', {
@@ -379,10 +379,12 @@ export default {
 									}
 									this.$emit("refresh");
 								}
+								data.bookLabel = data.bookLabel.split(',')
 							})
 							.catch((err) => {
 								console.log(err)
 								this.btnLoading = false
+								data.bookLabel = data.bookLabel.split(',')
 							})
 					}
 				}
@@ -508,7 +510,7 @@ export default {
 		.el-select .el-input__inner {
 			min-height: 32px;
 		}
-		.el-input--suffix .el-input__inner{
+		.el-input--suffix .el-input__inner {
 			min-height: 32px;
 		}
 		.el-tag.el-tag--info {
