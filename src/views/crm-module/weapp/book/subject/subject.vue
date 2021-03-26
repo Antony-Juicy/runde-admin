@@ -21,6 +21,8 @@
 				</template>
 				<template slot="edit" slot-scope="scope">
 					<el-button @click="handleEdit(scope.row)" type="text" size="small">查阅/编辑</el-button>
+					<el-button @click="handleImport(scope.row)" type="text" size="small" style="color: rgb(255, 165, 0)">导入章</el-button>
+					<br/>
 					<el-button @click="handleChapter(scope.row)" type="text" style="color: #67c23a" size="small">章节目录</el-button>
 					<el-button @click="handleDelete(scope.row)" type="text" style="color: #ec5b56" size="small">删除</el-button>
 				</template>
@@ -32,6 +34,10 @@
 		<fullDialog class="chapter" title="科目管理 > 章节目录" v-model="chapterVisible" @change="handleChapterClose">
 			<chapter v-if="chapterVisible" @close="handleChapterClose" :book="nextBook" :subject="subject"></chapter>
 		</fullDialog>
+		<!-- 链接 -->
+		<rd-dialog :title="'EXCEL 导入到数据库'" :dialogVisible="importVisible" :showFooter="false" :width="'500px'" @handleClose="importVisible = false">
+			<importFile v-if="importVisible" @submit="handleImportExcel" @cancel="importVisible = false" @download="handleDownTemp"></importFile>
+		</rd-dialog>
 	</div>
 </template>
 
@@ -41,6 +47,7 @@ import fullDialog from "@/components/FullDialog";
 import chapter from './chapter'
 import addEditSubject from './addEditSubject'
 import { scrollTo } from "@/utils/scroll-to";
+import importFile from './importFile'
 export default {
 
 	props: {
@@ -142,10 +149,12 @@ export default {
 			chapterVisible: false,
 			subject: {},
 			nextBook: {},
-			mode:'root',
+			mode: 'root',
+			importVisible: false,
+			importFileBookSubjectId: '',
 		};
 	},
-	components: { fullDialog, chapter, addEditSubject },
+	components: { fullDialog, chapter, addEditSubject, importFile },
 
 	watch: {},
 
@@ -166,7 +175,7 @@ export default {
 					lock: true,
 					target: ".el-table",
 				});
-                // 深拷贝
+				// 深拷贝
 				let searchForm = JSON.parse(JSON.stringify(this.searchForm))
 				if (searchForm.typeId && searchForm.typeId.constructor == Array) {
 					searchForm.typeId = searchForm.typeId.pop()
@@ -182,7 +191,7 @@ export default {
 					}
 				).then((res) => {
 					this.tableData = res.data.records.map((item) => {
-						item.typeName = item.typeName.replace(/\\n/g,'')
+						item.typeName = item.typeName.replace(/\\n/g, '')
 						try {
 							item.bookSubjectTeacherArray = JSON.parse(item.bookSubjectTeacherArray)
 						} catch (error) {
@@ -289,6 +298,27 @@ export default {
 			this.addEditVisible = false
 			scrollTo(this.markScroll, 100)
 		},
+
+		handleImport(data) {
+			this.importFileBookSubjectId = data.bookSubjectId
+			this.importVisible = true
+		},
+		// 上传文件 请求
+		handleImportExcel(data) {
+			let obj = new FormData();
+			obj.append("excel", data.file);
+			obj.append("bookSubjectId", this.importFileBookSubjectId);
+			this.$fetch("book_import_chapter_or_section", obj).then((res) => {
+				if (res.code == 200) {
+					this.$message.success("操作成功")
+					this.importVisible = false
+					this.getTableData();
+				}
+			});
+		},
+		handleDownTemp() {
+			window.location.href = "/temp/import_chapter_or_section.xlsx"
+		},
 		refresh(val) {
 			this.getTableData({
 				pageNum: val || this.pageConfig.pageNum
@@ -316,7 +346,16 @@ export default {
 		this.formOptions.push(typeId_select);
 		this.$refs.searchForm.addInitValue()
 		this.getTableData();
+		// 因为元素层级的原因，要把这个dialog放到body下才能正常显示在遮罩层上面
+		this.subjectDialogId = `subject-dialog-${Date.now()}`
+		document.querySelector('.subject-container .dialog-wrapper').id = this.subjectDialogId
+		document.body.append(document.querySelector('.subject-container .dialog-wrapper'))
 	},
+	beforeDestroy() {
+		// 既然要离开页面了，就把这个dialog标签删掉，做好文档流管理
+		document.body.removeChild(document.body.querySelector(`#${this.subjectDialogId}`))
+	}
+
 }
 </script>
 <style lang='scss' scoped>
@@ -336,8 +375,19 @@ export default {
 				position: initial !important;
 			}
 		}
+
+		.el-dialog__header {
+			background: #409eff;
+			.el-dialog__title {
+				color: #fff;
+			}
+			.el-dialog__close {
+				color: #fff;
+			}
+		}
 	}
 }
+
 .subject-teacher {
 	display: inline-block;
 	padding-bottom: 5px;

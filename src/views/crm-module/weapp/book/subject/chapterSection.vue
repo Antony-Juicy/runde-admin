@@ -92,12 +92,18 @@ export default {
 					value: "bookSubjectName",
 				},
 				{
+					name: "视频ID",
+					value: "bookVideoId",
+				},
+				{
 					name: "状态",
 					value: "bookChapterStatus",
+					width: 80
 				},
 				{
 					name: "排序值",
 					value: "orderValue",
+					width: 80
 				},
 				{
 					name: "操作",
@@ -114,7 +120,7 @@ export default {
 			searchForm: {}, //搜索栏信息
 			addEditVisible: false,
 			titleAddOrEdit: "创建",
-			markScroll:0,
+			markScroll: 0,
 		};
 	},
 

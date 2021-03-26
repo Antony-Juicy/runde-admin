@@ -12,6 +12,8 @@
 
 				<template slot="edit" slot-scope="scope">
 					<el-button @click="handleEdit(scope.row)" type="text" size="small">查阅/编辑</el-button>
+					<el-button @click="handleImport(scope.row)" type="text" size="small" style="color: rgb(255, 165, 0)">导入节</el-button>
+					<br/>
 					<el-button @click="handleSection(scope.row)" type="text" style="color: #67c23a" size="small">查看小节</el-button>
 					<el-button @click="handleDelete(scope.row)" type="text" style="color: #ec5b56" size="small">删除</el-button>
 				</template>
@@ -23,6 +25,10 @@
 		<fullDialog class="chapterSection" title="科目管理 > 章节目录 > 查看小节" v-model="chapterSectionVisible" @change="handleSectionClose">
 			<chapterSection :book="book" :subject="subject" :chapter="chapter" v-if="chapterSectionVisible" @close="handleSectionClose"></chapterSection>
 		</fullDialog>
+		<!-- 链接 -->
+		<rd-dialog :title="'EXCEL 导入到数据库'" :dialogVisible="importVisible" :showFooter="false" :width="'500px'" @handleClose="importVisible = false">
+			<importFile v-if="importVisible" @submit="handleImportExcel" @cancel="importVisible = false" @download="handleDownTemp"></importFile>
+		</rd-dialog>
 	</div>
 </template>
 
@@ -33,9 +39,10 @@ import fullDialog from "@/components/FullDialog";
 import chapterSection from './chapterSection'
 import addEditChapter from './addEditChapter'
 import { scrollTo } from "@/utils/scroll-to";
+import importFile from './importFile'
 export default {
 
-	components: { fullDialog, chapterSection, addEditChapter },
+	components: { fullDialog, chapterSection, addEditChapter, importFile },
 	props: {
 		book: {
 			type: Object,
@@ -120,6 +127,8 @@ export default {
 			chapterSectionVisible: false,
 			chapter: {},
 			markScroll: 0,
+			importVisible: false,
+			importFileBookChapterId: '',
 		};
 	},
 
@@ -229,6 +238,27 @@ export default {
 				pageNum: val || this.pageConfig.pageNum
 			});
 		},
+		handleImport(data) {
+			this.importFileBookChapterId = data.bookChapterId
+			this.importVisible = true
+
+		},
+		handleDownTemp() {
+			window.location.href = "/temp/import_section.xlsx"
+		},
+		// 上传文件 请求
+		handleImportExcel(data) {
+			let obj = new FormData();
+			obj.append("excel", data.file);
+			obj.append("bookChapterId", this.importFileBookChapterId);
+			this.$fetch("book_import_section", obj).then((res) => {
+				if (res.code == 200) {
+					this.$message.success("操作成功")
+					this.importVisible = false
+					this.getTableData();
+				}
+			});
+		},
 		bookChapterStatus2Zh(status) {
 			switch (status) {
 				case 'Open': return '上架';
@@ -241,7 +271,16 @@ export default {
 	mounted() {
 		scrollTo(0, 800);
 		this.getTableData()
+		// 因为元素层级的原因，要把这个dialog放到body下才能正常显示在遮罩层上面
+		this.chapterDialogId = `chapter-dialog-${Date.now()}`
+		document.querySelector('.chapter-container .dialog-wrapper').id = this.chapterDialogId
+		document.body.append(document.querySelector('.chapter-container .dialog-wrapper'))
 	},
+	beforeDestroy() {
+		// 既然要离开页面了，就把这个dialog标签删掉，做好文档流管理
+		document.body.removeChild(document.body.querySelector(`#${this.chapterDialogId}`))
+	}
+
 }
 </script>
 <style lang='scss' scoped>
