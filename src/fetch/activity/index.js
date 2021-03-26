@@ -146,4 +146,11 @@ export default {
 
     // 海报管理
     posterinfo_listJson:  {url: '/h5/posterinfo/listJson', method: 'get'}, //列表
+    posterinfo_save:  {url: '/h5/posterinfo/save', method: 'post'}, //新增
+    posterinfo_editJsp:  {url: '/h5/posterinfo/editJsp', method: 'post'}, //修改
+    posterinfo_deleteJsp:  {url: '/h5/posterinfo/deleteJsp', method: 'post'}, //删除
+    posterinfo_checkActivityId:  {url: '/h5/posterinfo/checkActivityId', method: 'post'}, //验证数据库是否存在活动
+    posterinfo_checkGoodsId:  {url: '/h5/posterinfo/checkGoodsId', method: 'post'}, //验证数据库是否存在商品
+    posterinfo_getMobileGoodsUrlDataList:  {url: '/h5/posterinfo/getMobileGoodsUrlDataList', method: 'get'}, //九块九包邮下拉列表
+    posterinfo_getActivityInfoDataList:  {url: '/h5/posterinfo/getActivityInfoDataList', method: 'get'}, //活动下拉列表
 }

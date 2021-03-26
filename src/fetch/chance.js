@@ -32,6 +32,7 @@ export default {
     chance_campus_receive: {url: '/crm/crmopportunity/updateReceiveOpps', method: 'post'}, //领取
     chance_distrube_list: {url: '/crm/crmopportunity/listMarketJson', method: 'post'}, //分配机会列表
     chance_campus_distrubute: {url: '/crm/crmopportunity/updateAllotOpp', method: 'post'},//分配
+    chance_campus_saveBranchImport: {url: '/crm/crmopportunity/saveBranchImport', method: 'post'},//导入
 
     // 省校/网校公海
     chance_province_list: {url: '/crm/crmopportunity/listProvinceCampusJson', method: 'post'},

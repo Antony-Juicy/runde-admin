@@ -214,6 +214,7 @@ export default {
         {
           name: "ID",
           value: "id",
+          width: 60
         },
         {
           name: "项目类型",
@@ -234,7 +235,8 @@ export default {
         {
           name: "活动时间",
           value: "startTime",
-          operate: true
+          operate: true,
+          width: 206
         },
         {
           name: "是否强制关注",
