@@ -151,7 +151,7 @@ export default {
     onSearch(val) {
       this.searchForm = {
         ...val,
-        createAt: val.createAt?val.createAt.join(' ~ '):""
+        createAt: val.createAt?val.createAt.join('~'):""
       };
       console.log(val,this.searchForm , 'val---')
        this.getTableData();

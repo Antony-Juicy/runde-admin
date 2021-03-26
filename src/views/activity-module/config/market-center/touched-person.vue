@@ -37,23 +37,35 @@
     </div>
     
     <!-- 添加 -->
-    <rd-dialog
+    <!-- <rd-dialog
         :title="addStatus?'添加':'编辑'"
         :dialogVisible="addVisible"
         @handleClose="addVisible = false"
         @submitForm="submitAddForm('dataForm3')"
+      > -->
+    <full-dialog
+        v-model="addVisible"
+        :title="addStatus?'添加':'编辑'"
+        @change="addVisible = false"
       >
         <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
           <template slot="post">
-            <el-button size="small" type="primary">上传</el-button>
+            <RdEditor placeholder="编辑题目内容" height="400px" module="activity" @change="changeEditor" />
+          </template>
+          <template slot="post2">
+            <RdEditor placeholder="编辑题目内容" height="400px" module="activity" @change="changeEditor" />
           </template>
         </RdForm>
-      </rd-dialog>
+        <div class="btn-wrapper" style="text-align:right">
+          <el-button type="primary" size="small">保存</el-button>
+        </div>
+      </full-dialog>
   </div>
 </template>
 
 <script>
 import RdForm from "@/components/RdForm";
+import RdEditor from "@/components/RdEditor";
 export default {
   name:"post-manage",
   data(){
@@ -61,18 +73,13 @@ export default {
       formOptions: [
         {
           prop: "menuName",
-          element: "el-input",
-          placeholder: "商品名称",
+          element: "el-select",
+          placeholder: "所属部门",
         },
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "活动名称",
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "名称",
+          placeholder: "对接人",
         }
       ],
       searchForm:{},
@@ -88,58 +95,26 @@ export default {
       ],
       tableKey: [
         {
-          name: "ID主键",
+          name: "序号",
           value: "id",
           fixed: "left",
           width: 80
         },
         {
-          name: "老师名称",
+          name: "所属部门",
           value: "staffName",
         },
         {
-          name: "商品名称",
+          name: "对接人",
           value: "goodsName",
         },
         {
-          name: "活动名称",
+          name: "负责模块",
           value: "activityName",
         },
         {
-          name: "名称",
+          name: "工作职责",
           value: "posterName",
-        },
-        {
-          name: "图片",
-          value: "posterPic",
-        },
-        {
-          name: "分享文案一",
-          value: "posterCopyFirst",
-        },
-        {
-          name: "分享文案二",
-          value: "posterCopySecond",
-        },
-        {
-          name: "分享文案三",
-          value: "posterCopyThird",
-        },
-        {
-          name: "分享文案四",
-          value: "posterCopyFourth",
-        },
-        {
-          name: "分享文案五",
-          value: "posterCopyFifth",
-        },
-        {
-          name: "创建时间",
-          value: "createAt",
-        },
-        {
-          name: "修改时间",
-          value: "updateAt",
         },
         {
           name: "操作",
@@ -152,108 +127,54 @@ export default {
        pageConfig: {
         totalCount: 0,
         currentPage: 1,
-        pageSize: 10,
+        showCount: 10,
       },
       addVisible: false,
       addFormOptions: [
+         {
+          prop: "roleName",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "所属部门",
+          options: [
+          ],
+        },
           
         {
           prop: "menuName",
           element: "el-input",
-          placeholder: "请输入名称",
-          label: "名称"
+          placeholder: "请输入对接人",
+          label: "对接人"
         },
         {
           prop: "post",
           element: "el-input",
           placeholder: "",
-          label: "上传",
+          label: "负责模块",
           operate: true,
           initValue: 0
         },
         {
-          prop: "roleName",
-          element: "el-select",
-          placeholder: "请选择",
-          label: "所属九块九包邮",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-        {
-          prop: "roleName",
-          element: "el-select",
-          placeholder: "请选择",
-          label: "所属活动",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-        {
-          prop: "menuName3",
+          prop: "post2",
           element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案一",
-          type:"textarea",
-          rows: 2
+          placeholder: "",
+          label: "工作职责",
+          operate: true,
+          initValue: 0
         },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案二",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案三",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案四",
-          type:"textarea",
-          rows: 2
-        },
-           {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案五",
-          type:"textarea",
-          rows: 2
-        }
       ],
       addRules:{
         updateReason: [
           { required: true, message: "请输入修改事由", trigger: "blur" },
         ]
       },
-      addStatus: true
+      addStatus: true,
+      contentDetail:""
     }
   },
   components:{
-    RdForm
+    RdForm,
+    RdEditor
   },
    methods: {
      onSearch(val){
@@ -311,7 +232,10 @@ export default {
           });
         })
         .catch(() => {});
-    }
+    },
+    changeEditor(val) {
+      this.contentDetail = val;
+    },
   }
 }
 </script>

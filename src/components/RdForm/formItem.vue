@@ -11,6 +11,7 @@
       :type="itemOptions.type"
       :rows="itemOptions.rows || 2"
       :disabled="itemOptions.disabled"
+      :readonly="itemOptions.readonly"
       size="small">
     </el-input>
 
@@ -115,6 +116,7 @@
       v-model="currentVal"
       v-bind="bindProps"
       v-on="bindEvents"
+      :disabled="itemOptions.disabled"
       size="small"
       :props="itemOptions.props"
       clearable>

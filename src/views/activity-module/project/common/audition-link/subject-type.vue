@@ -50,36 +50,12 @@
 <script>
 import RdForm from "@/components/RdForm";
 export default {
-  name:"link-manage",
+  name:"subject-type",
   data(){
     return {
-      formOptions: [
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "商品名称",
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "活动名称",
-        },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "名称",
-        }
-      ],
       searchForm:{},
       emptyText:"暂无数据",
       tableData:[
-         {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-        },
       ],
       tableKey: [
         {
@@ -90,27 +66,27 @@ export default {
         },
         {
           name: "APP名称",
-          value: "staffName",
+          value: "appName",
         },
         {
           name: "考药狮项目id",
-          value: "goodsName",
+          value: "productId",
         },
         {
           name: "考药狮项目名称",
-          value: "activityName",
+          value: "productName",
         },
         {
           name: "科目类型(英文)",
-          value: "posterName",
+          value: "subjectType",
         },
         {
           name: "科目类型(中文)",
-          value: "posterPic",
+          value: "subjectTypeText",
         },
         {
           name: "数据状态",
-          value: "posterCopyFirst",
+          value: "status",
         },
         {
           name: "创建时间",
@@ -131,12 +107,12 @@ export default {
        pageConfig: {
         totalCount: 0,
         currentPage: 1,
-        pageSize: 10,
+        showCount: 10,
       },
       addVisible: false,
       addFormOptions: [
         {
-          prop: "roleName",
+          prop: "appName",
           element: "el-select",
           placeholder: "请选择",
           label: "APP名称",
@@ -144,7 +120,7 @@ export default {
           ],
         },
         {
-          prop: "roleName",
+          prop: "productType",
           element: "el-select",
           placeholder: "请选择",
           label: "项目名称",
@@ -152,13 +128,13 @@ export default {
           ],
         },
          {
-          prop: "roleName",
+          prop: "subjectType",
           element: "el-input",
           placeholder: "请输入",
           label: "英文科目类型",
         },
         {
-          prop: "roleName",
+          prop: "subjectTypeText",
           element: "el-input",
           placeholder: "请输入",
           label: "中文科目类型",
@@ -175,6 +151,10 @@ export default {
   components:{
     RdForm
   },
+   mounted(){
+    this.getTableData();
+    
+  },
    methods: {
      onSearch(val){
        this.searchForm = {
@@ -183,8 +163,22 @@ export default {
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
      },
-     getTableData(){
-
+     getTableData(params = {}){
+       const { subjectId } = this.$route.params;
+       this.$fetch("auditionsubjecttype_listJsp", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+        subjectId: subjectId || ''
+      }).then((res) => {
+        this.tableData = res.data.varList.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          return item;
+        });;
+        this.pageConfig.totalCount = res.data.page.totalResult;
+        this.addFormOptions[0].options = res.data.appNameList;
+      })
      },
      pageChange(val) {
       console.log(val,'pagechange')

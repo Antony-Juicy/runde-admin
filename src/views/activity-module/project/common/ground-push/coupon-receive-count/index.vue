@@ -3,7 +3,7 @@
     <search-form :formOptions="formOptions" :showNum="7" @onSearch="onSearch"></search-form>
     <div class="w-container">
       <div class="btn-wrapper">
-        <el-button type="primary" size="small">导出</el-button>
+        <el-button type="primary" size="small" @click="handleExport">导出</el-button>
       </div>
       <rd-table
         :tableData="tableData"
@@ -13,6 +13,11 @@
         :pageConfig.sync="pageConfig"
         @select="handleSelect"
         @pageChange="pageChange">
+        <template slot="edit" slot-scope="scope">
+           <el-button @click="handleDetail(scope.row)" type="text" size="small"
+            >明细</el-button
+          >
+        </template>
       </rd-table>
     </div>
   </div>
@@ -26,7 +31,7 @@ export default {
     return {
       formOptions: [
         {
-          prop: "menuName",
+          prop: "couponName",
           element: "el-input",
           placeholder: "请输入优惠券名称",
         }
@@ -40,36 +45,37 @@ export default {
       tableKey: [
         {
           name: "邀请码",
-          value: "staffName",
+          value: "invitationCode",
         },
         {
           name: "优惠券id",
-          value: "staffName",
+          value: "couponId",
         },
         {
           name: "优惠券名称",
-          value: "staffName",
+          value: "couponName",
         },
         {
           name: "领取总数",
-          value: "staffName",
+          value: "countNum",
         },
         {
           name: "操作",
-          value: "staffName",
+          value: "edit",
+          operate: true
         }
       ],
       pageConfig: {
         totalCount: 0,
         currentPage: 1,
-        pageSize: 10,
+        showCount: 10,
       },
 
       loading: false,
     }
   },
   mounted () {
-    // this.getTableData()
+    this.getTableData()
   },
   methods: {
     onSearch(val){
@@ -83,15 +89,36 @@ export default {
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
-    getTableData(){
-      console.log('统计的页面')
-    },
+    getTableData(params = {}){
+       this.$fetch("groundPush_statisticslistJsp", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.varList.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          return item;
+        });;
+        this.pageConfig.totalCount = res.data.page.totalResult;
+      })
+     },
     pageChange(val) {
       console.log(val,'pagechange')
       this.pageConfig.currentPage = val.page;
       this.pageConfig.showCount = val.limit;
       this.getTableData();
     },
+    handleDetail(data){
+
+    },
+    handleExport(){
+      this.$fetch("groundPush_exportExcelJsp",{
+        ...this.searchForm
+      }).then(res => {
+        this.$common.downLoadFile(res);
+      })
+    }
   }
 }
 </script>

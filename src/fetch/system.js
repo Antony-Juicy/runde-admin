@@ -14,5 +14,7 @@ export default {
     staff_detail: {url: '/admin/staff/detail', method: 'get'},
     staff_detail_save: {url: '/admin/staff/save', method: 'get'},
     staff_role_list: {url: '/admin/sec/menu/bindrole', method: 'post'},
-    role_getMeunList:{url:'/admin/sec/role/roleByidMenu', method: 'get'}
+    role_getMeunList:{url:'/admin/sec/role/roleByidMenu', method: 'get'},
+    staff_save: {url:'/admin/sec/user/saveStaff',method:'post'},
+    staff_positionName: {url:'/admin/sec/user/findPositionList',method:'post'}
 }

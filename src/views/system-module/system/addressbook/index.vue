@@ -6,7 +6,10 @@
     </rd-tree>
     </div>
     <div class="center_r w-container">
-      <div style="font-weight: 700;margin-bottom: 20px;">{{deptlabel}}</div>
+      <div style="font-weight: 700;margin-bottom: 20px;">{{selectedTree.campusName}}</div>
+      <div class="btn-wrapper">
+        <el-button type="primary" size="small" @click="handleAdd">添加</el-button>
+      </div>
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
@@ -28,6 +31,72 @@
           <el-button @click="editRow(scope.$index,scope.row.id,scope.row)" type="text" size="small">编辑</el-button>
         </template>
       </rd-table>
+      <!-- 添加用户 -->
+      <rd-dialog
+        :title="userStatusVisible ? '添加用户' : '编辑用户'"
+        :dialogVisible="userVisible"
+        :width="widthNew"
+        @handleClose="closeUser('dataForm')"
+        @submitForm="submitForm('dataForm')">
+        <el-form ref="dataForm" :model="userForm" :rules="addRules" label-width="100px">
+          <el-form-item label="部门组织">
+            {{ selectedTree.campusName }}（id:{{ selectedTree.id }}）
+          </el-form-item>
+          <el-form-item label="姓名" prop="userName">
+            <el-input v-model.trim="userForm.userName" autocomplete="off" placeholder="请输入姓名" />
+          </el-form-item>
+          <el-form-item label="手机号码" prop="mobile">
+            <el-input v-model.trim="userForm.mobile" autocomplete="off" placeholder="请输入手机号" />
+          </el-form-item>
+          <el-form-item label="账号" prop="account">
+            <el-input v-model.trim="userForm.account" autocomplete="off" placeholder="请输入账号" />
+          </el-form-item>
+          <el-form-item label="密码" prop="password">
+            <el-input v-model.trim="userForm.password" autocomplete="off" type="password" placeholder="请输入密码" />
+          </el-form-item>
+          <el-form-item label="确认密码" prop="confirmPassword">
+            <el-input v-model.trim="userForm.confirmPassword" autocomplete="off" type="password" placeholder="请与上面密码一致" />
+          </el-form-item>
+          <el-form-item label="职位" prop="positionName">
+            <el-select v-model="userForm.positionName" @change="positionChange" filterable placeholder="请选择">
+              <el-option
+                v-for="item in positionOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="角色" prop="roleName">
+            <el-select v-model="userForm.roleName" filterable placeholder="请选择">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="七陌账号" prop="qimoAccount">
+            <el-input v-model.trim="userForm.qimoAccount" autocomplete="off" placeholder="请输入七陌账号" />
+          </el-form-item>
+          <el-form-item label="智博账号" prop="zhiboAccount">
+            <el-input v-model.trim="userForm.zhiboAccount" autocomplete="off" placeholder="请输入七陌账号" />
+          </el-form-item>
+          <el-form-item label="用户类型" prop="userType">
+            <el-select v-model.trim="userForm.userType" placeholder="请选择">
+              <el-option label="学生" value="Student"></el-option>
+              <el-option label="内部人员" value="Ordinary"></el-option>
+              <el-option label="加盟商" value="VFranchiser"></el-option>
+              <el-option label="连锁负责人" value="Chain"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="状态" prop="campusNature">
+            <el-radio v-model="userForm.campusNature" label="OnLine">在职</el-radio>
+            <el-radio v-model="userForm.campusNature" label="OffLine">离职</el-radio>
+          </el-form-item>
+        </el-form>
+      </rd-dialog>
       <el-drawer
         title=""
         :before-close="handleDrawerClose"
@@ -151,6 +220,7 @@
 import RdTree from '@/components/RdTree';
 import searchForm from '@/components/Searchform';
 import axios from 'axios';
+import Common from "@/utils/common";
 let loginUserId = JSON.parse(localStorage.getItem("userInfo")).userId;
 export default {
   inject: ["reload"],
@@ -161,7 +231,6 @@ export default {
   },
   data () {
     return {
-      deptlabel: '',
       campusId: 1, // 组织id
       campususerId: "", // 组织成员id
       showNum: 4,
@@ -250,12 +319,50 @@ export default {
       formLabelWidth: '80px',
       timer: null,
       userLogoUrl: require('@/assets/userlogo.png'),
-      currentId:''
+      currentId:'',
+
+      // 新增弹窗
+      widthNew: '700px',
+      userVisible: false,
+      userStatusVisible: true,
+      selectedTree: "",
+      positionOptions: [],
+      userForm: {
+        userName: '',
+        positionName: '',
+        positionId: '',
+        mobile: '',
+        account: '',
+        password: '',
+        confirmPassword: '',
+        roleName: '',
+        qimoAccount: '',
+        zhiboAccount: '',
+        userType: '',
+        campusNature: '',
+      },
+      addRules: {
+        userName: [{ required: true, message: "请输入用户名", trigger: "blur" }],
+        mobile: [
+          { required: true, message: "请输入正确的手机号", trigger: "blur" },
+          { validator: Common._validatorPhone, trigger: "blur" },
+        ],
+        account: [{ required: true, message: "请输入账号", trigger: "blur" }],
+        password: [{ required: true, message: "请输入密码", trigger: "blur" }],
+        confirmPassword: [{ required: true, message: "请输入密码", trigger: "blur" }],
+        positionName: [{ required: true, message: "请选择职位", trigger: "blur" }],
+        roleName: [{ required: true, message: "请选择角色", trigger: "blur" }],
+        qimoAccount: [{ required: true, message: "请输入七陌账号", trigger: "blur" }],
+        zhiboAccount: [{ required: true, message: "请输入智博账号", trigger: "blur" }],
+        userType: [{ required: true, message: "请选择用户类型", trigger: "blur" }],
+        campusNature: [{ required: true, message: "请勾选状态", trigger: "blur" }],
+      },
     }
   },
   mounted() {
     this.getTreeData();
     this.getRoleList();
+    this.getPositionList();
     this.getTableData();
   },
   filters: {
@@ -274,7 +381,7 @@ export default {
     // 操作通讯录树
     handleNodeClick(data) {
       console.log(data,'data----')
-      this.deptlabel = data.campusName
+      this.selectedTree = data
       this.campusId = data.id
       this.pageConfig.currentPage = 1;
       this.getTableData();
@@ -294,6 +401,11 @@ export default {
     },
     onReset(){
       this.searchForm = {};
+    },
+    positionChange(val) {
+      console.log(val,'positionChange----')
+      this.positionId = val.value;
+      this.positionName = val.label
     },
     // 获取通讯录组织树
     getTreeData() {
@@ -352,8 +464,37 @@ export default {
         });
       });
     },
+    getPositionList() {
+      this.$fetch("staff_positionName",{
+
+      }).then((res) => {
+        this.positionOptions = res.data.list.map(item => ({
+          value: item.id,
+          label: item.positionName
+        }))
+      })
+    },
     handleSelect(rows) {
       console.log(rows, "rows---");
+    },
+    handleAdd() {
+      if (!this.selectedTree) {
+        this.$message({
+          message: "请先选择部门组织",
+          type: "warning",
+        });
+        return;
+      }
+      this.userVisible = true;
+      this.userStatusVisible = true;
+      for (const key in this.userForm) {
+        this.userForm[key] = "";
+      }
+    },
+    // 关闭新增/编辑弹窗
+    closeUser(formName) {
+      this.userVisible = false;
+      this.$refs[formName].resetFields();
     },
     // 编辑
     editRow(index,id, rows) {
@@ -418,7 +559,36 @@ export default {
       this.loading = false;
       this.dialog = false;
       clearTimeout(this.timer);
-    }
+    },
+    // 提交新增用户
+    submitForm() {
+      this.$refs.dataForm.validate((val, data) => {
+        if(val) {
+          if(this.userStatusVisible) {
+            // 新增
+            // console.log(this.userForm,this.selectedTree.id,this.selectedTree.campusName,'this.userForm----')
+            // return
+            this.$fetch("staff_save", {
+              ...this.userForm,
+              campusId: this.selectedTree.id,
+              campusName: this.selectedTree.campusName,
+              positionId: this.positionId,
+              positionName: this.positionName,
+              loginUserId: this.$common.getUserId()
+            }).then((res) => {
+              this.$message({
+                message: "提交成功",
+                type: "success",
+              });
+              this.getTableData();
+              this.closeUser('dataForm');
+            });
+          } else {
+            
+          }
+        }
+      });
+    },
   }
 }
 </script>

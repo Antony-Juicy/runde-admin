@@ -39,6 +39,7 @@
 <script>
 import Fetch from '@/utils/fetch';
 import rdDrawer from "@/components/RdDrawer";
+import chanceSelect from '@/utils/chance-select';
 export default {
   name:'chance-list',
   components: {
@@ -94,7 +95,7 @@ export default {
         { name: '备注',value: 'remark' },
         { name: '最近回访内容',value: 'recentFeedbackContent'},
         { name: '最近回访时间',value: 'recentFeedbackTime',width:132 },
-        { name: '下次回访时间',value: 'nextFeedBackTime',width:132 },
+        { name: '下次回访时间',value: 'nextDate',width:132 },
         { name: '分配时间',value: 'allotTime',width:132 },
         { name: '状态',value: 'invalidStatus' },
         { name: '跟进状态',value: 'status' },
@@ -129,12 +130,12 @@ export default {
           enquireProductIdOne: val.product[0],
           enquireSubjectIdOne: val.product[1],
           enquireCourseIdOne: val.product[2],
-          createAt: val.createAt?val.createAt.join(' ~ '):""
+          createAt: val.createAt?val.createAt.join('~'):""
         };
       }else {
         this.searchForm = {
           ...val,
-          createAt: val.createAt?val.createAt.join(' ~ '):""
+          createAt: val.createAt?val.createAt.join('~'):""
         }
       }
       this.getTableData();
@@ -158,7 +159,7 @@ export default {
           item.createAt = this.$common._formatDates(item.createAt);
           item.recoveryTime = item.recoveryTime&&this.$common._formatDates(item.recoveryTime);
           item.recentFeedbackTime = item.recentFeedbackTime&&this.$common._formatDates(item.recentFeedbackTime);
-          item.nextFeedBackTime = item.nextFeedBackTime&&this.$common._formatDates(item.nextFeedBackTime);
+          item.nextDate = item.nextDate&&this.$common._formatDates(item.nextDate);
           item.allotTime = item.allotTime&&this.$common._formatDates(item.allotTime);
           if(item.enquireClassOne){
             item.enquireClassOne = item.enquireClassOne.map(ele=>(ele.name)).join(",")
@@ -253,64 +254,10 @@ export default {
         { prop: 'phoneProvince', element: 'el-input', initValue: '', placeholder: '省份' },
         { prop: 'phoneCity', element: 'el-input', initValue: '', placeholder: '城市' },
         { prop: 'address', element: 'el-input', initValue: '', placeholder: '地址' },
-         { prop: 'product', element: 'el-cascader', initValue: '', placeholder: '咨询项目/科目/课程',
-          props: {
-            checkStrictly: true,
-            lazy: true,
-            lazyLoad:(node, resolve)=> {
-              console.log(node,'node')
-              const { level } = node;
-              if(level == 0){
-                Fetch("chance_product_list").then(res => {
-                  let data = JSON.parse(res.msg);
-                  let nodes = data.map(item =>({
-                    value: item.id,
-                    label: item.productName,
-                    leaf: level >= 2,
-                  }));
-                  resolve(nodes);
-                })
-              }else if(level == 1){
-                 Fetch("chance_subject_list",{
-                   enquireProductIdOne: node.data.value
-                 }).then(res => {
-                   let nodes;
-                   if(res.msg == "没有相关数据"){
-                     nodes = [];
-                   }else {
-                     let data = res.data;
-                    nodes = data.map(item =>({
-                      value: item.id,
-                      label: item.subjectName,
-                      leaf: level >= 2,
-                    }));
-                   }
-                  resolve(nodes);
-                })
-              }else if(level == 2){
-                 Fetch("chance_course_list",{
-                   subjectIdOne: node.data.value
-                 }).then(res => {
-                   let nodes;
-                   if(res.msg == "没有相关数据"){
-                     nodes = [];
-                   }else {
-                     let data =JSON.parse(res.msg);
-                    nodes = data.map(item =>({
-                      value: item.id,
-                      label: item.courseName,
-                      leaf: level >= 2,
-                    }));
-                   }
-                  resolve(nodes);
-                })
-              }else {
-                resolve([]);
-              }
-            },
-          },
-          initWidth: true,
-         },
+        chanceSelect.getProjectCascader({
+            prop: "product",
+            placeholder: "咨询项目/科目/课程"
+        }),
         { prop: 'customerLevel', element: 'el-select', initValue: '', placeholder: '客户分类',options: customerOptinos },
         { prop: 'saleSource', element: 'el-select', initValue: '', placeholder: '销售来源',options: sourceOptions },
         { prop: 'eduBackground', element: 'el-select', initValue: '', placeholder: '学历',options: eduOptions },

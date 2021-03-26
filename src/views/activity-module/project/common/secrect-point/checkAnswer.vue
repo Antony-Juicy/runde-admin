@@ -61,7 +61,7 @@ export default {
     return {
       formOptions: [
         {
-          prop: "menuName",
+          prop: "serialNum",
           element: "el-input",
           placeholder: "请输入题号",
         }
@@ -73,44 +73,44 @@ export default {
       tableKey: [
         {
           name: "ID",
-          value: "name",
+          value: "id",
           width: 60
         },
         {
           name: "考试科目ID",
-          value: "name",
+          value: "examSubjectId",
         },
         {
           name: "题目序号",
-          value: "name",
+          value: "serialNum",
         },
         {
           name: "点赞基数",
-          value: "name",
+          value: "agreeBase",
         },
         {
           name: "课程名称",
-          value: "name",
+          value: "courseName",
         },
         {
           name: "题目内容",
-          value: "name",
+          value: "content",
         },
         {
           name: "题目答案",
-          value: "name",
+          value: "answer",
         },
         {
           name: "押题对比",
-          value: "name",
+          value: "custodyAnswer",
         },
         {
           name: "创建时间",
-          value: "name",
+          value: "createAt",
         },
         {
           name: "更新时间",
-          value: "name",
+          value: "updateAt",
         },
         {
           name: "操作",
@@ -121,7 +121,7 @@ export default {
       pageConfig: {
         totalCount: 0,
         currentPage: 1,
-        pageSize: 10,
+        showCount: 10,
       },
       emptyText:"暂无数据",
       addVisible: false,
@@ -159,11 +159,20 @@ export default {
     RdForm,
     RdEditor
   },
+  props: {
+    id: {
+      type: Number | String
+    }
+  },
+  mounted(){
+    this.getTableData();
+  },
    methods: {
       onSearch(val) {
         this.searchForm = {
           ...val
         };
+        this.getTableData();
       },
       pageChange(val) {
         console.log(val,'pagechange')
@@ -171,9 +180,21 @@ export default {
         this.pageConfig.showCount = val.limit;
         this.getTableData();
       },
-      getTableData(){
+      getTableData(params = {}) {
+      this.$fetch("practicingExamSiteItem_list", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+        examSubjectId: this.id
+      }).then((res) => {
+        this.tableData = res.data.varList.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          return item;
+        });
 
-      },
+      });
+    },
       handleEdit(data){
         this.addStatus = false;
         this.addVisible = true;
@@ -194,9 +215,8 @@ export default {
         type: "warning",
       })
         .then(async () => {
-          const res = await this.$fetch("projectType_delete", {
-            typeId: row.typeId,
-            loginUserId,
+          const res = await this.$fetch("practicingExamSiteItem_delete", {
+            id: row.id
           }).then((res) => {
             if (res) {
               this.$message({

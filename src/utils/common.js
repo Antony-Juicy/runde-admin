@@ -91,15 +91,7 @@ const $common = {
             return ""
         }
         let str = String(phone)
-        let len = str.length;
-        if (len >= 7) {
-            let reg = str.slice(-8, -4)
-            return str.replace(reg, "****")
-        } else if (len < 7 && len >= 6) {
-            //1234567
-            let reg = str.slice(-4, -2)
-            return str.replace(reg, "**")
-        }
+        return str.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
     },
 
     // 重新加载组件
@@ -146,6 +138,9 @@ const $common = {
 
     // 配置图片缩略图
     setThumbnail(pic){
+        if(!pic){
+            return;
+        }
         return pic + '?x-oss-process=image/auto-orient,1/resize,m_lfit,w_550/quality,q_100'
     },
 
@@ -157,13 +152,25 @@ const $common = {
           item.nodes = item.children
           if(item.children && item.children.length == 0) {
             // item.nodes = []
-            delete item.nodes
-            delete item.children
+            delete item.nodes;
+            delete item.children;
           } else {
             this.getTypeTree(item.nodes)
           }
         })
         return val
+    },
+
+    // 下载文件流
+    downLoadFile(res){
+        let blob = new Blob([res], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"}),
+        Temp = document.createElement("a");
+        Temp.href = window.URL.createObjectURL(blob);
+        Temp.download =new Date().getTime();
+        document.querySelector("body").appendChild(Temp);
+        Temp.click();
+        document.body.removeChild(Temp); //下载完成移除元素
+        window.URL.revokeObjectURL(Temp.href); 
     }
 }
 

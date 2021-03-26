@@ -156,8 +156,9 @@ export default {
         },
         {
           prop: "typeId",
-          element: "el-select",
+          element: "el-cascader",
           placeholder: "项目类型",
+          props: { checkStrictly: true },
           options: [],
         },
         {
@@ -395,10 +396,14 @@ export default {
     },
     getTableData(params = {}) {
       return new Promise((resolve, reject) => {
+        let searchForm = JSON.parse(JSON.stringify(this.searchForm))
+        if(this.searchForm.typeId) {
+          searchForm.typeId = searchForm.typeId.pop()
+        }
         this.$fetch("live_list", {
           loginUserId: this.$common.getUserId(),
           ...this.pageConfig,
-          ...this.searchForm,
+          ...searchForm,
           ...params,
         })
           .then((res) => {
@@ -450,11 +455,12 @@ export default {
       }
     },
     getSubjectList() {
-      this.$fetch("projectType_normalList").then((res) => {
-        let typeList = res.data.map((item) => ({
-          label: item.typeName,
-          value: item.typeId,
-        }));
+      this.$fetch("projectType_select").then((res) => {
+        // let typeList = res.data.map((item) => ({
+        //   label: item.typeName,
+        //   value: item.typeId,
+        // }));
+        let typeList = this.$common.getTypeTree((res.data))
         this.formOptions[2].options = typeList;
         this.formOptions = [...this.formOptions];
       });

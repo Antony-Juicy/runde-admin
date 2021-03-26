@@ -15,6 +15,7 @@
               :prop="item.prop"
               :label="item.label ? item.label : ''"
               :rules="item.rules"
+              v-if="!item.hide"
             >
               <formItem v-model="formData[item.prop]" :itemOptions="item" v-if="!item.operate"/>
               <div v-else>
@@ -74,6 +75,10 @@ export default {
     inline:{
       type: Boolean ,
       default: false
+    },
+    changeInitValue: {
+      type: Number,
+      default: 0
     }
   },
 
@@ -89,7 +94,12 @@ export default {
     this.addInitValue();
   },
 
-
+  watch: {
+    changeInitValue(val){
+      this.addInitValue();
+    }
+  },
+  
   methods: {
     // 校验
     validate(callback) {
@@ -102,6 +112,20 @@ export default {
       this.validate(() => {
         this.$emit("onSearch", this.formData);
       });
+    },
+
+    onReset() {
+      // this.$refs.boxId.resetFields();
+      const obj = {};
+      this.formOptions.forEach((v) => {
+          // if (v.initValue !== undefined) {
+          //   obj[v.prop] = v.initValue;
+          // }else {
+          obj[v.prop] = undefined;
+        // }
+      });
+      this.formData = obj;
+      this.$emit('onReset')
     },
 
     // 重置表单

@@ -15,7 +15,6 @@
         :tableData="tableData"
         :tableKey="tableKey"
         :pageConfig.sync="pageConfig"
-        :tbodyHeight="600"
         fixedTwoRow
         @pageChange="pageChange"
         :emptyText="emptyText"
@@ -52,18 +51,53 @@
         @submitForm="submitAddForm('dataForm3')"
       >
         <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
+          <template slot="appName">
+            <el-select v-model="appName" placeholder="请选择" @change="appNameChange">
+              <el-option
+                v-for="item in appNameArr"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </template>
+          <template slot="productId">
+            <el-select v-model="productId" placeholder="请选择" @change="productIdChange">
+              <el-option
+                v-for="item in productIdArr"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </template>
+          <template slot="subjectType">
+            <el-select v-model="subjectType" placeholder="请选择">
+              <el-option
+                v-for="item in subjectTypeArr"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </template>
         </RdForm>
       </rd-dialog>
 
       <!-- 上传 -->
-      <rd-dialog
+      <!-- <rd-dialog
         :title="'上传题目'"
         :dialogVisible="uploadVisible"
         @handleClose="uploadVisible = false"
         @submitForm="submitAddForm('dataForm4')"
       >
         <el-button type="primary">点击上传</el-button>
-      </rd-dialog>
+      </rd-dialog> -->
+      <uploadFile 
+        :importVisible.sync="uploadVisible" 
+        :importId="importId"
+        url="auditionitemsubject_importIssueExcel" 
+        @refresh="getTableData"/>
 
       <!-- 题目详情 -->
       <fullDialog
@@ -86,41 +120,30 @@ import RdForm from "@/components/RdForm";
 import subjectRecord from "./subjectRecord";
 import fullDialog from "@/components/FullDialog";
 import editSubject from './editSubject';
+import uploadFile from '@/components/Activity/uploadFileDialog';
 export default {
-  name:"link-manage",
+  name:"audition-subject",
   data(){
     return {
+      importId:"",
+      appName:"",
+      productId:"",
+      subjectType:"",
+      appNameArr:[],
+      productIdArr:[],
+      subjectTypeArr:[],
       formOptions: [
         {
-          prop: "menuName",
+          prop: "appName",
           element: "el-select",
           placeholder: "APP名称",
           options: [
-            {
-              label:"考药狮",
-              value: "1"
-            },
-            {
-              label:"考医狮",
-              value: "2"
-            },
-            {
-              label:"考护狮",
-              value: "3"
-            }
           ]
         }
       ],
       searchForm:{},
       emptyText:"暂无数据",
       tableData:[
-         {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-        },
       ],
       tableKey: [
         {
@@ -131,59 +154,61 @@ export default {
         },
         {
           name: "APP名称",
-          value: "staffName",
+          value: "appName",
+          options: [
+          ]
         },
         {
           name: "考药狮项目id",
-          value: "goodsName",
+          value: "productId",
         },
         {
           name: "考药狮项目名称",
-          value: "activityName",
+          value: "productName",
         },
         {
           name: "科目类型(中文)",
-          value: "posterName",
+          value: "subjectTypeText",
         },
         {
           name: "科目类型(英文)",
-          value: "posterPic",
+          value: "subjectType",
         },
         {
           name: "科目名",
-          value: "posterCopyFirst",
+          value: "subjectName",
         },
         {
           name: "视频id",
-          value: "posterCopySecond",
+          value: "videoId",
         },
         {
           name: "视频名称",
-          value: "posterCopyThird",
+          value: "videoName",
         },
         {
           name: "视频时长",
-          value: "posterCopyFourth",
+          value: "videoTimes",
         },
         {
           name: "科目学习人数",
-          value: "posterCopyFifth",
+          value: "count",
         },
         {
           name: "虚拟人数",
-          value: "createAt",
+          value: "virtualCount",
         },
         {
           name: "数据状态",
-          value: "updateAt",
+          value: "status",
         },
          {
           name: "排序",
-          value: "updateAt",
+          value: "orderValue",
         },
          {
           name: "创建时间",
-          value: "updateAt",
+          value: "createAt",
         },
          {
           name: "更新时间",
@@ -200,87 +225,130 @@ export default {
        pageConfig: {
         totalCount: 0,
         currentPage: 1,
-        pageSize: 10,
+        showCount: 10,
       },
       addVisible: false,
       addFormOptions: [
           
         {
-          prop: "menuName",
+          prop: "appName",
           element: "el-select",
           placeholder: "请选择",
-          label: "APP名称"
+          label: "APP名称",
+          operate: true,
+          initValue:"1",
+          options:[]
         },
         {
-          prop: "post",
+          prop: "productId",
           element: "el-select",
           placeholder: "请选择",
           label: "项目名称",
+          operate: true,
+          options: []
         },
         {
-          prop: "post",
+          prop: "subjectType",
           element: "el-select",
           placeholder: "请选择",
           label: "科目类型",
+          operate: true,
+          options: []
         },
         {
-          prop: "menuName3",
+          prop: "subjectName",
           element: "el-input",
           placeholder: "请输入",
           label: "科目名称"
         },
         {
-          prop: "menuName3",
+          prop: "videoName",
           element: "el-input",
           placeholder: "请输入",
           label: "视频名称"
         },
         {
-          prop: "menuName3",
+          prop: "videoId",
           element: "el-input",
           placeholder: "请输入",
           label: "视频id"
         },
         {
-          prop: "menuName3",
+          prop: "videoTimes",
           element: "el-input",
           placeholder: "请输入",
           label: "视频时长"
         },
         {
-          prop: "menuName3",
+          prop: "virtualCount",
           element: "el-input",
           placeholder: "请输入",
           label: "虚拟人数"
         },
         {
-          prop: "menuName3",
+          prop: "orderValue",
           element: "el-input",
           placeholder: "请输入",
           label: "排序"
         },
         {
-          prop: "menuName3",
+          prop: "status",
           element: "el-select",
           placeholder: "请选择",
-          label: "状态"
+          label: "状态",
+          options: [
+               {
+              label: "已开放",
+              value: "Open",
+            },
+            {
+              label: "未开放",
+              value: "Close",
+            }
+          ]
         },
       ],
       addRules:{
-        updateReason: [
-          { required: true, message: "请输入修改事由", trigger: "blur" },
-        ]
+        appName: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ],
+        subjectName: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+        videoName: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+        videoId: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+        videoTimes: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+        virtualCount: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+        orderValue: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+        status: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ],
       },
       addStatus: true,
       uploadVisible: false,
-      detailVisible: false
+      detailVisible: false,
+      editId:""
     }
   },
   components:{
     RdForm,
     subjectRecord,
     fullDialog,
-    editSubject
+    editSubject,
+    uploadFile
+  },
+   mounted(){
+    this.getTableData();
   },
    methods: {
      onSearch(val){
@@ -290,8 +358,27 @@ export default {
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
      },
-     getTableData(){
+     getTableData(params = {}){
+       this.$fetch("auditionitemsubject_listJsp", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.varList.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          return item;
+        });;
+        this.pageConfig.totalCount = res.data.page.totalResult;
 
+        let appNameList = res.data.appNameList.map(item => ({
+          label: item.value,
+          value: item.key
+        }))
+
+        this.formOptions[0].options = appNameList;
+        this.appNameArr = appNameList;
+      })
      },
      pageChange(val) {
       console.log(val,'pagechange')
@@ -301,11 +388,36 @@ export default {
     },
     handleAdd(){
       this.addVisible = true;
+      this.addStatus = true;
+      this.resetForm();
     },
     submitAddForm(formName){
+      if(!this.appName){
+        this.$message.error("请选择APP名称")
+        return
+      }
       this.$refs[formName].validate((valid, formData) => {
         if(valid){
           console.log(formData, "提交");
+          let obj1 = this.productIdArr.find(item => (item.value == this.productId));
+          let productName = obj1 && obj1.label;
+          let obj2 = this.subjectTypeArr.find(item => (item.value == this.subjectType));
+          let subjectTypeName = obj2 && obj2.label;
+          let subjectTypeNameEn = obj2 && obj2.enName;
+          this.$fetch(this.addStatus?"auditionitemsubject_save":"auditionitemsubject_editJsp",{
+            ...formData,
+            id: this.addStatus?"":this.editId,
+            appName: this.appName,
+            productId: this.productId,
+            productType: `${this.productId}/${productName}`,
+            subjectType: `${this.subjectType}/${subjectTypeNameEn}/${subjectTypeName}`
+          }).then(res => {
+            this.$message.success("操作成功")
+            this.addVisible = false;
+            this.getTableData();
+            
+          })
+          
         }
           
       });
@@ -313,6 +425,22 @@ export default {
     handleEdit(data){
       this.addStatus = false;
       this.addVisible = true;
+      this.editId = data.id;
+       this.$fetch("auditionitemsubject_goEdit",{
+        id: data.id
+      }).then( async res => {
+        this.addFormOptions.forEach(item => {
+          item.initValue = res.data.pd[item.prop];
+        })
+        setTimeout(() => {
+          this.$refs.dataForm3.addInitValue();
+        }, 0);
+        this.appName = res.data.pd.appName;
+        await this.appNameChange(this.appName,res.data.pd.productId);
+        this.productIdChange(res.data.pd.productId,res.data.pd.subjectTypeId);
+      })
+      
+      
     },
     handleDelete(row) {
       let info = '项';
@@ -322,9 +450,8 @@ export default {
         type: "warning",
       })
         .then(async () => {
-          const res = await this.$fetch("projectType_delete", {
-            typeId: row.typeId,
-            loginUserId,
+          const res = await this.$fetch("auditionitemsubject_deleteJsp", {
+            id: row.id
           }).then((res) => {
             if (res) {
               this.$message({
@@ -341,9 +468,71 @@ export default {
     },
     uploadSubject(data){
       this.uploadVisible = true;
+      this.importId = data.id;
     },
     handleDetail(data){
-      this.detailVisible = true;
+      // this.detailVisible = true;
+      // 跳转科目题目
+      this.$router.push({
+        name: '/activity-module/project/common/audition-link/subject-title'  + '?' + sessionStorage.getItem("router-timeStamp"),
+        params: {
+          subjectId: data.id,
+        } 
+      })
+    },
+    appNameChange(data,val){
+      return new Promise((resolve,reject) => {
+        this.$fetch("auditionitemsubject_getProductName",{
+            appName: data
+          }).then(res => {
+            
+            this.productIdArr = res.data?res.data.map(item => ({
+              label: item.typeName,
+              value: item.id
+            })):[]
+            this.productId = ""
+            this.subjectType = ""
+            this.subjectTypeArr = []
+            if(val) {
+              this.productId = val;
+            }
+            resolve();
+          })
+      })
+      
+    },
+    productIdChange(data,val){
+      let obj = this.productIdArr.find(item => (item.value == data));
+      let productTypeName = obj && obj.label;
+      this.$fetch("auditionitemsubject_getSubjectType",{
+        appName: this.appName,
+        productType: `${data}/${productTypeName}`
+      }).then(res => {
+     
+        this.subjectTypeArr = res.data?res.data.map(item => ({
+          label: item.subjectTypeText,
+          value: item.id,
+          enName: item.subjectType
+        })):[]
+        this.subjectType = ""
+        if(val){
+          this.subjectType = val;
+        }
+      })
+    },
+    resetForm(){
+      this.appName = "";
+      this.productId = "";
+      this.subjectType = "";
+      this.productIdArr = [];
+      this.subjectTypeArr = [];
+      this.addFormOptions.forEach(item => {
+        item.initValue = "";
+      })
+      this.addFormOptions[0].initValue = 0;
+      setTimeout(() => {
+        this.$refs.dataForm3.addInitValue();
+      }, 0);
     }
   }
 }

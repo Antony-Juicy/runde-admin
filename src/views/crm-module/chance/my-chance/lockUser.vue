@@ -51,7 +51,7 @@
       </template>
     </rd-table>
     <!-- 回访抽屉 -->
-    <template v-if="drawerVisible">
+    <!-- <template v-if="drawerVisible"> -->
       <rd-drawer
         :dialogVisible="drawerVisible"
         :size="drawerSize"
@@ -60,7 +60,7 @@
         :title="drawerTitle"
         @handleClose="drawerVisible = false"
       ></rd-drawer>
-    </template>
+    <!-- </template> -->
 
     <!-- 成单弹窗 -->
     <rd-dialog
@@ -73,6 +73,7 @@
         :formOptions="orderFormOptions"
         :rules="orderRules"
         ref="dataForm"
+        v-if="orderVisible"
       />
     </rd-dialog>
 
@@ -685,7 +686,7 @@ export default {
         if (res.msg == "没有相关数据") {
           nodes = [];
         } else {
-          let data = res.data;
+          let data = res.data.list;
           nodes = data.map((item) => ({
             value: item.id,
             label: item.subjectName,
@@ -793,9 +794,9 @@ export default {
       }
 
       
-      if(this.orderFlag){
-        this.orderVisible = true;
-      }else{
+      // if(this.orderFlag){
+      //   this.orderVisible = true;
+      // }else{
       // 赋值
       const { idStr,campusName,campusId,studentName,phone,saleSource,marketStaffId ,marketName} = this.selectedData[0];
       this.$fetch("chance_staff_list").then(res => {
@@ -813,9 +814,9 @@ export default {
           this.orderFormOptions[4].initValue = marketStaffId;
           this.orderVisible = true;
       })
-      }
+      // }
 
-      this.orderFlag = true;
+      // this.orderFlag = true;
       
     },
     // 成单弹窗关闭
@@ -903,7 +904,11 @@ export default {
       this.$refs[formName].validate((valid, formData) => {
         if (valid) {
           console.log(formData, "提交");
-          this.$fetch("chance_my_invalid",formData).then(res=>{
+          this.$fetch("chance_my_invalid", {
+            ...formData,
+            phone: this.selectedData[0].phone,
+            enquireProductIdOne: this.selectedData[0].enquireProductIdOne,
+          }).then(res=>{
             if(res.code == 200){
               this.$message.success('操作成功')
               this.handleClose();

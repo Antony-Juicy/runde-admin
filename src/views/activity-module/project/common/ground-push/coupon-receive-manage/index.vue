@@ -3,7 +3,7 @@
     <search-form :formOptions="formOptions" :showNum="7" @onSearch="onSearch"></search-form>
     <div class="w-container">
       <div class="btn-wrapper">
-        <el-button type="primary" size="small">打包</el-button>
+        <el-button type="primary" size="small" @click="exportFile">打包</el-button>
       </div>
       <rd-table
         :tableData="tableData"
@@ -26,12 +26,12 @@ export default {
     return {
       formOptions: [
         {
-          prop: "menuName",
+          prop: "couponName",
           element: "el-input",
           placeholder: "请输入优惠券名称",
         },
         {
-          prop: "menuName",
+          prop: "phone",
           element: "el-input",
           placeholder: "请输入手机号码",
         }
@@ -51,49 +51,49 @@ export default {
         },
         {
           name: "优惠券名称",
-          value: "staffName",
+          value: "couponName",
         },
         {
           name: "优惠券id",
-          value: "staffName",
+          value: "couponId",
         },
         {
           name: "用户id",
-          value: "staffName",
+          value: "userId",
         },
         {
           name: "手机号码",
-          value: "staffName",
+          value: "phone",
         },
         {
           name: "openId",
-          value: "staffName",
+          value: "openid",
         },
         {
           name: "目标id",
-          value: "staffName",
+          value: "tragetId",
         },
         {
           name: "目标名称",
-          value: "staffName",
+          value: "tragetName",
         },
         {
           name: "邀请码",
-          value: "staffName",
+          value: "invitationCode",
         },
         {
           name: "创建时间",
-          value: "staffName",
+          value: "createAt",
         },
         {
           name: "更新时间",
-          value: "staffName",
+          value: "updateAt",
         }
       ],
       pageConfig: {
         totalCount: 0,
         currentPage: 1,
-        pageSize: 10,
+        showCount: 10,
       },
 
       loading: false,
@@ -114,15 +114,29 @@ export default {
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
-    getTableData(){
-      console.log('管理的页面')
-    },
+    getTableData(params = {}){
+       this.$fetch("groundPush_listJsp", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.varList.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          return item;
+        });;
+        this.pageConfig.totalCount = res.data.page.totalResult;
+      })
+     },
     pageChange(val) {
       console.log(val,'pagechange')
       this.pageConfig.currentPage = val.page;
       this.pageConfig.showCount = val.limit;
       this.getTableData();
     },
+    exportFile(){
+      this.$fetch("groundPush_export")
+    }
   }
 }
 </script>

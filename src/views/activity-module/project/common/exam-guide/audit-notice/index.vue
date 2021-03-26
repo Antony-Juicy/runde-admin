@@ -13,21 +13,41 @@
         :pageConfig.sync="pageConfig"
         @select="handleSelect"
         @pageChange="pageChange">
-      </rd-table>
-      <fullDialog v-model="addVisible" title="审核通知标题标题标题标题标题标题标题标题标题标题" @change="fullDialogChange">
+        <template slot="edit" slot-scope="scope">
+          <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑</el-button>
+          <el-divider direction="vertical"></el-divider>
+          <el-button @click="handleDelete(scope.row)" type="text" size="small" style="color: #ec5b56">删除</el-button>
+        </template>
+      </rd-table> 
+      <fullDialog v-model="addVisible" :title="addStatus?'添加':'编辑'" @change="fullDialogChange">
         <div class="w-container" v-if="addVisible">
           <el-form ref="dataForm" :model="noticeForm" label-width="120px">
-            <el-form-item label="项目" prop="project">
-              <el-select v-model="noticeForm.project" clearable placeholder="请选择">
-                <!-- <el-option v-for="item in typeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option> -->
+            <el-form-item 
+              label="项目" 
+              prop="productName" 
+              :rules="[
+                  { required: true, message: '请选择', trigger: 'blur' },
+                ]">
+              <el-select v-model="noticeForm.productName" clearable placeholder="请选择">
+                <el-option v-for="item in productList" :key="item.value" :label="item.label" :value="item.value"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="报考省份/学历" prop="province">
-              <el-select v-model="noticeForm.province" clearable placeholder="请选择">
-                <!-- <el-option v-for="item in typeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option> -->
+            <el-form-item 
+              label="报考省份/学历" 
+              prop="examProvinceId"
+              :rules="[
+                  { required: true, message: '请选择', trigger: 'blur' },
+                ]">
+              <el-select v-model="noticeForm.examProvinceId" clearable placeholder="请选择">
+                <el-option v-for="item in productList2" :key="item.value" :label="item.label" :value="item.value"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="状态" prop="status">
+            <el-form-item 
+              label="状态" 
+              prop="status"
+              :rules="[
+                  { required: true, message: '请选择', trigger: 'blur' },
+                ]">
               <el-radio v-model.trim="noticeForm.status" label="Open">开放</el-radio>
               <el-radio v-model.trim="noticeForm.status" label="Close">未开放</el-radio>
             </el-form-item>
@@ -38,32 +58,47 @@
               <el-form-item
                 class="mtn"
                 :label="'审核时间'"
-                :prop="'ancillaryGoods.' + index + '.value'">
-                <el-input v-model="domain.value1" placeholder="请输入活动跳转菜单名称"></el-input>
+                :prop="`ancillaryGoods.${index}.provinceCheckTime`"
+                :rules="[
+                  { required: true, message: '请输入', trigger: 'blur' },
+                ]">
+                <el-input size="small" v-model="domain.provinceCheckTime" placeholder="请输入活动跳转菜单名称"></el-input>
               </el-form-item>
               <el-form-item
                 class="mtn"
                 :label="'审核省份'"
-                :prop="'ancillaryGoods.' + index + '.value'">
-                <el-input v-model="domain.value2" placeholder="请输入活动跳转菜单名称"></el-input>
+                :prop="`ancillaryGoods.${index}.provinceCheckProvince`"
+                :rules="[
+                  { required: true, message: '请输入', trigger: 'blur' },
+                ]">
+                <el-input size="small" v-model="domain.provinceCheckProvince" placeholder="请输入活动跳转菜单名称"></el-input>
               </el-form-item>
               <el-form-item
                 class="mtn"
                 :label="'审核地点'"
-                :prop="'ancillaryGoods.' + index + '.value'">
-                <el-input v-model="domain.value3" placeholder="请输入活动跳转菜单名称"></el-input>
+                :prop="`ancillaryGoods.${index}.provinceCheckAddress`"
+                :rules="[
+                  { required: true, message: '请输入', trigger: 'blur' },
+                ]">
+                <el-input size="small" v-model="domain.provinceCheckAddress" placeholder="请输入活动跳转菜单名称"></el-input>
               </el-form-item>
               <el-form-item
                 class="mtn"
                 :label="'审核材料'"
-                :prop="'ancillaryGoods.' + index + '.value'">
-                <el-input type="textarea" v-model="domain.value4" placeholder="请输入活动跳转菜单名称"></el-input>
+                :prop="`ancillaryGoods.${index}.provinceCheckMaterials`"
+                :rules="[
+                  { required: true, message: '请输入', trigger: 'blur' },
+                ]">
+                <el-input size="small" type="textarea" v-model="domain.provinceCheckMaterials" placeholder="请输入活动跳转菜单名称"></el-input>
               </el-form-item>
               <el-form-item
                 class="mtn"
                 :label="'审核提醒'"
-                :prop="'ancillaryGoods.' + index + '.value'">
-                <el-input type="textarea" v-model="domain.value5" placeholder="请输入活动跳转菜单名称"></el-input>
+                :prop="`ancillaryGoods.${index}.provinceCheckNotification`"
+                :rules="[
+                  { required: true, message: '请输入', trigger: 'blur' },
+                ]">
+                <el-input size="small" type="textarea" v-model="domain.provinceCheckNotification" placeholder="请输入活动跳转菜单名称"></el-input>
               </el-form-item>
               <el-button style="margin-left: 20px;height:40px;" type="danger" size="small" @click.prevent="removeDomain(domain)">删除</el-button>
             </div>
@@ -74,39 +109,54 @@
               <el-form-item
                 class="mtn"
                 :label="'审核时间'"
-                :prop="'citySign.' + index + '.value'">
-                <el-input v-model="domain.value1" placeholder="请输入活动跳转菜单名称"></el-input>
+                :prop="'citySign.' + index + '.cityCheckTime'"
+                :rules="[
+                  { required: true, message: '请输入', trigger: 'blur' },
+                ]">
+                <el-input size="small" v-model="domain.cityCheckTime" placeholder="请输入活动跳转菜单名称"></el-input>
               </el-form-item>
               <el-form-item
                 class="mtn"
                 :label="'审核省份'"
-                :prop="'citySign.' + index + '.value'">
-                <el-input v-model="domain.value2" placeholder="请输入活动跳转菜单名称"></el-input>
+                :prop="'citySign.' + index + '.cityCheckCity'"
+                :rules="[
+                  { required: true, message: '请输入', trigger: 'blur' },
+                ]">
+                <el-input size="small" v-model="domain.cityCheckCity" placeholder="请输入活动跳转菜单名称"></el-input>
               </el-form-item>
               <el-form-item
                 class="mtn"
                 :label="'审核地点'"
-                :prop="'citySign.' + index + '.value'">
-                <el-input v-model="domain.value3" placeholder="请输入活动跳转菜单名称"></el-input>
+                :prop="'citySign.' + index + '.cityCheckAddress'"
+                :rules="[
+                  { required: true, message: '请输入', trigger: 'blur' },
+                ]">
+                <el-input size="small" v-model="domain.cityCheckAddress" placeholder="请输入活动跳转菜单名称"></el-input>
               </el-form-item>
               <el-form-item
                 class="mtn"
                 :label="'审核材料'"
-                :prop="'citySign.' + index + '.value'">
-                <el-input type="textarea" v-model="domain.value4" placeholder="请输入活动跳转菜单名称"></el-input>
+                :prop="'citySign.' + index + '.cityCheckMaterials'"
+                :rules="[
+                  { required: true, message: '请输入', trigger: 'blur' },
+                ]">
+                <el-input size="small" type="textarea" v-model="domain.cityCheckMaterials" placeholder="请输入活动跳转菜单名称"></el-input>
               </el-form-item>
               <el-form-item
                 class="mtn"
                 :label="'审核提醒'"
-                :prop="'citySign.' + index + '.value'">
-                <el-input type="textarea" v-model="domain.value5" placeholder="请输入活动跳转菜单名称"></el-input>
+                :prop="'citySign.' + index + '.cityCheckNotification'"
+                :rules="[
+                  { required: true, message: '请输入', trigger: 'blur' },
+                ]">
+                <el-input size="small" type="textarea" v-model="domain.cityCheckNotification" placeholder="请输入活动跳转菜单名称"></el-input>
               </el-form-item>
               <el-button style="margin-left: 50px;height:40px;" type="danger" size="small" @click.prevent="removeCityDomain(domain)">删除</el-button>
             </div>
           </el-form>
           <div class="btn-bottom">
             <el-button type="primary" @click="fullDialogChange(false)">返回</el-button>
-            <el-button type="primary" :loading="btnLoading" >保存</el-button>
+            <el-button type="primary" :loading="btnLoading" @click="submitAdd('dataForm')">保存</el-button>
           </div>
         </div>
       </fullDialog>
@@ -127,14 +177,16 @@ export default {
     return {
       formOptions: [
         {
-          prop: "menuName",
+          prop: "productName",
           element: "el-select",
           placeholder: "请选择项目",
+          options: []
         },
         {
-          prop: "menuName",
+          prop: "examProvinceId",
           element: "el-select",
           placeholder: "请选择报考省份",
+          options: []
         }
       ],
       searchForm: {},
@@ -146,47 +198,56 @@ export default {
       tableKey: [
         {
           name: "主键id",
-          value: "staffName",
+          value: "id",
           width: 80
         },
         {
           name: "项目",
-          value: "staffName",
+          value: "productName1",
+           width: 140
         },
         {
           name: "报考省份id",
-          value: "staffName"
+          value: "examProvinceId",
+          width: 50
         },
         {
           name: "审核通知详情json",
-          value: "staffName",
+          value: "detail",
+          showTooltip: true
         },
         {
           name: "排序",
-          value: "staffName",
-          width: 80
+          value: "orderValue",
+          width: 50
         },
         {
           name: "状态",
-          value: "staffName"
+          value: "status",
+          width: 80
         },
         {
           name: "创建时间",
-          value: "posterCopySecond",
+          value: "createAt",
+          width: 140
         },
         {
           name: "更新时间",
-          value: "posterCopyThird",
+          value: "updateAt",
+           width: 140
         },
         {
           name: "操作",
-          value: "staffName",
-        }
+          value: "edit",
+          operate: true,
+          width: 140,
+          fixed: "right"
+        },
       ],
       pageConfig: {
         totalCount: 0,
         currentPage: 1,
-        pageSize: 10,
+        showCount: 10,
       },
 
       loading: false,
@@ -195,32 +256,36 @@ export default {
       addStatus: true,
       addVisible: false,
       noticeForm: {
-        project: '',
-        province: '',
         status: '',
+        productName:'',
+        examProvinceId:'',
         ancillaryGoods: [
           {
-            value1: '',
-            value2: '',
-            value3: '',
-            value4: '',
-            value5: ''
+            provinceCheckTime: '',
+            provinceCheckProvince: '',
+            provinceCheckAddress: '',
+            provinceCheckMaterials: '',
+            provinceCheckNotification: ''
           }
         ],
         citySign: [
           {
-            cityvalue1: '',
-            cityvalue2: '',
-            cityvalue3: '',
-            cityvalue4: '',
-            cityvalue5: ''
+            cityCheckTime: '',
+            cityCheckCity: '',
+            cityCheckAddress: '',
+            cityCheckMaterials: '',
+            cityCheckNotification: ''
           }
         ],
-      }
+        
+      },
+      productList: [],
+        productList2: [],
+        editId:""
     }
   },
   mounted () {
-    // this.getTableData()
+    this.getTableData()
   },
   methods: {
     onSearch(val){
@@ -234,8 +299,45 @@ export default {
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
-    getTableData(){
-      console.log('信息的页面')
+    getTableData(params = {}) {
+      this.$fetch("cmsexamchecknotification_listJsp", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.varList.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          let obj1 = res.data.productList.find(ele => ele.key == item.productName);
+          item.productName1 = obj1&&obj1.value;
+          item.provinceType1 = item.provinceType == "province" ? "省份" : "学历";
+          return item;
+        });
+
+        this.productList = res.data.productList.map(item => ({
+          label: item.value,
+          value: item.key
+        }));
+        this.provinceList = res.data.provinceList.map(item => ({
+          label: item.provinceName,
+          value: item.id
+        }));
+        this.pageConfig.totalCount = res.data.page.totalResult;
+
+        this.productList2 = res.data.provinceList.map(item => {
+           let obj1 = res.data.productList.find(ele => ele.key == item.productName);
+          return {
+          label: `${item.provinceName}(${obj1&&obj1.value})`,
+          value: item.id
+        }
+        });
+        // 给添加弹窗的下拉赋值
+        // this.addFormOptions[0].options = this.productList;
+        // 给搜索栏下拉赋值
+        this.formOptions[0].options = this.productList;
+        this.formOptions[1].options = this.provinceList;
+
+      });
     },
     pageChange(val) {
       console.log(val,'pagechange')
@@ -244,14 +346,50 @@ export default {
       this.getTableData();
     },
     handleAdd(){
+      this.addStatus = true;
       this.addVisible = true;
       this.noticeForm.ancillaryGoods = []
       this.noticeForm.citySign = []
     },
 
+    handleEdit(data){
+      this.addStatus = false;
+      this.addVisible = true;
+      this.editId = data.id;
+      this.$fetch("cmsexamchecknotification_goEdit",{
+        id: data.id
+      }).then(res => {
+        const { province, city, pd } = res.data;
+        if(province){
+          if(province instanceof Array) {
+            this.noticeForm.ancillaryGoods = province
+          }else {
+            this.noticeForm.ancillaryGoods = [province]
+          }
+        }else {
+          this.noticeForm.ancillaryGoods = []
+        }
+
+        if(city){
+          if(city instanceof Array) {
+            this.noticeForm.citySign = city
+          }else {
+            this.noticeForm.citySign = [city]
+          }
+        }else {
+          this.noticeForm.citySign = []
+        }
+        // this.noticeForm.ancillaryGoods = province;
+        // this.noticeForm.citySign = city;
+        this.noticeForm.productName = pd.productName;
+        this.noticeForm.examProvinceId = pd.examProvinceId;
+        this.noticeForm.status = pd.status;
+      })
+    },
+
     fullDialogChange(val){
       this.addVisible = val;
-      // this.$refs[formName].resetFields();
+      this.$refs["dataForm"].resetFields();
     },
 
     removeDomain(item) {
@@ -262,12 +400,12 @@ export default {
     },
     addDomain() {
       this.noticeForm.ancillaryGoods.push({
-        value1: '',
-        value2: '',
-        value3: '',
-        value4: '',
-        value5: '',
-      });
+            provinceCheckTime: '',
+            provinceCheckProvince: '',
+            provinceCheckAddress: '',
+            provinceCheckMaterials: '',
+            provinceCheckNotification: ''
+          });
     },
     removeCityDomain(item) {
       var index = this.noticeForm.citySign.indexOf(item)
@@ -277,12 +415,67 @@ export default {
     },
     addCityDomain() {
       this.noticeForm.citySign.push({
-        cityvalue1: '',
-        cityvalue2: '',
-        cityvalue3: '',
-        cityvalue4: '',
-        cityvalue5: ''
-      });
+            cityCheckTime: '',
+            cityCheckCity: '',
+            cityCheckAddress: '',
+            cityCheckMaterials: '',
+            cityCheckNotification: ''
+          });
+    },
+    handleDelete(row) {
+      let info = '项';
+      this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.$fetch("cmsexamchecknotification_deleteJsp", {
+            id: row.id
+          }).then((res) => {
+            if (res) {
+              this.$message({
+                message: "删除成功",
+                type: "success",
+              });
+              setTimeout(() => {
+                this.getTableData();
+              }, 50);
+            }
+          });
+        })
+        .catch(() => {});
+    },
+    submitAdd(formName){
+      
+      this.$refs[formName].validate((valid) => {
+        console.log(this.noticeForm,'noticeForm')
+          if (valid) {
+            
+            const {productName,examProvinceId,status,ancillaryGoods,citySign} = this.noticeForm;
+            let data = {
+              productName,
+              examProvinceId,
+              status,
+              provinceCheckList: ancillaryGoods,
+              cityCheckList: citySign,
+              id:this.addStatus?"": this.editId
+            }
+            
+            console.log(data,'data---')
+            this.$fetch(this.addStatus?"cmsexamchecknotification_save":"cmsexamchecknotification_editJsp",data).then(res => {
+              this.$message.success("操作成功")
+              setTimeout(() => {
+                this.addVisible = false;
+                this.$refs["dataForm"].resetFields();
+                this.getTableData();
+              }, 50);
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
     }
   }
 }
@@ -304,11 +497,11 @@ export default {
     margin-bottom: 20px;
   }
   .mtn {
-    margin-bottom: 5px; 
+    // margin-bottom: 5px; 
   }
   .btn-bottom {
     width: 50%;
-    margin-left: 7.5%;
+    margin-left: 74.5%;
   }
 }
 </style>

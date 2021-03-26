@@ -32,6 +32,7 @@ export default {
     chance_campus_receive: {url: '/crm/crmopportunity/updateReceiveOpps', method: 'post'}, //领取
     chance_distrube_list: {url: '/crm/crmopportunity/listMarketJson', method: 'post'}, //分配机会列表
     chance_campus_distrubute: {url: '/crm/crmopportunity/updateAllotOpp', method: 'post'},//分配
+    chance_campus_saveBranchImport: {url: '/crm/crmopportunity/saveBranchImport', method: 'post'},//导入
 
     // 省校/网校公海
     chance_province_list: {url: '/crm/crmopportunity/listProvinceCampusJson', method: 'post'},
@@ -91,7 +92,7 @@ export default {
     chance_customer_list: {url: '/crm/crmopportunity/customerLevelList', method: 'post'},
     // 项目
     chance_product_list: {url: '/crm/crmopportunity/productList', method: 'post', hideLoading: true},
-    chance_subject_list: {url: '/crm/crmopportunity/subjectList', method: 'post', hideLoading: true },
+    chance_subject_list: {url: '/crm/coursesubject/subjectList', method: 'post', hideLoading: true },
     chance_course_list: {url: '/crm/crmopportunity/courseListOne', method: 'get', hideLoading: true},
     chance_class_list: {url: '/crm/crmopportunity/classTypeList', method: 'post', hideLoading: true},
     // 呼叫状态

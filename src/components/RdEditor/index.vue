@@ -29,7 +29,7 @@
 import "quill/dist/quill.snow.css";
 import "quill/dist/quill.bubble.css";
 import { quillEditor } from "vue-quill-editor";
-import UploadOss from "@/components/UploadOss";
+import UploadOss from "@/components/UploadOss-old";
 // 工具栏配置
 const toolbarOptions = [
   ['bold', 'italic', 'underline', 'strike'], // toggled buttons
@@ -139,6 +139,7 @@ export default {
       this.reloadElem('uploadOssElem');
        // 获取富文本组件实例
       const quill = this.$refs.myQuillEditor.quill
+      console.log(quill,'quill---')
       const length = quill.getSelection().index
       // 插入图片  res.info为服务器返回的图片地址
       quill.insertEmbed(length, 'image', this.bgImg)

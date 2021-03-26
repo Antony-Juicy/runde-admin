@@ -165,7 +165,8 @@ export default {
       redirect: undefined,
       bigBg: {
         backgroundImage: 'url('+ require("../../assets/bg.png") +')'
-      }
+      },
+      keyDownEvent:null
     };
   },
   components:{
@@ -187,6 +188,18 @@ export default {
   mounted() {
     this.getImgcode();
     this.getCookie();
+
+    // 绑定键盘回车事件
+    this.keyDownEvent = (event)=>{
+      let e = event ? event :(window.event ? window.event : null);
+      if(e.keyCode==13){
+        this.handleLogin();
+      }
+    };
+    document.addEventListener("keydown",this.keyDownEvent)
+  },
+  destroyed(){
+    document.removeEventListener("keydown",this.keyDownEvent)
   },
   methods: {
     handleClick(tab, event) {

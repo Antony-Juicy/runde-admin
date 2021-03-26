@@ -7,7 +7,7 @@
     ></search-form>
     <div class="w-container">
       <div class="btn-wrapper">
-        <el-button type="primary" size="small" icon="el-icon-download" @click="handleAdd"
+        <el-button type="primary" size="small" icon="el-icon-download" @click="handleExport"
           >打包</el-button
         >
       </div>
@@ -15,7 +15,6 @@
         :tableData="tableData"
         :tableKey="tableKey"
         :pageConfig.sync="pageConfig"
-        :tbodyHeight="600"
         fixedTwoRow
         @pageChange="pageChange"
         :emptyText="emptyText"
@@ -43,6 +42,7 @@
           ref="evaluteRecord"
           @close="evaluteVisible = false"
           v-if="evaluteVisible"
+          :linkUserId="linkUserId"
         />
     </fullDialog>
 
@@ -56,6 +56,7 @@
           ref="writeRecord"
           @close="writeVisible = false"
           v-if="writeVisible"
+          :linkUserId="linkUserId2"
         />
       </fullDialog>
   </div>
@@ -70,28 +71,18 @@ export default {
   name:"link-manage",
   data(){
     return {
+      linkUserId:"",
+      linkUserId2:"",
       formOptions: [
         {
-          prop: "menuName",
+          prop: "appName",
           element: "el-select",
           placeholder: "APP名称",
           options: [
-            {
-              label:"考药狮",
-              value: "1"
-            },
-            {
-              label:"考医狮",
-              value: "2"
-            },
-            {
-              label:"考护狮",
-              value: "3"
-            }
           ]
         },
         {
-          prop: "menuName",
+          prop: "phone",
           element: "el-input",
           placeholder: "手机号码",
         }
@@ -99,13 +90,6 @@ export default {
       searchForm:{},
       emptyText:"暂无数据",
       tableData:[
-         {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-        },
       ],
       tableKey: [
         {
@@ -116,31 +100,31 @@ export default {
         },
         {
           name: "APP名称",
-          value: "staffName",
+          value: "appName",
         },
         {
           name: "openId",
-          value: "goodsName",
+          value: "openId",
         },
         {
           name: "用户Id",
-          value: "activityName",
+          value: "userId",
         },
         {
           name: "手机号码",
-          value: "posterName",
+          value: "phone",
         },
         {
           name: "用户名称",
-          value: "posterPic",
+          value: "userName",
         },
         {
           name: "老师营销id",
-          value: "posterCopyFirst",
+          value: "teacherId",
         },
         {
           name: "创建时间",
-          value: "posterCopySecond",
+          value: "createAt",
         },
         {
           name: "用户测评记录",
@@ -156,7 +140,7 @@ export default {
        pageConfig: {
         totalCount: 0,
         currentPage: 1,
-        pageSize: 10,
+        showCount: 10,
       },
       evaluteVisible: false,
       writeVisible: false
@@ -168,6 +152,9 @@ export default {
     evaluteRecord,
     writeRecord
   },
+  mounted(){
+    this.getTableData();
+  },
    methods: {
      onSearch(val){
        this.searchForm = {
@@ -176,8 +163,26 @@ export default {
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
      },
-     getTableData(){
+     getTableData(params = {}){
+       this.$fetch("auditionLink_listJsp", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.varList.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          return item;
+        });;
+        this.pageConfig.totalCount = res.data.page.totalResult;
 
+        let appNameList = res.data.appNameList.map(item => ({
+          label: item.value,
+          value: item.key
+        }))
+
+        this.formOptions[0].options = appNameList;
+      })
      },
      pageChange(val) {
       console.log(val,'pagechange')
@@ -185,14 +190,18 @@ export default {
       this.pageConfig.showCount = val.limit;
       this.getTableData();
     },
-    handleAdd(){
-
+    handleExport(){
+      this.$fetch("auditionLink_export",{
+        ...this.searchForm
+      })
     },
     evaluationDetail(data){
       this.evaluteVisible = true;
+      this.linkUserId = data.id;
     },
     writeDetail(data){
       this.writeVisible = true;
+      this.linkUserId2 = data.id;
     },
   }
 }

@@ -49,6 +49,18 @@
           </template>
         </RdForm>
       </rd-dialog>
+
+      <full-dialog
+        v-model="addVisible"
+        :title="addStatus?'添加':'编辑'"
+        @change="addVisible = false"
+      >
+        <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
+          <template slot="post">
+            <el-button size="small" type="primary">上传</el-button>
+          </template>
+        </RdForm>
+      </full-dialog>
   </div>
 </template>
 

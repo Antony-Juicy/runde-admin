@@ -224,7 +224,7 @@ export default {
     onSearch(val) {
       this.searchForm = {
         ...val,
-        updateAt: val.updateAt ? val.updateAt.join(" ~ ") : "",
+        updateAt: val.updateAt ? val.updateAt.join("~") : "",
       };
       this.getTableData();
       console.log(val, this.searchForm, "val---");
@@ -265,6 +265,9 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log(this.detectForm, 666);
+          if(this.detectForm.invalidReason == ""){
+            delete this.detectForm.invalidReason;
+          }
           this.$fetch("chance_invalid_update", {
             ids: this.selectedRows.map((item) => item.idStr).join(","),
             ...this.detectForm,
@@ -292,7 +295,7 @@ export default {
     getTableData(params = {}) {
       this.$fetch("chance_invalid_list", {
         invalidStatus: "Invalid",
-        // stayModule:"Lost",
+        stayModule:"Lost",
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
