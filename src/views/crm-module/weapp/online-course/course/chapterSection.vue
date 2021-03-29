@@ -215,7 +215,7 @@ export default {
 		},
 		handleEditClose() {
 			this.addEditVisible = false
-			scrollTo(this.markScroll,100)
+			scrollTo(this.markScroll, 100)
 		},
 		refresh(val) {
 			this.getTableData({
@@ -237,13 +237,14 @@ export default {
 			.full-dialog-container .content {
 				background: #fff !important;
 			}
-			.full-dialog-container {
-				top: 0;
-				bottom: 0;
-			}
+
 			&.el-loading-parent--relative {
 				position: initial !important;
 			}
+		}
+		.full-dialog-container {
+			top: 0;
+			bottom: 0;
 		}
 	}
 }

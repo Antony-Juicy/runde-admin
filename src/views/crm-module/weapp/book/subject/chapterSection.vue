@@ -8,7 +8,7 @@
 				<el-button type="primary" size="small" @click="handleAdd">创建节</el-button>
 			</div>
 			<!-- 表格主体 -->
-			<rd-table :tableData="tableData" :tableKey="tableKey" :pageConfig.sync="pageConfig" fixedTwoRow @pageChange="pageChange">
+			<rd-table  style="" :tableData="tableData" :tableKey="tableKey" :pageConfig.sync="pageConfig" fixedTwoRow @pageChange="pageChange">
 				<template slot="edit" slot-scope="scope">
 					<el-button @click="handleEdit(scope.row)" type="text" size="small">查阅/编辑</el-button>
 					<el-button @click="handleDelete(scope.row)" type="text" style="color: #ec5b56" size="small">删除</el-button>
@@ -240,14 +240,15 @@ export default {
 			.full-dialog-container .content {
 				background: #fff !important;
 			}
-			.full-dialog-container {
-				top: 0;
-				bottom: 0;
-			}
+			
 			&.el-loading-parent--relative {
 				position: initial !important;
 			}
 		}
+		.full-dialog-container {
+				top: 0;
+				bottom: 0;
+			}
 	}
 }
 </style>
