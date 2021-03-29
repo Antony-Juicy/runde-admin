@@ -366,6 +366,10 @@ export default {
 		}
 
 		.chapter {
+			.full-dialog-container {
+			top: 0;
+			bottom: 0;
+		}
 			.full-dialog-container .content {
 				background: #f0f2f5;
 			}
@@ -386,7 +390,7 @@ export default {
 			}
 		}
 		.el-table {
-			max-height: calc(100vh - 425px) !important;
+			max-height: calc(100vh - 400px) !important;
 			overflow: scroll;
 		}
 		.el-table::before {

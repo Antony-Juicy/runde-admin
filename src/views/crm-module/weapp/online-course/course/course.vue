@@ -388,7 +388,7 @@ export default {
 			}
 		}
 		.el-table {
-			max-height: calc(100vh - 425px) !important;
+			max-height: calc(100vh - 400px) !important;
 			overflow: scroll;
 		}
 		.el-table::before{

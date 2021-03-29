@@ -295,12 +295,6 @@ export default {
 				position: initial !important;
 			}
 		}
-		.chapterSection {
-			.full-dialog-container {
-				top: 0;
-				bottom: 0;
-			}
-		}
 		.full-dialog-container {
 			top: 0;
 			bottom: 0;
