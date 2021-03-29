@@ -387,6 +387,13 @@ export default {
 				position: initial !important;
 			}
 		}
+		.el-table {
+			max-height: calc(100vh - 400px) !important;
+			overflow: scroll;
+		}
+		.el-table::before{
+			background: none;
+		}
 	}
 }
 .course-teacher {

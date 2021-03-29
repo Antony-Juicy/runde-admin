@@ -12,8 +12,8 @@
 
 				<template slot="edit" slot-scope="scope">
 					<el-button @click="handleEdit(scope.row)" type="text" size="small">查阅/编辑</el-button>
-                    <el-button @click="handleImport(scope.row)" type="text" size="small" style="color: rgb(255, 165, 0)">导入节</el-button>
-					<br/>
+					<el-button @click="handleImport(scope.row)" type="text" size="small" style="color: rgb(255, 165, 0)">导入节</el-button>
+					<br />
 					<el-button @click="handleSection(scope.row)" type="text" style="color: #67c23a" size="small">查看小节</el-button>
 					<el-button @click="handleDelete(scope.row)" type="text" style="color: #ec5b56" size="small">删除</el-button>
 				</template>
@@ -25,7 +25,7 @@
 		<fullDialog class="chapterSection" title="科目管理 > 章节目录 > 查看小节" v-model="chapterSectionVisible" @change="handleSectionClose">
 			<chapterSection v-if="chapterSectionVisible" @close="handleSectionClose" :courseClass="courseClass" :course="course" :chapter="chapter"></chapterSection>
 		</fullDialog>
-        <!-- 链接 -->
+		<!-- 链接 -->
 		<rd-dialog :title="'EXCEL 导入到数据库'" :dialogVisible="importVisible" :showFooter="false" :width="'500px'" @handleClose="importVisible = false">
 			<importFile v-if="importVisible" @submit="handleImportExcel" @cancel="importVisible = false" @download="handleDownTemp"></importFile>
 		</rd-dialog>
@@ -51,7 +51,7 @@ export default {
 			default: () => { return {} }
 		}
 	},
-	components: { fullDialog, chapterSection, addEditChapter ,importFile},
+	components: { fullDialog, chapterSection, addEditChapter, importFile },
 	data() {
 
 		return {
@@ -126,8 +126,8 @@ export default {
 			chapterSectionVisible: false,
 			chapter: {},
 			markScroll: 0,
-            importVisible:false,
-            importFileCourseChapterId:""
+			importVisible: false,
+			importFileCourseChapterId: ""
 		};
 	},
 
@@ -290,19 +290,14 @@ export default {
 			.full-dialog-container .content {
 				background: #fff !important;
 			}
-			.full-dialog-container {
-				top: 0;
-				bottom: 0;
-			}
+
 			&.el-loading-parent--relative {
 				position: initial !important;
 			}
 		}
-		.chapterSection {
-			.full-dialog-container {
-				top: 0;
-				bottom: 0;
-			}
+		.full-dialog-container {
+			top: 0;
+			bottom: 0;
 		}
 	}
 }

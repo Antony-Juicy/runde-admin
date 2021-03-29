@@ -10,9 +10,8 @@
 
 import courseCourse from './course'
 export default {
-	name: "onlineCourseIndex",
+	name: "course",
 	components: { courseCourse },
-
 }
 </script>
 <style lang='scss' scoped>
