@@ -366,10 +366,9 @@ export default {
 		}
 
 		.chapter {
-			.full-dialog-container {
-			top: 0;
-			bottom: 0;
-		}
+			.full-dialog-container{
+				bottom: 0;
+			}
 			.full-dialog-container .content {
 				background: #f0f2f5;
 			}
