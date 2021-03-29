@@ -167,6 +167,9 @@ export default {
 .rd-form-box {
   padding-right: 20px;
   /deep/ {
+    .el-form-item__label {
+      line-height: 20px;
+    }
     .el-form--inline {
       .el-form-item {
           width: 40%;

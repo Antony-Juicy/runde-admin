@@ -59,9 +59,11 @@ export const mixinUpload = {
                                 this.set_upload_param(uploader,baseKey + this.randomString()+"."+files[0].name.split(".")[1], false);
                                 return;
                             }
+                        }else {
+                            // 这次处理 修改了图片上传的名称为随机的32为字符 解决了图片是中文的问题
+                            this.set_upload_param(uploader,baseKey + this.randomString()+"."+files[0].name.split(".")[1], false);
                         }
-                        // 这次处理 修改了图片上传的名称为随机的32为字符 解决了图片是中文的问题
-                        this.set_upload_param(uploader,baseKey + this.randomString()+"."+files[0].name.split(".")[1], false);
+                        
                     });
                     //五：上传成功
                     uploader.bind('FileUploaded',  (up, file, info)=> {

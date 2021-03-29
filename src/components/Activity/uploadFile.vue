@@ -11,7 +11,7 @@
         :file-list="fileList"
         :before-upload="beforeAvatarUpload"
         :auto-upload="false"
-        accept=".xls, .xlsx"
+        :accept="accept"
       >
         <el-button size="small" type="primary">点击上传</el-button>
       </el-upload>
@@ -27,7 +27,15 @@ export default {
       fileList: []
     };
   },
-  props: ["file"],
+  props: {
+    file: {
+      type: Object | String
+    },
+    accept: {
+      type: String,
+      default: ".xls, .xlsx"
+    }
+  },
   methods: {
     submitImportForm() {
       if (!this.importFile) {
