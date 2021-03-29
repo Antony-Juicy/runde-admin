@@ -142,7 +142,7 @@ export default {
     cmsactivityinfo_save:  {url: '/h5/cmsactivityinfo/save', method: 'post'}, //新增
     cmsactivityinfo_editJsp:  {url: '/h5/cmsactivityinfo/editJsp', method: 'post'}, //编辑
     cmsactivityinfo_deleteJsp:  {url: '/h5/cmsactivityinfo/deleteJsp', method: 'post'}, //删除
-    cmsactivityinfo_selectInvitation:  {url: '/h5/cmsactivityinfourl/selectInvitation', method: 'post'}, //生成链接
+    cmsactivityinfo_selectInvitation:  {url: '/h5/cmsactivityinfourl/selectInvitation', method: 'get'}, //生成链接
 
     // 海报管理
     posterinfo_listJson:  {url: '/h5/posterinfo/listJson', method: 'get'}, //列表

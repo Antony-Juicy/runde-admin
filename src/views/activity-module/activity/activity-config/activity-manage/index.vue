@@ -132,14 +132,14 @@
           fixedTwoRow
           :emptyText="emptyLinkText"
         >
-        <template slot="link" slot-scope="scope">
+        <template slot="invitation" slot-scope="scope">
           <el-input
-            v-model="scope.row.link"
+            v-model="scope.row.invitation"
             id="link"
             ref="link"
-            style="width: 380px"
+            style="width: 100%"
             :readonly="true"
-            :title="scope.row.link"
+            :title="scope.row.invitation"
           >
           </el-input>
         </template>
@@ -275,32 +275,34 @@ export default {
       editVisible: false,
       linkVisible: false,
       tableLinkData:[
-         {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-          link:"http://wx.kaoyaoshi.cn/yaoshi/2019/MyRoad/HomePage.html?activityId=119&id=3182880"
-        },
+        //  {
+        //   id: 1,
+        //   name: "飞翔的荷兰人3",
+        //   cutdown: 1608897351706,
+        //   visit: 2,
+        //   phone: "15692026183",
+        //   link:"http://wx.kaoyaoshi.cn/yaoshi/2019/MyRoad/HomePage.html?activityId=119&id=3182880"
+        // },
       ],
       tableLinkKey:[
          {
           name: "活动名称",
-          value: "name",
+          value: "activityName",
+          width: 180
         },
         {
           name: "老师名称",
-          value: "phone",
+          value: "staffName",
+          width: 120
         },
         {
           name: "老师邀请码",
-          value: "cutdown",
+          value: "staffInvitation",
+          width: 120
         },
         {
           name: "活动链接",
-          value: "link",
-          width: 400,
+          value: "invitation",
           operate: true
         },
         {
@@ -536,7 +538,7 @@ export default {
       this.$fetch("cmsactivityinfo_selectInvitation",{
         activityId: data.id
       }).then(res => {
-
+        this.tableLinkData = res.data.varList;
       })
     },
     copyLink(btnName) {
