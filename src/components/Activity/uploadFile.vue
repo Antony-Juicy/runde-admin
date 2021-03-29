@@ -4,6 +4,7 @@
         class="upload-demo"
         action="#"
         :before-remove="beforeRemove"
+        :on-remove="onRemove"
         :limit="1"
         :on-exceed="handleExceed"
         :on-change="handleChange"
@@ -54,6 +55,11 @@ export default {
     },
     beforeRemove(file, fileList) {
       return this.$confirm(`确定移除 ${file.name}？`);
+    },
+    onRemove(file, fileList){
+      if(file){
+        this.$emit("update:file","");
+      }
     },
     handleChange(file, fileList) {
       this.importFile = file.raw;
