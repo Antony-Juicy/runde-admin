@@ -33,7 +33,7 @@ const chanceSelect = {
                      enquireProductIdOne: node.data.value
                    }).then(res => {
                      let nodes;
-                     if(res.msg == "没有相关数据"){
+                     if(res.msg == "数据为空"){
                        nodes = [];
                      }else {
                        let data = res.data.list;
@@ -52,7 +52,7 @@ const chanceSelect = {
                      subjectIdOne: node.data.value
                    }).then(res => {
                      let nodes;
-                     if(res.msg == "没有相关数据"){
+                     if(res.msg == "数据为空"){
                        nodes = [];
                      }else {
                        let data =JSON.parse(res.msg);

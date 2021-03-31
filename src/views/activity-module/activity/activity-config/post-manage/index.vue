@@ -15,11 +15,16 @@
         :tableData="tableData"
         :tableKey="tableKey"
         :pageConfig.sync="pageConfig"
-        :tbodyHeight="600"
         fixedTwoRow
         @pageChange="pageChange"
         :emptyText="emptyText"
       >
+        <template slot="posterPic" slot-scope="scope">
+          <el-image 
+          style="width: 100px; height: 100px"
+            :src="scope.row.posterPic"
+            fit="cover"></el-image>
+        </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
             >查阅/编辑</el-button
@@ -40,12 +45,21 @@
     <rd-dialog
         :title="addStatus?'添加海报':'编辑海报'"
         :dialogVisible="addVisible"
-        @handleClose="addVisible = false"
+        @handleClose="handleClose"
         @submitForm="submitAddForm('dataForm3')"
       >
         <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
-          <template slot="post">
-            <el-button size="small" type="primary">上传海报</el-button>
+          <template slot="posterPic">
+            <Upload-oss
+              :objConfig="{module: 'activity', project: 'icon_'}"
+              :src.sync="posterPic"
+              />
+          </template>
+          <template slot="part">
+            <el-radio-group v-model="part" @change="partChange">
+              <el-radio :label="1">九块九包邮</el-radio>
+              <el-radio :label="2">活动</el-radio>
+            </el-radio-group>
           </template>
         </RdForm>
       </rd-dialog>
@@ -54,10 +68,14 @@
 
 <script>
 import RdForm from "@/components/RdForm";
+import uploadFile from "@/components/Activity/uploadFile";
+import UploadOss from "@/components/UploadOss";
 export default {
   name:"post-manage",
   data(){
     return {
+      part: "",
+      postPic:"",
       formOptions: [
         {
           prop: "goodsName",
@@ -112,6 +130,7 @@ export default {
         {
           name: "海报图片",
           value: "posterPic",
+          operate:true
         },
         {
           name: "分享文案一",
@@ -149,6 +168,7 @@ export default {
           fixed: "right"
         },
       ],
+      posterPic:"",
        pageConfig: {
         totalCount: 0,
         currentPage: 1,
@@ -172,39 +192,43 @@ export default {
           initValue: 0
         },
         {
-          prop: "roleName",
+          prop: "part",
+          element: "el-radio",
+          placeholder: "请选择",
+          label: "所属模块",
+          options: [
+            {
+              label:"九块九包邮",
+              value: 1
+            },
+            {
+              label:"活动",
+              value: 2
+            }
+          ],
+          operate: true,
+          initValue: 0
+        },
+        {
+          prop: "goodsId",
           element: "el-select",
           placeholder: "请选择",
           label: "所属九块九包邮",
           options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
           ],
+          hide: true
         },
         {
-          prop: "roleName",
+          prop: "activityId",
           element: "el-select",
           placeholder: "请选择",
           label: "所属活动",
           options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
           ],
+          hide: true
         },
         {
-          prop: "menuName3",
+          prop: "posterCopyFirst",
           element: "el-input",
           placeholder: "请输入",
           label: "分享分案一",
@@ -212,7 +236,7 @@ export default {
           rows: 2
         },
          {
-          prop: "menuName3",
+          prop: "posterCopySecond",
           element: "el-input",
           placeholder: "请输入",
           label: "分享分案二",
@@ -220,7 +244,7 @@ export default {
           rows: 2
         },
          {
-          prop: "menuName3",
+          prop: "posterCopyThird",
           element: "el-input",
           placeholder: "请输入",
           label: "分享分案三",
@@ -228,7 +252,7 @@ export default {
           rows: 2
         },
          {
-          prop: "menuName3",
+          prop: "posterCopyFourth",
           element: "el-input",
           placeholder: "请输入",
           label: "分享分案四",
@@ -236,7 +260,7 @@ export default {
           rows: 2
         },
            {
-          prop: "menuName3",
+          prop: "posterCopyFifth",
           element: "el-input",
           placeholder: "请输入",
           label: "分享分案五",
@@ -245,18 +269,33 @@ export default {
         }
       ],
       addRules:{
-        updateReason: [
-          { required: true, message: "请输入修改事由", trigger: "blur" },
+        goodsId: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ],
+         activityId: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ],
+         posterName: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+         part: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ],
+         posterPic: [
+          { required: true, message: "请上传", trigger: "blur" },
         ]
       },
       addStatus: true
     }
   },
   components:{
-    RdForm
+    RdForm,
+    uploadFile,
+    UploadOss
   },
   mounted(){
     this.getTableData();
+    this.getSelectList();
   },
    methods: {
      onSearch(val){
@@ -295,6 +334,29 @@ export default {
       this.$refs[formName].validate((valid, formData) => {
         if(valid){
           console.log(formData, "提交");
+          if(!this.posterPic){
+            this.$message.error(("请上传图片"));
+            return;
+          }
+          if(!this.part){
+            this.$message.error(("请选择所属模块"));
+            return;
+          }
+          let goodsName,activityName;
+          let obj1 = this.addFormOptions[3].options.find(item => (item.value == formData.goodsId));
+          goodsName = obj1&&obj1.label;
+          let obj2 = this.addFormOptions[4].options.find(item => (item.value == formData.activityId));
+          activityName = obj2&&obj2.label;
+          this.$fetch(this.addStatus?"posterinfo_save":"posterinfo_editJsp",{
+            ...formData,
+            posterPic: this.posterPic,
+            goodsName,
+            activityName
+          }).then(res => {
+            this.$message.success("操作成功")
+            this.addVisible = false;
+            this.getTableData();
+          })
         }
           
       });
@@ -327,6 +389,36 @@ export default {
           });
         })
         .catch(() => {});
+    },
+    partChange(val){
+      if(val == 1){
+        this.addFormOptions[3].hide = false;
+        this.addFormOptions[4].hide = true;
+      }else if(val == 2){
+        this.addFormOptions[3].hide = true;
+        this.addFormOptions[4].hide = false;
+      }
+    },
+    getSelectList(){
+      this.$fetch("posterinfo_getMobileGoodsUrlDataList").then(res => {
+        this.addFormOptions[3].options = res.data.list.map(item => ({
+          label: item.goodsName,
+          value: item.id
+        }))
+      })
+      this.$fetch("posterinfo_getActivityInfoDataList").then(res => {
+        this.addFormOptions[4].options = res.data.list.map(item => ({
+          label: item.activityName,
+          value: item.id
+        }))
+      })
+    },
+    handleClose(){
+      this.addVisible = false;
+      this.posterPic = "";
+      this.part = 0;
+      this.addFormOptions[3].hide = true;
+        this.addFormOptions[4].hide = true;
     }
   }
 }

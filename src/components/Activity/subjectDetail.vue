@@ -112,7 +112,7 @@ export default {
         ...params,
         id: this.id
       }).then((res) => {
-        this.tableData = res.data.varList.map(item => {
+        this.tableData = res.data.map(item => {
           item.issuse1 = item.issue&&item.issue.issuse;
           return item;
         });

@@ -91,12 +91,18 @@ export default {
 					value: "courseName",
 				},
 				{
+					name: "视频ID",
+					value: "courseVideoId",
+				},
+				{
 					name: "状态",
 					value: "courseChapterStatus",
+					width: 80
 				},
 				{
 					name: "排序值",
 					value: "orderValue",
+					width: 80
 				},
 				{
 					name: "操作",
@@ -209,7 +215,7 @@ export default {
 		},
 		handleEditClose() {
 			this.addEditVisible = false
-			scrollTo(this.markScroll,100)
+			scrollTo(this.markScroll, 100)
 		},
 		refresh(val) {
 			this.getTableData({
@@ -231,13 +237,14 @@ export default {
 			.full-dialog-container .content {
 				background: #fff !important;
 			}
-			.full-dialog-container {
-				top: 0;
-				bottom: 0;
-			}
+
 			&.el-loading-parent--relative {
 				position: initial !important;
 			}
+		}
+		.full-dialog-container {
+			top: 0;
+			bottom: 0;
 		}
 	}
 }

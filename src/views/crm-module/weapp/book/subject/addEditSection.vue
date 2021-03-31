@@ -37,6 +37,19 @@ export default {
 		},
 	},
 	data() {
+		var checkName = async (rule, value, callback) => {
+			let res = await this.$fetch("book_check_chapter_name", {
+				bookChapterName: value,
+				// bookSubjectId: this.subject.bookSubjectId,
+				parentId: this.chapter.bookChapterId,
+				bookChapterId:this.bookChapterId
+			})
+			if (res.msg != "操作成功") {
+				callback(new Error(res.msg));
+			} else {
+				callback();
+			}
+		};
 		return {
 			addFormOptions: [
 				{
@@ -108,7 +121,7 @@ export default {
 			],
 			addRules: {
 				bookChapterName: [
-					{ required: true, message: '请输入科目名称', trigger: 'blur' },
+					{ required: true, message: '请输入科目名称', trigger: 'blur' }, { validator: checkName, trigger: "blur" }
 				],
 				// bookVideoId: [
 				// 	{ required: true, message: '请输入视频ID', trigger: 'blur' },

@@ -285,6 +285,7 @@ export default {
       this.getTableData();
     },
     handleAdd(){
+      this.addStatus = true;
       this.addVisible = true;
     },
     submitAddForm(formName){

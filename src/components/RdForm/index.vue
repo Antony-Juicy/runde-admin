@@ -15,6 +15,7 @@
               :prop="item.prop"
               :label="item.label ? item.label : ''"
               :rules="item.rules"
+              v-if="!item.hide"
             >
               <formItem v-model="formData[item.prop]" :itemOptions="item" v-if="!item.operate"/>
               <div v-else>
