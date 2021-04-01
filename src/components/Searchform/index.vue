@@ -138,7 +138,6 @@ export default {
           412 * datePikerArr.length +
           "px";
       } else {
-        console.log(222)
         document.querySelector("#" + this.boxId).style.width =
           262 * this.formOptions.length + "px";
       }

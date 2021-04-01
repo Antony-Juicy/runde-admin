@@ -59,26 +59,20 @@ export default {
     return {
       formOptions: [
         {
-          prop: "menuName",
+          prop: "appName",
           element: "el-input",
           placeholder: "公众号名称",
         },
         {
-          prop: "menuName",
+          prop: "status",
           element: "el-select",
           placeholder: "公众号状态",
+          options: []
         }
       ],
       searchForm:{},
       emptyText:"暂无数据",
       tableData:[
-         {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-        },
       ],
       tableKey: [
         {
@@ -89,23 +83,23 @@ export default {
         },
         {
           name: "公众号名称",
-          value: "staffName",
+          value: "appName",
         },
         {
           name: "公众号账户信息",
-          value: "goodsName",
+          value: "appAccount",
         },
         {
           name: "微信商户信息",
-          value: "activityName",
+          value: "partner",
         },
         {
           name: "状态",
-          value: "posterName",
+          value: "state",
         },
         {
           name: "微信二维码",
-          value: "posterPic",
+          value: "appImage",
         },
         {
           name: "操作",
@@ -191,6 +185,9 @@ export default {
   components:{
     RdForm
   },
+  mounted(){
+    this.getTableData();
+  },
    methods: {
      onSearch(val){
        this.searchForm = {
@@ -199,8 +196,20 @@ export default {
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
      },
-     getTableData(){
-
+     getTableData(params = {}){
+       this.$fetch("mobilegoodsurl_listJspComments", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.varList.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.phone = this.$common.hidePhone(item.phone);
+          
+          return item;
+        });;
+        this.pageConfig.totalCount = res.data.page.totalResult;
+      })
      },
      pageChange(val) {
       console.log(val,'pagechange')

@@ -285,7 +285,8 @@ export default {
           { required: true, message: "请上传", trigger: "blur" },
         ]
       },
-      addStatus: true
+      addStatus: true,
+      editId:""
     }
   },
   components:{
@@ -302,7 +303,6 @@ export default {
        this.searchForm = {
         ...val
       };
-      console.log(val,this.searchForm , 'val---')
       this.getTableData();
      },
      getTableData(params = {}){
@@ -322,13 +322,13 @@ export default {
       })
      },
      pageChange(val) {
-      console.log(val,'pagechange')
       this.pageConfig.currentPage = val.page;
       this.pageConfig.showCount = val.limit;
       this.getTableData();
     },
     handleAdd(){
       this.addVisible = true;
+      this.addStatus = true;
     },
     submitAddForm(formName){
       this.$refs[formName].validate((valid, formData) => {
@@ -351,7 +351,8 @@ export default {
             ...formData,
             posterPic: this.posterPic,
             goodsName,
-            activityName
+            activityName,
+            id: this.addStatus?"": this.editId
           }).then(res => {
             this.$message.success("操作成功")
             this.addVisible = false;
@@ -364,18 +365,29 @@ export default {
     handleEdit(data){
       this.addStatus = false;
       this.addVisible = true;
+      this.posterPic = data.posterPic;
+      this.part = data.goodsId? 1 : 2;
+      this.partChange(this.part);
+      this.addFormOptions.forEach(item => {
+        if(item.prop != "part"){
+           item.initValue = data[item.prop];
+        }
+      })
+      setTimeout(() => {
+        this.$refs.dataForm3.addInitValue();
+      }, 0);
+      this.editId = data.id;
     },
     handleDelete(row) {
-      let info = '海报';
+      let info = '项';
       this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(async () => {
-          const res = await this.$fetch("projectType_delete", {
-            typeId: row.typeId,
-            loginUserId,
+          const res = await this.$fetch("posterinfo_deleteJsp", {
+            id: row.id
           }).then((res) => {
             if (res) {
               this.$message({
@@ -418,7 +430,9 @@ export default {
       this.posterPic = "";
       this.part = 0;
       this.addFormOptions[3].hide = true;
-        this.addFormOptions[4].hide = true;
+      this.addFormOptions[4].hide = true;
+      this.$refs.dataForm3.onReset();
+        
     }
   }
 }

@@ -312,6 +312,12 @@ export default {
         appName: [
           { required: true, message: "请选择", trigger: "blur" },
         ],
+        productId: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ],
+        subjectType: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ],
         subjectName: [
           { required: true, message: "请输入", trigger: "blur" },
         ],
@@ -396,6 +402,14 @@ export default {
         this.$message.error("请选择APP名称")
         return
       }
+      if(!this.productId){
+        this.$message.error("请选择项目名称")
+        return
+      }
+      if(!this.subjectType){
+        this.$message.error("请选择科目名称")
+        return
+      }
       this.$refs[formName].validate((valid, formData) => {
         if(valid){
           console.log(formData, "提交");
@@ -409,8 +423,8 @@ export default {
             id: this.addStatus?"":this.editId,
             appName: this.appName,
             productId: this.productId,
-            productType: `${this.productId}/${productName}`,
-            subjectType: `${this.subjectType}/${subjectTypeNameEn}/${subjectTypeName}`
+            productType: this.productId?`${this.productId}/${productName}`:``,
+            subjectType: this.subjectType?`${this.subjectType}/${subjectTypeNameEn}/${subjectTypeName}`:``
           }).then(res => {
             this.$message.success("操作成功")
             this.addVisible = false;

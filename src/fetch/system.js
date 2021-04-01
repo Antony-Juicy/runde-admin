@@ -16,5 +16,11 @@ export default {
     staff_role_list: {url: '/admin/sec/menu/bindrole', method: 'post'},
     role_getMeunList:{url:'/admin/sec/role/roleByidMenu', method: 'get'},
     staff_save: {url:'/admin/sec/user/saveStaff',method:'post'},
-    staff_positionName: {url:'/admin/sec/user/findPositionList',method:'post'}
+    staff_positionName: {url:'/admin/sec/user/findPositionList',method:'post'},
+    // 基本配置管理
+    baseconfig_listJsp: {url:'/admin/baseconfig/listJsp',method:'get'},
+    baseconfig_save: {url:'/admin/baseconfig/save',method:'post'},
+    baseconfig_editJsp: {url:'/admin/baseconfig/editJsp',method:'post'},
+    baseconfig_deleteJsp: {url:'/admin/baseconfig/deleteJsp',method:'post'},
+    baseconfig_saveImport: {url:'/admin/baseconfig/saveImport',method:'post'},
 }

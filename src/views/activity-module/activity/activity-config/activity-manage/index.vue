@@ -3,7 +3,7 @@
     <search-form :formOptions="formOptions" @onSearch="onSearch"></search-form>
     <div class="w-container">
       <div class="btn-wrapper">
-        <el-button type="primary" size="small" @click="addVisible = true"
+        <el-button type="primary" size="small" @click="handleAdd"
           >添加</el-button
         >
       </div>
@@ -36,8 +36,8 @@
       <!-- 添加活动 -->
       <fullDialog
         v-model="addVisible"
-        title="添加活动"
-        @change="addVisible = false"
+        :title="addStatus?'添加活动':'编辑活动'"
+        @change="handleClose('dataForm3')"
       >
        <div class="add-act">
           <RdForm
@@ -95,7 +95,7 @@
               type="primary"
               size="small"
               :loading="btnLoading"
-              @click="handleAdd"
+              @click="handleSubmit"
               v-prevent-re-click="2000"
               >保存</el-button
             >
@@ -168,6 +168,7 @@ export default {
   name: "activity-manage",
   data() {
     return {
+      addStatus: true,
       formOptions: [
         {
           prop: "activityName",
@@ -448,6 +449,12 @@ export default {
         fieldTwo: [
           { required: true, message: "请输入", trigger: "blur" },
         ],
+        appId: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ],
+        time: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ],
       },
       btnLoading: false,
       dynamicValidateForm: {
@@ -476,7 +483,6 @@ export default {
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
      },
-    handleAdd() {},
     pageChange(val) {
       console.log(val,'pagechange')
       this.pageConfig.currentPage = val.page;
@@ -517,7 +523,8 @@ export default {
           }));
           this.addFormOptions[4].options = res.data.weChatList.map(item => ({
             label: item.appName,
-            value: item.appId
+            value: item.appId,
+            secretKey: item.secretKey
           }))
           this.addFormOptions[5].options = res.data.invitationTypeList.map(item => ({
             label: item.value,
@@ -552,22 +559,70 @@ export default {
         clipboard.destroy();
       });
     },
-    handleEdit(){
-      this.editVisible = true;
+    handleEdit(data){
+      this.addVisible = true;
+      this.addStatus = false;
+      this.editId = data.id;
+      this.$fetch("cmsactivityinfo_goEdit",{
+        id: this.editId
+      }).then(res => {
+        let { pd } = res.data;
+        pd.shareStatus = pd.shareStatus?1:0;
+        pd.hideStatus = pd.hideStatus?1:0;
+        pd.attentionStatus = pd.attentionStatus?1:0;
+        pd.time = [new Date(pd.startTime),new Date(pd.endTime)];
+        this.addFormOptions.forEach(item => {
+          item.initValue = pd[item.prop];
+        })
+        setTimeout(() => {
+          this.$refs.dataForm3.addInitValue();
+        }, 0);
+        this.dynamicValidateForm.domains = pd.parameter&&JSON.parse(pd.parameter)&&JSON.parse(pd.parameter).map(item => ({
+          paramName: item.skipKey,
+          paramVal: item.skipValue
+        })) || [];
+      })
+    },
+    handleAdd(){
+      this.addVisible = true;
+      this.addStatus = true;
     },
 
     handleClose(formName) {
-      this.$refs[formName].resetFields();
-      this.$emit("close");
+      this.$refs[formName].onReset();
+      this.addVisible = false;
+      this.dynamicValidateForm.domains = [];
     },
-    handleAdd() {
+    handleSubmit() {
       this.$refs.dataForm3.validate((val, data) => {
         if (val) {
           console.log(data, "data");
           this.$refs.dynamicValidateForm.validate((valid) => {
             if (valid) {
               console.log(this.dynamicValidateForm,'99')
-              // this.$fetch("cmsactivityinfo_save")
+              const { domains }  = this.dynamicValidateForm;
+              const { time, appId}  = data;
+              let currentApp = this.addFormOptions[4].options.find(item => (item.value == appId));
+              let secretKey = currentApp && currentApp.secretKey;
+              let appName = currentApp && currentApp.label;
+              let param = {
+                ...data,
+                skipList: domains && domains.length && domains.map(item => ({
+                  skipKey: item.paramName,
+                  skipValue: item.paramVal
+                })),
+                time: "",
+                startTime: time?time[0]:"",
+                endTime: time?time[1]:"",
+                id: this.addStatus?"": this.editId,
+                appName,
+                secretKey
+              }
+              this.$fetch(this.addStatus?"cmsactivityinfo_save":"cmsactivityinfo_editJsp",param).then(res => {
+                this.$message.success("操作成功")
+                this.getTableData();
+                this.addVisible = false;
+              })
             } else {
               console.log("error submit!!");
               return false;

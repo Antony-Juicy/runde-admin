@@ -33,49 +33,51 @@ export default {
     return {
       formOptions: [
         {
-          prop: "menuName",
+          prop: "payType",
           element: "el-select",
           placeholder: "支付类型",
+          options: []
         },
         {
-          prop: "menuName",
+          prop: "code",
           element: "el-input",
           placeholder: "活动编码",
         },
         {
-          prop: "menuName",
+          prop: "phone",
           element: "el-input",
           placeholder: "电话号码",
         },
         {
-          prop: "menuName",
+          prop: "goodsName",
           element: "el-input",
           placeholder: "商品名称",
         },
         {
-          prop: "menuName",
+          prop: "name",
           element: "el-input",
           placeholder: "学员名称",
         },
         {
-          prop: "menuName",
+          prop: "nickName",
           element: "el-input",
           placeholder: "微信昵称",
         },
         {
-          prop: "menuName",
+          prop: "expressStatus",
           element: "el-select",
           placeholder: "快递状态",
         },
         {
-          prop: "menuName",
+          prop: "area",
           element: "el-input",
           placeholder: "地址区域",
         },
          {
-          prop: "menuName",
-          element: "el-input",
+          prop: "staffId",
+          element: "el-select",
           placeholder: "老师名称",
+          options: []
         },
         {
           prop: "time",
@@ -88,13 +90,6 @@ export default {
       searchForm:{},
       emptyText:"暂无数据",
       tableData:[
-         {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-        },
       ],
       tableKey: [
         {
@@ -105,7 +100,7 @@ export default {
         },
         {
           name: "学员信息",
-          value: "staffName",
+          value: "name",
         },
         {
           name: "商品信息",
@@ -113,15 +108,15 @@ export default {
         },
         {
           name: "老师信息",
-          value: "activityName",
+          value: "staffName",
         },
         {
           name: "订单状态",
-          value: "posterName",
+          value: "payType",
         },
         {
           name: "快递信息",
-          value: "posterPic",
+          value: "expressStatus",
         }
       ],
        pageConfig: {
@@ -227,6 +222,9 @@ export default {
       addStatus: true
     }
   },
+  mounted(){
+    this.getTableData();
+  },
    methods: {
      onSearch(val){
        this.searchForm = {
@@ -235,8 +233,22 @@ export default {
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
      },
-     getTableData(){
-
+     getTableData(params = {}){
+       this.$fetch("cmsactivityinfo_listJsp", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.varList.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          item.startTime = this.$common._formatDates(item.startTime);
+          item.endTime = this.$common._formatDates(item.endTime);
+          
+          return item;
+        });;
+        this.pageConfig.totalCount = res.data.page.totalResult;
+      })
      },
      pageChange(val) {
       console.log(val,'pagechange')

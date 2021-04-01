@@ -40,7 +40,8 @@ service.interceptors.request.use(
       }
     } 
     else if(totalNewConfig.headers["Content-Type"]&& totalNewConfig.headers["Content-Type"] == "application/json"){
-      
+      config.data.token = getToken()
+      config.data.loginUserId = common.getUserId()
     }
     else{
       config.data = qs.stringify({

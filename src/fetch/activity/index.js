@@ -139,9 +139,10 @@ export default {
 
     // 活动管理
     cmsactivityinfo_listJsp:  {url: '/h5/cmsactivityinfo/listJsp', method: 'get'}, //列表
-    cmsactivityinfo_save:  {url: '/h5/cmsactivityinfo/save', method: 'post'}, //新增
-    cmsactivityinfo_editJsp:  {url: '/h5/cmsactivityinfo/editJsp', method: 'post'}, //编辑
+    cmsactivityinfo_save:  {url: '/h5/cmsactivityinfo/save', method: 'post',paramType: "body"}, //新增
+    cmsactivityinfo_editJsp:  {url: '/h5/cmsactivityinfo/editJsp', method: 'post',paramType: "body"}, //编辑
     cmsactivityinfo_deleteJsp:  {url: '/h5/cmsactivityinfo/deleteJsp', method: 'post'}, //删除
+    cmsactivityinfo_goEdit:  {url: '/h5/cmsactivityinfo/goEdit', method: 'get'}, //去修改页面
     cmsactivityinfo_selectInvitation:  {url: '/h5/cmsactivityinfourl/selectInvitation', method: 'get'}, //生成链接
 
     // 海报管理
@@ -149,8 +150,35 @@ export default {
     posterinfo_save:  {url: '/h5/posterinfo/save', method: 'post'}, //新增
     posterinfo_editJsp:  {url: '/h5/posterinfo/editJsp', method: 'post'}, //修改
     posterinfo_deleteJsp:  {url: '/h5/posterinfo/deleteJsp', method: 'post'}, //删除
+    posterinfo_goEdit:  {url: '/h5/posterinfo/goEdit', method: 'get'}, //删除
     posterinfo_checkActivityId:  {url: '/h5/posterinfo/checkActivityId', method: 'post'}, //验证数据库是否存在活动
     posterinfo_checkGoodsId:  {url: '/h5/posterinfo/checkGoodsId', method: 'post'}, //验证数据库是否存在商品
     posterinfo_getMobileGoodsUrlDataList:  {url: '/h5/posterinfo/getMobileGoodsUrlDataList', method: 'get'}, //九块九包邮下拉列表
     posterinfo_getActivityInfoDataList:  {url: '/h5/posterinfo/getActivityInfoDataList', method: 'get'}, //活动下拉列表
+
+    // 9块9包邮
+    mobilegoodsurl_listNewJsp:  {url: '/h5/mobilegoodsurl/listNewJsp', method: 'get'}, //列表
+    mobilegoodsurl_goNewEdit:  {url: '/h5/mobilegoodsurl/goNewEdit', method: 'get'}, //去新增页面
+    mobilegoodsurl_editNewJsp:  {url: '/h5/mobilegoodsurl/editNewJsp', method: 'post'}, //新增、编辑
+    mobilegoodsurl_deleteJsp:  {url: '/h5/mobilegoodsurl/deleteJsp', method: 'post'}, //删除
+    mobilegoodsurl_goAddNew:  {url: '/h5/mobilegoodsurl/goAddNew', method: 'get'}, //去新增页面
+    mobilegoodsurl_subjectList:  {url: '/h5/coursesubject/subjectList', method: 'post'}, //获取科目列表
+    mobilegoodsurl_bookList:  {url: '/h5/bookinfo/purchase/bookList/xlp', method: 'post'}, //获取书籍列表
+    mobilegoodsurl_getProductList:  {url: '/h5/mobilegoodsurl/getProductList', method: 'get'}, //获取项目列表
+    mobilegoodsurl_getWeChatList:  {url: '/h5/mobilegoodsurl/getWeChatList', method: 'get'}, //获取项目列表
+    mobilegoodsurl_getCampusList:  {url: '/h5/mobilegoodsurl/getCampusList', method: 'get'}, //获取项目列表
+
+    // 订单信息
+
+
+    // 物流信息
+    mobilegoodsexpresslog_listJsp:  {url: '/h5/mobilegoodsexpresslog/listJsp', method: 'get'}, //列表
+    mobilegoodsexpresslog_saveImport:  {url: '/h5/mobilegoodsexpresslog/saveImport', method: 'post'}, //导出
+
+    // 评论管理
+    mobilegoodsurl_listJspComments:  {url: '/h5/mobilegoodsurl/listJspComments', method: 'get'}, //列表
+    mobilegoodsurl_saveImport:  {url: '/h5/mobilegoodsurl/saveImport', method: 'post'}, //导入
+
+    // 公众号管理
+    
 }
