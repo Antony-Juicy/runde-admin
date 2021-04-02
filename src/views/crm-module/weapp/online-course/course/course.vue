@@ -8,7 +8,7 @@
 				<el-button type="primary" size="small" @click="handleAdd">创建科目</el-button>
 			</div>
 			<!-- 表格主体 -->
-			<rd-table :tableData="tableData" :tableKey="tableKey" :pageConfig.sync="pageConfig" fixedTwoRow @pageChange="pageChange">
+			<rd-table :tableData="tableData" :tableKey="tableKey" :pageConfig.sync="pageConfig" @pageChange="pageChange">
 				<template slot="defaultImageUrl" slot-scope="scope">
 					<el-image style="width: 100px; height: 100px" :src="scope.row.defaultImageUrl" fit="contain"></el-image>
 				</template>
@@ -22,8 +22,10 @@
 				<template slot="edit" slot-scope="scope">
 					<el-button @click="handleEdit(scope.row)" type="text" size="small">查阅/编辑</el-button>
 					<el-button @click="handleImport(scope.row)" type="text" size="small" style="color: rgb(255, 165, 0)">导入章</el-button>
-					<br />
+					<br>
 					<el-button @click="handleChapter(scope.row)" type="text" style="color: #67c23a" size="small">章节目录</el-button>
+					<el-button @click="handleDownload(scope.row)" type="text" size="small" style="color: #8e44ad">二维码导出</el-button>
+					<br>
 					<el-button @click="handleDelete(scope.row)" type="text" style="color: #ec5b56" size="small">删除</el-button>
 				</template>
 			</rd-table>
@@ -309,6 +311,9 @@ export default {
 			this.addEditVisible = false
 			scrollTo(this.markScroll, 100)
 		},
+		handleDownload() {
+
+		},
 		handleImport(data) {
 			this.importFileCourseId = data.courseId
 			this.importVisible = true
@@ -391,7 +396,7 @@ export default {
 			max-height: calc(100vh - 400px) !important;
 			overflow: scroll;
 		}
-		.el-table::before{
+		.el-table::before {
 			background: none;
 		}
 	}
