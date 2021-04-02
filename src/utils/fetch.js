@@ -212,8 +212,8 @@ const $fetch = async (apiName, params, config) => {
   }
 
   if (getToken()) {
-    // newConfig.headers["Authorization"] = getToken();
-    newConfig.headers["Authorization"] = 'rd_superadmin';
+    newConfig.headers["Authorization"] = getToken();
+    // newConfig.headers["Authorization"] = 'rd_superadmin';
   }
 
   if(paramType == "body"){
