@@ -173,10 +173,6 @@ export default {
 		},
 		getTableData(params = {}) {
 			return new Promise((resolve, reject) => {
-				const loading = this.$loading({
-					lock: true,
-					target: ".el-table",
-				});
 				// 深拷贝
 				let searchForm = JSON.parse(JSON.stringify(this.searchForm))
 				if (searchForm.typeId && searchForm.typeId.constructor == Array) {
@@ -202,13 +198,9 @@ export default {
 
 						return item;
 					});
-					this.pageConfig.totalCount = res.data.totalCount;
-					setTimeout(() => {
-						loading.close();
-					}, 200);
+					this.pageConfig.totalCount = res.data.totalCount;		
 					resolve();
 				}).catch(err => {
-					loading.close();
 					console.log(err)
 					reject();
 				});
