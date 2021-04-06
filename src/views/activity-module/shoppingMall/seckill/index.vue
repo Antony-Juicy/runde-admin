@@ -10,6 +10,12 @@
         <el-button type="primary" size="small" @click="handleAdd"
           >添加</el-button
         >
+        <!-- <el-button type="primary" size="small" @click="handleCode"
+          >活动编码</el-button
+        >
+        <el-button type="primary" size="small" @click="handleGoodsName"
+          >商品名称</el-button
+        > -->
       </div>
       <rd-table
         :tableData="tableData"
@@ -91,10 +97,8 @@
         @change="handleClose('dataForm3')"
       >
         <RdForm :inline="true" :formOptions="addFormOptions" formLabelWidth="130px" :rules="addRules" ref="dataForm3">
-          <template slot="addSubject">
-            <!-- <el-button size="small" type="primary" @click="handleAddSubject">添加</el-button> -->
-          </template>
         </RdForm>
+        <!-- 添加科目 -->
         <el-form inline class="add-subject-container" label-width="130px" size="small" :model="dynamicValidateForm" ref="dynamicValidateForm" >
                <el-form-item
                   label="添加科目"
@@ -141,6 +145,7 @@
                   <el-button @click="resetForm('dynamicValidateForm')">重置</el-button>
                 </el-form-item>
           </el-form>
+          <!-- 轮播图上传 -->
           <el-form inline class="add-subject-container" label-width="130px" size="small" :model="picForm" ref="picForm" >
               <el-form-item
                   label="轮播图上传"
@@ -163,10 +168,11 @@
                     />
                    <el-button size="mini" class="del-btn" @click.prevent="removePic(img)" :key="img.key"><i class="el-icon-delete"></i></el-button>
                 </el-form-item>
-                <!-- <el-form-item>
+                <el-form-item>
                   <el-button type="primary" @click="submitPicForm('picForm')">提交</el-button>
-                </el-form-item> -->
+                </el-form-item>
           </el-form>
+          <!-- 商品详情图片，缩略图，分享内容 -->
           <el-form class="add-subject-container" label-width="130px" size="small" :model="picForm" ref="picForm" >
               <el-form-item
                   label="商品详情图片"
@@ -184,21 +190,59 @@
                       :src.sync="picUrlThree"
                     />
                 </el-form-item>
+                <el-form-item
+                  label="分享内容"
+                >
+                  <el-input
+                    type="textarea"
+                    :rows="4"
+                    placeholder="分享标题@/摘要@/分享图片链接,请按此格式输入"
+                    v-model="remark"
+                    style="width: 600px">
+                  </el-input>
+                </el-form-item>
           </el-form>
+          <div class="btn-container">
+            <el-button type="primary" size="small" @click="submitAddForm('dataForm3')">保存</el-button>
+            <el-button size="small">取消</el-button>
+          </div>
       </full-dialog>
+
+      <!-- 活动编码 -->
+      <full-dialog
+        v-model="codeVisible"
+        :title="currentGoodsName + '活动统计'"
+        @change="codeVisible = false"
+      >
+        <statistics :data="statisticsData" v-if="codeVisible"/>
+      </full-dialog>
+
+      <!-- 商品名称 -->
+      <full-dialog
+        v-model="goodsNameVisible"
+        :title="currentGoodsName"
+        @change="goodsNameVisible = false"
+      >
+        <goodsName :data="statisticsData" v-if="goodsNameVisible"/>
+      </full-dialog>
+
   </div>
 </template>
 
 <script>
 import RdForm from "@/components/RdForm";
 import UploadOss from "@/components/UploadOss";
-// import commonDetail from "./commonDetail";
+import statistics from "./statistics";
+import goodsName from "./goodsName";
+import { scrollTo } from '@/utils/scroll-to'
 export default {
   name:"seckill",
   data(){
     return {
+      currentGoodsName:"",
       picUrlTwo:"",
       picUrlThree:"",
+      remark:"",
       dynamicValidateForm: {
           domains: [],
         },
@@ -207,6 +251,7 @@ export default {
         },
       codeVisible: false,
       goodsNameVisible: false,
+      statisticsData:{},
       formOptions: [
         {
           prop: "goodsName",
@@ -449,47 +494,7 @@ export default {
           placeholder: "请输入评论标签,多个使用,分隔",
           label: "评论标签"
         },
-        //  {
-        //   prop: "addSubject",
-        //   element: "el-input",
-        //   placeholder: "请输入",
-        //   label: "添加科目",
-        //   operate: true,
-        //   oneRow: true
-        // },
-        {
-          prop: "picUrlOne",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "轮播图上传",
-          operate: true,
-          oneRow: true
-        },
-        {
-          prop: "picUrlTwo",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "商品详情图片",
-          operate: true,
-          oneRow: true
-        },
-        {
-          prop: "picUrlThree",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "商品缩略图",
-          operate: true,
-          oneRow: true
-        },
-         {
-          prop: "shareContent",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享内容",
-          type: "textarea",
-          rows: 3,
-          oneRow: true
-        },
+      
       ],
       addRules:{
         updateReason: [
@@ -504,8 +509,9 @@ export default {
   },
   components:{
     RdForm,
-    UploadOss
-    // commonDetail
+    UploadOss,
+    statistics,
+    goodsName
   },
    mounted(){
     this.getTableData();
@@ -575,6 +581,7 @@ export default {
       this.getTableData();
     },
     handleAdd(){
+      scrollTo(0, 800);
       this.addVisible = true;
       this.addStatus = true;
       // this.$fetch("mobilegoodsurl_goAddNew").then(res => {
@@ -591,6 +598,7 @@ export default {
       });
     },
     handleEdit(data){
+      scrollTo(0, 800);
       this.addStatus = false;
       this.addVisible = true;
     },
@@ -627,10 +635,20 @@ export default {
       this.addVisible = false;
     },
     handleCode(data){
-
+      this.codeVisible = true;
+      this.currentGoodsName = data.goodsName;
+      const { code, startTime, endTime, goodsName } = data;
+      this.statisticsData = {
+        code, startTime, endTime, goodsName 
+      }
     },
     handleGoodsName(data){
-
+      this.currentGoodsName = data.goodsName;
+      this.goodsNameVisible = true;
+      const { code, startTime, endTime, goodsName } = data;
+       this.statisticsData = {
+        code, startTime, endTime, goodsName 
+      }
     },
     productChange(val){
        this.currentProductId = val;
@@ -716,6 +734,11 @@ export default {
     p {
       line-height: 15px;
     }
+    /deep/ {
+      .el-button {
+        padding: 0;
+      }
+    }
   }
   .del-btn {
     top: 0;
@@ -723,6 +746,11 @@ export default {
     z-index: 9;
     right: 0;
     padding: 6px;
+  }
+  .btn-container {
+    text-align: right;
+    width: 800px;
+    margin-top: 40px;
   }
   /deep/ .add-subject-container {
      

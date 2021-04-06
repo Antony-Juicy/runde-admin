@@ -162,14 +162,33 @@ export default {
     mobilegoodsurl_editNewJsp:  {url: '/h5/mobilegoodsurl/editNewJsp', method: 'post'}, //新增、编辑
     mobilegoodsurl_deleteJsp:  {url: '/h5/mobilegoodsurl/deleteJsp', method: 'post'}, //删除
     mobilegoodsurl_goAddNew:  {url: '/h5/mobilegoodsurl/goAddNew', method: 'get'}, //去新增页面
-    mobilegoodsurl_subjectList:  {url: '/h5/coursesubject/subjectList', method: 'post'}, //获取科目列表
-    mobilegoodsurl_bookList:  {url: '/h5/bookinfo/purchase/bookList/xlp', method: 'post'}, //获取书籍列表
+    mobilegoodsurl_subjectList:  {url: '/admin/coursesubject/subjectList', method: 'post'}, //获取科目列表
+    mobilegoodsurl_bookList:  {url: '/crm/bookinfo/purchase/bookList/xlp', method: 'post'}, //获取书籍列表
     mobilegoodsurl_getProductList:  {url: '/h5/mobilegoodsurl/getProductList', method: 'get'}, //获取项目列表
     mobilegoodsurl_getWeChatList:  {url: '/h5/mobilegoodsurl/getWeChatList', method: 'get'}, //获取项目列表
     mobilegoodsurl_getCampusList:  {url: '/h5/mobilegoodsurl/getCampusList', method: 'get'}, //获取项目列表
+    // 活动统计
+    mobilegoodspaylog_getQgsjxqActivityNumRank:  {url: '/h5/cmsmobilegoodspaylog/getQgsjxqActivityNumRank', method: 'get'},//全国
+    mobilegoodspaylog_getQgxxfxActivityNumRank:  {url: '/h5/cmsmobilegoodspaylog/getQgxxfxActivityNumRank', method: 'get'},//线下
+    mobilegoodspaylog_getQgxxfxActivityNumRank:  {url: '/h5/cmsmobilegoodspaylog/getQgxxfxActivityNumRank', method: 'get'},//线上
+    mobilegoodspaylog_getPersonalActivityNumRank:  {url: '/h5/cmsmobilegoodspaylog/getPersonalActivityNumRank', method: 'get'},//个人
+    mobilegoodspaylog_toStatisticsJsp:  {url: '/h5/cmsmobilegoodspaylog/toStatisticsJsp', method: 'get'},//合计
+    // 活动名称详情
+    cmsmobilegoodspaylog_listJson:  {url: '/h5/cmsmobilegoodspaylog/listJson', method: 'get'},//列表
+    cmsmobilegoodspaylog_editJsp:  {url: '/h5/cmsmobilegoodspaylog/editJsp', method: 'post'},//修改地址
+    cmsmobilegoodspaylog_importKuaidi:  {url: '/h5/cmsmobilegoodspaylog/importKuaidi', method: 'post'},//导入快递管家
+    cmsmobilegoodspaylog_checkData:  {url: '/h5/cmsmobilegoodspaylog/checkData', method: 'post'},//判断是否可以添加订单数据
+    cmsmobilegoodspaylog_saveAgain:  {url: '/h5/cmsmobilegoodspaylog/saveAgain', method: 'post'},//添加订单（旧）
+    cmsmobilegoodspaylog_saveAgainTwo:  {url: '/h5/cmsmobilegoodspaylog/saveAgainTwo', method: 'post'},//添加订单（新）
+    cmsmobilegoodspaylog_batchImportToKd:  {url: '/h5/cmsmobilegoodspaylog/batchImportToKd', method: 'post'},//批量同步到金蝶
+    cmsmobilegoodspaylog_getAllColumnNames:  {url: '/h5/exportexcelcolumnname/getAllColumnNames', method: 'post'},//获取导出所有列
+    cmsmobilegoodspaylog_excelJsp:  {url: '/h5/cmsmobilegoodspaylog/excelJsp', method: 'get'},//导出
+    cmsmobilegoodspaylog_batchImportToKuaidi:  {url: '/h5/mobilegoodsurl/batchImportToKuaidi', method: 'post'},//同步到快递100
 
     // 订单信息
-
+    cmsmobilegoodspaylog_listJsp:  {url: '/h5/cmsmobilegoodspaylog/listJsp', method: 'get'}, //列表
+    cmsmobilegoodspaylog_getPayTypeList:  {url: '/h5/cmsmobilegoodspaylog/getPayTypeList', method: 'get'}, //支付类型列表
+    cmsmobilegoodspaylog_getExpressStatus:  {url: '/h5/cmsmobilegoodspaylog/getExpressStatus', method: 'get'}, //快递状态列表
 
     // 物流信息
     mobilegoodsexpresslog_listJsp:  {url: '/h5/mobilegoodsexpresslog/listJsp', method: 'get'}, //列表
@@ -178,7 +197,11 @@ export default {
     // 评论管理
     mobilegoodsurl_listJspComments:  {url: '/h5/mobilegoodsurl/listJspComments', method: 'get'}, //列表
     mobilegoodsurl_saveImport:  {url: '/h5/mobilegoodsurl/saveImport', method: 'post'}, //导入
+    mobilegoodsurl_updateStatus:  {url: '/h5/mobilegoodsurl/updateStatus', method: 'post'}, //
+    mobilegoodsurl_deleteJspCommentLog:  {url: '/h5/mobilegoodsurl/deleteJspCommentLog', method: 'post'}, //
 
     // 公众号管理
-    
+    wechatmanage_listJsp:  {url: '/h5/wechatmanage/listJsp', method: 'get'}, //列表
+    wechatmanage_save:  {url: '/h5/wechatmanage/save', method: 'post'}, //列表
+    wechatmanage_editJsp:  {url: '/h5/wechatmanage/editJsp', method: 'post'}, //列表
 }

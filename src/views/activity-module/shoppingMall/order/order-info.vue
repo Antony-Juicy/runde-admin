@@ -15,11 +15,43 @@
         :tableData="tableData"
         :tableKey="tableKey"
         :pageConfig.sync="pageConfig"
-        :tbodyHeight="600"
-        fixedTwoRow
         @pageChange="pageChange"
         :emptyText="emptyText"
       >
+        <template slot="name" slot-scope="scope">
+            <p>姓名：{{scope.row.name}}</p>
+            <p>微信昵称：{{scope.row.nickName}}</p>
+            <p>电话号码：{{scope.row.phone}}</p>
+            <p>区域：{{scope.row.area}}</p>
+            <p>详细地址：{{scope.row.area}}{{scope.row.address}}</p>
+        </template>
+        <template slot="goodsName" slot-scope="scope">
+          <p>商品名称：{{scope.row.goodsName}}</p>
+            <p>科目：{{scope.row.subjectName}}</p>
+            <p>编码：{{scope.row.code}}</p>
+            <p>支付金额：{{scope.row.payPrice}}</p>
+            <p>支付时间：{{scope.row.createAt}}</p>
+        </template>
+        <template slot="staffName" slot-scope="scope">
+          <p>润德老师姓名：{{scope.row.staffName}}</p>
+            <p>分校：{{scope.row.campusName}}</p>
+        </template>
+        <template slot="payType" slot-scope="scope">
+          <p>支付类型：{{scope.row.payType}}</p>
+            <p>订单来源：{{scope.row.orderSource}}</p>
+        </template>
+        <template slot="expressStatus" slot-scope="scope">
+          <template v-if="scope.row.expressStatus == '未快递'">
+            <p>快递状态：<span style="color: red">{{scope.row.expressStatus}}</span></p>
+          </template>
+          <template v-if="scope.row.expressStatus == '已快递' || scope.row.expressStatus == '已签收'">
+            <p>快递状态：<span style="color: green">{{scope.row.expressStatus}}</span></p>
+            <p>快递单号：{{scope.row.expressNo}}</p>
+          </template>
+           <template v-if="scope.row.expressStatus == '待发货'">
+            <p>快递状态：<span style="color: blue">{{scope.row.expressStatus}}</span></p>
+          </template>
+        </template>
       </rd-table>
     </div>
     
@@ -67,6 +99,7 @@ export default {
           prop: "expressStatus",
           element: "el-select",
           placeholder: "快递状态",
+           options: []
         },
         {
           prop: "area",
@@ -77,10 +110,11 @@ export default {
           prop: "staffId",
           element: "el-select",
           placeholder: "老师名称",
-          options: []
+          options: [],
+          filterable: true
         },
         {
-          prop: "time",
+          prop: "createAt",
           element: "el-date-picker",
           startPlaceholder: "支付时间(开始)",
           endPlaceholder: "支付时间(结束)",
@@ -101,22 +135,27 @@ export default {
         {
           name: "学员信息",
           value: "name",
+          operate: true
         },
         {
           name: "商品信息",
           value: "goodsName",
+          operate: true
         },
         {
           name: "老师信息",
           value: "staffName",
+          operate: true
         },
         {
           name: "订单状态",
           value: "payType",
+          operate: true
         },
         {
           name: "快递信息",
           value: "expressStatus",
+          operate: true
         }
       ],
        pageConfig: {
@@ -224,17 +263,19 @@ export default {
   },
   mounted(){
     this.getTableData();
+    this.getSelectList();
   },
    methods: {
      onSearch(val){
        this.searchForm = {
-        ...val
+        ...val,
+        createAt: val.createAt?val.createAt.join('~'):""
       };
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
      },
      getTableData(params = {}){
-       this.$fetch("cmsactivityinfo_listJsp", {
+       this.$fetch("cmsmobilegoodspaylog_listJsp", {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
@@ -244,11 +285,29 @@ export default {
           item.updateAt = this.$common._formatDates(item.updateAt);
           item.startTime = this.$common._formatDates(item.startTime);
           item.endTime = this.$common._formatDates(item.endTime);
-          
+          item.phone = this.$common.hidePhone(item.phone);
           return item;
         });;
         this.pageConfig.totalCount = res.data.page.totalResult;
+        this.formOptions[8].options = res.data.staffInfoList.map(item => ({
+          label: item.staffName,
+          value: item.id
+        }))
       })
+     },
+     getSelectList(){
+       this.$fetch("cmsmobilegoodspaylog_getPayTypeList").then(res => {
+          this.formOptions[0].options = res.data.map(item => ({
+            label: item.value,
+            value: item.key
+          }))
+       })
+       this.$fetch("cmsmobilegoodspaylog_getExpressStatus").then(res => {
+         this.formOptions[6].options = res.data.map(item => ({
+            label: item.value,
+            value: item.key
+          }))
+       })
      },
      pageChange(val) {
       console.log(val,'pagechange')
@@ -297,6 +356,7 @@ export default {
         .catch(() => {});
     }
   }
+
 }
 </script>
 

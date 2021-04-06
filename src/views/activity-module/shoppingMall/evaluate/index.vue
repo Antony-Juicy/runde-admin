@@ -33,6 +33,37 @@
             >删除</el-button
           >
         </template> -->
+        <template slot="edit" slot-scope="scope">
+          <template v-if="scope.row.status == '待审核'">
+            <el-button @click="updateStatus(scope.row,'YES')" type="text" size="small"
+              >通过审核</el-button
+            >
+            <el-divider direction="vertical"></el-divider>
+            <el-button @click="updateStatus(scope.row,'NO')" type="text" size="small"
+              >拒绝审核</el-button
+            >
+            <el-divider direction="vertical"></el-divider>
+          </template>
+           <template v-if="scope.row.status == '审核通过'">
+            <el-button @click="updateStatus(scope.row,'NO')" type="text" size="small"
+              >拒绝审核</el-button
+            >
+            <el-divider direction="vertical"></el-divider>
+          </template>
+          <template v-if="scope.row.status == '审核拒绝'">
+            <el-button @click="updateStatus(scope.row,'YES')" type="text" size="small"
+              >通过审核</el-button
+            >
+            <el-divider direction="vertical"></el-divider>
+          </template>
+          <el-button
+            @click="handleDelete(scope.row)"
+            type="text"
+            size="small"
+            style="color: #ec5b56"
+            >删除</el-button
+          >
+        </template>
       </rd-table>
     </div>
     
@@ -114,6 +145,10 @@ export default {
           value: "id",
           fixed: "left",
           width: 80
+        },
+        {
+          name: "活动名称",
+          value: "activityName",
         },
         {
           name: "昵称",
@@ -220,9 +255,8 @@ export default {
         type: "warning",
       })
         .then(async () => {
-          const res = await this.$fetch("projectType_delete", {
-            typeId: row.typeId,
-            loginUserId,
+          const res = await this.$fetch("mobilegoodsurl_deleteJspCommentLog", {
+            id: row.id
           }).then((res) => {
             if (res) {
               this.$message({
@@ -239,7 +273,16 @@ export default {
     },
     downLoad(){
       window.location.href = "/temp/mobilegoods_comment_import.xlsx"
-    }
+    },
+    updateStatus(data,status){
+    this.$fetch("mobilegoodsurl_updateStatus",{
+      id: data.id,
+      status
+    }).then(res => {
+      this.$message.success("操作成功")
+      this.getTableData()
+    })
+  }
   }
 }
 </script>

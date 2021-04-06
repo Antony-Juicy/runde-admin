@@ -79,15 +79,11 @@
       >
         <el-form ref="form" label-width="80px">
             <el-form-item label="登陆页背景图">
-              {{bgPic2}}
-              <Upload-oss
-                    :objConfig="{module: 'bg', project: 'icon_'}"
-                    :src.sync="bgPic2"
-                    />
                 {{bgPic}}
                 <Upload-oss
-                    :objConfig="{module: 'bg', project: 'runde_jiaowu/bg/20210401/bg.png', name: 'bg.png',dir:'web',}"
+                    :objConfig="{module: 'bg', project: 'runde_jiaowu', dir:'web', name:'bg.png', raw: true}"
                     :src.sync="bgPic"
+                    @change="bgChange"
                     />
             </el-form-item>
         </el-form>
@@ -198,6 +194,11 @@ export default {
     this.getTableData()
   },
    methods: {
+     bgChange(){
+       console.log('change')
+       this.$forceUpdate();
+       this.bgPic = this.bgPic + `?${Date.now()}`
+     },
      getTableData(params = {}){
        this.$fetch("baseconfig_listJsp", {
         ...this.pageConfig,

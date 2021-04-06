@@ -1,5 +1,5 @@
 <template>
-  <div class="post-manage">
+  <div class="official-account">
       <search-form
       :formOptions="formOptions"
       :showNum="7"
@@ -15,11 +15,27 @@
         :tableData="tableData"
         :tableKey="tableKey"
         :pageConfig.sync="pageConfig"
-        :tbodyHeight="600"
-        fixedTwoRow
         @pageChange="pageChange"
         :emptyText="emptyText"
       >
+        <template slot="appAccount" slot-scope="scope">
+          公众号账号： {{scope.row.appAccount}}<br>
+          公众号AppID： {{scope.row.appId}}<br>
+          公众号AppSecret： {{scope.row.secretKey}}<br>
+          公众号模板： {{scope.row.templateContent}}<br>
+        </template>
+        <template slot="partner" slot-scope="scope">
+          商户号： {{scope.row.partner}}<br>
+          微信APIKEY： {{scope.row.partnerKey}}<br>
+        </template>
+        <template slot="appImage" slot-scope="scope">
+           <el-image
+            style="width: 100px; height: 100px"
+            :src="scope.row.appImage"
+            fit="cover"
+          >
+           </el-image>
+        </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
             >编辑</el-button
@@ -54,7 +70,7 @@
 <script>
 import RdForm from "@/components/RdForm";
 export default {
-  name:"post-manage",
+  name:"official-account",
   data(){
     return {
       formOptions: [
@@ -64,7 +80,7 @@ export default {
           placeholder: "公众号名称",
         },
         {
-          prop: "status",
+          prop: "state",
           element: "el-select",
           placeholder: "公众号状态",
           options: []
@@ -88,6 +104,8 @@ export default {
         {
           name: "公众号账户信息",
           value: "appAccount",
+          operate: true,
+          width: 400
         },
         {
           name: "微信商户信息",
@@ -100,6 +118,7 @@ export default {
         {
           name: "微信二维码",
           value: "appImage",
+          operate: true
         },
         {
           name: "操作",
@@ -118,25 +137,25 @@ export default {
       addFormOptions: [
           
         {
-          prop: "menuName",
+          prop: "id",
           element: "el-input",
           placeholder: "请输入",
           label: "公众号ID"
         },
          {
-          prop: "menuName",
+          prop: "appAccount",
           element: "el-input",
           placeholder: "请输入公众号账号，不知道账号请不要填",
           label: "公众号账号"
         },
         {
-          prop: "menuName",
+          prop: "appName",
           element: "el-input",
           placeholder: "请输入",
           label: "微信公众号名称"
         },
         {
-          prop: "menuName",
+          prop: "secretKey",
           element: "el-input",
           placeholder: "请输入APPSECRET",
           label: "微信密钥"
@@ -150,28 +169,31 @@ export default {
           initValue: 0
         },
         {
-          prop: "roleName",
+          prop: "partner",
           element: "el-input",
           placeholder: "请输入",
           label: "微信商户号"
         },
         {
-          prop: "roleName",
+          prop: "partnerKey",
           element: "el-input",
           placeholder: "请输入",
           label: "微信商户支付APIKEY"
         },
         {
-          prop: "roleName",
+          prop: "templateContent",
           element: "el-input",
           placeholder: "请输入推送消息模板，不知道怎么配置请不要填",
-          label: "推送消息模板"
+          label: "推送消息模板",
+          type:"textarea",
+          rows: 3
         },
         {
-          prop: "roleName",
+          prop: "state",
           element: "el-select",
           placeholder: "请选择",
-          label: "微信公众号状态"
+          label: "微信公众号状态",
+          options: []
         },
       ],
       addRules:{
@@ -197,7 +219,7 @@ export default {
       this.getTableData();
      },
      getTableData(params = {}){
-       this.$fetch("mobilegoodsurl_listJspComments", {
+       this.$fetch("wechatmanage_listJsp", {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
@@ -209,6 +231,12 @@ export default {
           return item;
         });;
         this.pageConfig.totalCount = res.data.page.totalResult;
+        let statusArr = res.data.weChatStateList.map(item => ({
+          label: item.value,
+          value: item.key
+        }));
+        this.formOptions[1].options = statusArr;
+        this.addFormOptions[8].options = statusArr;
       })
      },
      pageChange(val) {
@@ -262,7 +290,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.post-manage {
+.official-account {
   /deep/ {
     .el-form-item__label {
       line-height: 24px;

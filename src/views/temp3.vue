@@ -15,7 +15,6 @@
         :tableData="tableData"
         :tableKey="tableKey"
         :pageConfig.sync="pageConfig"
-        :tbodyHeight="600"
         fixedTwoRow
         @pageChange="pageChange"
         :emptyText="emptyText"
@@ -261,7 +260,8 @@ export default {
           { required: true, message: "请输入修改事由", trigger: "blur" },
         ]
       },
-      addStatus: true
+      addStatus: true,
+      editId:""
     }
   },
   components:{
@@ -299,6 +299,13 @@ export default {
     handleEdit(data){
       this.addStatus = false;
       this.addVisible = true;
+      this.addFormOptions.forEach(item => {
+           item.initValue = data[item.prop];
+      })
+      setTimeout(() => {
+        this.$refs.dataForm3.addInitValue();
+      }, 0);
+      this.editId = data.id;
     },
     handleDelete(row) {
       let info = '';
