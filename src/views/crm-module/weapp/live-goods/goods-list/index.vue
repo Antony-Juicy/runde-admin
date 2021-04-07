@@ -16,6 +16,9 @@
         <template slot="goodsThumbnail" slot-scope="scope">
           <img :src="scope.row.goodsThumbnail || userLogoUrl" style="width:60px;height:60px;" alt="">
         </template>
+        <template slot="goodsType" slot-scope="scope">
+          <span>{{ scope.row.goodsType | goodsTypeFilter }}</span>
+        </template>
         <template slot="goodsStatus" slot-scope="scope">
           <span>{{ scope.row.goodsStatus | goodsStatusFilter }}</span>
         </template>
@@ -36,6 +39,12 @@
           <el-form ref="dataForm" :model="goodsForm" :rules="rules" label-width="120px">
             <el-form-item label="商品名称" prop="goodsName">
               <el-input v-model.trim="goodsForm.goodsName" autocomplete="off" placeholder="请输入商品名称" />
+            </el-form-item>
+            <el-form-item label="商品分类" prop="goodsType">
+              <el-select v-model.trim="goodsForm.goodsType" :disabled="goodsStatusVisible ? false : true" placeholder="请选择商品类型">
+                <el-option label="课程" value="Course"></el-option>
+                <el-option label="图书" value="Book"></el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="项目类型" prop="typeId">
               <!-- <el-select v-model="goodsForm.typeId" :disabled="goodsStatusVisible ? false : true" clearable placeholder="请选择">
@@ -149,6 +158,21 @@ export default {
         { prop: 'typeId', element: 'el-cascader', placeholder: '请选择项目', props: { checkStrictly: true } },
         { prop: 'goodsName', element: 'el-input', placeholder: '请输入商品名称' },
         { 
+          prop: 'goodsType',
+          element: 'el-select',
+          placeholder: '请输入商品名称',
+          options: [
+            {
+              label: "课程",
+              value: "Course",
+            },
+            {
+              label: "图书",
+              value: "Book",
+            },
+          ],
+        },
+        { 
           prop: 'goodsStatus',
           element: 'el-select',
           placeholder: '请选择状态',
@@ -166,11 +190,12 @@ export default {
       ],
       tableData: [],
       tableKey: [
-        { name: '商品id',value: 'goodsId' },
+        { name: '商品id',value: 'goodsId',width: 80 },
         { name: '项目类型',value: 'typeName' },
         { name: '商品缩略图',value: 'goodsThumbnail',operate: true,width: 100 },
         { name: '商品名称',value: 'goodsName' },
-        { name: '规格组数',value: 'goodsItemGroupCount' },
+        { name: '商品类型',value: 'goodsType',operate: true },
+        { name: '规格组数',value: 'goodsItemGroupCount',width: 80 },
         { name: '商品价格',value: 'goodsPrices' },
         { name: '总销售量',value: 'totalSalesCount' },
         { name: '状态',value: 'goodsStatus',operate: true },
@@ -198,6 +223,7 @@ export default {
       goodsForm: {
         typeId: '', // 项目类型
         goodsName: '', // 商品名称
+        goodsType: '', // 商品类型
         couponIds: [], // 优惠券
         goodsLabels: [], // 商品标签
         initialBuyNumber: '', // 虚拟购买数
@@ -217,6 +243,9 @@ export default {
         goodsName: [
           { required: true, message: "请输入商品名称", trigger: "blur" },
           {  max: 25, message: '长度不多于25个字符', trigger: 'blur' }
+        ],
+        goodsType: [
+          { required: true, message: "请选择商品类型", trigger: "blur" },
         ],
         typeId: [
           { required: true, message: "请选择类型", trigger: "blur" },
@@ -499,6 +528,16 @@ export default {
     },
   },
   filters: {
+    goodsTypeFilter(status){
+      switch(status){
+        case "Course":
+          return '课程';
+        case "Book":
+          return '图书';
+        default:
+          return '';
+      }
+    },
     goodsStatusFilter(status){
       switch(status){
         case "Open":
