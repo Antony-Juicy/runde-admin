@@ -13,8 +13,8 @@
         :pageConfig.sync="pageConfig"
         @select="handleSelect"
         @pageChange="pageChange">
-        <template slot="goodsItemGroupType" slot-scope="scope">
-          <span>{{ scope.row.goodsItemGroupType | goodsItemGroupTypeFilter }}</span>
+        <template slot="goodsType" slot-scope="scope">
+          <span>{{ scope.row.goodsType | goodsTypeFilter }}</span>
         </template>
         <template slot="goodsGroupStatus" slot-scope="scope">
           <span>{{ scope.row.goodsGroupStatus | Filter }}</span>
@@ -36,8 +36,8 @@
           <el-form-item label="规格组名称" prop="goodsGroupName">
             <el-input v-model.trim="groupForm.goodsGroupName" autocomplete="off" placeholder="请输入规格组名称" />
           </el-form-item>
-          <el-form-item label="规格组分类" prop="goodsItemGroupType">
-            <el-select v-model.trim="groupForm.goodsItemGroupType" :disabled="groupVisibleStatus ? false : true" placeholder="请选择商品类型">
+          <el-form-item label="规格组类型" prop="goodsType">
+            <el-select v-model.trim="groupForm.goodsType" :disabled="groupVisibleStatus ? false : true" placeholder="请选择规格组类型">
               <el-option label="课程" value="Course"></el-option>
               <el-option label="图书" value="Book"></el-option>
             </el-select>
@@ -158,9 +158,9 @@ export default {
         { prop: 'goodsGroupName', element: 'el-input', placeholder: '规格组名称' },
         { prop: 'typeId', element: 'el-cascader', placeholder: '选择项目类型', props: { checkStrictly: true } },
         { 
-          prop: 'goodsItemGroupType',
+          prop: 'goodsType',
           element: 'el-select',
-          placeholder: '请输入商品名称',
+          placeholder: '请选择规格组分类',
           options: [
             {
               label: "课程",
@@ -199,7 +199,7 @@ export default {
       ],
       tableKey: [
         { name: '规格组名称',value: 'goodsGroupName' },
-        { name: '商品类型',value: 'goodsItemGroupType',operate: true },
+        { name: '规格组类型',value: 'goodsType',operate: true },
         { name: '项目类型',value: 'typeName' },
         { name: '规格数',value: 'itemCount' },
         { name: '状态',value: 'goodsGroupStatus',operate: true },
@@ -221,7 +221,7 @@ export default {
       groupVisibleStatus: true,
       groupForm: {
         goodsGroupName: '',
-        goodsItemGroupType: '',
+        goodsType: '',
         typeId: '',
         remark: '',
         goodsGroupStatus: ''
@@ -232,7 +232,7 @@ export default {
           { required: true, message: "请输入规格组名称", trigger: "blur" },
           {  max: 25, message: '长度不多于25个字符', trigger: 'blur' }
         ],
-        goodsItemGroupType: [
+        goodsType: [
           { required: true, message: "请选择规格组类型", trigger: "blur" }
         ],
         typeId: [
@@ -263,6 +263,8 @@ export default {
         { name: '价格',value: 'salesPrice' },
         { name: '划线价',value: 'originalPrice' },
         // { name: '剩余库存量',value: 'inventory',width: 120 },
+        { name: '活动编码', value: 'activityCode' },
+        { name: '科目名称', value: 'subjectName' },
         { name: '开通班型id',value: 'openClassId' },
         { name: '开通班型名称',value: 'openClassName' },
         { name: '开通课程id',value: 'openSubjectId' },
@@ -314,18 +316,18 @@ export default {
           { required: true, message: "请输入科目名称", trigger: "blur" },
           {  max: 25, message: '长度不多于25个字符', trigger: 'blur' }
         ],
-        // openClassId: [
-        //   { required: true, message: "请输入班型id", trigger: "blur" }
-        // ],
-        // openClassName: [
-        //   { required: true, message: "请输入班型名称", trigger: "blur" }
-        // ],
-        // openSubjectId: [
-        //   { required: true, message: "请输入课程id", trigger: "blur" }
-        // ],
-        // openSubjectName: [
-        //   { required: true, message: "请输入课程名称", trigger: "blur" }
-        // ],
+        openClassId: [
+          { required: true, message: "请输入班型id", trigger: "blur" }
+        ],
+        openClassName: [
+          { required: true, message: "请输入班型名称", trigger: "blur" }
+        ],
+        openSubjectId: [
+          { required: true, message: "请输入课程id", trigger: "blur" }
+        ],
+        openSubjectName: [
+          { required: true, message: "请输入课程名称", trigger: "blur" }
+        ],
         goodsItemStatus: [
           { required: true, message: "请选择状态", trigger: "blur" }
         ]
@@ -456,7 +458,7 @@ export default {
       this.showGroup = true;
       this.currentGoodsGroupId = row.goodsGroupId
       this.showGroupTitle = row.goodsGroupName
-      this.showGroupTpye = 'Book'
+      this.showGroupTpye = row.goodsType
       this.gitRuletableData(row.goodsGroupId)
     },
     closeConfig(val) {
@@ -578,7 +580,7 @@ export default {
     }
   },
   filters: {
-    goodsItemGroupTypeFilter(status){
+    goodsTypeFilter(status){
       switch(status){
         case "Course":
           return '课程';

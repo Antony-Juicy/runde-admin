@@ -40,7 +40,7 @@
             <el-form-item label="商品名称" prop="goodsName">
               <el-input v-model.trim="goodsForm.goodsName" autocomplete="off" placeholder="请输入商品名称" />
             </el-form-item>
-            <el-form-item label="商品分类" prop="goodsType">
+            <el-form-item label="商品类型" prop="goodsType">
               <el-select v-model.trim="goodsForm.goodsType" :disabled="goodsStatusVisible ? false : true" placeholder="请选择商品类型">
                 <el-option label="课程" value="Course"></el-option>
                 <el-option label="图书" value="Book"></el-option>
@@ -160,7 +160,7 @@ export default {
         { 
           prop: 'goodsType',
           element: 'el-select',
-          placeholder: '请输入商品名称',
+          placeholder: '请选择商品类型',
           options: [
             {
               label: "课程",
