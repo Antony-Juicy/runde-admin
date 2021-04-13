@@ -204,4 +204,12 @@ export default {
     wechatmanage_listJsp:  {url: '/h5/wechatmanage/listJsp', method: 'get'}, //列表
     wechatmanage_save:  {url: '/h5/wechatmanage/save', method: 'post'}, //列表
     wechatmanage_editJsp:  {url: '/h5/wechatmanage/editJsp', method: 'post'}, //列表
+    // 查看公众号粉丝信息
+    wechatstaffqrcode_listJsp:  {url: '/h5/wechatstaffqrcode/listJsp', method: 'get'}, //列表
+    wechatstaffqrcode_getActivityDataList:  {url: '/h5/wechatstaffqrcode/getActivityDataList', method: 'get'}, //列表
+    wechatstaffqrcode_getBindTypeList:  {url: '/h5/wechatstaffqrcode/getBindTypeList', method: 'get'}, //列表
+    wechatstaffqrcode_getOrderSourceList:  {url: '/h5/wechatstaffqrcode/getOrderSourceList', method: 'get'}, //列表
+    wechatstaffqrcode_getUrlCodeDataList:  {url: '/h5/wechatstaffqrcode/getUrlCodeDataList', method: 'get'}, //列表
+    wechatstaffqrcode_deleteJsp:  {url: '/h5/wechatstaffqrcode/deleteJsp', method: 'post'}, //删除
+    wechatstaffqrcode_sendMessageInfo:  {url: '/h5/wechatstaffqrcode/sendMessageInfo', method: 'post'}, //推送专属信息
 }

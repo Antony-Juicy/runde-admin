@@ -45,6 +45,7 @@
             type="text"
             size="small"
             style="color: #ec5b56"
+            @click="showDetail(scope.row)"
             >查看详情</el-button
           >
         </template>
@@ -55,24 +56,41 @@
     <rd-dialog
         :title="addStatus?'添加':'编辑'"
         :dialogVisible="addVisible"
-        @handleClose="addVisible = false"
+        @handleClose="addVisible = false;resetAddForm('dataForm3')"
         @submitForm="submitAddForm('dataForm3')"
       >
         <RdForm :formOptions="addFormOptions" formLabelWidth="90px" :rules="addRules" ref="dataForm3">
-          <template slot="post">
-            <el-button size="small" type="primary">上传</el-button>
+          <template slot="appImage">
+            <Upload-oss
+              :objConfig="{module: 'activity'}"
+              :src.sync="appImage"
+            />
           </template>
         </RdForm>
       </rd-dialog>
+
+      <!-- 查看详情 -->
+      <full-dialog
+        v-model="detailVisible"
+        :title="'查看公众号粉丝信息'"
+        @change="detailVisible = false"
+      >
+        <viewDetail :wechatId="wechatId" v-if="detailVisible"/>
+      </full-dialog>
   </div>
 </template>
 
 <script>
 import RdForm from "@/components/RdForm";
+import viewDetail from "./viewDetail";
+import UploadOss from "@/components/UploadOss";
 export default {
   name:"official-account",
   data(){
     return {
+      wechatId:"",
+      detailVisible: false,
+      appImage:"",
       formOptions: [
         {
           prop: "appName",
@@ -137,7 +155,7 @@ export default {
       addFormOptions: [
           
         {
-          prop: "id",
+          prop: "appId",
           element: "el-input",
           placeholder: "请输入",
           label: "公众号ID"
@@ -161,7 +179,7 @@ export default {
           label: "微信密钥"
         },
         {
-          prop: "post",
+          prop: "appImage",
           element: "el-input",
           placeholder: "",
           label: "微信二维码",
@@ -201,11 +219,14 @@ export default {
           { required: true, message: "请输入修改事由", trigger: "blur" },
         ]
       },
-      addStatus: true
+      addStatus: true,
+      editId: ""
     }
   },
   components:{
-    RdForm
+    RdForm,
+    UploadOss,
+    viewDetail
   },
   mounted(){
     this.getTableData();
@@ -246,19 +267,41 @@ export default {
       this.getTableData();
     },
     handleAdd(){
+      this.appImage = "";
       this.addVisible = true;
+      this.addStatus = true;
     },
     submitAddForm(formName){
       this.$refs[formName].validate((valid, formData) => {
         if(valid){
           console.log(formData, "提交");
+          this.$fetch(this.addStatus?"wechatmanage_save":"wechatmanage_editJsp",{
+            ...formData,
+            appImage: this.appImage,
+            id: this.addStatus?"": this.editId
+          }).then(res => {
+            this.$message.success("操作成功")
+            this.getTableData()
+            this.addVisible = false
+          })
         }
           
       });
     },
+    resetAddForm(formName){
+      this.$refs[formName].onReset();
+    },
     handleEdit(data){
       this.addStatus = false;
       this.addVisible = true;
+      this.editId = data.id;
+      this.appImage = data.appImage;
+      this.addFormOptions.forEach(item => {
+           item.initValue = data[item.prop];
+      })
+      setTimeout(() => {
+        this.$refs.dataForm3.addInitValue();
+      }, 0);
     },
     handleDelete(row) {
       let info = '';
@@ -284,6 +327,10 @@ export default {
           });
         })
         .catch(() => {});
+    },
+    showDetail(data){
+      this.detailVisible = true;
+      this.wechatId = data.id;
     }
   }
 }

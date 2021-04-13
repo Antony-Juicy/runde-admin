@@ -133,7 +133,7 @@
         @handleClose="downLoadVisible = false"
         @submitForm="submitExportForm('dataForm3')"
       >
-         <el-transfer v-model="exportValue" :data="data"></el-transfer>
+         <el-transfer v-model="exportValue" :data="exportData"></el-transfer>
       </rd-dialog>
 
     <!-- 添加旧订单 -->
@@ -168,7 +168,7 @@ export default {
   name:"goodsName",
   data(){
     return {
-      data: [
+      exportData: [
       ],
       columnData:[],
       exportValue: [],
@@ -539,9 +539,13 @@ export default {
     },
     submitExportForm(){
       console.log(this.exportValue,'exportValue')
+      if(!this.exportValue.length){
+        this.$message.warning("请选择导出的列")
+        return
+      }
       let arr = [];
       this.exportValue.forEach((item,index) => {
-        let obj = this.data.find(ele => (ele.key == item));
+        let obj = this.exportData.find(ele => (ele.key == item));
         if(obj){
           arr.push(obj)
         }
@@ -551,10 +555,10 @@ export default {
         newArr.push(item.label)
         newArr.push(item.key)
       })
-      console.log(newArr,'newArr--')
-      this.$fetch("cmscertificateinfo_export",{
+      this.$fetch("cmsmobilegoodspaylog_excelJsp",{
         ...this.searchForm,
-        columnName: newArr.join(",")
+        columnName: newArr.join(","),
+        code: this.data.code
       }).then(res => {
         this.$message.success("操作成功")
         this.downLoadVisible = false;
@@ -568,11 +572,12 @@ export default {
         ...this.searchForm,
         code: this.data.code
       }).then(res => {
+        console.log(res,'ress--')
         if(!res.data.columnData){
           return;
         }
         this.columnData = res.data.columnData;
-        this.data = res.data.columnData.map(item => ({
+        this.exportData = res.data.columnData.map(item => ({
           key: item.columnNames,
           label: item.columnValues
         }))

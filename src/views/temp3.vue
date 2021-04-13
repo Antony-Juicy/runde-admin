@@ -1,5 +1,5 @@
 <template>
-  <div class="post-manage">
+  <div class="view-detail">
       <search-form
       :formOptions="formOptions"
       :showNum="7"
@@ -66,7 +66,7 @@
 <script>
 import RdForm from "@/components/RdForm";
 export default {
-  name:"post-manage",
+  name:"view-detail",
   data(){
     return {
       formOptions: [
@@ -337,7 +337,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.post-manage {
+.view-detail {
 
 }
 </style>
