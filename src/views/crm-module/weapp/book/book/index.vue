@@ -9,7 +9,7 @@
 			</div>
 
 			<!-- 表格主体 -->
-			<rd-table :tableData="tableData" :tableKey="tableKey" :pageConfig.sync="pageConfig" fixedTwoRow @pageChange="pageChange">
+			<rd-table :tableData="tableData" :tableKey="tableKey" :pageConfig.sync="pageConfig"  @pageChange="pageChange">
 				<template slot="bookImageUrl" slot-scope="scope">
 					<el-image style="width: 100px; height: 100px" :src="scope.row.bookImageUrl" fit="contain"></el-image>
 				</template>
@@ -18,7 +18,9 @@
 				</template>
 				<template slot="edit" slot-scope="scope">
 					<el-button @click="handleEdit(scope.row)" type="text" size="small">查阅/编辑</el-button>
+					<br>
 					<el-button @click="handleSubject(scope.row)" type="text" style="color: #67c23a" size="small">查阅科目</el-button>
+					<br>
 					<el-button @click="handleDelete(scope.row)" type="text" style="color: #ec5b56" size="small">删除</el-button>
 				</template>
 			</rd-table>
@@ -112,6 +114,16 @@ export default {
 					value: "bookKeywords",
 				},
 				{
+					name: "活动ID",
+					value: "activityId",
+					width: 80,
+				},
+				{
+					name: "员工ID",
+					value: "staffId",
+					width: 80,
+				},
+				{
 					name: "封面图",
 					value: "bookImageUrl",
 					operate: true,
@@ -120,26 +132,29 @@ export default {
 				{
 					name: "状态",
 					value: "bookStatus",
+					width: 80,
 				},
 				{
 					name: "报名人数",
 					value: "bookEnrollNum",
+					width: 80,
 				},
 				{
 					name: "授课讲师",
 					value: "bookTeacherArray",
 					operate: true,
-					width: 200,
+					width: 100,
 				},
 				{
 					name: "排序值",
 					value: "orderValue",
+					width: 80,
 				},
 				{
 					name: "操作",
 					value: "edit",
 					operate: true,
-					width: 200,
+					width: 80,
 				},
 			],
 			addEditVisible: false,

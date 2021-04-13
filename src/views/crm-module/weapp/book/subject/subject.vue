@@ -297,8 +297,19 @@ export default {
 			this.importFileBookSubjectId = data.bookSubjectId
 			this.importVisible = true
 		},
-		handleDownload() {
-
+		handleDownload(data) {
+			this.$fetch("book_download_qrCode", {
+				bookSubjectId: data.bookSubjectId,
+			}).then((res) => {
+				const url = window.URL.createObjectURL(new Blob([res], { type: "application/zip" }))
+				const link = document.createElement('a')
+				link.style.display = 'none'
+				link.href = url
+				link.setAttribute('download', 'code.zip')
+				document.body.appendChild(link)
+				link.click()
+				document.body.removeChild(link)
+			});
 		},
 		// 上传文件 请求
 		handleImportExcel(data) {
