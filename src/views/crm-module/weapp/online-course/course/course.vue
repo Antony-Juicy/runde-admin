@@ -24,8 +24,6 @@
 					<el-button @click="handleImport(scope.row)" type="text" size="small" style="color: rgb(255, 165, 0)">导入章</el-button>
 					<br>
 					<el-button @click="handleChapter(scope.row)" type="text" style="color: #67c23a" size="small">章节目录</el-button>
-					<el-button @click="handleDownload(scope.row)" type="text" size="small" style="color: #8e44ad">二维码导出</el-button>
-					<br>
 					<el-button @click="handleDelete(scope.row)" type="text" style="color: #ec5b56" size="small">删除</el-button>
 				</template>
 			</rd-table>

@@ -136,6 +136,41 @@ export default {
 					initValue: 'Open',
 				},
 				{
+					prop: 'activityId',
+					element: 'el-input',
+					placeholder: '请输入',
+					label: '活动ID',
+					initValue: '',
+				},
+				{
+					prop: 'labelInfo',
+					element: 'el-input',
+					placeholder: '请输入',
+					label: '活动标志',
+					initValue: '',
+				},
+				{
+					prop: 'staffId',
+					element: 'el-input',
+					placeholder: '请输入',
+					label: '员工ID',
+					initValue: '',
+				},
+				{
+					prop: 'title',
+					element: 'el-input',
+					placeholder: '请输入',
+					label: '分享标题',
+					initValue: '',
+				},
+				{
+					prop: 'content',
+					element: 'el-input',
+					placeholder: '请输入',
+					label: '分享描述',
+					initValue: '',
+				},
+				{
 					prop: 'orderValue',
 					element: 'el-input-number',
 					placeholder: '请输入',
@@ -289,10 +324,12 @@ export default {
 								this.$emit('close')
 								this.$emit('refresh')
 							}
+							data.bookLabel = data.bookLabel.split(',')
 						})
 						.catch((err) => {
 							console.log(err)
 							this.btnLoading = false
+							data.bookLabel = data.bookLabel.split(',')
 						})
 				}
 			})
