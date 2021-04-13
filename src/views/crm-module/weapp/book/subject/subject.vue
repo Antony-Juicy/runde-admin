@@ -50,6 +50,7 @@ import chapter from './chapter'
 import addEditSubject from './addEditSubject'
 import { scrollTo } from "@/utils/scroll-to";
 import importFile from './importFile'
+import { getToken } from '@/utils/auth'
 export default {
 
 	props: {
@@ -298,18 +299,14 @@ export default {
 			this.importVisible = true
 		},
 		handleDownload(data) {
-			this.$fetch("book_download_qrCode", {
-				bookSubjectId: data.bookSubjectId,
-			}).then((res) => {
-				const url = window.URL.createObjectURL(new Blob([res], { type: "application/zip" }))
-				const link = document.createElement('a')
-				link.style.display = 'none'
-				link.href = url
-				link.setAttribute('download', 'code.zip')
-				document.body.appendChild(link)
-				link.click()
-				document.body.removeChild(link)
-			});
+			console.log(data)
+			const link = document.createElement('a')
+			link.style.display = 'none'
+			link.href = `${process.env.VUE_APP_BASE_API}/live/console/book/subject/batch_download_miniprogram_QR_code?bookSubjectId=${data.bookSubjectId}&token=${getToken()}&loginUserId=${this.$common.getUserId()}` 
+			// link.setAttribute('download', `${data.bookSubjectName}.zip`)
+			document.body.appendChild(link)
+			link.click()
+			document.body.removeChild(link)
 		},
 		// 上传文件 请求
 		handleImportExcel(data) {
