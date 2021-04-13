@@ -160,7 +160,7 @@
                 <div class="line-divider"></div>
             </template>
             <div class="btn-wrapper">
-                <el-button size="small" type="primary">搜索</el-button>
+                <el-button size="small" type="primary" @click="onSearch">搜索</el-button>
                 <el-button size="small">重置</el-button>
                 <el-button
                     type="text"
@@ -182,6 +182,55 @@
                 :pageConfig.sync="pageConfig"
                 @pageChange="pageChange"
             >
+                <template slot="studentName" slot-scope="scope">
+                   姓名：{{scope.row.studentName}}<br/>
+                   手机：{{scope.row.phone}}<br/>
+                   学历：{{scope.row.education}}<br/>
+                   学年：{{scope.row.studentBatch}}<br/>
+                   <!-- 代理人：{{scope.row.studentName}}<br/> -->
+                </template>
+                <template slot="productName" slot-scope="scope">
+                   项目：{{scope.row.studentName}}<br/>
+                   科目：{{scope.row.subjectName}}<br/>
+                   班型：<el-button type="text" style="padding: 0">{{scope.row.classTypeName}}</el-button><br/>
+                   班次年份：{{scope.row.classBatch}}<br/>
+                   课程：{{scope.row.courseName}}<br/>
+                   邮寄图书发放类型：{{scope.row.bookType}}<br/>
+                </template>
+                <template slot="salesName" slot-scope="scope">
+                   市场老师：{{scope.row.salesName}}<br/>
+                   教务老师：{{scope.row.eduName}}<br/>
+                   招生老师：{{scope.row.enrollName}}<br/>
+                   班主任：{{scope.row.classTeacherName}}<br/>
+                   <!-- 订单创建：{{scope.row.courseName}}<br/> -->
+                </template>
+                <template slot="orderId" slot-scope="scope">
+                   订单id：{{scope.row.orderId}}<br/>
+                   订单状态：{{scope.row.status}}<br/>
+                   订单流水：<el-button type="text" style="padding: 0">查看详情</el-button><br/>
+                   创建日期：{{scope.row.createAt}}<br/>
+                   更新时间：{{scope.row.updateAt}}<br/>
+                </template>
+                 <template slot="realPrice" slot-scope="scope">
+                    原价：{{scope.row.realPrice}}<br/>
+                    应收：{{scope.row.rebatePrice}}<br/>
+                    订单可用余额： <br/>
+                    已收(待审/通过)：{{scope.row.applyPassReal}} / {{scope.row.applyPassReal}}<br/>
+                    优惠(待审/通过)：{{scope.row.applyRebatePrice}} / {{scope.row.applyPassRebate}}<br/>
+                    退费(待审/通过)：{{scope.row.refundPrice}} / {{scope.row.applyPassRefund}}<br/>
+                    订单欠费：{{scope.row.arrears}}<br/>
+                    订单状态：{{scope.row.status}}<br/>
+                </template>
+                <template slot="remark" slot-scope="scope">
+                    <el-input
+                    type="textarea"
+                    :rows="3"
+                    placeholder="请输入内容"
+                    v-model="scope.row.remark"
+                    @change="remarkChange(scope.row)"
+                    >
+                    </el-input>
+                </template>
                 <template slot="edit" slot-scope="scope">
                     <el-button @click="handleEdit(scope.row)" type="text" size="small"
                         >缴费</el-button
@@ -230,32 +279,33 @@ export default {
         tableKey: [
             {
                 name: "学员信息",
-                value: "name",
+                value: "studentName",
                 operate: true
             },
             {
                 name: "报班信息",
-                value: "name",
+                value: "productName",
                 operate: true
             },
             {
                 name: "服务信息",
-                value: "name",
+                value: "salesName",
                 operate: true
             },
             {
                 name: "订单信息",
-                value: "name",
+                value: "orderId",
                 operate: true
             },
             {
                 name: "缴费信息",
-                value: "name",
-                operate: true
+                value: "realPrice",
+                operate: true,
+                width: 230
             },
             {
                 name: "备注",
-                value: "name",
+                value: "remark",
                 operate: true
             },
             {
@@ -263,16 +313,52 @@ export default {
                 value: "edit",
                 operate: true
             }
-        ]
+        ],
+        pageConfig: {
+            totalCount: 0,
+            currentPage: 1,
+            pageSize: 10,
+        },
     }
   },
+  mounted(){
+      this.getTableData();
+  },
    methods: {
+       onSearch(){
+           this.getTableData();
+       },
        closeSearch(){
            this.showAll = !this.showAll;
        },
        pageChange(){
 
-       }
+       },
+       getTableData(params = {}) {
+            this.$fetch("orderinfo_orderManage", {
+                ...this.pageConfig,
+                ...this.searchForm,
+                ...params,
+            }).then((res) => {
+                this.tableData = res.data.varList.map((item) => {
+                    item.createAt = this.$common._formatDates(item.createAt);
+                    item.updateAt = this.$common._formatDates(item.updateAt);
+                    return item;
+                });
+                this.pageConfig.totalCount = res.data.page.totalResult;
+            })
+        },
+        remarkChange(val){
+            console.log(val,'val')
+            const { orderId ,remark } = val;
+            this.$fetch("orderinfo_setRemark",{
+                orderId,
+                remark
+            }).then(res => {
+                this.$message.success("设置成功")
+            })
+        }
+
   }
 }
 </script>
