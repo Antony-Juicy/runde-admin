@@ -145,9 +145,9 @@ export default {
 					this.tableData = res.data.records.map((item) => {
 						item.typeName = item.typeName.replace(/\\n/g,'')
 						item.iconStatus = this.iconStatus2Zh(item.iconStatus)
-						if(item.linkType == 'None'){
-							item.iconLink = '/'
-						}
+						// if(item.linkType == 'None' || item.linkType == 'OutSideXcx'){
+						// 	item.iconLink = '/'
+						// }
 						Object.assign(item,this.linkType2Zh(item))
 						return item;
 					});
@@ -234,7 +234,7 @@ export default {
 				case 'InnerXcxLive': type.linkType = '直播'; break;
 				case 'InnerXcxCourse': type.linkType = '科目'; break;
 				case 'InnerXcxBook': type.linkType = '图书'; break;
-				case 'OutSideXcx': type.linkType = '小程序外'; break;
+				case 'OutSideXcx': type.linkType = '外部小程序';type.iconLink = '/'; break;
 			}
 			return type
 		},
