@@ -124,10 +124,10 @@ export default {
 					label: "图书",
 					value: "InnerXcxBook",
 				},
-				// {
-				// 	label: "小程序外",
-				// 	value: "OutSideXcx"
-				// }
+				{
+					label: "外部小程序",
+					value: "OutSideXcx"
+				}
 			],
 			xcxPage: {
 				"InnerXcxLive": "/pagesLive/pages/index/index?liveId=",
@@ -314,11 +314,15 @@ export default {
 						exLabel.initValue = res.data.iconLink.split('=')[1]
 						this.addFormOptions.splice(3, 0, exLabel)
 					}
-					if (res.data.linkType == 'H5') {
+					else if (res.data.linkType == 'H5') {
+						this.linkType = 'H5'
 						exLabel.prop = "link";
 						exLabel.label = "跳转参数";
 						exLabel.initValue = res.data.iconLink
 						this.addFormOptions.splice(3, 0, exLabel)
+					}
+					else {
+						this.linkType = res.data.linkType
 					}
 
 					this.$refs.dataForm.addInitValue();
@@ -333,6 +337,7 @@ export default {
 		await this.$fetch(
 			"projectType_select",
 		).then((res) => {
+			console.log(res)
 			this.addFormOptions.unshift({
 				prop: "typeId",
 				element: "el-cascader",
