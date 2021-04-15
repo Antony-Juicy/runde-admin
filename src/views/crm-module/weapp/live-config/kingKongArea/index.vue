@@ -129,10 +129,6 @@ export default {
 		},
 		getTableData(params = {}) {
 			return new Promise((resolve, reject) => {
-				const loading = this.$loading({
-					lock: true,
-					target: ".el-table",
-				});
 				let searchForm = JSON.parse(JSON.stringify(this.searchForm))
 				if (searchForm.typeId && searchForm.typeId.constructor == Array) {
 					searchForm.typeId = searchForm.typeId.pop()
@@ -149,19 +145,15 @@ export default {
 					this.tableData = res.data.records.map((item) => {
 						item.typeName = item.typeName.replace(/\\n/g,'')
 						item.iconStatus = this.iconStatus2Zh(item.iconStatus)
-						if(item.linkType == 'None'){
-							item.iconLink = '/'
-						}
+						// if(item.linkType == 'None' || item.linkType == 'OutSideXcx'){
+						// 	item.iconLink = '/'
+						// }
 						Object.assign(item,this.linkType2Zh(item))
 						return item;
 					});
 					this.pageConfig.totalCount = res.data.totalCount;
-					setTimeout(() => {
-						loading.close();
-					}, 200);
 					resolve();
 				}).catch(err => {
-					loading.close();
 					console.log(err)
 					reject();
 				});
@@ -242,7 +234,7 @@ export default {
 				case 'InnerXcxLive': type.linkType = '直播'; break;
 				case 'InnerXcxCourse': type.linkType = '科目'; break;
 				case 'InnerXcxBook': type.linkType = '图书'; break;
-				case 'OutSideXcx': type.linkType = '小程序外'; break;
+				case 'OutSideXcx': type.linkType = '外部小程序';type.iconLink = '/'; break;
 			}
 			return type
 		},

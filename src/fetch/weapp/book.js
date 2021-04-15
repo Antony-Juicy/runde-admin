@@ -29,4 +29,7 @@ export default {
     book_import_section: { url: '/live/console/book/chapter/import_section', method: 'post' },
 
     book_check_chapter_name: { url: '/live/console/book/chapter/is_have_chapter_name', method: 'post' },
+
+    // 下载二维码
+    book_download_qrCode: { url: '/live/console/book/subject/batch_download_miniprogram_QR_code', method: 'get', headers: [{ key: 'responseType', value: 'blob' }] },
 }

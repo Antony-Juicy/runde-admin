@@ -4,6 +4,7 @@ import chance from './chance'
 import weapp from './weapp/index'
 import activity from './activity/index'
 import order from './order'
+import officialAccounts from './official-accounts'
 
 export default {
     ...user,
@@ -11,5 +12,6 @@ export default {
     ...weapp,
     ...chance,
     ...activity,
-    ...order
+    ...order,
+    ...officialAccounts
 }
