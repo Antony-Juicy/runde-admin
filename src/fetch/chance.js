@@ -13,7 +13,7 @@ export default {
     chance_feedback_fxwh: {url: '/crm/crmopportunity/zhiboCallRecordListJson', method: 'post'},
 
     // 我的机会
-    chance_my_list:  {url: '/crm/elasticsearchQuery/search', method: 'post'},
+    chance_my_list:  {url: '/crm/crmopportunity/myListJson', method: 'post'},
     chance_saveData: {url: '/crm/crmopportunityfeedback/saveData', method: 'post'},
     chance_editData: {url: '/crm/crmopportunity/editMyOpportunityJsp', method: 'post'},
     chance_my_info:  {url: '/crm/crmopportunity/getOpportunieyCallInfo', method: 'post'}, 
