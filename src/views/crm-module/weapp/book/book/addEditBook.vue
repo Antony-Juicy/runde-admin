@@ -137,7 +137,7 @@ export default {
 				},
 				{
 					prop: 'activityId',
-					element: 'el-input',
+					element: 'el-input-number',
 					placeholder: '请输入',
 					label: '活动ID',
 					initValue: '',
@@ -151,7 +151,7 @@ export default {
 				},
 				{
 					prop: 'staffId',
-					element: 'el-input',
+					element: 'el-input-number',
 					placeholder: '请输入',
 					label: '员工ID',
 					initValue: '',
