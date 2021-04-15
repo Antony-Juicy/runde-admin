@@ -8,4 +8,8 @@ export default {
     coupontemplateversiontwo_goEdit: {url: '/admin/coupontemplateversiontwo/goEdit', method: 'post'}, 
     coupontemplateversiontwo_editJsp: {url: '/admin/coupontemplateversiontwo/editJsp', method: 'post'}, 
     coupontemplateversiontwo_deleteJsp: {url: '/admin/coupontemplateversiontwo/deleteJsp', method: 'post'}, 
+    coupontemplateversiontwo_subjectList:  {url: '/admin/coursesubject/subjectList', method: 'post', hideLoading: true}, //获取科目列表
+    coupontemplateversiontwo_getClassListSelects:  {url: '/admin/courseclasstype/getClassListSelects', method: 'post', hideLoading: true}, //获取班型列表
+    coupontemplateversiontwo_getCourseListSelects:  {url: '/admin/courseclasstype/getCourseListSelects', method: 'post', hideLoading: true}, //获取课程列表
+
 }

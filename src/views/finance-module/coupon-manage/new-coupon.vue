@@ -181,30 +181,19 @@
     </div>
     
     <!-- 添加 -->
-    <rd-dialog
-        :title="addStatus?'添加':'编辑'"
-        :dialogVisible="addVisible"
-        @handleClose="addVisible = false"
-        @submitForm="submitAddForm('dataForm3')"
-      >
-        <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
-          <template slot="post">
-            <el-button size="small" type="primary">上传</el-button>
-          </template>
-        </RdForm>
-      </rd-dialog>
+      <rd-dialog
+          :title="addStatus?'添加':'编辑'"
+          :dialogVisible="addVisible"
+          @handleClose="addVisible = false"
+          @submitForm="submitAddForm('dataForm3')"
+        >
+          <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
+            <template slot="addSkip">
+              <el-button size="small" type="primary">添加梯度优惠详情</el-button>
+            </template>
+          </RdForm>
+        </rd-dialog>
 
-      <full-dialog
-        v-model="addVisible"
-        :title="addStatus?'添加':'编辑'"
-        @change="addVisible = false"
-      >
-        <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
-          <template slot="post">
-            <el-button size="small" type="primary">上传</el-button>
-          </template>
-        </RdForm>
-      </full-dialog>
   </div>
 </template>
 
@@ -319,102 +308,205 @@ export default {
         pageSize: 10,
       },
       addVisible: false,
-      addFormOptions: [
-          
+      addFormOptions: [     
         {
-          prop: "menuName",
+          prop: "couponName",
           element: "el-input",
-          placeholder: "请输入名称",
-          label: "名称"
+          placeholder: "请输入",
+          label: "优惠券名称"
         },
         {
-          prop: "post",
-          element: "el-input",
-          placeholder: "",
-          label: "上传",
-          operate: true,
-          initValue: 0
-        },
-        {
-          prop: "roleName",
+          prop: "productId",
           element: "el-select",
           placeholder: "请选择",
-          label: "所属九块九包邮",
+          label: "项目名称",
+          options: [
+          ],
+          events: {
+
+          }
+        },
+        {
+          prop: "subjectId",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "科目名称",
+          options: [
+          ],
+          multiple: true
+        },
+        {
+          prop: "classTypeId",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "班型名称",
+          options: [
+          ],
+          multiple: true
+        },
+        {
+          prop: "courseId",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "课程名称",
+          options: [
+          ],
+          multiple: true
+        },
+        {
+          prop: "frontClassTypeId",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "前置班型",
+          options: [
+          ],
+          multiple: true
+        },
+        {
+          prop: "campusId",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "指定校区",
+          options: [
+          ],
+          filterable: true,
+          multiple: true
+        },
+        {
+          prop: "time",
+          element: "el-date-picker",
+          startPlaceholder: "开始时间",
+          endPlaceholder: "结束时间",
+          initWidth: true,
+          label: "时间"
+        },
+        {
+          prop: "couponType",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "优惠类型",
+          options: [
+          ],
+        },
+        //9
+        {
+          prop: "fullPrice",
+          element: "el-input",
+          placeholder: "请选择",
+          label: "满减金额",
+          hide: true
+        },
+        //10
+        {
+          prop: "faceValue",
+          element: "el-input",
+          placeholder: "请选择",
+          label: "优惠金额",
+          hide: true
+        },
+        //11
+        {
+          prop: "couponRate",
+          element: "el-input",
+          placeholder: "请选择",
+          label: "折扣百分比",
+          hide: true
+        },
+        //12
+         {
+          prop: "addSkip",
+          element: "el-input",
+          placeholder: "请选择",
+          label: "梯度优惠",
+          hide: true,
+          operate: true
+        },
+        //13
+        {
+          prop: "couponNum",
+          element: "el-input",
+          placeholder: "请输入",
+          label: "优惠券数量"
+        },
+        //14
+        {
+          prop: "studentType",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "学员类型",
+          options: [
+          ],
+        },
+        // 15
+        {
+          prop: "superposition",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "可否叠加",
           options: [
             {
-              label: "博士",
-              value: "0",
+              label:"不能叠加",
+              value: false
             },
             {
-              label: "硕士",
-              value: 1,
-            },
+              label:"能叠加",
+              value: true
+            }
+          ],
+        },
+        // 16
+        {
+          prop: "couponStatus",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "优惠券状态",
+          options: [
           ],
         },
         {
-          prop: "roleName",
-          element: "el-select",
-          placeholder: "请选择",
-          label: "所属活动",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-        {
-          prop: "menuName3",
+          prop: "remark",
           element: "el-input",
           placeholder: "请输入",
-          label: "分享分案一",
-          type:"textarea",
-          rows: 2
+          label: "使用说明",
+          type: "textarea",
+          rows: 3
         },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案二",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案三",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案四",
-          type:"textarea",
-          rows: 2
-        },
-           {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案五",
-          type:"textarea",
-          rows: 2
-        }
       ],
       addRules:{
-        updateReason: [
-          { required: true, message: "请输入修改事由", trigger: "blur" },
-        ]
+        couponName: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+        productId: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ],
+        couponType: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ],
+        couponNum: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+        superposition: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ],
+        couponStatus: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ],
+        remark: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+        faceValue: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+         fullPrice: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+         couponRate: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
       },
       addStatus: true,
-      editId:""
+      editId:"",
+      currentProductId:""
     }
   },
   components:{
@@ -422,6 +514,7 @@ export default {
   },
   mounted(){
       this.getTableData();
+      this.getSelectList();
   },
    methods: {
      onSearch(val){
@@ -430,6 +523,16 @@ export default {
       };
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
+     },
+     getSelectList(){
+       this.$fetch("chance_config_campusList").then(res => {
+         this.addFormOptions[6].options = res.data.data.map(item => (
+           {
+           label: item.campusName,
+           value: item.id
+         }
+         ))
+       })
      },
      getTableData(params = {}){
        this.$fetch("coupontemplateversiontwo_listJsp", {
@@ -457,9 +560,98 @@ export default {
             label: item.productName,
             value: item.id
         }))
+         this.addFormOptions[1].options = res.data.productList.map(item => ({
+            label: item.productName,
+            value: item.id
+        }))
+         this.addFormOptions[8].options = res.data.couponTypeList.map(item => ({
+            label: item.value,
+            value: item.key
+        }))
+         this.addFormOptions[14].options = res.data.studentTypeList.map(item => ({
+            label: item.value,
+            value: item.key
+        }))
+        this.addFormOptions[16].options = res.data.couponStatusList.map(item => ({
+            label: item.value,
+            value: item.key
+        }))
+        this.addFormOptions[1].events = {
+          change: this.productChange
+        }
+        this.addFormOptions[2].events = {
+          change: this.subjectChange
+        }
+        this.addFormOptions[3].events = {
+          change: this.classChange
+        }
+         this.addFormOptions[8].events = {
+           change: this.couponTypeChange
+         }
         
       })
      },
+     productChange(val){
+       this.currentProductId = val;
+      //  获取科目下拉
+      this.$fetch("coupontemplateversiontwo_subjectList",{productId: val}).then(res => {
+        this.addFormOptions[2].options = res.data.list.map(item => ({
+          label: item.subjectName,
+          value: item.id
+        }))
+      })
+    },
+    subjectChange(val){
+       //  获取班型下拉
+      this.$fetch("coupontemplateversiontwo_getClassListSelects",{
+        subjectIds: val.join(","),
+        productId: this.currentProductId
+        }).then(res => {
+        this.addFormOptions[3].options = res.data.dataJson.list.map(item => ({
+          label: item.name,
+          value: item.value
+        }))
+        this.addFormOptions[5].options = res.data.dataJson.list.map(item => ({
+          label: item.name,
+          value: item.value
+        }))
+      })
+    },
+    classChange(val){
+      // 获取课程下拉
+      this.$fetch("coupontemplateversiontwo_getCourseListSelects",{
+          classTypeIds: val.join(",")
+        }).then(res => {
+        // this.addFormOptions[4].options = res.data.dataJson.list.map(item => ({
+          // label: item.name,
+          // value: item.value
+        // }))
+      })
+    },
+    couponTypeChange(val){
+      // console.log(val,'couponchange')
+      if(val == 'AllDisCount'){
+        this.addFormOptions[10].hide = false;
+        this.addFormOptions[9].hide = true;
+        this.addFormOptions[11].hide = true;
+        this.addFormOptions[12].hide = true;
+      }else if(val == 'FullDisCount'){
+        this.addFormOptions[9].hide = false;
+        this.addFormOptions[10].hide = false;
+        this.addFormOptions[11].hide = true;
+        this.addFormOptions[12].hide = true;
+      }else if(val == 'RageDisCount'){
+        this.addFormOptions[11].hide = false;
+        this.addFormOptions[9].hide = true;
+        this.addFormOptions[10].hide = true;
+        this.addFormOptions[12].hide = true;
+      }else if(val == 'GradientDisCount'){
+        this.addFormOptions[12].hide = false;
+        this.addFormOptions[9].hide = true;
+        this.addFormOptions[11].hide = true;
+        this.addFormOptions[10].hide = true;
+      }
+    },
      pageChange(val) {
       console.log(val,'pagechange')
       this.pageConfig.currentPage = val.page;
@@ -474,6 +666,16 @@ export default {
       this.$refs[formName].validate((valid, formData) => {
         if(valid){
           console.log(formData, "提交");
+          this.$fetch("coupontemplateversiontwo_save",{
+            ...formData,
+            time:'',
+            startTime: formData.time?formData.time[0]:'',
+            endTime: formData.time?formData.time[1]:'',
+          }).then(res => {
+            this.$message.success("操作成功")
+            this.addVisible = false;
+            this.getTableData();
+          })
         }
           
       });
