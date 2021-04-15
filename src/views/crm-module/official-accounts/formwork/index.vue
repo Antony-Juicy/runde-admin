@@ -10,7 +10,7 @@
 		</rd-table>
 
 		<rd-dialog :title="'模板通知'" :dialogVisible="templateVisible" :showFooter="false" :width="'1200px'" @handleClose="templateVisible = false">
-			<addEditFormwrok></addEditFormwrok>
+			<addEditFormwrok :formwork="formwork" v-if="templateVisible" :appId="official_accounts[searchForm.officialAccounts].appId" :appSecret="official_accounts[searchForm.officialAccounts].appSecret"></addEditFormwrok>
 		</rd-dialog>
 	</div>
 </template>
@@ -19,7 +19,7 @@
 import addEditFormwrok from './addEditFormwrok'
 export default {
 	name: "formwork",
-	components: {addEditFormwrok},
+	components: { addEditFormwrok },
 	data() {
 		return {
 			formOptions: [
@@ -50,7 +50,7 @@ export default {
 					width: 200,
 				},
 			],
-			templateVisible: true,
+			templateVisible: false,
 			pageConfig: {
 				totalCount: 0,
 				pageNum: 1,
@@ -59,8 +59,8 @@ export default {
 			searchForm: {}, //搜索栏信息,
 			book: {},
 			markScroll: 0,
-
-
+			formwork: {},
+			official_accounts: []
 		}
 	},
 	methods: {
@@ -72,8 +72,8 @@ export default {
 
 		async getTableData(params = {}) {
 			let searchForm = JSON.parse(JSON.stringify(this.searchForm))
-			searchForm.appId = JSON.parse(searchForm.officialAccounts).appId
-			searchForm.app_Secret = JSON.parse(searchForm.officialAccounts).appSecret
+			searchForm.appId = this.official_accounts[this.searchForm.officialAccounts].appId
+			searchForm.app_Secret = this.official_accounts[this.searchForm.officialAccounts].appSecret
 			let res = await this.$fetch(
 				"get_official_accounts_formwrok_list",
 				{
@@ -89,7 +89,11 @@ export default {
 		handleAdd() {
 
 		},
-		handleEdit() {
+		handleEdit(data) {
+			this.formwork = data
+			this.$nextTick(() => {
+				this.templateVisible = true
+			})
 
 		},
 		pageChange() {
@@ -104,19 +108,21 @@ export default {
 			prop: "officialAccounts",
 			element: "el-select",
 			placeholder: "选择公众号",
-			options: res.data.map(v => {
+			unClearable:true,
+			options: res.data.map((v, i) => {
 				return {
 					label: v.appName,
-					value: JSON.stringify(v)
+					value: i
 				}
 			}),
 			// 需要指定一个公众号，默认就选第一个
-			initValue: JSON.stringify(res.data[0])
+			initValue: 0
 		}
 		this.formOptions.unshift(official_accounts);
+		this.official_accounts = res.data
 		this.$refs.searchForm.addInitValue()
 		// 这里是通过模拟search方法，是的searchFrom里面有值
-		this.onSearch({ officialAccounts: JSON.stringify(res.data[0]) })
+		this.onSearch({ officialAccounts: 0 })
 	}
 }
 </script>
