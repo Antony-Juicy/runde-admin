@@ -1,10 +1,10 @@
 <template>
 	<div class="addEditAccount">
 		<RdForm :formOptions="addFormOptions" :rules="addRules" :formLabelWidth="'150px'" ref="dataForm">
-			<template slot="appAvatar">
-				<Upload-oss v-if="uploadOssElem" :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }" :src.sync="appAvatar" :initGetConfig="initGetConfig" @srcChangeFun="
+			<template slot="appImg">
+				<Upload-oss v-if="uploadOssElem" :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }" :src.sync="appImg" :initGetConfig="initGetConfig" @srcChangeFun="
 						(data) => {
-							appAvatar = data
+							appImg = data
 							reloadElem('uploadOssElem')
 						}
 					" />
@@ -47,7 +47,7 @@ export default {
 					label: "公众号名称",
 				},
 				{
-					prop: "appAvatar",
+					prop: "appImg",
 					element: "el-input",
 					placeholder: "",
 					label: "公众号头像",
@@ -59,10 +59,10 @@ export default {
 				appId: [{ required: true, message: '请输入公众号appId', trigger: 'blur' },],
 				appSecret: [{ required: true, message: '请输入公众号appSecret', trigger: 'blur' },],
 				appName: [{ required: true, message: '请输入公众号名称', trigger: 'blur' },],
-				appAvatar: [{ required: true, message: '请输入公众号名称', trigger: 'blur' },],
+				appImg: [{ required: true, message: '请输入公众号名称', trigger: 'blur' },],
 			},
 			uploadOssElem: true,
-			appAvatar: "",
+			appImg: "",
 			initGetConfig: false,
 			mode: 'add',
 			accountId: ""
@@ -75,10 +75,11 @@ export default {
 		handle_add() {
 			this.$refs.dataForm.validate((val, data) => {
 				if (val) {
-					if (this.appAvatar == '') {
+					if (this.appImg == '') {
 						this.$message.error("请上传公众号头像");
 						return;
 					}
+					data.appImg = this.appImg
 					this.$fetch('add_official_account', {
 						...data,
 						loginUserId: this.$common.getUserId(),
@@ -100,10 +101,11 @@ export default {
 		handle_save() {
 			this.$refs.dataForm.validate((val, data) => {
 				if (val) {
-					if (this.appAvatar == '') {
+					if (this.appImg == '') {
 						this.$message.error("请上传公众号头像");
 						return;
 					}
+					data.appImg = this.appImg
 					this.$fetch('update_official_account', {
 						...data,
 						id: this.accountId,
@@ -131,7 +133,7 @@ export default {
 				return v
 			})
 			this.addFormOptions[3].initValue = 0
-			this.appAvatar = account.appAvatar
+			this.appImg = account.appImg
 			this.accountId = account.id
 			this.$refs.dataForm.addInitValue()
 		},

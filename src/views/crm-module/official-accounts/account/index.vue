@@ -8,12 +8,16 @@
 			</div>
 			<!-- 表格主体 -->
 			<rd-table :tableData="tableData" :tableKey="tableKey" :pageConfig.sync="pageConfig" @pageChange="pageChange">
+				<template slot="appImg" slot-scope="scope">
+					<el-image style="width: 100px; height: 100px" :src="scope.row.appImg" fit="contain"></el-image>
+				</template>
 				<template slot="edit" slot-scope="scope">
 					<el-button @click="handleEdit(scope.row)" type="text" size="small">查阅/编辑</el-button>
 					<el-button @click="handleLabel(scope.row)" type="text" style="color: #67c23a" size="small">查看标签</el-button>
 					<el-button @click="handleDelete(scope.row)" type="text" style="color: #ec5b56" size="small">删除</el-button>
 
 				</template>
+
 			</rd-table>
 		</div>
 
@@ -58,6 +62,12 @@ export default {
 				{
 					name: "appId",
 					value: "appId",
+				},
+				{
+					name: "公众号图标",
+					value: "appImg",
+					operate: true,
+					width: 120,
 				},
 				{
 					name: "操作",

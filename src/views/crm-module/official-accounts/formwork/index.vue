@@ -9,11 +9,6 @@
 					<el-button @click="handleEdit(scope.row)" type="text" size="small">查阅/编辑</el-button>
 				</template>
 			</rd-table>
-
-			<likePhone mode='text' :cardData="'通知内容通知内容通知内容通知内容通知内容通知内容通知内容'" accountName="公众号"></likePhone>
-			<likePhone mode='imageText' :cardData='{title:" 标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题", description:"描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述", imgUrl:"https://tse3-mm.cn.bing.net/th/id/OIP.rZ6TpMQXVTQEmZwN1bVrLAHaHa?w=201&h=202&c=7&o=5&pid=1.7"}' accountName="公众号"></likePhone>
-			<likePhone mode='image' :cardData="'https://tse3-mm.cn.bing.net/th/id/OIP.dyIhFIkD3ySYebAl0JjmSAHaLH?w=200&h=300&c=7&o=5&pid=1.7'" accountName="公众号"></likePhone>
-			<likePhone mode='miniprogram' :cardData="{appLogo:'https://tse4-mm.cn.bing.net/th/id/OIP.48wQvO6GdrazorQd3tOZGwHaHa?w=197&h=198&c=7&o=5&pid=1.7',appName:'小程序名称小程序名称小程序名称小程序名称小程序名称',title:'小程序名称小程序名称小程序名称小程序名称小程序名称',imgUrl:'https://tse4-mm.cn.bing.net/th/id/OIP.YHIHn0znRU-OfddNxIpYogHaHa?w=200&h=200&c=7&o=5&pid=1.7'}" accountName="公众号"></likePhone>
 		</div>
 
 		<rd-dialog :title="'模板通知'" :dialogVisible="templateVisible" :showFooter="false" :width="'1200px'" @handleClose="templateVisible = false">
@@ -26,10 +21,9 @@
 
 <script>
 import addEditFormwrok from './addEditFormwrok'
-import likePhone from '@/components/likePhone'
 export default {
 	name: "formwork",
-	components: { addEditFormwrok, likePhone },
+	components: { addEditFormwrok },
 	data() {
 		return {
 			formOptions: [
