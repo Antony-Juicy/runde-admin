@@ -1,61 +1,10 @@
 <template>
   <div class="class-manage">
-    <div class="class-form-box">
-      <el-form ref="form" :model="form" label-width="80px">
-        <el-row :gutter="20">
-          <el-col :span="6">
-            <el-form-item label="内容项名称:" label-width="100px">
-              <el-input
-                v-model="form.name"
-                size="small"
-                placeholder="请输入班型名称"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="4">
-            <el-form-item label="项目:">
-              <el-select
-                size="small"
-                v-model="form.type"
-                placeholder="项目"
-              ></el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="4">
-            <el-form-item label="类型:">
-              <el-select
-                size="small"
-                v-model="form.type"
-                placeholder="项目"
-              ></el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="4">
-            <el-form-item label="确认时点:">
-              <el-select
-                size="small"
-                v-model="form.type"
-                placeholder="项目"
-              ></el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="4">
-            <el-form-item label="状态:">
-              <el-select
-                size="small"
-                v-model="form.type"
-                placeholder="项目"
-              ></el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-    </div>
-    <!-- <search-form
+    <search-form
       :formOptions="formOptions"
       :showNum="showNum"
       @onSearch="onSearch"
-    ></search-form> -->
+    ></search-form>
     <div class="w-container">
       <div class="btn-wrapper">
         <el-button type="primary" size="small" @click="handleAdd">
@@ -141,36 +90,31 @@ export default {
         {
           prop: "liveId",
           element: "el-input",
-          placeholder: "请输入班型名称",
-          label: "内容项名称",
+          placeholder: "请输入班型名称"
         },
         {
           prop: "typeId",
           element: "el-select",
-          placeholder: "请选择项目",
-          label: "项目",
+          placeholder: "请选择项目"
         },
         {
           prop: "typeId",
           element: "el-select",
-          placeholder: "请选择类型",
-          label: "类型",
+          placeholder: "请选择类型"
         },
         {
           prop: "typeId",
           element: "el-select",
-          placeholder: "请选择确认时点",
-          label: "确认时点",
+          placeholder: "请选择确认时点"
         },
         {
           prop: "typeId",
           element: "el-select",
-          placeholder: "请选择状态",
-          label: "状态",
+          placeholder: "请选择状态"
         },
       ],
       addVisible: false,
-      addStatus: true,
+      addStatus: true, 
       form: {},
       emptyText: "暂无数据",
       tableData: [
@@ -463,7 +407,7 @@ export default {
     handleDelete(row) {
       let info = "";
       this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
-        confirmButtonText: "确定",
+        confirmButtonText: "确定",      
         cancelButtonText: "取消",
         type: "warning",
       })
@@ -491,11 +435,7 @@ export default {
 
 <style lang="scss" scoped>
 .class-manage {
-  .class-form-box {
-    padding: 20px 20px 0;
-    background: #fff;
-    margin-bottom: 20px;
-  }
+
   .full-dialog-wrap {
     width: 60%;
     margin: 0 auto;
@@ -505,10 +445,6 @@ export default {
       width: 60%;
       margin: 0 auto;
     }
-  }
-  /deep/.el-form-item {
-    // flex-direction: row;
-    // display: flex;
   }
   .btn-wrap {
     display: flex;
