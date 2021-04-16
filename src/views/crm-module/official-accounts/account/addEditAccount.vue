@@ -1,0 +1,150 @@
+<template>
+	<div class="addEditAccount">
+		<RdForm :formOptions="addFormOptions" :rules="addRules" :formLabelWidth="'150px'" ref="dataForm">
+			<template slot="appAvatar">
+				<Upload-oss v-if="uploadOssElem" :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }" :src.sync="appAvatar" :initGetConfig="initGetConfig" @srcChangeFun="
+						(data) => {
+							appAvatar = data
+							reloadElem('uploadOssElem')
+						}
+					" />
+			</template>
+		</RdForm>
+		<div class="btns">
+			<el-button @click="handle_close">取消</el-button>
+			<el-button v-if="mode=='add'" @click="handle_add" type="primary">新增</el-button>
+			<el-button v-if="mode=='save'" @click="handle_save" type="primary">保存</el-button>
+		</div>
+
+	</div>
+</template>
+
+<script>
+import RdForm from "@/components/RdForm";
+import UploadOss from '@/components/UploadOss'
+export default {
+	components: { RdForm, UploadOss },
+	data() {
+		return {
+			addFormOptions: [
+				{
+					prop: "appId",
+					element: "el-input",
+					placeholder: "",
+					label: "appId",
+				},
+				{
+					prop: "appSecret",
+					element: "el-input",
+					placeholder: "",
+					label: "appSecret",
+				},
+				{
+					prop: "appName",
+					element: "el-input",
+					placeholder: "",
+					label: "公众号名称",
+				},
+				{
+					prop: "appAvatar",
+					element: "el-input",
+					placeholder: "",
+					label: "公众号头像",
+					operate: true,
+					initValue: 0,
+				},
+			],
+			addRules: {
+				appId: [{ required: true, message: '请输入公众号appId', trigger: 'blur' },],
+				appSecret: [{ required: true, message: '请输入公众号appSecret', trigger: 'blur' },],
+				appName: [{ required: true, message: '请输入公众号名称', trigger: 'blur' },],
+				appAvatar: [{ required: true, message: '请输入公众号名称', trigger: 'blur' },],
+			},
+			uploadOssElem: true,
+			appAvatar: "",
+			initGetConfig: false,
+			mode: 'add',
+			accountId: ""
+		}
+	},
+	methods: {
+		handle_close() {
+			this.$emit('close')
+		},
+		handle_add() {
+			this.$refs.dataForm.validate((val, data) => {
+				if (val) {
+					if (this.appAvatar == '') {
+						this.$message.error("请上传公众号头像");
+						return;
+					}
+					this.$fetch('add_official_account', {
+						...data,
+						loginUserId: this.$common.getUserId(),
+					}).then((res) => {
+						if (res.code == 200) {
+							this.btnLoading = false
+							this.$message.success('创建成功')
+							this.$emit('close')
+							this.$emit('refresh')
+						}
+					})
+						.catch((err) => {
+							console.log(err)
+							this.btnLoading = false
+						})
+				}
+			})
+		},
+		handle_save() {
+			this.$refs.dataForm.validate((val, data) => {
+				if (val) {
+					if (this.appAvatar == '') {
+						this.$message.error("请上传公众号头像");
+						return;
+					}
+					this.$fetch('update_official_account', {
+						...data,
+                        id:this.accountId,
+						loginUserId: this.$common.getUserId(),
+					}).then((res) => {
+						if (res.code == 200) {
+							this.btnLoading = false
+							this.$message.success('保存成功')
+							this.$emit('close')
+							this.$emit('refresh')
+						}
+					})
+						.catch((err) => {
+							console.log(err)
+							this.btnLoading = false
+						})
+				}
+			})
+		},
+		initFormData(account) {
+			console.log(account)
+			this.mode = 'save'
+			this.addFormOptions = this.addFormOptions.map(v => {
+				v.initValue = account[v.prop]
+				return v
+			})
+			this.addFormOptions[3].initValue = 0
+			this.appAvatar = account.appAvatar
+			this.accountId = account.id
+			this.$refs.dataForm.addInitValue()
+		},
+	},
+	mounted() {
+
+	}
+}
+</script>
+
+<style lang='scss' scoped>
+.addEditAccount {
+	.btns {
+		text-align: center;
+	}
+}
+</style>

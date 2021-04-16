@@ -1,7 +1,7 @@
 <template>
 
 	<el-popover v-model="show" class="select-pop" placement="bottom-start" width="700" trigger="click" :append-to-body="false">
-		<search-form :formOptions="searchObj.formOptions" :showNum="searchObj.showNum" @onSearch="onSearch" ref="searchForm"></search-form>
+		<search-form v-if="searchObj.formOptions.length > 0" :formOptions="searchObj.formOptions" :showNum="searchObj.showNum" @onSearch="onSearch" ref="searchForm"></search-form>
 		<div class="scroll-box" v-infinite-scroll="getTableData">
 			<el-table :data="tableData" v-loading="tableLoad">
 				<template v-for="(item,index) in tableObj.tableKey">
@@ -84,8 +84,8 @@ export default {
 				}
 			).catch(() => { this.tableLoad = false })
 
-			if(typeof this.tableObj.transItem == 'function'){
-				res.data.records.map(v=>{
+			if (typeof this.tableObj.transItem == 'function') {
+				res.data.records.map(v => {
 					return this.tableObj.transItem(v)
 				})
 			}
