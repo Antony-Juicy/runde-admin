@@ -6,5 +6,7 @@ export default {
     //查询微信公众号
     wechat_list: { url: '/wechat/console/wechat_name/list', method: 'post' },
 
+    //获取标签
+    wechat_label: { url: '/wechat//console/wechat_label/list', method: 'post' },
 
 }
