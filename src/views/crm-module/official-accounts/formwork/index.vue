@@ -10,16 +10,16 @@
 		</rd-table>
 
 		<rd-dialog :title="'模板通知'" :dialogVisible="templateVisible" :showFooter="false" :width="'1200px'" @handleClose="templateVisible = false">
-			<addEditFormwrok></addEditFormwrok>
+			<!-- <addEditFormwrok></addEditFormwrok> -->
 		</rd-dialog>
 	</div>
 </template>
 
 <script>
-import addEditFormwrok from './addEditFormwrok'
+// import addEditFormwrok from './addEditFormwrok'
 export default {
 	name: "formwork",
-	components: {addEditFormwrok},
+	// components: {addEditFormwrok},
 	data() {
 		return {
 			formOptions: [
