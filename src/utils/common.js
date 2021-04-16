@@ -238,7 +238,81 @@ const $common = {
             '[object Object]': 'object'
         };
         return map[toString.call(obj)];
-    }
+    },
+
+    /**
+     * 获取 js 常用的标准时间戳
+     *
+     * @param {(string|number)} time
+     */
+    getNormalTime(time) {
+        return Number(String(time).padEnd(13, '0'));
+    },
+    /**
+    * 按类型格式化日期
+    * @param {number | Date} date 具体日期变量
+    * @param {string} dateType 需要返回类型
+    * @return {string} dateText 返回为指定格式的日期字符串
+    */
+    getFormatDate(date, dateType) {
+        let dateObj = new Date(date);
+        let month = dateObj.getMonth() + 1;
+        let strDate = dateObj.getDate();
+        let hours = dateObj.getHours();
+        let minutes = dateObj.getMinutes();
+        let seconds = dateObj.getSeconds();
+        if (month >= 1 && month <= 9) {
+            month = '0' + month;
+        }
+        if (strDate >= 0 && strDate <= 9) {
+            strDate = '0' + strDate;
+        }
+        if (hours >= 0 && hours <= 9) {
+            hours = '0' + hours;
+        }
+        if (minutes >= 0 && minutes <= 9) {
+            minutes = '0' + minutes;
+        }
+        if (seconds >= 0 && seconds <= 9) {
+            seconds = '0' + seconds;
+        }
+
+        let dateText = dateObj.getFullYear() + '年' + (dateObj.getMonth() + 1) + '月' + dateObj.getDate() + '日';
+        if (dateType == 'yyyy-mm-dd') {
+            dateText = dateObj.getFullYear() + '-' + (dateObj.getMonth() + 1) + '-' + dateObj.getDate();
+        }
+        if (dateType == 'yyyy.mm.dd') {
+            dateText = dateObj.getFullYear() + '.' + (dateObj.getMonth() + 1) + '.' + dateObj.getDate();
+        }
+        if (dateType == 'yyyy-mm-dd HH:mm:ss') {
+            dateText = dateObj.getFullYear() + '-' + month + '-' + strDate + ' ' + hours + ':' + minutes + ':' + seconds;
+        }
+        if (dateType == 'mm-dd HH:mm:ss') {
+            dateText = month + '-' + strDate + ' ' + hours + ':' + minutes + ':' + seconds;
+        }
+        if (dateType == 'yyyy年mm月dd日 HH:mm:ss') {
+            dateText = dateObj.getFullYear() + '年' + month + '月' + strDate + '日' + ' ' + hours + ':' + minutes + ':' + seconds;
+        }
+        if (dateType == 'yyyy年mm月dd日 HH:mm') {
+            dateText = dateObj.getFullYear() + '年' + month + '月' + strDate + '日' + ' ' + hours + ':' + minutes;
+        }
+        if (dateType == 'yyyy/mm/dd HH:mm') {
+            dateText = dateObj.getFullYear() + '/' + month + '/' + strDate + ' ' + hours + ':' + minutes;
+        }
+        if (dateType == 'mm月dd日') {
+            dateText = month + '月' + strDate + '日'
+        }
+        if (dateType == 'HH:mm:ss') {
+            dateText = hours + ':' + minutes + ':' + seconds;
+        }
+        if (dateType == 'mm:ss') {
+            dateText = minutes + ':' + seconds;
+        }
+        if (dateType == 'HH:mm') {
+            dateText = hours + ':' + minutes;
+        }
+        return dateText;
+    },
 
 }
 

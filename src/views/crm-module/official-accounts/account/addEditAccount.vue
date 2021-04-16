@@ -22,6 +22,7 @@
 <script>
 import RdForm from "@/components/RdForm";
 import UploadOss from '@/components/UploadOss'
+
 export default {
 	components: { RdForm, UploadOss },
 	data() {
@@ -105,7 +106,7 @@ export default {
 					}
 					this.$fetch('update_official_account', {
 						...data,
-                        id:this.accountId,
+						id: this.accountId,
 						loginUserId: this.$common.getUserId(),
 					}).then((res) => {
 						if (res.code == 200) {

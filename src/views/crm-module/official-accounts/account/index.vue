@@ -2,25 +2,28 @@
 	<div class="account-container">
 		<!-- 搜索栏 -->
 		<search-form ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch"></search-form>
-		<div class="btn-wrapper">
-			<el-button type="primary" size="small" @click="handleAdd">新增公众号</el-button>
-		</div>
-		<!-- 表格主体 -->
-		<rd-table :tableData="tableData" :tableKey="tableKey" :pageConfig.sync="pageConfig" @pageChange="pageChange">
-			<template slot="edit" slot-scope="scope">
-				<el-button @click="handleEdit(scope.row)" type="text" size="small">查阅/编辑</el-button>
-				<el-button @click="handleLabel(scope.row)" type="text" style="color: #67c23a" size="small">查看标签</el-button>
-				<el-button @click="handleDelete(scope.row)" type="text" style="color: #ec5b56" size="small">删除</el-button>
+		<div class="w-container">
+			<div class="btn-wrapper">
+				<el-button type="primary" size="small" @click="handleAdd">新增公众号</el-button>
+			</div>
+			<!-- 表格主体 -->
+			<rd-table :tableData="tableData" :tableKey="tableKey" :pageConfig.sync="pageConfig" @pageChange="pageChange">
+				<template slot="edit" slot-scope="scope">
+					<el-button @click="handleEdit(scope.row)" type="text" size="small">查阅/编辑</el-button>
+					<el-button @click="handleLabel(scope.row)" type="text" style="color: #67c23a" size="small">查看标签</el-button>
+					<el-button @click="handleDelete(scope.row)" type="text" style="color: #ec5b56" size="small">删除</el-button>
 
-			</template>
-		</rd-table>
+				</template>
+			</rd-table>
+		</div>
+
 		<!-- 编辑公众号 -->
 		<rd-dialog :title="AddEditTitle" :dialogVisible="addEditVisible" :showFooter="false" :width="'600px'" @handleClose="addEditVisible = false">
-			<addEditAccount ref="addEditAccount" v-if="addEditVisible" @refresh="getTableData" @close="addEditVisible=false"></addEditAccount>
+			<addEditAccount ref="addEditAccount" v-if="addEditVisible" @refresh="refresh" @close="addEditVisible=false"></addEditAccount>
 		</rd-dialog>
 		<!-- 编辑标签 -->
 		<fullDialog class="accountLabel" :title="'公众号标签'" v-model="labelVisible" @change="labelVisible = false">
-			<accountLabel ref="accountLabel" :appId="appId" v-if="labelVisible" @refresh="getTableData"></accountLabel>
+			<accountLabel ref="accountLabel" :appId="appId" v-if="labelVisible" @refresh="refresh"></accountLabel>
 		</fullDialog>
 	</div>
 </template>
@@ -79,6 +82,11 @@ export default {
 			this.searchForm = { ...data };
 			this.pageConfig.pageNum = 1;
 			this.getTableData();
+		},
+		refresh(val) {
+			this.getTableData({
+				pageNum: val || this.pageConfig.pageNum
+			});
 		},
 		pageChange(val) {
 			this.pageConfig.pageNum = val.page;
