@@ -179,7 +179,7 @@ export default {
 			fansOpenIds: [],
 			SelectPopOptions: {
 				searchObj: {
-					api: "get_wechat_users_page",
+					api: "wechat_user_page_list",
 					formOptions: [],
 					needType: false,
 					params: {
