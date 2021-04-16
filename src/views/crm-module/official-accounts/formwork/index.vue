@@ -1,5 +1,5 @@
 <template>
-	<div class='book-container'>
+	<div class='formwork-container'>
 		<!-- 搜索栏 -->
 		<search-form ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch"></search-form>
 		<!-- 表格主体 -->
@@ -10,7 +10,7 @@
 		</rd-table>
 
 		<rd-dialog :title="'模板通知'" :dialogVisible="templateVisible" :showFooter="false" :width="'1200px'" @handleClose="templateVisible = false">
-			<addEditFormwrok :formwork="formwork" v-if="templateVisible" :appId="official_accounts[searchForm.officialAccounts].appId" :appSecret="official_accounts[searchForm.officialAccounts].appSecret"></addEditFormwrok>
+			<addEditFormwrok :formwork="formwork" v-if="templateVisible" :appId="official_accounts[searchForm.officialAccounts].appId" :appSecret="official_accounts[searchForm.officialAccounts].appSecret" @refresh="getTableData" @close="templateVisible = false"></addEditFormwrok>
 		</rd-dialog>
 	</div>
 </template>
@@ -23,7 +23,9 @@ export default {
 	data() {
 		return {
 			formOptions: [
-				{}
+				{
+					
+				}
 			],
 			tableData: [],
 			tableKey: [
@@ -128,7 +130,7 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-.book-container {
+.formwork-container {
 	/deep/ {
 		.el-input__icon {
 			line-height: unset;

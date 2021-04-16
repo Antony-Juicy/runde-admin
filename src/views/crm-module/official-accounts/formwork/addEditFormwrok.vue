@@ -38,6 +38,14 @@
 								</el-option>
 							</el-select>
 						</template>
+						<template v-if="fansType == 'openIds'">
+							<el-tag style="margin-right:10px" v-for="(item,index) in fansOpenIds" :key="index" closable>
+								{{item.name}}
+							</el-tag>
+							<SelectPop style="width:auto" v-bind="SelectPopOptions" @select="handle_selectUser">
+								<el-button size="small">添加粉丝</el-button>
+							</SelectPop>
+						</template>
 					</template>
 				</RdForm>
 			</div>
@@ -77,6 +85,7 @@
 
 <script>
 import RdForm from "@/components/RdForm";
+import SelectPop from '@/components/SelectPop'
 export default {
 	props: {
 		formwork: {
@@ -92,7 +101,7 @@ export default {
 			require: true
 		}
 	},
-	components: { RdForm },
+	components: { RdForm, SelectPop },
 	data() {
 		return {
 			addFormOptions: [
@@ -166,7 +175,42 @@ export default {
 			},
 			fansType: "allFans",
 			tagsOptions: [],
-			fansTages: ''
+			fansTages: [],
+			fansOpenIds: [],
+			SelectPopOptions: {
+				searchObj: {
+					api: "get_wechat_users_page",
+					formOptions: [],
+					needType: false,
+					params: {
+						appId: this.appId
+					}
+				},
+				tableObj: {
+					tableKey: [
+						{
+							name: "用户名",
+							value: "nickName",
+							width: 200,
+						},
+						{
+							name: "用户标签",
+							value: "labels",
+						},
+					],
+					transItem: (item) => {
+						try {
+							item.labels = (item.wechatUserTagModel.map(v => {
+								return v.labelName
+							})).join(',')
+						} catch (error) {
+
+						}
+
+						return item
+					}
+				}
+			}
 		}
 	},
 	computed: {
@@ -182,7 +226,6 @@ export default {
 		analysis_content() {
 			let content = this.formwork.content.replace(/ /g, '')
 			let content_keys = content.match(/\{(.+?)\}}/g)
-			console.log(content, content_keys)
 			let formwork_content = []
 			for (const i of content_keys) {
 				i.match(/\{{(.+?)\}}/g)
@@ -222,9 +265,9 @@ export default {
 			this.formwork_content = formwork_content
 		},
 		handle_close() {
-
+			this.$emit('close')
 		},
-		handle_commit() {
+		async handle_commit() {
 			// 实际上 form 里面没有需要提交的数据  坑了
 			if (this.noticeFontCount > 200) {
 				this.$message.error("模板消息内容请在200字以内");
@@ -244,7 +287,7 @@ export default {
 				data: {}
 			}
 			this.formwork_content.forEach(v => {
-                msgTemplate.data[v.key] = {}
+				msgTemplate.data[v.key] = {}
 				msgTemplate.data[v.key].value = v.value
 				msgTemplate.data[v.key].color = v.color
 			})
@@ -253,17 +296,48 @@ export default {
 			}
 			else {
 				msgTemplate.miniprogram = {
-                    appid:this.linkContent.xcx[0].value,
-                    pagepath:this.linkContent.xcx[1].value,
-                    remark:this.linkContent.xcx[3].value,
+					appid: this.linkContent.xcx[0].value,
+					pagepath: this.linkContent.xcx[1].value,
+					remark: this.linkContent.xcx[3].value,
 				}
 			}
+
 			let formData = {
 				appId: this.appId,
 				appSecret: this.appSecret,
 				msgTemplate: JSON.stringify(msgTemplate)
 			}
-			console.log(formData)
+			if (this.fansType == 'allFans') {
+				formData.allFans = true
+			}
+			else if (this.fansType == 'labelIds') {
+
+			}
+			else if (this.fansType == 'openIds') {
+				if (!this.fansOpenIds.length > 0) {
+					this.$message.error("需要指定推送的粉丝");
+					return
+				}
+				formData.openId = this.fansOpenIds.map(v => { return v.openId }).join(',')
+			}
+			// console.log(formData)
+
+			let res = await this.$fetch(
+				"send_official_accounts_formwrok",
+				formData);
+			console.log(res)
+
+
+		},
+
+		handle_selectUser(data) {
+			if (this.fansOpenIds.findIndex(v => v.openId == data.openId) > -1) {
+				return
+			}
+			this.fansOpenIds.push({
+				name: data.nickName,
+				openId: data.openId
+			})
 		}
 	},
 	mounted() {
