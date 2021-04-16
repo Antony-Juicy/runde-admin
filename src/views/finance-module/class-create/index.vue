@@ -1,0 +1,577 @@
+<template>
+  <div class="class-create">
+    <search-form
+      :formOptions="formOptions"
+      :showNum="showNum"
+      @onSearch="onSearch"
+    ></search-form>
+    <div class="w-container mt-15">
+      <div class="btn-wrapper">
+        <el-button type="primary" size="small"> +添加</el-button>
+        <el-button type="primary" size="small" @click="handleAdd">
+          设置班型内容</el-button
+        >
+      </div>
+      <rd-table
+        :tableData="tableData"
+        :tableKey="tableKey"
+        :loading="loading"
+        :tbodyHeight="600"
+        :pageConfig.sync="pageConfig"
+        @pageChange="pageChange"
+      >
+        <template slot="edit" slot-scope="scope">
+          <el-button @click="handleEdit()" type="text" size="medium">
+            编辑
+          </el-button>
+          <el-button @click="handleDelete(scope.row)" type="text" size="medium"
+            >设置网课编码</el-button
+          >
+          <el-button @click="handleDelete(scope.row)" type="text" size="medium"
+            >设置图书编码</el-button
+          >
+          <el-button @click="handleDelete(scope.row)" type="text" size="medium"
+            >设置配送图书</el-button
+          >
+        </template>
+      </rd-table>
+    </div>
+    <!-- 添加弹窗 -->
+    <fullDialog
+      class="full-dialog-wrap"
+      v-model="addVisible"
+      :title="addStatus ? '添加班型内容' : '编辑班型内容'"
+      @change="handleClose('dataForm1')"
+    >
+      <div class="steps-box">
+        <el-steps :active="active" finish-status="success">
+          <el-step title="填写班型基本信息"></el-step>
+          <el-step title="配置班型内容"></el-step>
+          <el-step title="配置其他权限"></el-step>
+        </el-steps>
+      </div>
+
+      <div class="class-step1 class-moudle" v-if="active == 0">
+        <RdForm
+          :formOptions="addFormOptions"
+          :rules="addRules"
+          ref="dataForm1"
+          formLabelWidth="120px"
+        >
+        </RdForm>
+
+        <div class="btn-wrapper btn-wrap">
+          <el-button
+            class="el-btn"
+            type="primary"
+            size="small"
+            :loading="btnLoading"
+            @click="handleNext"
+            v-prevent-re-click="2000"
+            >下一步</el-button
+          >
+        </div>
+      </div>
+
+      <div class="class-step2 class-moudle" v-if="active == 1">
+        <el-form
+          ref="dataForm2"
+          :model="basicInfo"
+          :rules="rules"
+          label-width="100px"
+        >
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="项目：" prop="project" inline="true">
+                <el-select
+                  v-model="basicInfo.project"
+                  placeholder="请选择"
+                  size="small"
+                >
+                  <el-option
+                    v-for="item in projectArr"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="科目：" prop="subject" inline="true">
+                <el-select
+                  v-model="basicInfo.subject"
+                  placeholder="请选择"
+                  size="small"
+                >
+                  <el-option
+                    v-for="item in projectArr"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <!-- <el-row>
+            <el-col :span="8">学费价格：</el-col>
+            <el-col :span="8">
+            
+            </el-col>
+            <el-col :span="8">元</el-col>
+          </el-row> -->
+
+          <el-form-item label="学费价格：">
+            <el-row :gutter="12">
+              <el-col :span="3">总学费</el-col>
+              <el-col :span="8">
+                <el-input
+                  v-model="basicInfo.sumPrice"
+                  placeholder="请输入内容"
+                ></el-input>
+              </el-col>
+              <el-col :span="8">元</el-col>
+            </el-row>
+            <el-row :gutter="12">
+              <el-col :span="3">中药一</el-col>
+              <el-col :span="8">
+                <el-input
+                  v-model="basicInfo.price1"
+                  placeholder="请输入价格"
+                ></el-input>
+              </el-col>
+              <el-col :span="3">
+                <el-checkbox v-model="basicInfo.checked1">备选项</el-checkbox>
+              </el-col>
+            </el-row>
+            <el-row :gutter="12">
+              <el-col :span="3">中药一</el-col>
+              <el-col :span="8">
+                <el-input
+                  v-model="basicInfo.price1"
+                  placeholder="请输入价格"
+                ></el-input>
+              </el-col>
+              <el-col :span="3">
+                <el-checkbox v-model="basicInfo.checked1">备选项</el-checkbox>
+              </el-col>
+            </el-row>
+            <el-row :gutter="12">
+              <el-col :span="3">中药一</el-col>
+              <el-col :span="8">
+                <el-input
+                  v-model="basicInfo.price1"
+                  placeholder="请输入价格"
+                ></el-input>
+              </el-col>
+              <el-col :span="3">
+                <el-checkbox v-model="basicInfo.checked1">备选项</el-checkbox>
+              </el-col>
+            </el-row>
+            <el-row :gutter="12">
+              <el-col :span="3">中药一</el-col>
+              <el-col :span="8">
+                <el-input
+                  v-model="basicInfo.price1"
+                  placeholder="请输入价格"
+                ></el-input>
+              </el-col>
+              <el-col :span="3">
+                <el-checkbox v-model="basicInfo.checked1">备选项</el-checkbox>
+              </el-col>
+            </el-row>
+          </el-form-item>
+        </el-form>
+      </div>
+    </fullDialog>
+  </div>
+</template>
+
+<script>
+import fullDialog from "@/components/FullDialog";
+import RdForm from "@/components/RdForm";
+export default {
+  name: "temp",
+  components: {
+    fullDialog,
+    RdForm,
+  },
+  data() {
+    return {
+      btnLoading: false,
+      active: 0,
+      showNum: 5,
+      formOptions: [
+        {
+          prop: "classTypeName",
+          element: "el-input",
+          placeholder: "请输入班型名称",
+        },
+        { prop: "project", element: "el-select", placeholder: "请选择项目" },
+        { prop: "subject", element: "el-select", placeholder: "请选择科目" },
+        { prop: "status", element: "el-select", placeholder: "请选择状态" },
+        { prop: "year", element: "el-select", placeholder: "请选择年份" },
+        {
+          prop: "helpType",
+          element: "el-select",
+          placeholder: "请选择协议类型",
+        },
+        {
+          prop: "refundType",
+          element: "el-select",
+          placeholder: "请选择退费类型",
+        },
+        { prop: "eduSystem", element: "el-select", placeholder: "请选择学制" },
+        {
+          prop: "serviceTime",
+          element: "el-select",
+          placeholder: "请选择服务年限",
+        },
+        {
+          prop: "classGroup",
+          element: "el-select",
+          placeholder: "请选择班型分组",
+        },
+      ],
+      tableData: [
+        {
+          id: 1,
+          value2: "啊哈哈",
+          value3: 1995,
+          value4: 1995,
+          value5: 1995,
+          value6: 1995,
+          value7: 1995,
+          value8: 1995,
+          value9: 1995,
+          value10: 1995,
+          value11: 1995,
+          value12: 1995,
+          value13: 1995,
+          value14: 1995,
+          value15: 1995,
+        },
+      ],
+      tableKey: [
+        { name: "ID", value: "id" },
+        { name: "班型名称", value: "value2" },
+        { name: "年份", value: "value3" },
+        { name: "班型类型", value: "value4" },
+        { name: "协议类型", value: "value5" },
+        { name: "退费类型", value: "value6" },
+        { name: "项目", value: "value7" },
+        { name: "科目", value: "value8" },
+        { name: "课程", value: "value9" },
+        { name: "班型内容", value: "value10" },
+        { name: "学费/元", value: "value11" },
+        { name: "学制", value: "value12" },
+        { name: "服务年限", value: "value13" },
+        { name: "成本费用/元", value: "value14" },
+        { name: "通过扣除费用", value: "value15" },
+        { name: "班型分组", value: "value16" },
+        { name: "班型阶段", value: "value17" },
+        { name: "班群服务类型", value: "value18" },
+        { name: "班群人数", value: "value19" },
+        { name: "状态", value: "value20" },
+        {
+          name: "操作",
+          value: "edit",
+          operate: true,
+          width: 140,
+          fixed: "right",
+        },
+      ],
+      emptyText: "暂无数据",
+      pageConfig: {
+        totalCount: 0,
+        pageNum: 1,
+        showCount: 10,
+      },
+      loading: false,
+      addVisible: false,
+      addStatus: true,
+      addFormOptions: [
+        {
+          prop: "className",
+          element: "el-input",
+          placeholder: "请输入班型内容名称",
+          label: "班型内容名称：",
+        },
+        {
+          prop: "classYear",
+          element: "el-select",
+          placeholder: "班型年份",
+          label: "班型年份:",
+        },
+        {
+          prop: "classType",
+          element: "el-radio",
+          placeholder: "请选择类型",
+          label: "班型类型：",
+          options: [
+            {
+              label: "网课",
+              value: "1",
+            },
+            {
+              label: "直播",
+              value: "2",
+            },
+            {
+              label: "面授",
+              value: "3",
+            },
+            {
+              label: "证书",
+              value: "4",
+            },
+            {
+              label: "公开课",
+              value: "5",
+            },
+          ],
+          initValue: "0",
+        },
+        {
+          prop: "classGroup",
+          element: "el-radio",
+          placeholder: "请选择类型",
+          label: "班型分组：",
+          options: [
+            {
+              label: "高端班",
+              value: "1",
+            },
+            {
+              label: "非高端班",
+              value: "2",
+            },
+            {
+              label: "定制班",
+              value: "3",
+            },
+          ],
+          initValue: "0",
+        },
+        {
+          prop: "serviceYear",
+          element: "el-radio",
+          placeholder: "请选择类型",
+          label: "服务年限：",
+          options: [
+            {
+              label: "1年",
+              value: "1",
+            },
+            {
+              label: "1年",
+              value: "2",
+            },
+            {
+              label: "1年",
+              value: "3",
+            },
+            {
+              label: "4年",
+              value: "4",
+            },
+          ],
+          initValue: "0",
+        },
+        {
+          prop: "protocolType",
+          element: "el-radio",
+          placeholder: "请选择协议类型",
+          label: "协议类型：",
+          options: [
+            {
+              label: "协议班",
+              value: "Open",
+            },
+            {
+              label: "非协议班",
+              value: "Close",
+            },
+          ],
+          initValue: "Open",
+        },
+        {
+          prop: "refundType",
+          element: "el-radio",
+          placeholder: "请选择退费类型",
+          label: "退费类型：",
+          options: [
+            {
+              label: "退费",
+              value: "Open",
+            },
+            {
+              label: "不退费",
+              value: "Close",
+            },
+          ],
+          initValue: "Open",
+        },
+        {
+          prop: "status",
+          element: "el-radio",
+          placeholder: "请选择状态",
+          label: "状态：",
+          options: [
+            {
+              label: "正常",
+              value: "Open",
+            },
+            {
+              label: "暂停",
+              value: "Close",
+            },
+          ],
+          initValue: "Open",
+        },
+      ],
+      addRules: {},
+      basicInfo: {
+        project: "",
+        subject: "",
+        sumPrice: "",
+        price1: "",
+        checked1: "",
+        value1: "",
+        value2: "",
+        value3: "",
+        value4: "",
+        status: "",
+        nextTime: "",
+        detail: "",
+      },
+      rules: {
+        project: [{ message: "请选择项目", trigger: "blur" }],
+        subject: [{ message: "请选择科目", trigger: "blur" }],
+      },
+      projectArr: [
+        {
+          value: "选项1",
+          label: "1",
+        },
+        {
+          value: "选项2",
+          label: "2",
+        },
+        {
+          value: "选项3",
+          label: "3",
+        },
+        {
+          value: "选项4",
+          label: "4",
+        },
+        {
+          value: "选项5",
+          label: "5",
+        },
+      ],
+    };
+  },
+  methods: {
+    handleAdd() {
+      this.addVisible = true;
+    },
+    onSearch(val) {
+      this.searchForm = { ...val };
+      this.pageConfig.pageNum = 1;
+      this.getTableData();
+      console.log(val, this.searchForm, "val---");
+      this.getTableData();
+    },
+    pageChange(val) {
+      console.log(val, "pagechange");
+      this.pageConfig.currentPage = val.page;
+      this.pageConfig.showCount = val.limit;
+      this.getTableData();
+    },
+    getTableData(params = {}) {
+      return new Promise((resolve, reject) => {
+        // this.$fetch("", {
+        //   ...this.pageConfig,
+        //   ...this.searchForm,
+        //   ...params,
+        // }).then((res) => {
+        //   this.tableData = res.data.records;
+        //   this.pageConfig.totalCount = res.data.totalCount;
+        //   resolve();
+        // });
+      });
+    },
+    handleEdit(data) {
+      this.addStatus = false;
+      this.addVisible = true;
+    },
+    handleDelete(row) {
+      let info = "";
+      this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(async () => {
+          //   const res = await this.$fetch("projectType_delete", {
+          //     typeId: row.typeId,
+          //     loginUserId,
+          //   }).then((res) => {
+          //     if (res) {
+          //       this.$message({
+          //         message: "删除成功",
+          //         type: "success",
+          //       });
+          //       setTimeout(() => {
+          //         this.getTableData();
+          //       }, 50);
+          //     }
+          //   });
+        })
+        .catch(() => {});
+    },
+    handleClose(formName) {
+      this.active = 0;
+      this.$refs[formName].onReset();
+      this.addVisible = false;
+      //   this.dynamicValidateForm.domains = [];
+    },
+    handleNext() {
+      this.active++;
+      console.log("active", this.active);
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.class-create {
+  /deep/.el-button {
+    margin: 0;
+  }
+  .steps-box {
+    width: 80%;
+    margin: 0 auto;
+  }
+  .class-moudle {
+    width: 60%;
+    margin: 40px auto 0;
+  }
+  .class-step2 {
+    .el-row {
+      margin-bottom: 20px;
+    }
+  }
+  .btn-wrap {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+}
+</style>
