@@ -12,6 +12,7 @@
           设置班型内容</el-button
         >
       </div>
+
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
@@ -78,9 +79,9 @@
           ref="dataForm2"
           :model="basicInfo"
           :rules="rules"
-          label-width="100px"
+          label-width="120px"
         >
-          <el-row>
+          <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="项目：" prop="project" inline="true">
                 <el-select
@@ -116,18 +117,10 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <!-- <el-row>
-            <el-col :span="8">学费价格：</el-col>
-            <el-col :span="8">
-            
-            </el-col>
-            <el-col :span="8">元</el-col>
-          </el-row> -->
-
           <el-form-item label="学费价格：">
-            <el-row :gutter="12">
+            <el-row :gutter="6" class="mb20">
               <el-col :span="3">总学费</el-col>
-              <el-col :span="8">
+              <el-col :span="5">
                 <el-input
                   v-model="basicInfo.sumPrice"
                   placeholder="请输入内容"
@@ -135,7 +128,7 @@
               </el-col>
               <el-col :span="8">元</el-col>
             </el-row>
-            <el-row :gutter="12">
+            <el-row :gutter="20" class="mb20">
               <el-col :span="3">中药一</el-col>
               <el-col :span="8">
                 <el-input
@@ -144,11 +137,11 @@
                 ></el-input>
               </el-col>
               <el-col :span="3">
-                <el-checkbox v-model="basicInfo.checked1">备选项</el-checkbox>
+                <el-checkbox v-model="basicInfo.checked1">计算业绩</el-checkbox>
               </el-col>
             </el-row>
-            <el-row :gutter="12">
-              <el-col :span="3">中药一</el-col>
+            <el-row :gutter="20" class="mb20">
+              <el-col :span="3">中药二</el-col>
               <el-col :span="8">
                 <el-input
                   v-model="basicInfo.price1"
@@ -156,11 +149,11 @@
                 ></el-input>
               </el-col>
               <el-col :span="3">
-                <el-checkbox v-model="basicInfo.checked1">备选项</el-checkbox>
+                <el-checkbox v-model="basicInfo.checked2">计算业绩</el-checkbox>
               </el-col>
             </el-row>
-            <el-row :gutter="12">
-              <el-col :span="3">中药一</el-col>
+            <el-row :gutter="20" class="mb20">
+              <el-col :span="3">中药综合</el-col>
               <el-col :span="8">
                 <el-input
                   v-model="basicInfo.price1"
@@ -168,11 +161,11 @@
                 ></el-input>
               </el-col>
               <el-col :span="3">
-                <el-checkbox v-model="basicInfo.checked1">备选项</el-checkbox>
+                <el-checkbox v-model="basicInfo.checked3">计算业绩</el-checkbox>
               </el-col>
             </el-row>
-            <el-row :gutter="12">
-              <el-col :span="3">中药一</el-col>
+            <el-row :gutter="20">
+              <el-col :span="3">中药法规</el-col>
               <el-col :span="8">
                 <el-input
                   v-model="basicInfo.price1"
@@ -180,24 +173,197 @@
                 ></el-input>
               </el-col>
               <el-col :span="3">
-                <el-checkbox v-model="basicInfo.checked1">备选项</el-checkbox>
+                <el-checkbox v-model="basicInfo.checked4">计算业绩</el-checkbox>
               </el-col>
             </el-row>
           </el-form-item>
+          <el-row :gutter="20">
+            <el-form-item label="退费规则：" prop="refundType">
+              <el-select
+                v-model="basicInfo.refundType"
+                placeholder="请选择退费规则"
+                size="small"
+              >
+                <el-option
+                  v-for="item in projectArr"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="成本费用：" prop="value14" inline="true">
+                <el-row :gutter="12">
+                  <el-col :span="12">
+                    <el-input
+                      v-model="basicInfo.value14"
+                      placeholder="请输入价格"
+                      size="small"
+                    >
+                    </el-input
+                  ></el-col>
+                  <el-col :span="4">/科</el-col>
+                </el-row>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="通过扣除费用：" prop="value15" inline="true">
+                <el-row :gutter="12">
+                  <el-col :span="12">
+                    <el-input
+                      v-model="basicInfo.value15"
+                      placeholder="请输入价格"
+                      size="small"
+                    >
+                    </el-input>
+                  </el-col>
+                  <el-col :span="4">/科</el-col>
+                </el-row>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-form-item label="班型内容：" prop="value10" inline="true">
+            <div>
+              <el-button
+                @click="handleAddContent()"
+                type="primary"
+                size="small"
+              >
+                +添加内容
+              </el-button>
+            </div>
+            <div class="mt20">
+              <rd-table
+                :tableData="basicInfo.tableData"
+                :tableKey="basicInfo.tableKey"
+                :pageConfig.sync="basicInfo.pageConfig"
+                :tbodyHeight="600"
+                fixedTwoRow
+                @pageChange="handlePageChange"
+                :emptyText="basicInfo.emptyText"
+              >
+                <template slot="edit" slot-scope="scope">
+                  <el-button @click="handleDelete()" type="text" size="medium">
+                    删除
+                  </el-button>
+                </template>
+              </rd-table>
+            </div>
+          </el-form-item>
         </el-form>
+
+        <div class="btn-wrapper btn-wrap">
+          <el-button
+            class="el-btn"
+            type="primary"
+            size="small"
+            @click="handlePre('step2')"
+            v-prevent-re-click="2000"
+            >上一步</el-button
+          >
+          <el-button
+            class="el-btn"
+            type="primary"
+            size="small"
+            @click="handleNext('step2')"
+            v-prevent-re-click="2000"
+            >下一步</el-button
+          >
+        </div>
+      </div>
+
+      <div class="class-step3 class-moudle" v-if="active == 2">
+        <RdForm
+          :formOptions="step3FormOptions"
+          :rules="step3Rules"
+          ref="dataForm1"
+          formLabelWidth="160px"
+        >
+          <template slot="campusVisible" slot-scope="scope">
+            <el-form-item label="校区可见" prop="campusVisible">
+              <el-select
+                v-model="basicInfo.campusVisible"
+                placeholder="请选择"
+                multiple
+              >
+                <el-option
+                  :label="item.label"
+                  :value="item.value"
+                  v-for="item in campusArr"
+                  :key="item.value"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </template>
+        </RdForm>
+
+        <div class="btn-wrapper btn-wrap">
+          <el-button
+            class="el-btn"
+            type="primary"
+            size="small"
+            @click="handlePre('step3')"
+            v-prevent-re-click="2000"
+            >上一步</el-button
+          >
+          <el-button
+            class="el-btn"
+            type="primary"
+            size="small"
+            @click="handleNext('step3')"
+            v-prevent-re-click="2000"
+            >提交</el-button
+          >
+        </div>
       </div>
     </fullDialog>
+    <!-- 添加内容弹窗 -->
+    <rd-dialog
+      :title="'添加班型内容'"
+      :dialogVisible="distributeVisible"
+      :showFooter="false"
+      :width="'990px'"
+      @handleClose="distributeVisible = false"
+    >
+      <addClass
+        :opportunityIds="opportunityIds"
+        @refresh="getAddClassTableData"
+        @close="distributeVisible = false"
+        v-if="distributeVisible"
+      />
+      <div class="btn-wrapper" style="text-align: right; margin-top: 20px">
+        <el-button size="small" @click="distributeVisible = false"
+          >取消</el-button
+        >
+        <el-button
+          type="primary"
+          size="small"
+          :loading="btnLoading"
+          @click="handleAddClass"
+          v-prevent-re-click="2000"
+          >添加</el-button
+        >
+      </div>
+    </rd-dialog>
   </div>
 </template>
 
 <script>
 import fullDialog from "@/components/FullDialog";
 import RdForm from "@/components/RdForm";
+import addClass from "./add-class";
 export default {
   name: "temp",
   components: {
     fullDialog,
     RdForm,
+    addClass,
   },
   data() {
     return {
@@ -278,7 +444,7 @@ export default {
         { name: "状态", value: "value20" },
         {
           name: "操作",
-          value: "edit",
+          value: "edit2",
           operate: true,
           width: 140,
           fixed: "right",
@@ -440,6 +606,9 @@ export default {
         sumPrice: "",
         price1: "",
         checked1: "",
+        checked2: "",
+        checked3: "",
+        checked4: "",
         value1: "",
         value2: "",
         value3: "",
@@ -447,6 +616,51 @@ export default {
         status: "",
         nextTime: "",
         detail: "",
+        refundType: "",
+        value14: "",
+        value15: "",
+        tableData: [
+          {
+            id: 1,
+            value2: "啊哈哈11",
+            value3: 1995,
+            value4: 1995,
+            value5: 1995,
+            value6: 1995,
+            value7: 1995,
+            value8: 1995,
+            value9: 1995,
+            value10: 1995,
+            value11: 1995,
+            value12: 1995,
+            value13: 1995,
+            value14: 1995,
+            value15: 1995,
+          },
+        ],
+        tableKey: [
+          { name: "id", value: "id" },
+          { name: "所属项目", value: "value2" },
+          { name: "内容名称", value: "value3" },
+          { name: "类型", value: "value4" },
+          { name: "核算规则", value: "value5" },
+          { name: "学费/元", value: "value6" },
+          { name: "录播情况", value: "value7" },
+
+          {
+            name: "操作",
+            value: "edit",
+            operate: true,
+            width: 140,
+            fixed: "right",
+          },
+        ],
+        emptyText: "暂无数据",
+        pageConfig: {
+          totalCount: 0,
+          pageNum: 1,
+          showCount: 10,
+        },
       },
       rules: {
         project: [{ message: "请选择项目", trigger: "blur" }],
@@ -474,9 +688,160 @@ export default {
           label: "5",
         },
       ],
+      step3FormOptions: [
+        {
+          prop: "WeeklyPermissions",
+          element: "el-radio",
+          placeholder: "请选择考药狮周测权限",
+          label: "考药狮周测权限：",
+          options: [
+            {
+              label: "有权限",
+              value: "Open",
+            },
+            {
+              label: "无权限",
+              value: "Close",
+            },
+          ],
+          initValue: "Open",
+        },
+        {
+          prop: "exchange",
+          element: "el-radio",
+          placeholder: "请选择电商是否可兑换",
+          label: "电商是否可兑换",
+          options: [
+            {
+              label: "是",
+              value: "Open",
+            },
+            {
+              label: "否",
+              value: "Close",
+            },
+          ],
+          initValue: "Open",
+        },
+        {
+          prop: "testAuthority",
+          element: "el-radio",
+          placeholder: "请选择考药狮模拟测试权限",
+          label: "考药狮模拟测试权限：",
+          options: [
+            {
+              label: "有权限",
+              value: "Open",
+            },
+            {
+              label: "无权限",
+              value: "Close",
+            },
+          ],
+          initValue: "Open",
+        },
+        {
+          prop: "studyAuthority",
+          element: "el-radio",
+          placeholder: "请选择考药狮自习室权限",
+          label: "考药狮自习室权限：",
+          options: [
+            {
+              label: "有权限",
+              value: "Open",
+            },
+            {
+              label: "无权限",
+              value: "Close",
+            },
+          ],
+          initValue: "Open",
+        },
+        {
+          prop: "ClassTypeService",
+          element: "el-select",
+          placeholder: "班型服务",
+          label: "班型服务：",
+        },
+        {
+          prop: "ClassGroupSize",
+          element: "el-input",
+          placeholder: "班级群人数",
+          label: "班级群人数：",
+        },
+        {
+          prop: "campusVisible",
+          element: "el-cascader",
+          placeholder: "校区可见",
+          initWidth: true,
+          label: "校区可见：",
+        },
+        {
+          prop: "RevenueCategory1",
+          element: "el-select",
+          placeholder: "营收一级类目",
+          label: "营收一级类目：",
+        },
+        {
+          prop: "secondaryCategory",
+          element: "el-select",
+          placeholder: "二级类目",
+          label: "二级类目：",
+        },
+        {
+          prop: "ThirdCategory",
+          element: "el-select",
+          placeholder: "三级类目",
+          label: "三级类目",
+        },
+        {
+          prop: "ClassType",
+          element: "el-select",
+          placeholder: "班型",
+          label: "班型：",
+        },
+      ],
+      step3Rules: {
+        campusVisible: [
+          { required: false, message: "请选择", trigger: "blur" },
+        ],
+      },
+      campusArr: [],
+      distributeVisible: true,
+      opportunityIds: "",
     };
   },
+  mounted() {
+    this.getAddClassTableData();
+  },
   methods: {
+    getAddClassTableData(params = {}) {
+      // this.$fetch("chance_campus_list", {
+      //   ...this.pageConfig,
+      //   ...this.searchForm,
+      //   ...params,
+      // }).then((res) => {
+      //   this.tableData = res.data.data.map((item) => {
+      //     item.createAt = this.$common._formatDates(item.createAt);
+      //     item.updateAt = this.$common._formatDates(item.updateAt);
+      //     item.campusPoolTime = this.$common._formatDates(item.campusPoolTime);
+      //     item.recentFeedbackTime = this.$common._formatDates(item.recentFeedbackTime);
+      //     // item.phone = this.$common.hidePhone(item.phone);
+      //     item.enquireClassOne =
+      //       item.enquireClassOne &&
+      //       item.enquireClassOne.map((item) => item.name).join(",");
+      //     return item;
+      //   });
+      //   this.pageConfig.totalCount = res.data.count;
+      // });
+    },
+    handleAddClass() {
+      console.log(77);
+    },
+    handleAddContent() {
+      console.log("handleAddContent--");
+      this.distributeVisible = true;
+    },
     handleAdd() {
       this.addVisible = true;
     },
@@ -493,6 +858,7 @@ export default {
       this.pageConfig.showCount = val.limit;
       this.getTableData();
     },
+    handlePageChange() {},
     getTableData(params = {}) {
       return new Promise((resolve, reject) => {
         // this.$fetch("", {
@@ -537,9 +903,12 @@ export default {
     },
     handleClose(formName) {
       this.active = 0;
-      this.$refs[formName].onReset();
+      // this.$refs[formName].onReset();
       this.addVisible = false;
       //   this.dynamicValidateForm.domains = [];
+    },
+    handlePre() {
+      this.active--;
     },
     handleNext() {
       this.active++;
@@ -562,10 +931,15 @@ export default {
     width: 60%;
     margin: 40px auto 0;
   }
-  .class-step2 {
-    .el-row {
-      margin-bottom: 20px;
-    }
+
+  .mt20 {
+    margin-top: 20px;
+  }
+  .mb20 {
+    margin-bottom: 20px;
+  }
+  .el-btn {
+    margin-right: 20px;
   }
   .btn-wrap {
     display: flex;
