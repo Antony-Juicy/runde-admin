@@ -21,7 +21,7 @@
         <template slot="couponName" slot-scope="scope">
             优惠券名称： {{scope.row.couponName}}<br>
             项目名称： {{scope.row.productName}}<br>
-            优惠券数量： <span style="font-size:15px;color:#009688;font-weight:bold;">{{scope.row.couponNum}}</span><br>
+            优惠券数量： <span style="font-size:14px;color:#009688;font-weight:bold;">{{scope.row.couponNum}}</span><br>
             学员类型： {{scope.row.studentType}}<br>
             优惠券状态： {{scope.row.couponStatus}}<br>
             说明： {{scope.row.remark}}<br>
@@ -36,7 +36,7 @@
                     </template>
                 </template>
                 <template v-else>
-                    <span style="font-size:15px;color:#009688;font-weight:bold;">无层级限制</span>
+                    <span style="font-size:14px;color:#009688;font-weight:bold;">无层级限制</span>
                 </template>
             </template>
             <template v-else>
@@ -46,7 +46,7 @@
                     </template>
                 </template>
                 <template v-else>
-                    <span style="font-size:15px;color:#009688;font-weight:bold;">无科目限制</span>
+                    <span style="font-size:14px;color:#009688;font-weight:bold;">无科目限制</span>
                 </template>
             </template>
         </template>
@@ -58,7 +58,7 @@
                     </template>
                 </template>
                 <template v-else>
-                    <span style="font-size:15px;color:#009688;font-weight:bold;">无学校限制</span>
+                    <span style="font-size:14px;color:#009688;font-weight:bold;">无学校限制</span>
                 </template>
             </template>
             <template v-else>
@@ -68,7 +68,7 @@
                     </template>
                 </template>
                 <template v-else>
-                    <span style="font-size:15px;color:#009688;font-weight:bold;">无班型限制</span>
+                    <span style="font-size:14px;color:#009688;font-weight:bold;">无班型限制</span>
                 </template>
             </template>
         </template>
@@ -80,7 +80,7 @@
                     </template>
                 </template>
                 <template v-else>
-                    <span style="font-size:15px;color:#009688;font-weight:bold;">无专业限制</span>
+                    <span style="font-size:14px;color:#009688;font-weight:bold;">无专业限制</span>
                 </template>
             </template>
             <template v-else>
@@ -90,7 +90,7 @@
                     </template>
                 </template>
                 <template v-else>
-                    <span style="font-size:15px;color:#009688;font-weight:bold;">无课程限制</span>
+                    <span style="font-size:14px;color:#009688;font-weight:bold;">无课程限制</span>
                 </template>
             </template>
         </template>
@@ -102,7 +102,7 @@
                     </template>
                 </template>
                 <template v-else>
-                    <span style="font-size:15px;color:#009688;font-weight:bold;">无前置学校限制</span>
+                    <span style="font-size:14px;color:#009688;font-weight:bold;">无前置学校限制</span>
                 </template>
             </template>
             <template v-else>
@@ -112,7 +112,7 @@
                     </template>
                 </template>
                 <template v-else>
-                    <span style="font-size:15px;color:#009688;font-weight:bold;">无前置班型限制</span>
+                    <span style="font-size:14px;color:#009688;font-weight:bold;">无前置班型限制</span>
                 </template>
             </template>
         </template>
@@ -124,7 +124,7 @@
                     </template>
                 </template>
                 <template v-else>
-                    <span style="font-size:15px;color:#009688;font-weight:bold;">无前置专业限制</span>
+                    <span style="font-size:14px;color:#009688;font-weight:bold;">无前置专业限制</span>
                 </template>
             </template>
             <template v-else>
@@ -134,7 +134,7 @@
                     </template>
                 </template>
                 <template v-else>
-                    <span style="font-size:15px;color:#009688;font-weight:bold;">无前置科目限制</span>
+                    <span style="font-size:14px;color:#009688;font-weight:bold;">无前置科目限制</span>
                 </template>
             </template>
         </template>
@@ -145,7 +145,7 @@
                 </template>
             </template>
             <template v-else>
-                <span style="font-size:15px;color:#009688;font-weight:bold;">无校区限制</span>
+                <span style="font-size:14px;color:#009688;font-weight:bold;">无校区限制</span>
             </template>
         </template>
         <template slot="couponType" slot-scope="scope">
@@ -184,7 +184,7 @@
       <rd-dialog
           :title="addStatus?'添加':'编辑'"
           :dialogVisible="addVisible"
-          @handleClose="addVisible = false"
+          @handleClose="handleClose"
           @submitForm="submitAddForm('dataForm3')"
         >
           <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
@@ -333,6 +333,7 @@ export default {
           label: "科目名称",
           options: [
           ],
+          filterable: true,
           multiple: true
         },
         {
@@ -342,7 +343,8 @@ export default {
           label: "班型名称",
           options: [
           ],
-          multiple: true
+          multiple: true,
+          filterable: true
         },
         {
           prop: "courseId",
@@ -351,6 +353,7 @@ export default {
           label: "课程名称",
           options: [
           ],
+          filterable: true,
           multiple: true
         },
         {
@@ -360,6 +363,7 @@ export default {
           label: "前置班型",
           options: [
           ],
+          filterable: true,
           multiple: true
         },
         {
@@ -446,11 +450,11 @@ export default {
           options: [
             {
               label:"不能叠加",
-              value: false
+              value: '0'
             },
             {
               label:"能叠加",
-              value: true
+              value: '1'
             }
           ],
         },
@@ -506,7 +510,13 @@ export default {
       },
       addStatus: true,
       editId:"",
-      currentProductId:""
+      currentProductId:"",
+      // 多选： 科目名称，班型名称，课程名称，前置班型，指定校区
+      subjectArr: [],
+      classTypeArr:[],
+      courseArr:[],
+      frontClassTypeArr:[],
+      campusArr:[]
     }
   },
   components:{
@@ -514,7 +524,7 @@ export default {
   },
   mounted(){
       this.getTableData();
-      this.getSelectList();
+      this.getCampuseList();
   },
    methods: {
      onSearch(val){
@@ -523,16 +533,6 @@ export default {
       };
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
-     },
-     getSelectList(){
-       this.$fetch("chance_config_campusList").then(res => {
-         this.addFormOptions[6].options = res.data.data.map(item => (
-           {
-           label: item.campusName,
-           value: item.id
-         }
-         ))
-       })
      },
      getTableData(params = {}){
        this.$fetch("coupontemplateversiontwo_listJsp", {
@@ -560,6 +560,7 @@ export default {
             label: item.productName,
             value: item.id
         }))
+        
          this.addFormOptions[1].options = res.data.productList.map(item => ({
             label: item.productName,
             value: item.id
@@ -595,37 +596,38 @@ export default {
        this.currentProductId = val;
       //  获取科目下拉
       this.$fetch("coupontemplateversiontwo_subjectList",{productId: val}).then(res => {
-        this.addFormOptions[2].options = res.data.list.map(item => ({
+        this.subjectArr = res.data.list.map(item => ({
           label: item.subjectName,
           value: item.id
-        }))
+        }));
+        this.addFormOptions[2].options = this.subjectArr;
       })
     },
     subjectChange(val){
        //  获取班型下拉
       this.$fetch("coupontemplateversiontwo_getClassListSelects",{
-        subjectIds: val.join(","),
+        subjectIds: val instanceof Array? val.join(","): val,
         productId: this.currentProductId
         }).then(res => {
-        this.addFormOptions[3].options = res.data.dataJson.list.map(item => ({
+        this.classTypeArr = res.data.dataJson.list.map(item => ({
           label: item.name,
           value: item.value
-        }))
-        this.addFormOptions[5].options = res.data.dataJson.list.map(item => ({
-          label: item.name,
-          value: item.value
-        }))
+        }));
+        this.frontClassTypeArr = this.classTypeArr;
+        this.addFormOptions[3].options = this.classTypeArr;
+        this.addFormOptions[5].options = this.classTypeArr;
       })
     },
     classChange(val){
       // 获取课程下拉
       this.$fetch("coupontemplateversiontwo_getCourseListSelects",{
-          classTypeIds: val.join(",")
+          classTypeIds: val instanceof Array? val.join(","): val,
         }).then(res => {
-        // this.addFormOptions[4].options = res.data.dataJson.list.map(item => ({
-          // label: item.name,
-          // value: item.value
-        // }))
+          this.courseArr = res.data.dataJson.list.map(item => ({
+            label: item.name,
+            value: item.value
+          }));
+          this.addFormOptions[4].options = this.courseArr;
       })
     },
     couponTypeChange(val){
@@ -661,16 +663,49 @@ export default {
     handleAdd(){
       this.addStatus = true;
       this.addVisible = true;
+      
+    },
+    getMulInfo(selIds, arr){
+      if(!selIds){
+        return []
+      }
+      //选中的id selIds， 整个下拉，
+      const currentArr = [];
+      selIds.forEach(item => {
+        let name = arr.find(ele => (ele.value == item)).label;
+        currentArr.push({
+          name,
+          val: item
+        })
+      })
+      return currentArr;
     },
     submitAddForm(formName){
       this.$refs[formName].validate((valid, formData) => {
         if(valid){
           console.log(formData, "提交");
-          this.$fetch("coupontemplateversiontwo_save",{
+          const { time,campusId,classTypeId,courseId,frontClassTypeId,subjectId } = formData;
+          let campusInfo = this.getMulInfo(campusId,this.campusArr);
+          let classTypeInfo = this.getMulInfo(classTypeId,this.classTypeArr);
+          let courseInfo = this.getMulInfo(courseId,this.courseArr);
+          let frontClassTypeInfo = this.getMulInfo(frontClassTypeId,this.frontClassTypeArr);
+          let subjectInfo = this.getMulInfo(subjectId,this.subjectArr);
+          this.$fetch(this.addStatus?"coupontemplateversiontwo_save":"coupontemplateversiontwo_editJsp",{
             ...formData,
             time:'',
-            startTime: formData.time?formData.time[0]:'',
-            endTime: formData.time?formData.time[1]:'',
+            startTime: time?time[0]:'',
+            endTime: time?time[1]:'',
+            campusId: campusId&&campusId.join(','),
+            classTypeId: classTypeId&&classTypeId.join(','),
+            courseId: courseId&&courseId.join(','),
+            frontClassTypeId: frontClassTypeId&&frontClassTypeId.join(','),
+            subjectId: subjectId.join(','),
+            campusInfo: JSON.stringify(campusInfo),
+            classTypeInfo: JSON.stringify(classTypeInfo),
+            courseInfo: JSON.stringify(courseInfo),
+            frontClassTypeInfo: JSON.stringify(frontClassTypeInfo),
+            subjectInfo: JSON.stringify(subjectInfo),
+            id: this.addStatus?"":this.editId
           }).then(res => {
             this.$message.success("操作成功")
             this.addVisible = false;
@@ -680,15 +715,71 @@ export default {
           
       });
     },
+    //  获取校区列表
+     getCampuseList(){
+       return new Promise((resolve) => {
+         this.$fetch("chance_config_campusList").then(res => {
+          this.campusArr = res.data.data.map(item => (
+            {
+            label: item.campusName,
+            value: item.id
+          }
+          ));
+          this.addFormOptions[6].options = this.campusArr;
+          resolve();
+        })
+       })
+     },
     handleEdit(data){
-      this.addStatus = false;
       this.addVisible = true;
-      this.addFormOptions.forEach(item => {
-           item.initValue = data[item.prop];
+      this.addStatus = false;
+      this.$fetch("coupontemplateversiontwo_goEdit",{
+        id: data.id
+      }).then(async (res) => {
+        const { 
+          pd,campusIdStr,classTypeIdStr,frontClassTypeIdStr,subjectIdStr,courseIdStr,
+          subjectList,classList,courseList,campusList
+        } = res.data;
+        const { productId,couponType } = pd;
+        // 获取下拉
+        console.log(productId,'productId---')
+        productId&&this.productChange(productId);
+        subjectIdStr&&this.subjectChange(subjectIdStr);
+        classTypeIdStr&&this.classChange(classTypeIdStr);
+        // 赋值
+         this.addFormOptions.forEach(item => {
+          item.initValue = pd[item.prop];
+          if(item.prop == 'couponType'){
+             this.couponTypeChange(couponType)
+           }
+           if(item.prop == 'superposition'){
+             item.initValue = pd.superposition?'1':'0'
+           }
+           if(item.prop == 'productId'){
+             
+           }
+           if(item.prop == 'subjectId'){
+             item.initValue = subjectIdStr&&subjectIdStr.split(',').map(item => Number(item) || '')
+           }
+           if(item.prop == 'classTypeId'){
+             item.initValue = classTypeIdStr&&classTypeIdStr.split(',').map(item => Number(item) || '')
+           }
+           if(item.prop == 'courseId'){
+             item.initValue = courseIdStr&&courseIdStr.split(',')
+           }
+           if(item.prop == 'frontClassTypeId'){
+             item.initValue = frontClassTypeIdStr&&frontClassTypeIdStr.split(',').map(item => Number(item) || '')
+           }
+           if(item.prop == 'campusId'){
+             item.initValue = campusIdStr&&campusIdStr.split(',').map(item => Number(item) || '')
+           }
+        })
+
+        setTimeout(() => {
+          this.$refs.dataForm3.addInitValue();
+        }, 300);
       })
-      setTimeout(() => {
-        this.$refs.dataForm3.addInitValue();
-      }, 0);
+      
       this.editId = data.id;
     },
     handleDelete(row) {
@@ -699,9 +790,8 @@ export default {
         type: "warning",
       })
         .then(async () => {
-          const res = await this.$fetch("projectType_delete", {
-            typeId: row.typeId,
-            loginUserId,
+          const res = await this.$fetch("coupontemplateversiontwo_deleteJsp", {
+            id: row.id
           }).then((res) => {
             if (res) {
               this.$message({
@@ -715,6 +805,10 @@ export default {
           });
         })
         .catch(() => {});
+    },
+    handleClose(){
+      this.addVisible = false;
+      this.$refs.dataForm3&&this.$refs.dataForm3.onReset();
     }
   }
 }

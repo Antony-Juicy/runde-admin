@@ -4,12 +4,12 @@
         <el-form ref="form" :model="form" label-width="80px">
             <el-row :gutter="20">
                     <el-col :span="2">
-                        <div class="label-wrapper" style="line-height:40px">
+                        <div class="label-wrapper">
                             查看类型：
                         </div>
                     </el-col>
                     <el-col :span="9">
-                        <el-radio-group v-model="form.type">
+                        <el-radio-group v-model="form.type" size="small">
                             <el-radio-button label="我招生的"></el-radio-button>
                             <el-radio-button label="我服务的"></el-radio-button>
                             <el-radio-button label="我管理的"></el-radio-button>
@@ -368,13 +368,16 @@ export default {
     .label-wrapper {
         text-align: right;
         line-height: 32px;
+        font-size: 14px;
+        color: #333333;
+        font-weight: 600;
     }
     .line-divider {
         border-top: 1px dashed #ccc;
         width: 100%;
         height: 1px;
-        margin-top: 20px;
-        margin-bottom: 20px;
+        margin-top: 10px;
+        margin-bottom: 10px;
     }
     .btn-wrapper {
         text-align: right;

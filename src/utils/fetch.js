@@ -43,9 +43,6 @@ service.interceptors.request.use(
       config.data.token = getToken()
       config.data.loginUserId = common.getUserId()
     }
-    else if (totalNewConfig.headers["Content-Type"] && totalNewConfig.headers["Content-Type"] == "application/json") {
-
-    }
     else {
       config.data = qs.stringify({
         token: getToken(),
