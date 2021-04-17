@@ -126,7 +126,6 @@ export default {
 			})
 		},
 		initFormData(account) {
-			console.log(account)
 			this.mode = 'save'
 			this.addFormOptions = this.addFormOptions.map(v => {
 				v.initValue = account[v.prop]

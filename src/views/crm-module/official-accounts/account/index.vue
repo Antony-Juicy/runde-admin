@@ -1,4 +1,5 @@
 <template>
+	<!-- 公众号管理 5月1日 前上线  -->
 	<div class="account-container">
 		<!-- 搜索栏 -->
 		<search-form ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch"></search-form>

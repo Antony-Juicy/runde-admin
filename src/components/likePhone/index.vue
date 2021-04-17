@@ -29,7 +29,7 @@
 					{{cardData}}
 				</div>
 			</div>
-			<div class="imageText" v-if="mode == 'imageText'">
+			<div class="mpnews" v-if="mode == 'mpnews'">
 				<div class="avatar">
 					<img src="@/assets/logo.png">
 				</div>
@@ -50,7 +50,7 @@
 				<img v-if="cardData.length > 0" class="imgUrl" :src="cardData">
 				<div v-else class="default-img">图片</div>
 			</div>
-			<div class="miniprogram" v-if="mode == 'miniprogram'">
+			<div class="miniprogrampage" v-if="mode == 'miniprogrampage'">
 				<div class="avatar">
 					<img src="@/assets/logo.png">
 				</div>
@@ -74,7 +74,7 @@
 <script>
 export default {
 	props: {
-		// mode : notice 模板通知 text 文字 imageText 图文 image 图片 miniprogram 小程序
+		// mode : notice 模板通知 text 文字 mpnews 图文 image 图片 miniprogrampage 小程序
 		/* 
 			notice 的 cardData结构：
 			cardData=[
@@ -95,7 +95,7 @@ export default {
 			cardData='*******.png'
 		*/
 		/* 
-			imageText 的 cardData 结构
+			mpnews 的 cardData 结构
 			cardData={
 				title:"标题",
 				description:"描述",
@@ -103,7 +103,7 @@ export default {
 			}
 		*/
 		/* 
-			miniprogram 的 cardData 结构
+			miniprogrampage 的 cardData 结构
 			cardData = {
 				appName:"小程序名称",
 				title:"小程序标题",
@@ -212,7 +212,7 @@ export default {
 		align-items: flex-start;
 		padding: 0 10px;
 	}
-	.imageText {
+	.mpnews {
 		display: flex;
 		align-items: flex-start;
 		padding: 0 10px;
@@ -256,7 +256,7 @@ export default {
 			justify-content: center;
 		}
 	}
-	.miniprogram {
+	.miniprogrampage {
 		display: flex;
 		align-items: flex-start;
 		padding: 0 10px;
