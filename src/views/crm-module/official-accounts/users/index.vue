@@ -2,8 +2,10 @@
   <div class="index">
 
     <!-- 搜索栏 -->
-    <search-form ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch" @onReset="onReset"></search-form>
-    
+    <div >
+      <search-form ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch" @onReset="onReset"></search-form>
+    </div>
+
 		<!-- 表格主体 -->
     <div class="el-form">
       <el-table :data="realList" style="width: 100%">
