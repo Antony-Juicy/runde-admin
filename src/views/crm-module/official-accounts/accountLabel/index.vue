@@ -1,12 +1,12 @@
 <template>
 	<div class="accountLabel">
 		<!-- 搜索栏 -->
-		<el-popover v-if="officialAccounts.length > 0" ref="accountOption" placement="bottom-start" width="300" trigger="click">
+		<el-popover v-if="officialAccounts.length > 0" :value="choseAccountVisible" ref="accountOption" placement="bottom-start" width="300" trigger="manual">
 			<div class="account-option" v-for="(item,index) in officialAccounts" :key="index" @click="handle_select_account(item)">
 				<img :src="item.appImg" class="logo">
 				<span>{{ item.appName }}</span>
 			</div>
-			<el-button slot="reference" size="mini" style="height:32px;margin-right:15px;margin-top:-2px">
+			<el-button slot="reference" size="mini" style="height:32px;margin-right:15px;margin-top:4px" @click="choseAccountVisible = !choseAccountVisible">
 				<div class="select-accoumt">
 					<img class="logo" :src='account.appImg'>
 					<div>{{account.appName}}</div>
@@ -22,7 +22,7 @@
 			<rd-table :tableData="tableData" :tableKey="tableKey" :pageConfig.sync="pageConfig" @pageChange="pageChange">
 				<template slot="edit" slot-scope="scope">
 					<el-button @click="handleEdit(scope.row)" type="text" size="small">查阅/编辑</el-button>
-					<el-button @click="handleDelete(scope.row)" type="text" style="color: #ec5b56" size="small">删除</el-button>
+					<el-button v-if="scope.row.labelType == '1'" @click="handleDelete(scope.row)" type="text" style="color: #ec5b56" size="small">删除</el-button>
 				</template>
 			</rd-table>
 		</div>
@@ -136,7 +136,8 @@ export default {
 			},
 			mode: 'add',
 			officialAccounts: [],
-			account: {}
+			account: {},
+			choseAccountVisible: false,
 		}
 	},
 	methods: {
@@ -164,7 +165,7 @@ export default {
 					...this.pageConfig,
 					...searchForm,
 					...params,
-					appId: this.appId
+					appId: this.account.appId
 				}
 			);
 			this.tableData = res.data.records.map((item) => {
@@ -222,7 +223,7 @@ export default {
 				if (val) {
 					this.$fetch('add_official_accounts_label', {
 						...data,
-						appId: this.appId,
+						appId: this.account.appId,
 						loginUserId: this.$common.getUserId(),
 					}).then((res) => {
 						if (res.code == 200) {
@@ -260,6 +261,10 @@ export default {
 						})
 				}
 			})
+		},
+		handle_select_account(data) {
+			this.account = data
+			this.choseAccountVisible = false
 		}
 	},
 	async mounted() {
@@ -268,10 +273,9 @@ export default {
 		);
 		this.officialAccounts = res.data
 		this.account = this.officialAccounts[0]
-        console.log(this.$refs.accountOption)
-        this.$nextTick(()=>{
-            document.querySelector('.accountLabel .search-box-wrapper').insertBefore(this.$refs.accountOption.$el,document.querySelector('.accountLabel .search-box'))
-        })
+		this.$nextTick(() => {
+			document.querySelector('.accountLabel .search-box').insertBefore(this.$refs.accountOption.$el, document.querySelector('.accountLabel .el-form-item'))
+		})
 		this.onSearch()
 		// 因为元素层级的原因，要把这个dialog放到body下才能正常显示在遮罩层上面
 		this.dialogId = `accountLabel-dialog-${Date.now()}`
