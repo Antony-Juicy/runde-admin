@@ -51,29 +51,6 @@
 			</div>
 			<div class="right">
 				<likePhone mode="notice" :cardData='formwork_content' :accountName="appName"></likePhone>
-				<!-- <div class="like-phone">
-					<img src="@/assets/shouji.png" class="bg-shouji">
-					<div class="over">
-						<div class="notice">
-							<div v-for="(item,index) in formwork_content" :key="index">
-								<template v-if="item.key == 'first'">
-									<div class="title" :style="{color:item.color}">{{item.value || '请输入内容'}}</div>
-									<div class="date line">4月14日</div>
-								</template>
-								<template v-else-if="item.key == 'remark'">
-									<div class="remark line" :style="{color:item.color}">{{item.value || '请输入内容'}}</div>
-								</template>
-								<template v-else>
-									<div class="line ">
-										<div class="label">{{item.label}}</div>
-										<div class="value" :style="{color:item.color}">{{item.value || '请输入内容'}}</div>
-									</div>
-								</template>
-								<div class="count" :class="{danger:noticeFontCount > 200}">{{noticeFontCount}} / 200</div>
-							</div>
-						</div>
-					</div>
-				</div> -->
 			</div>
 		</div>
 		<div class="down">
@@ -102,7 +79,7 @@ export default {
 			type: String,
 			require: true
 		},
-		appName:{
+		appName: {
 			type: String,
 			require: true
 		}
@@ -144,11 +121,15 @@ export default {
 			addRules: {
 				addFormOptions: [{ required: true, message: "模板名称", trigger: "blur" },],
 			},
+			// 模板的内容
 			formwork_content: [],
+			// 可选颜色
 			predefineColors: [
 				'#F4664A', '#FF7D75', '#000000', '#FF9823', '#F6BD16', '#5AD8A6', '#30BF78', '#6DC8EC', '#2C9EFF', '#1E9493', '#945FB9', '#666666', '#999999'
 			],
+			// 链接类型
 			linkType: 'h5',
+			// 链接类型里面要填的东西
 			linkContent: {
 				h5: [
 					{
@@ -179,10 +160,15 @@ export default {
 					}
 				]
 			},
+			// 推送粉丝类型
 			fansType: "allFans",
+			// 可选标签
 			tagsOptions: [],
+			// 选中的标签
 			fansTages: [],
+			// 选中的粉丝
 			fansOpenIds: [],
+			// 选择用户组件数据 有点复杂
 			SelectPopOptions: {
 				searchObj: {
 					api: "wechat_user_page_list",
@@ -317,7 +303,11 @@ export default {
 				formData.allFans = true
 			}
 			else if (this.fansType == 'labelIds') {
-
+				if (!this.fansTages.length > 0) {
+					this.$message.error("需要选择推送的粉丝标签");
+					return
+				}
+				formData.labelIds = this.fansTages.join(',')
 			}
 			else if (this.fansType == 'openIds') {
 				if (!this.fansOpenIds.length > 0) {
@@ -326,14 +316,14 @@ export default {
 				}
 				formData.openId = this.fansOpenIds.map(v => { return v.openId }).join(',')
 			}
-			// console.log(formData)
-
 			let res = await this.$fetch(
 				"send_official_accounts_formwrok",
 				formData);
-			console.log(res)
-
-
+			// if (!res || this.$common.isEmpty(res.data)) {
+			// 	return
+			// }
+			this.$message.success('发送成功')
+			this.$emit('close')
 		},
 
 		handle_selectUser(data) {
@@ -344,10 +334,22 @@ export default {
 				name: data.nickName,
 				openId: data.openId
 			})
+		},
+		async getLabel() {
+			let res = await this.$fetch(
+				"get_official_accounts_label_list",
+			);
+			this.tagsOptions = res.data.map(v => {
+				return {
+					label: v.labelName,
+					value: v.id
+				}
+			})
 		}
 	},
 	mounted() {
 		this.analysis_content()
+		this.getLabel()
 	}
 
 }

@@ -115,7 +115,7 @@ export default {
 			require: true
 		},
 		cardData: {
-			type: [Object, String],
+			type: [Object, String, Array],
 			require: true
 		},
 		accountName: {
@@ -338,9 +338,9 @@ export default {
 }
 /* 单行 */
 .oneline {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 /* 双行 */
