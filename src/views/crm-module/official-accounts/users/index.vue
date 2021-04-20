@@ -2,7 +2,22 @@
   <div class="index">
 
     <!-- 搜索栏 -->
-    <div >
+    <div class="search">
+      <el-dropdown ref="accountOption" trigger="click" placement="bottom-start">
+        <div class="select-accoumt">
+          <img class="logo" :src='account.appImg'>
+          <div>{{account.appName}}</div>
+          <i class="el-icon-arrow-down el-icon--right"></i>
+        </div>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item>
+            <div class="account-option" v-for="(item,index) in officialAccounts" :key="index" @click="handle_select_account(item)">
+              <img :src="item.appImg" class="logo">
+              <span>{{ item.appName }}</span>
+            </div>
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
       <search-form ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch" @onReset="onReset"></search-form>
     </div>
 
@@ -103,7 +118,6 @@ export default {
     return {
       list:[],
       pageNum:1,
-      appId:'',
       hasNext:true,
       total:0,
       pageSize:10,
@@ -128,7 +142,11 @@ export default {
       ],
       outerVisible:false,
       labelId:'',
-      labelOpenId:''
+      labelOpenId:'',
+      
+			officialAccounts: [],
+			account: {},
+			label: {},
     }
   },
 
@@ -136,23 +154,13 @@ export default {
 		let res = await this.$fetch(
 			"get_official_accounts_list",
 		);
-		let official_accounts = {
-			prop: "officialAccounts",
-			element: "el-select",
-			placeholder: "选择公众号",
-			options: res.data.map(v => {
-				return {
-					label: v.appName,
-					value: JSON.stringify(v)
-				}
-			}),
-			// 需要指定一个公众号，默认就选第一个
-			initValue: JSON.stringify(res.data[0])
-		}
-		this.formOptions.unshift(official_accounts);
-    //默认第一项
-		this.$refs.searchForm.addInitValue()
-    this.appId = res.data[0].appId;
+		this.officialAccounts = res.data
+		this.account = this.officialAccounts[0]
+    console.log(this.account)
+		this.$nextTick(() => {
+			// 把选择公众号的东西放到搜索区
+			document.querySelector('.accountLabel .search-box').insertBefore(this.$refs.accountOption.$el, document.querySelector('.accountLabel .el-form-item'))
+		})
     this.getTableData();
     this.getLabel();
 	},
@@ -168,7 +176,7 @@ export default {
       let postData = {
         pageNum:this.pageNum,
         pageSize:this.pageSize,
-        appId:this.appId
+        appId:this.account.appId
       }
 			let res = await this.$fetch(
 				"wechat_user_page_list",
@@ -191,6 +199,11 @@ export default {
       this.labelList = res.data;
 		},
 
+    
+		handle_select_account(data) {
+			this.account = data;
+		},
+
     changepageNum(e){
       if(e.page > this.pageNum && this.hasNext){
         this.pageNum = e.page;
@@ -200,9 +213,6 @@ export default {
 
     onSearch(data){
       let searchForm = {};
-      if(!!data.officialAccounts){
-        this.appId = JSON.parse(data.officialAccounts).appId;
-      }
       if(!!data.labelName){
         searchForm.labelName = data.labelName;
       }
@@ -279,6 +289,52 @@ export default {
 <style lang='scss' scoped>
 .index{
   height: 100%;
+}
+.search{
+  width: 100%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-left:15px;
+  box-sizing: border-box;
+}
+.search-form-box{
+  margin-bottom: 0;
+}
+.select-accoumt {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 4px;
+  height: 32px;
+  border: 1px solid #dcdfe6;
+  margin-right: 10px;
+  padding:0 15px;
+  white-space:nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  .logo {
+    height: 20px;
+    width: 20px;
+    margin-right: 10px;
+    object-fit: contain;
+  }
+}
+.account-option {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	padding: 4px 4px;
+	&:hover {
+		background-color: #f5f7fa;
+	}
+	.logo {
+		width: 40px;
+		height: 40px;
+		object-fit: contain;
+		margin-right: 10px;
+	}
 }
 .el-form{
   width: 100%;
