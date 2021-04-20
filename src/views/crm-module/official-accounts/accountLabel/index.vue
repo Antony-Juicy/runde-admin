@@ -1,18 +1,20 @@
 <template>
 	<div class="accountLabel">
 		<!-- 搜索栏 -->
-		<el-popover v-if="officialAccounts.length > 0" :value="choseAccountVisible" ref="accountOption" placement="bottom-start" width="300" trigger="manual">
-			<div class="account-option" v-for="(item,index) in officialAccounts" :key="index" @click="handle_select_account(item)">
-				<img :src="item.appImg" class="logo">
-				<span>{{ item.appName }}</span>
+		<el-dropdown ref="accountOption" trigger="click" placement="bottom-start">
+			<div class="select-accoumt">
+				<img class="logo" :src='account.appImg'>
+				<div>{{account.appName}}</div>
 			</div>
-			<el-button slot="reference" size="mini" style="height:32px;margin-right:15px;margin-top:4px" @click="choseAccountVisible = !choseAccountVisible">
-				<div class="select-accoumt">
-					<img class="logo" :src='account.appImg'>
-					<div>{{account.appName}}</div>
-				</div>
-			</el-button>
-		</el-popover>
+			<el-dropdown-menu slot="dropdown">
+				<el-dropdown-item>
+					<div class="account-option" v-for="(item,index) in officialAccounts" :key="index" @click="handle_select_account(item)">
+						<img :src="item.appImg" class="logo">
+						<span>{{ item.appName }}</span>
+					</div>
+				</el-dropdown-item>
+			</el-dropdown-menu>
+		</el-dropdown>
 		<search-form ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch"></search-form>
 		<!-- 表格主体 -->
 		<div class="w-container">
@@ -137,6 +139,7 @@ export default {
 			mode: 'add',
 			officialAccounts: [],
 			account: {},
+			label: {},
 			choseAccountVisible: false,
 		}
 	},
@@ -175,10 +178,28 @@ export default {
 			this.pageConfig.totalCount = res.data.totalCount;
 		},
 		handleAdd() {
+			this.mode = 'add'
+			this.AddEditTitle = "新增标签"
 			this.addEditVisible = true
+			this.addFormOptions.forEach(v => {
+				v.initValue = ''
+			})
+			this.$nextTick(() => {
+				this.$refs.dataForm.addInitValue()
+			})
 		},
-		handleEdit() {
-
+		handleEdit(data) {
+			this.mode = 'save'
+			this.AddEditTitle = "编辑标签"
+			this.label = data
+			this.addFormOptions.forEach(v => {
+				v.initValue = data[v.prop]
+			})
+			this.addEditVisible = true
+			this.$nextTick(() => {
+				this.$refs.dataForm.addInitValue()
+			})
+			// this.addFormOptions
 		},
 		handleDelete(data) {
 			if (data.labelType == '0') {
@@ -218,7 +239,7 @@ export default {
 			this.addEditVisible = false
 		},
 		dialog_handleAdd() {
-			this.mode = 'add'
+
 			this.$refs.dataForm.validate((val, data) => {
 				if (val) {
 					this.$fetch('add_official_accounts_label', {
@@ -241,30 +262,32 @@ export default {
 			})
 		},
 		dialog_handleSave() {
-			this.mode = 'save'
+
 			this.$refs.dataForm.validate((val, data) => {
 				if (val) {
 					this.$fetch('update_official_accounts_label', {
 						...data,
-						id: this.accountId,
+						id: this.label.id,
+						appId: this.account.appId,
 						loginUserId: this.$common.getUserId(),
 					}).then((res) => {
 						if (res.code == 200) {
 							this.btnLoading = false
 							this.$message.success('保存成功')
 							this.addEditVisible = false
+							this.refresh()
 						}
+					}).catch((err) => {
+						console.log(err)
+						this.btnLoading = false
 					})
-						.catch((err) => {
-							console.log(err)
-							this.btnLoading = false
-						})
 				}
 			})
 		},
 		handle_select_account(data) {
 			this.account = data
 			this.choseAccountVisible = false
+			this.refresh()
 		}
 	},
 	async mounted() {
@@ -274,6 +297,7 @@ export default {
 		this.officialAccounts = res.data
 		this.account = this.officialAccounts[0]
 		this.$nextTick(() => {
+			// 把选择公众号的东西放到搜索区
 			document.querySelector('.accountLabel .search-box').insertBefore(this.$refs.accountOption.$el, document.querySelector('.accountLabel .el-form-item'))
 		})
 		this.onSearch()
@@ -297,6 +321,13 @@ export default {
 	.select-accoumt {
 		display: flex;
 		align-items: center;
+		background-color: #fff;
+		border-radius: 4px;
+		height: 32px;
+		padding: 0 10px;
+		border: 1px solid #dcdfe6;
+		margin-top: 4px;
+		margin-right: 10px;
 		.logo {
 			height: 20px;
 			width: 20px;
