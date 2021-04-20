@@ -155,11 +155,10 @@ export default {
 			"get_official_accounts_list",
 		);
 		this.officialAccounts = res.data
-		this.account = this.officialAccounts[0]
-    console.log(this.account)
+		this.account = this.officialAccounts[0];
 		this.$nextTick(() => {
 			// 把选择公众号的东西放到搜索区
-			document.querySelector('.accountLabel .search-box').insertBefore(this.$refs.accountOption.$el, document.querySelector('.accountLabel .el-form-item'))
+			document.querySelector('.search .search-box').insertBefore(this.$refs.accountOption.$el, document.querySelector('.accountLabel .el-form-item'))
 		})
     this.getTableData();
     this.getLabel();
@@ -228,6 +227,7 @@ export default {
     },
 
     onReset(){
+		  this.account = this.officialAccounts[0];
       this.searchForm = {};
     },
 
