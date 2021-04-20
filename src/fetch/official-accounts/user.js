@@ -7,6 +7,11 @@ export default {
     wechat_list: { url: '/wechat/console/wechat_name/list', method: 'post' },
 
     //获取标签
-    wechat_label: { url: '/wechat//console/wechat_label/list', method: 'post' },
+    wechat_label: { url: '/wechat/console/wechat_label/list', method: 'post' },
+
+    //修改标签
+    update_label: { url: '/wechat/console/wechat_user_tag/add', method: 'post' },
+
+
 
 }

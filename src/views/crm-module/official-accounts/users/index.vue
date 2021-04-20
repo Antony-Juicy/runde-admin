@@ -6,7 +6,7 @@
     
 		<!-- 表格主体 -->
     <div class="el-form">
-      <el-table :data="list" style="width: 100%">
+      <el-table :data="realList" style="width: 100%">
         <el-table-column prop="date" label="用户昵称" width="180">
           <template slot-scope="scope">
             <div class="form">
@@ -24,7 +24,7 @@
         </el-table-column>
         <el-table-column label="用户标签">
           <template slot-scope="scope">
-            <div class="form" v-if="scope.row.wechatUserTagModel.length">
+            <div class="form form-label-list" v-if="scope.row.wechatUserTagModel.length">
               <p class="form-label" v-for="item in scope.row.wechatUserTagModel" :key="item.id">{{item.labelName}}</p>
             </div>
             <div class="form" v-else>
@@ -47,7 +47,7 @@
       </el-table>
         
       <div class="pages">
-        <Pagination :total="total" @pagination="changepageNum"  />
+        <Pagination :total="total" @pagination="changepageNum" :layout="'total, prev, pager, next'" />
       </div>
     
     </div>
@@ -72,7 +72,7 @@
       </div>
       <div class="list-fn">
         <div @click="outerVisible = false">取消</div>
-        <div>确定</div>
+        <div @click="changeLabel()">确定</div>
       </div>
       </div>
     </el-dialog>
@@ -90,11 +90,18 @@ export default {
     Pagination
   },
 
+  computed: {
+    // 计算属性的 getter
+    realList() {
+      return this.list.slice((this.pageNum-1) * this.pageSize,(this.pageNum*this.pageSize-1))
+    }
+  },
+
   data() {
     return {
       list:[],
       pageNum:1,
-      openId:'',
+      appId:'',
       hasNext:true,
       total:0,
       pageSize:10,
@@ -118,8 +125,8 @@ export default {
         },
       ],
       outerVisible:false,
-      checked:false
-
+      labelId:'',
+      labelOpenId:''
     }
   },
 
@@ -156,7 +163,6 @@ export default {
         this.list = [];
         this.hasNext = true;
       }
-      if(!this.hasNext)return
       let postData = {
         pageNum:this.pageNum,
         pageSize:this.pageSize,
@@ -170,9 +176,9 @@ export default {
         }
 			);
 			// console.log(res)
-			this.list = this.list.concat(res.data.records);
-      this.hasNext = res.data.hasNext;
+      this.list = this.list.concat(res.data.records);
       this.total = res.data.totalCount;
+      this.hasNext = res.data.hasNext;
 		},
 
     //获取标签数组
@@ -184,11 +190,10 @@ export default {
 		},
 
     changepageNum(e){
-      if(e.page > this.pageNum && !this.hasNext)return
-      if(e.page == this.pageNum)return
-      this.pageNum = e.page;
-      this.pageSize = e.limit;
-      this.getTableData();
+      if(e.page > this.pageNum && this.hasNext){
+        this.pageNum = e.page;
+        this.getTableData();
+      }
     },
 
     onSearch(data){
@@ -216,31 +221,52 @@ export default {
 
     //修改标签
     edit(row){
-      console.log(row)
+      this.labelId = "";
       let labelList= this.labelList;
       for(let z in row.wechatUserTagModel){
         for(let i in labelList){
           if(labelList[i].labelName == row.wechatUserTagModel[z].labelName){
             labelList[i].active = true;
-            break;
           }
-          labelList[i].active = false;
         }
       }
       this.labelList = labelList;
+      this.labelId = row.id;
+      this.labelOpenId = row.openId;
       this.outerVisible = true;
     },
 
     //选择标签
     chooseLabel(index){
-      this.checked = !this.checked;
-      if(!this.labelList[index].active){
-        this.$set(this.labelList[index],"active",true);
-      }else{
-        this.$set(this.labelList[index],"active",false);
+      let newValue = this.labelList[index];
+      newValue.active = !newValue.active;
+      this.$set(this.labelList,index,newValue);
+    },
+
+    async changeLabel(){
+      let label = [];
+      let index = this.list.findIndex(item => item.id == this.labelId && item.openId == this.labelOpenId);
+      let wechatUserTagModel = [];
+      this.labelList.forEach((item)=>{
+        if(item.active){
+          label.push({labelName:item.labelName,labelId:this.labelId,openId:this.labelOpenId});
+          wechatUserTagModel.push(item);
+        }
+      })
+      let res = await this.$fetch(
+				"update_label",
+        {
+          userTagAddListRequest:JSON.stringify(label)
+        }
+			);
+      if(res.code == 200){
+        let item = this.list[index];
+        item.wechatUserTagModel = wechatUserTagModel;
+        this.$set(this.list,index,item);
       }
-      
-    }
+      this.outerVisible = false;
+      this.$message(res.msg);
+    },
     
 	},
 
@@ -248,7 +274,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang='scss' scoped>
 .index{
   height: 100%;
 }
@@ -293,6 +319,11 @@ export default {
 }
 .form-label:nth-last-child(1){
   margin-right: 0;
+}
+.form-label-list{
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom:0  !important;
 }
 .form-edit{
   font-size: 14px;
