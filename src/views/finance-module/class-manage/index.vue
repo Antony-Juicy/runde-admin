@@ -25,11 +25,11 @@
             编辑
           </el-button>
           <el-button
-            @click="handleDelete(scope.row)"
+            @click="handleControlBtn(scope.row)"
             type="text"
             size="small"
             style="color: #ec5b56"
-            >删除</el-button
+            >启用/暂停</el-button
           >
         </template>
       </rd-table>
@@ -89,32 +89,32 @@ export default {
       formOptions: [
         {
           prop: "liveId",
-          element: "el-input",
-          placeholder: "请输入班型名称"
+          element: "el-input", 
+          placeholder: "请输入班型名称",
         },
         {
           prop: "typeId",
           element: "el-select",
-          placeholder: "请选择项目"
+          placeholder: "请选择项目",
         },
         {
           prop: "typeId",
           element: "el-select",
-          placeholder: "请选择类型"
+          placeholder: "请选择类型",
         },
         {
           prop: "typeId",
           element: "el-select",
-          placeholder: "请选择确认时点"
+          placeholder: "请选择确认时点",
         },
         {
           prop: "typeId",
           element: "el-select",
-          placeholder: "请选择状态"
+          placeholder: "请选择状态",
         },
       ],
       addVisible: false,
-      addStatus: true, 
+      addStatus: true,
       form: {},
       emptyText: "暂无数据",
       tableData: [
@@ -393,7 +393,15 @@ export default {
     handleAdd() {
       this.addVisible = true;
     },
-    getTableData() {},
+    getTableData(params = {}) {
+      this.$fetch("posterinfo_listJson", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        console.log("res0000", res.data.data);
+      });
+    },
     pageChange(val) {
       console.log(val, "pagechange");
       this.pageConfig.currentPage = val.page;
@@ -404,10 +412,11 @@ export default {
       this.addStatus = false;
       this.addVisible = true;
     },
+    handleControlBtn() {},
     handleDelete(row) {
       let info = "";
       this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
-        confirmButtonText: "确定",      
+        confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
@@ -435,7 +444,6 @@ export default {
 
 <style lang="scss" scoped>
 .class-manage {
-
   .full-dialog-wrap {
     width: 60%;
     margin: 0 auto;

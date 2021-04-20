@@ -21,17 +21,32 @@
         :pageConfig.sync="pageConfig"
         @pageChange="pageChange"
       >
-        <template slot="edit" slot-scope="scope">
-          <el-button @click="handleEdit()" type="text" size="medium">
+        <template slot="value10" slot-scope="scope"> 
+          {{ scope.row.value10 }}<br /> 
+          <el-button
+            type="text"
+            style="height: 40px"
+            id="closeSearchBtn"
+            @click="goDetails"
+          >
+            查看详情
+          </el-button>
+        </template>
+        <template slot="edit" slot-scope="scope"> 
+          <el-button @click="handleEdit(scope.row)" type="text" size="small">
             编辑
           </el-button>
-          <el-button @click="handleDelete(scope.row)" type="text" size="medium"
+          <el-divider direction="vertical"></el-divider>
+          <el-button @click="handleDelete(scope.row)" type="text" size="small"
             >设置网课编码</el-button
           >
-          <el-button @click="handleDelete(scope.row)" type="text" size="medium"
+
+          <el-divider direction="vertical"></el-divider>
+          <el-button @click="handleDelete(scope.row)" type="text" size="small"
             >设置图书编码</el-button
           >
-          <el-button @click="handleDelete(scope.row)" type="text" size="medium"
+          <el-divider direction="vertical"></el-divider>
+          <el-button @click="handleDelete(scope.row)" type="text" size="small"
             >设置配送图书</el-button
           >
         </template>
@@ -227,7 +242,7 @@
             </el-col>
           </el-row>
 
-          <el-form-item label="班型内容：" prop="value10" inline="true">
+          <el-form-item label="班型内容：" prop="value10" :inline="true">
             <div>
               <el-button
                 @click="handleAddContent()"
@@ -413,7 +428,7 @@ export default {
           value7: 1995,
           value8: 1995,
           value9: 1995,
-          value10: 1995,
+          value10: 1998,
           value11: 1995,
           value12: 1995,
           value13: 1995,
@@ -431,7 +446,7 @@ export default {
         { name: "项目", value: "value7" },
         { name: "科目", value: "value8" },
         { name: "课程", value: "value9" },
-        { name: "班型内容", value: "value10" },
+        { name: "班型内容", value: "value10", operate: true },
         { name: "学费/元", value: "value11" },
         { name: "学制", value: "value12" },
         { name: "服务年限", value: "value13" },
@@ -444,7 +459,7 @@ export default {
         { name: "状态", value: "value20" },
         {
           name: "操作",
-          value: "edit2",
+          value: "edit",
           operate: true,
           width: 140,
           fixed: "right",
@@ -807,7 +822,7 @@ export default {
         ],
       },
       campusArr: [],
-      distributeVisible: true,
+      distributeVisible: false,
       opportunityIds: "",
     };
   },
@@ -815,6 +830,10 @@ export default {
     this.getAddClassTableData();
   },
   methods: {
+    goDetails() {
+    
+
+    },
     getAddClassTableData(params = {}) {
       // this.$fetch("chance_campus_list", {
       //   ...this.pageConfig,
