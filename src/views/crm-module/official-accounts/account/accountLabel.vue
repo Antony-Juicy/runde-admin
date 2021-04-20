@@ -122,7 +122,8 @@ export default {
 				labelName: [{ required: true, message: '请输入标签名称', trigger: 'blur' },],
 				labelType: [{ required: true, message: '请输入标签类型', trigger: 'blur' },],
 			},
-			mode: 'add'
+			mode: 'add',
+			label: {}
 		}
 	},
 	methods: {
@@ -160,10 +161,27 @@ export default {
 			this.pageConfig.totalCount = res.data.totalCount;
 		},
 		handleAdd() {
+			this.mode = 'add'
+			this.AddEditTitle = "新增标签"
 			this.addEditVisible = true
+			this.addFormOptions.forEach(v => {
+				v.initValue = ''
+			})
+			this.$nextTick(() => {
+				this.$refs.dataForm.addInitValue()
+			})
 		},
-		handleEdit() {
-
+		handleEdit(data) {
+			this.label = data
+			this.mode = 'save'
+			this.AddEditTitle = "编辑标签"
+			this.addFormOptions.forEach(v => {
+				v.initValue = data[v.prop]
+			})
+			this.addEditVisible = true
+			this.$nextTick(() => {
+				this.$refs.dataForm.addInitValue()
+			})
 		},
 		handleDelete(data) {
 			if (data.labelType == '0') {
@@ -203,7 +221,7 @@ export default {
 			this.addEditVisible = false
 		},
 		dialog_handleAdd() {
-			this.mode = 'add'
+
 			this.$refs.dataForm.validate((val, data) => {
 				if (val) {
 					this.$fetch('add_official_accounts_label', {
@@ -226,18 +244,20 @@ export default {
 			})
 		},
 		dialog_handleSave() {
-			this.mode = 'save'
+
 			this.$refs.dataForm.validate((val, data) => {
 				if (val) {
 					this.$fetch('update_official_accounts_label', {
 						...data,
-						id: this.accountId,
+						id: this.label.id,
+						appId: this.appId,
 						loginUserId: this.$common.getUserId(),
 					}).then((res) => {
 						if (res.code == 200) {
 							this.btnLoading = false
 							this.$message.success('保存成功')
 							this.addEditVisible = false
+							this.refresh()
 						}
 					})
 						.catch((err) => {
