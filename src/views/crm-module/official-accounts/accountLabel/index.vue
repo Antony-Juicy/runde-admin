@@ -1,6 +1,18 @@
 <template>
 	<div class="accountLabel">
 		<!-- 搜索栏 -->
+		<el-popover v-if="officialAccounts.length > 0" :value="choseAccountVisible" ref="accountOption" placement="bottom-start" width="300" trigger="manual">
+			<div class="account-option" v-for="(item,index) in officialAccounts" :key="index" @click="handle_select_account(item)">
+				<img :src="item.appImg" class="logo">
+				<span>{{ item.appName }}</span>
+			</div>
+			<el-button slot="reference" size="mini" style="height:32px;margin-right:15px;margin-top:4px" @click="choseAccountVisible = !choseAccountVisible">
+				<div class="select-accoumt">
+					<img class="logo" :src='account.appImg'>
+					<div>{{account.appName}}</div>
+				</div>
+			</el-button>
+		</el-popover>
 		<search-form ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch"></search-form>
 		<!-- 表格主体 -->
 		<div class="w-container">
@@ -122,7 +134,10 @@ export default {
 				labelName: [{ required: true, message: '请输入标签名称', trigger: 'blur' },],
 				labelType: [{ required: true, message: '请输入标签类型', trigger: 'blur' },],
 			},
-			mode: 'add'
+			mode: 'add',
+			officialAccounts: [],
+			account: {},
+			choseAccountVisible: false,
 		}
 	},
 	methods: {
@@ -150,7 +165,7 @@ export default {
 					...this.pageConfig,
 					...searchForm,
 					...params,
-					appId: this.appId
+					appId: this.account.appId
 				}
 			);
 			this.tableData = res.data.records.map((item) => {
@@ -208,7 +223,7 @@ export default {
 				if (val) {
 					this.$fetch('add_official_accounts_label', {
 						...data,
-						appId: this.appId,
+						appId: this.account.appId,
 						loginUserId: this.$common.getUserId(),
 					}).then((res) => {
 						if (res.code == 200) {
@@ -246,14 +261,29 @@ export default {
 						})
 				}
 			})
+		},
+		handle_select_account(data) {
+			this.account = data
+			this.choseAccountVisible = false
 		}
 	},
-	mounted() {
+	async mounted() {
+		let res = await this.$fetch(
+			"get_official_accounts_list",
+		);
+		this.officialAccounts = res.data
+		this.account = this.officialAccounts[0]
+		this.$nextTick(() => {
+			document.querySelector('.accountLabel .search-box').insertBefore(this.$refs.accountOption.$el, document.querySelector('.accountLabel .el-form-item'))
+		})
 		this.onSearch()
 		// 因为元素层级的原因，要把这个dialog放到body下才能正常显示在遮罩层上面
 		this.dialogId = `accountLabel-dialog-${Date.now()}`
 		document.querySelector('.accountLabel .dialog-wrapper').id = this.dialogId
 		document.body.append(document.querySelector('.accountLabel .dialog-wrapper'))
+
+
+
 	},
 	beforeDestroy() {
 		// 既然要离开页面了，就把这个dialog标签删掉，做好文档流管理
@@ -264,10 +294,35 @@ export default {
 
 <style lang='scss' scoped>
 .accountLabel {
+	.select-accoumt {
+		display: flex;
+		align-items: center;
+		.logo {
+			height: 20px;
+			width: 20px;
+			margin-right: 10px;
+			object-fit: contain;
+		}
+	}
 }
 .label-form {
 	.btns {
 		text-align: center;
+	}
+}
+.account-option {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	padding: 4px 4px;
+	&:hover {
+		background-color: #f5f7fa;
+	}
+	.logo {
+		width: 40px;
+		height: 40px;
+		object-fit: contain;
+		margin-right: 10px;
 	}
 }
 </style>

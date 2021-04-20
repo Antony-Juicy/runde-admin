@@ -50,7 +50,8 @@
 				</RdForm>
 			</div>
 			<div class="right">
-				<div class="like-phone">
+				<likePhone mode="notice" :cardData='formwork_content' :accountName="appName"></likePhone>
+				<!-- <div class="like-phone">
 					<img src="@/assets/shouji.png" class="bg-shouji">
 					<div class="over">
 						<div class="notice">
@@ -72,7 +73,7 @@
 							</div>
 						</div>
 					</div>
-				</div>
+				</div> -->
 			</div>
 		</div>
 		<div class="down">
@@ -86,6 +87,7 @@
 <script>
 import RdForm from "@/components/RdForm";
 import SelectPop from '@/components/SelectPop'
+import likePhone from '@/components/likePhone'
 export default {
 	props: {
 		formwork: {
@@ -99,9 +101,13 @@ export default {
 		appSecret: {
 			type: String,
 			require: true
+		},
+		appName:{
+			type: String,
+			require: true
 		}
 	},
-	components: { RdForm, SelectPop },
+	components: { RdForm, SelectPop, likePhone },
 	data() {
 		return {
 			addFormOptions: [
@@ -392,59 +398,6 @@ export default {
 			flex-shrink: 0;
 			margin: 0 30px 30px 30px;
 			box-sizing: border-box;
-			.like-phone {
-				width: 100%;
-				height: 100%;
-				position: relative;
-				user-select: none;
-				.bg-shouji {
-					position: absolute;
-					z-index: 1;
-				}
-				.over {
-					width: 345px;
-					height: 696px;
-					position: relative;
-					z-index: 2;
-					padding: 87px 26px;
-				}
-				.notice {
-					background: #fff;
-					width: 80%;
-					padding: 20px 10px;
-					margin: 10px;
-					position: relative;
-					.title {
-						font-size: 16px;
-						font-weight: bold;
-					}
-					.date {
-						color: #ccc !important;
-						margin-top: 5px;
-					}
-					.line {
-						margin-bottom: 15px;
-						display: flex;
-						align-items: flex-start;
-						color: #000;
-						.label {
-							flex-shrink: 0;
-						}
-						&:last-child() {
-							margin-bottom: 0;
-						}
-					}
-					.count {
-						color: #ccc;
-						position: absolute;
-						bottom: 5px;
-						right: 10px;
-					}
-					.count.danger {
-						color: red;
-					}
-				}
-			}
 		}
 	}
 	.down {

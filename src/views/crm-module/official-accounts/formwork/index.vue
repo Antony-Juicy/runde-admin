@@ -1,16 +1,20 @@
 <template>
 	<div class='formwork-container'>
 		<!-- 搜索栏 -->
-		<search-form ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch"></search-form>
+		<search-form v-if="formOptions.length > 0" ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch"></search-form>
 		<!-- 表格主体 -->
-		<rd-table :tableData="tableData" :tableKey="tableKey" :pageConfig.sync="pageConfig" @pageChange="pageChange">
-			<template slot="edit" slot-scope="scope">
-				<el-button @click="handleEdit(scope.row)" type="text" size="small">查阅/编辑</el-button>
-			</template>
-		</rd-table>
+		<div class="w-container">
+			<rd-table :tableData="tableData" :tableKey="tableKey" :pageConfig.sync="pageConfig" @pageChange="pageChange">
+				<template slot="edit" slot-scope="scope">
+					<el-button @click="handleEdit(scope.row)" type="text" size="small">查阅/编辑</el-button>
+				</template>
+			</rd-table>
+		</div>
 
 		<rd-dialog :title="'模板通知'" :dialogVisible="templateVisible" :showFooter="false" :width="'1200px'" @handleClose="templateVisible = false">
-			<addEditFormwrok :formwork="formwork" v-if="templateVisible" :appId="official_accounts[searchForm.officialAccounts].appId" :appSecret="official_accounts[searchForm.officialAccounts].appSecret" @refresh="getTableData" @close="templateVisible = false"></addEditFormwrok>
+			<addEditFormwrok :formwork="formwork" v-if="templateVisible" :appName="official_accounts[searchForm.officialAccounts].appName"
+				:appId="official_accounts[searchForm.officialAccounts].appId" :appSecret="official_accounts[searchForm.officialAccounts].appSecret" @refresh="getTableData"
+				@close="templateVisible = false"></addEditFormwrok>
 		</rd-dialog>
 	</div>
 </template>
@@ -23,9 +27,6 @@ export default {
 	data() {
 		return {
 			formOptions: [
-				{
-					
-				}
 			],
 			tableData: [],
 			tableKey: [
@@ -110,7 +111,7 @@ export default {
 			prop: "officialAccounts",
 			element: "el-select",
 			placeholder: "选择公众号",
-			unClearable:true,
+			unClearable: true,
 			options: res.data.map((v, i) => {
 				return {
 					label: v.appName,
@@ -122,9 +123,12 @@ export default {
 		}
 		this.formOptions.unshift(official_accounts);
 		this.official_accounts = res.data
-		this.$refs.searchForm.addInitValue()
-		// 这里是通过模拟search方法，是的searchFrom里面有值
-		this.onSearch({ officialAccounts: 0 })
+		this.$nextTick(() => {
+			this.$refs.searchForm.addInitValue()
+			// 这里是通过模拟search方法，是的searchFrom里面有值
+			this.onSearch({ officialAccounts: 0 })
+		})
+
 	}
 }
 </script>
