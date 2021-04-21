@@ -1,7 +1,7 @@
 <template>
 
 	<el-popover v-model="show" class="select-pop" placement="bottom-start" width="700" trigger="click" :append-to-body="false">
-		<search-form :formOptions="searchObj.formOptions" :showNum="searchObj.showNum" @onSearch="onSearch" ref="searchForm"></search-form>
+		<search-form v-if="searchObj.formOptions.length > 0" :formOptions="searchObj.formOptions" :showNum="searchObj.showNum" @onSearch="onSearch" ref="searchForm"></search-form>
 		<div class="scroll-box" v-infinite-scroll="getTableData">
 			<el-table :data="tableData" v-loading="tableLoad">
 				<template v-for="(item,index) in tableObj.tableKey">
@@ -14,7 +14,7 @@
 				</el-table-column>
 			</el-table>
 		</div>
-		<div slot="reference" class="reference">
+		<div slot="reference" class="reference" @click="load">
 			<slot></slot>
 		</div>
 		<!-- <el-button slot="reference">click 激活</el-button> -->
@@ -63,7 +63,8 @@ export default {
 			this.tableData = JSON.parse(JSON.stringify([]))
 			this.getTableData();
 		},
-		async getTableData() {
+		// 使用函数防抖，防止内容加长触发滚动等于在同一时间发起了两次请求
+		getTableData: debounce(async function () {
 
 			if (!this.pageConfig.hasNext) {
 				return
@@ -84,18 +85,18 @@ export default {
 				}
 			).catch(() => { this.tableLoad = false })
 
-			if(typeof this.tableObj.transItem == 'function'){
-				res.data.records.map(v=>{
+			if (typeof this.tableObj.transItem == 'function') {
+				res.data.records.map(v => {
 					return this.tableObj.transItem(v)
 				})
 			}
 			this.pageConfig.hasNext = res.data.hasNext
-			// console.log(this.tableData)
-			await this.$common.sleep(1000)
 			this.tableData = this.tableData.concat(res.data.records)
 			this.tableLoad = false
 			this.pageConfig.pageNum++
-			// console.log(res)
+		}, 500),
+		load() {
+			this.getTableData()
 		}
 	},
 	async created() {
@@ -113,8 +114,28 @@ export default {
 			this.searchObj.formOptions.push(typeId_select);
 			this.$refs.searchForm.addInitValue()
 		}
-		this.getTableData()
 	}
+}
+/**
+ *  函数防抖 设定时间内多次事件一次相应
+ *
+ * @param {Function} fn
+ * @param {number} wait
+ * @returns
+ */
+function debounce(fn, wait) {
+	let timer;
+	return function () {
+		var context = this;
+		var args = arguments;
+		if (timer) {
+			clearTimeout(timer);
+			timer = null;
+		}
+		timer = setTimeout(function () {
+			fn.apply(context, args);
+		}, wait);
+	};
 }
 </script>
 
