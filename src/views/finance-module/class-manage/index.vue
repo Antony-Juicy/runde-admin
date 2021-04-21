@@ -96,30 +96,30 @@ export default {
       showNum: 5,
       formOptions: [
         {
-          prop: "liveId",
+          prop: "className",
           element: "el-input",
           placeholder: "请输入班型名称",
         },
         {
-          prop: "typeId",
+          prop: "projectName",
           element: "el-select",
           placeholder: "请选择项目",
           options: [],
         },
         {
-          prop: "typeId",
+          prop: "elType",
           element: "el-select",
           placeholder: "请选择类型",
           options: [],
         },
         {
-          prop: "typeId",
+          prop: "classTime",
           element: "el-select",
           placeholder: "请选择确认时点",
           options: [],
         },
         {
-          prop: "typeId",
+          prop: "status",
           element: "el-select",
           placeholder: "请选择状态",
           options: [],

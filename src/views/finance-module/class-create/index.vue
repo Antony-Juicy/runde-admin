@@ -15,8 +15,9 @@
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
-        :loading="loading"
+        :loading="loading" 
         :tbodyHeight="600"
+        :filterColumn="true"
         :pageConfig.sync="pageConfig"
         @pageChange="pageChange"
       >
@@ -73,6 +74,44 @@
           ref="dataForm1"
           formLabelWidth="120px"
         >
+          <template slot="project" slot-scope="scope">
+            <el-row style="margin-left: -120px">
+              <el-col :span="12">
+                <el-form-item label="项目：" prop="project" inline="true">
+                  <el-select
+                    v-model="basicInfo.project"
+                    placeholder="请选择"
+                    size="small"
+                  >
+                    <el-option
+                      v-for="item in projectArr"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="科目：" prop="subject" inline="true">
+                  <el-select
+                    v-model="basicInfo.subject"
+                    placeholder="请选择"
+                    size="small"
+                  >
+                    <el-option
+                      v-for="item in projectArr"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </template>
         </RdForm>
 
         <div class="btn-wrapper btn-wrap">
@@ -95,42 +134,6 @@
           :rules="rules"
           label-width="120px"
         >
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <el-form-item label="项目：" prop="project" inline="true">
-                <el-select
-                  v-model="basicInfo.project"
-                  placeholder="请选择"
-                  size="small"
-                >
-                  <el-option
-                    v-for="item in projectArr"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  >
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="科目：" prop="subject" inline="true">
-                <el-select
-                  v-model="basicInfo.subject"
-                  placeholder="请选择"
-                  size="small"
-                >
-                  <el-option
-                    v-for="item in projectArr"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  >
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-row>
           <el-form-item label="学费价格：">
             <el-row :gutter="6" class="mb20">
               <el-col :span="3">总学费</el-col>
@@ -409,23 +412,23 @@ export default {
         { prop: "status", element: "el-select", placeholder: "请选择状态" },
         { prop: "year", element: "el-select", placeholder: "请选择年份" },
         {
-          prop: "helpType",
+          prop: "protocolTypeId",
           element: "el-select",
           placeholder: "请选择协议类型",
         },
         {
-          prop: "refundType",
+          prop: "refundTypeId",
           element: "el-select",
           placeholder: "请选择退费类型",
         },
-        { prop: "eduSystem", element: "el-select", placeholder: "请选择学制" },
+        { prop: "refundRulers", element: "el-select", placeholder: "请选择退费规则" },
         {
           prop: "serviceTime",
           element: "el-select",
           placeholder: "请选择服务年限",
         },
         {
-          prop: "classGroup",
+          prop: "classGroupNumber",
           element: "el-select",
           placeholder: "请选择班型分组",
         },
@@ -433,43 +436,30 @@ export default {
       tableData: [
         {
           id: 1,
-          value2: "啊哈哈",
-          value3: 1995,
-          value4: 1995,
-          value5: 1995,
-          value6: 1995,
-          value7: 1995,
-          value8: 1995,
-          value9: 1995,
-          value10: 1998,
-          value11: 1995,
-          value12: 1995,
-          value13: 1995,
-          value14: 1995,
-          value15: 1995,
+          classTypeName: "啊哈哈",
         },
       ],
       tableKey: [
         { name: "ID", value: "id" },
-        { name: "班型名称", value: "value2" },
-        { name: "年份", value: "value3" },
-        { name: "班型类型", value: "value4" },
-        { name: "协议类型", value: "value5" },
-        { name: "退费类型", value: "value6" },
-        { name: "项目", value: "value7" },
-        { name: "科目", value: "value8" },
-        { name: "课程", value: "value9" },
-        { name: "班型内容", value: "value10", operate: true },
-        { name: "学费/元", value: "value11" },
-        { name: "学制", value: "value12" },
-        { name: "服务年限", value: "value13" },
-        { name: "成本费用/元", value: "value14" },
-        { name: "通过扣除费用", value: "value15" },
-        { name: "班型分组", value: "value16" },
-        { name: "班型阶段", value: "value17" },
-        { name: "班群服务类型", value: "value18" },
-        { name: "班群人数", value: "value19" },
-        { name: "状态", value: "value20" },
+        { name: "班型名称", value: "classTypeName" },
+        { name: "年份", value: "year" },
+        { name: "项目", value: "project" },
+        { name: "科目", value: "subject" },
+        { name: "班型类型", value: "classTypeId" },
+        { name: "协议类型", value: "protocolTypeId" },
+        { name: "退费类型", value: "refundTypeId" },
+        { name: "退费规则", value: "refundRulers" },
+        { name: "课程", value: "course" },
+        { name: "班型内容", value: "classtypeContent", operate: true },
+        { name: "学费/元", value: " tuitionFees" },
+        { name: "服务年限", value: "serviceTime" },
+        { name: "成本费用/元", value: " cost" },
+        { name: "通过扣除费用", value: "deductingFees" },
+        { name: "班型分组", value: "classTypeGroup" },
+        { name: "班型阶段", value: "classStage" },
+        { name: "班群服务类型", value: "serviceType" },
+        { name: "班群人数", value: "classGroupNumber" },
+        { name: "状态", value: "status" },
         {
           name: "操作",
           value: "edit",
@@ -489,10 +479,16 @@ export default {
       addStatus: true,
       addFormOptions: [
         {
+          prop: "project",
+          element: "el-input",
+          placeholder: "项目",
+          operate: true,
+        },
+        {
           prop: "className",
           element: "el-input",
-          placeholder: "请输入班型内容名称",
-          label: "班型内容名称：",
+          placeholder: "请输入班型名称",
+          label: "班型名称：",
         },
         {
           prop: "classYear",
@@ -561,11 +557,11 @@ export default {
               value: "1",
             },
             {
-              label: "1年",
+              label: "2年",
               value: "2",
             },
             {
-              label: "1年",
+              label: "3年",
               value: "3",
             },
             {
@@ -838,35 +834,35 @@ export default {
       distributeVisible: false,
       opportunityIds: "",
       detailTableData: [
-          {
-            id: 1,
-            year: "啊哈哈11",
-            subProject: 1995,
-            contentName: 1995,
-            type: 1995,
-            SingleCourseFee: 1995,
-            courseStage: 1995,
-            accountingRules: 1995,
-            recordedCase: 1995,
-            StartTime: 1995,
-            creatTime: 1995,
-            status: 1995
-          },
+        {
+          id: 1,
+          year: "啊哈哈11",
+          subProject: 1995,
+          contentName: 1995,
+          type: 1995,
+          SingleCourseFee: 1995,
+          courseStage: 1995,
+          accountingRules: 1995,
+          recordedCase: 1995,
+          StartTime: 1995,
+          creatTime: 1995,
+          status: 1995,
+        },
       ],
-      detailTableKey:[
-         { name: "id", value: "id" },
-          { name: "年份", value: "year" },
-          { name: "所属项目", value: "subProject" },
-          { name: "内容名称", value: "contentName" },
-          { name: "类型", value: "type" },
-          { name: "单科学费/元", value: "SingleCourseFee" },
-          { name: "课程阶段", value: "courseStage" },
-          { name: "核算规则", value: "accountingRules" },
-          { name: "录播情况", value: "recordedCase" },
-          { name: "授课开始时间", value: "StartTime" },
-          { name: "创建时间", value: "creatTime" },
-          { name: "状态", value: "status" },
-      ]
+      detailTableKey: [
+        { name: "id", value: "id" },
+        { name: "年份", value: "year" },
+        { name: "所属项目", value: "subProject" },
+        { name: "内容名称", value: "contentName" },
+        { name: "类型", value: "type" },
+        { name: "单科学费/元", value: "SingleCourseFee" },
+        { name: "课程阶段", value: "courseStage" },
+        { name: "核算规则", value: "accountingRules" },
+        { name: "录播情况", value: "recordedCase" },
+        { name: "授课开始时间", value: "StartTime" },
+        { name: "创建时间", value: "creatTime" },
+        { name: "状态", value: "status" },
+      ],
     };
   },
   mounted() {
@@ -921,6 +917,7 @@ export default {
     },
     handlePageChange() {},
     getTableData(params = {}) {
+      // TODO
       return new Promise((resolve, reject) => {
         // this.$fetch("", {
         //   ...this.pageConfig,
@@ -936,6 +933,7 @@ export default {
     handleEdit(data) {
       this.addStatus = false;
       this.addVisible = true;
+      // TODO 编辑
     },
     handleDelete(row) {
       let info = "";
@@ -981,9 +979,6 @@ export default {
 
 <style lang="scss" scoped>
 .class-create {
-  /deep/.el-button {
-    margin: 0;
-  }
   .steps-box {
     width: 80%;
     margin: 0 auto;
