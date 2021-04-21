@@ -14,7 +14,7 @@
         @select="handleSelect"
         @pageChange="pageChange">
         <template slot="goodsThumbnail" slot-scope="scope">
-          <img :src="scope.row.goodsThumbnail || userLogoUrl" style="width:60px;height:60px;" alt="">
+          <img :src="scope.row.goodsThumbnail || userLogoUrl" style="width:120px;height:90px;" alt="">
         </template>
         <template slot="goodsType" slot-scope="scope">
           <span>{{ scope.row.goodsType | goodsTypeFilter }}</span>
@@ -192,7 +192,7 @@ export default {
       tableKey: [
         { name: '商品id',value: 'goodsId',width: 80 },
         { name: '项目类型',value: 'typeName' },
-        { name: '商品缩略图',value: 'goodsThumbnail',operate: true,width: 100 },
+        { name: '商品缩略图',value: 'goodsThumbnail',operate: true,width: 140 },
         { name: '商品名称',value: 'goodsName' },
         { name: '商品类型',value: 'goodsType',operate: true },
         { name: '规格组数',value: 'goodsItemGroupCount',width: 80 },

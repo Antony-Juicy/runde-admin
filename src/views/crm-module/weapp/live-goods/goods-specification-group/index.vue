@@ -101,7 +101,7 @@
               <el-input-number controls-position="right" v-model.trim ="ruleForm.originalPrice" autocomplete="off" :min="0" placeholder="" />
             </el-form-item>
             <el-form-item label="活动编码" prop="activityCode" v-if="this.showGroupTpye == 'Book'">
-              <el-input v-model.trim="ruleForm.activityCode" autocomplete="off" @input="ruleForm.activityCode = String(ruleForm.activityCode).replace(/[^\d]/g,'')" placeholder="请输入活动编码" />
+              <el-input v-model.trim="ruleForm.activityCode" autocomplete="off" placeholder="请输入活动编码" />
             </el-form-item>
             <el-form-item label="科目名称" prop="subjectName" v-if="this.showGroupTpye == 'Book'">
               <el-input v-model.trim="ruleForm.subjectName" autocomplete="off" placeholder="请输入规格组名称" />
