@@ -191,7 +191,10 @@ export default {
     //获取标签数组
     async getLabel() {
 			let res = await this.$fetch(
-				"wechat_label"
+				"wechat_label",
+        {
+          appId:this.account.appId
+        }
 			);
       this.labelList = res.data;
 		},
