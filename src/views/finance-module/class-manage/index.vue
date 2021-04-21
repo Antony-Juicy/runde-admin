@@ -21,15 +21,24 @@
         :emptyText="emptyText"
       >
         <template slot="edit" slot-scope="scope">
-          <el-button @click="handleEdit()" type="text" size="small">
+          <el-button @click="handleEdit(scope.row)" type="text" size="small">
             编辑
           </el-button>
           <el-button
-            @click="handleControlBtn(scope.row)"
+            @click="changeTable(scope.row.buttonVisible, scope.$index)"
             type="text"
             size="small"
             style="color: #ec5b56"
-            >启用/暂停</el-button
+            v-if="scope.row.buttonVisible"
+            >启用</el-button
+          >
+          <el-button
+            @click="changeTable(scope.row.buttonVisible, scope.$index)"
+            type="text"
+            size="small"
+            style="color: #ec5b56"
+            v-else
+            >暂停</el-button
           >
         </template>
       </rd-table>
@@ -41,7 +50,7 @@
       :title="addStatus ? '添加班型内容' : '编辑班型内容'"
       @change="handleClose('dataForm3')"
     >
-      <div class="add-act">
+      <div>
         <RdForm
           :formOptions="addFormOptions"
           :rules="addRules"
@@ -63,7 +72,7 @@
             type="primary"
             size="small"
             :loading="btnLoading"
-            @click="handleSubmit"
+            @click="handleSubmit('dataForm3')"
             v-prevent-re-click="2000"
             >保存</el-button
           >
@@ -85,32 +94,35 @@ export default {
   data() {
     return {
       showNum: 5,
-      checkList: [],
       formOptions: [
         {
           prop: "liveId",
-          element: "el-input", 
+          element: "el-input",
           placeholder: "请输入班型名称",
         },
         {
           prop: "typeId",
           element: "el-select",
           placeholder: "请选择项目",
+          options: [],
         },
         {
           prop: "typeId",
           element: "el-select",
           placeholder: "请选择类型",
+          options: [],
         },
         {
           prop: "typeId",
           element: "el-select",
           placeholder: "请选择确认时点",
+          options: [],
         },
         {
           prop: "typeId",
           element: "el-select",
           placeholder: "请选择状态",
+          options: [],
         },
       ],
       addVisible: false,
@@ -118,19 +130,20 @@ export default {
       form: {},
       emptyText: "暂无数据",
       tableData: [
-        {
-          id: 1,
-          name: "啊哈哈",
-          year: 1995,
-          type: 2,
-          money: "454",
-          stage: "基础阶段",
-          rules: "直线分摊",
-          video: "有录播",
-          classTime: 1995,
-          createTime: 2,
-          status: "正常",
-        },
+        // {
+        //   id: 1,
+        //   name: "啊哈哈",
+        //   year: 1995,
+        //   type: 2,
+        //   money: "454",
+        //   stage: "基础阶段",
+        //   rules: "直线分摊",
+        //   video: "有录播",
+        //   classTime: 1995,
+        //   createTime: 2,
+        //   status: "正常",
+        //   buttonVisible: true,
+        // },
       ],
       tableKey: [
         {
@@ -142,6 +155,10 @@ export default {
         {
           name: "年份",
           value: "year",
+        },
+          {
+          name: "所属项目",
+          value: "belongSubject",
         },
         {
           name: "内容名称",
@@ -198,6 +215,7 @@ export default {
           element: "el-select",
           placeholder: "所属项目",
           label: "所属项目:",
+          options: [],
         },
         {
           prop: "className",
@@ -309,15 +327,15 @@ export default {
         },
       ],
       addRules: {
-        projectName: [{ required: false, message: "请输入", trigger: "blur" }],
-        className: [{ required: false, message: "请输入", trigger: "blur" }],
-        part: [{ required: false, message: "请选择", trigger: "blur" }],
-        video: [{ required: false, message: "请选择", trigger: "blur" }],
-        eduAmount: [{ required: false, message: "请输入", trigger: "blur" }],
-        computedRules: [
-          { required: false, message: "请选择", trigger: "blur" },
-        ],
-        time: [{ required: false, message: "请选择", trigger: "blur" }],
+        projectName: [{ required: true, message: "请选择", trigger: "blur" }],
+        className: [{ required: true, message: "请输入", trigger: "blur" }],
+        elType: [{ required: true, message: "请选择", trigger: "blur" }],
+        eduAmount: [{ required: true, message: "请输入", trigger: "blur" }],
+        computedRules: [{ required: true, message: "请选择", trigger: "blur" }],
+        time: [{ required: true, message: "请选择", trigger: "blur" }],
+        videoStatus: [{ required: true, message: "请选择", trigger: "blur" }],
+        stage: [{ required: true, message: "请选择", trigger: "blur" }],
+        courseStatus: [{ required: true, message: "请选择", trigger: "blur" }],
       },
       btnLoading: false,
       dynamicValidateForm: {
@@ -328,62 +346,65 @@ export default {
           // },
         ],
       },
+      // 多选：学习阶段 所属项目 核算规则
+      checkList: [],
+      subjectArr: [],
+      rulesArr: [],
     };
   },
   methods: {
+    getMulInfo(selIds, arr) {
+      if (!selIds) {
+        return [];
+      }
+      //选中的id selIds， 整个下拉，
+      const currentArr = [];
+      selIds.forEach((item) => {
+        let name = arr.find((ele) => ele.value == item).label;
+        currentArr.push({
+          name,
+          val: item,
+        });
+      });
+      return currentArr;
+    },
     handleClose(formName) {
-      this.$refs[formName].onReset();
+      this.$refs[formName] && this.$refs[formName].onReset();
       this.checkList = [];
       this.addVisible = false;
       //   this.dynamicValidateForm.domains = [];
     },
-    handleSubmit() {
-      //   this.$refs.dataForm3.validate((val, data) => {
-      //     if (val) {
-      //       console.log(data, "data");
-      //       this.$refs.dynamicValidateForm.validate((valid) => {
-      //         if (valid) {
-      //           console.log(this.dynamicValidateForm, "99");
-      //           const { domains } = this.dynamicValidateForm;
-      //           const { time, appId } = data;
-      //           let currentApp = this.addFormOptions[4].options.find(
-      //             (item) => item.value == appId
-      //           );
-      //           let secretKey = currentApp && currentApp.secretKey;
-      //           let appName = currentApp && currentApp.label;
-      //           let param = {
-      //             ...data,
-      //             skipList:
-      //               domains &&
-      //               domains.length &&
-      //               domains.map((item) => ({
-      //                 skipKey: item.paramName,
-      //                 skipValue: item.paramVal,
-      //               })),
-      //             time: "",
-      //             startTime: time ? time[0] : "",
-      //             endTime: time ? time[1] : "",
-      //             id: this.addStatus ? "" : this.editId,
-      //             appName,
-      //             secretKey,
-      //           };
-      //           this.$fetch(
-      //             this.addStatus
-      //               ? "cmsactivityinfo_save"
-      //               : "cmsactivityinfo_editJsp",
-      //             param
-      //           ).then((res) => {
-      //             this.$message.success("操作成功");
-      //             this.getTableData();
-      //             this.addVisible = false;
-      //           });
-      //         } else {
-      //           console.log("error submit!!");
-      //           return false;
-      //         }
-      //       });
-      //     }
-      //   });
+    handleSubmit(formName) {
+      // TODO 保存
+      // this.$refs[formName].validate((valid, formData) => {
+      //   if (valid) {
+      //     console.log(formData, "提交 11");
+      //     const {time, projectName, computedRules } = formData;
+      //     let belongSubject = this.getMulInfo(projectName, this.subjectArr);
+      //     let rulesInfo = this.getMulInfo(computedRules, this.rulesArr);
+  
+      //     this.$fetch(
+      //       this.addStatus
+      //         ? "coupontemplateversiontwo_save"
+      //         : "coupontemplateversiontwo_editJsp",
+      //       {
+      //         ...formData,
+      //         time: "",
+      //         startTime: time ? time[0] : "",
+      //         endTime: time ? time[1] : "",
+      //         projectName: projectName && projectName.join(","),
+      //         computedRules: computedRules && computedRules.join(","),
+      //         belongSubject:JSON.stringify(belongSubject),
+      //         rulesInfo:JSON.stringify(rulesInfo),
+              
+      //       }
+      //     ).then((res) => {
+      //       this.$message.success("操作成功");
+      //       this.addVisible = false;
+      //       this.getTableData();
+      //     });
+      //   }
+      // });
     },
     onSearch(val) {
       this.searchForm = { ...val };
@@ -411,8 +432,11 @@ export default {
     handleEdit(data) {
       this.addStatus = false;
       this.addVisible = true;
+      //TODO 编辑
     },
-    handleControlBtn() {},
+    changeTable(buttonVisible, index) {
+      this.tableData[index].buttonVisible = !buttonVisible;
+    },
     handleDelete(row) {
       let info = "";
       this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
