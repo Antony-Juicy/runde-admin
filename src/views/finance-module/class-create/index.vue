@@ -7,9 +7,8 @@
     ></search-form>
     <div class="w-container mt-15">
       <div class="btn-wrapper">
-        <el-button type="primary" size="small"> +添加</el-button>
         <el-button type="primary" size="small" @click="handleAdd">
-          设置班型内容</el-button
+          +创建班型</el-button
         >
       </div>
 
@@ -21,8 +20,8 @@
         :pageConfig.sync="pageConfig"
         @pageChange="pageChange"
       >
-        <template slot="value10" slot-scope="scope"> 
-          {{ scope.row.value10 }}<br /> 
+        <template slot="value10" slot-scope="scope">
+          {{ scope.row.value10 }}<br />
           <el-button
             type="text"
             style="height: 40px"
@@ -32,7 +31,7 @@
             查看详情
           </el-button>
         </template>
-        <template slot="edit" slot-scope="scope"> 
+        <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small">
             编辑
           </el-button>
@@ -366,6 +365,19 @@
         >
       </div>
     </rd-dialog>
+    <!-- 添加查看详情弹窗 -->
+    <fullDialog
+      v-model="detailVisible"
+      title="金牌通关班"
+      @change="detailVisible = false"
+    >
+      <rd-table
+        :tableData="detailTableData"
+        :tableKey="detailTableKey"
+        :tbodyHeight="600"
+      >
+      </rd-table>
+    </fullDialog>
   </div>
 </template>
 
@@ -374,7 +386,7 @@ import fullDialog from "@/components/FullDialog";
 import RdForm from "@/components/RdForm";
 import addClass from "./add-class";
 export default {
-  name: "temp",
+  name: "class-create",
   components: {
     fullDialog,
     RdForm,
@@ -383,6 +395,7 @@ export default {
   data() {
     return {
       btnLoading: false,
+      detailVisible: false,
       active: 0,
       showNum: 5,
       formOptions: [
@@ -824,6 +837,36 @@ export default {
       campusArr: [],
       distributeVisible: false,
       opportunityIds: "",
+      detailTableData: [
+          {
+            id: 1,
+            year: "啊哈哈11",
+            subProject: 1995,
+            contentName: 1995,
+            type: 1995,
+            SingleCourseFee: 1995,
+            courseStage: 1995,
+            accountingRules: 1995,
+            recordedCase: 1995,
+            StartTime: 1995,
+            creatTime: 1995,
+            status: 1995
+          },
+      ],
+      detailTableKey:[
+         { name: "id", value: "id" },
+          { name: "年份", value: "year" },
+          { name: "所属项目", value: "subProject" },
+          { name: "内容名称", value: "contentName" },
+          { name: "类型", value: "type" },
+          { name: "单科学费/元", value: "SingleCourseFee" },
+          { name: "课程阶段", value: "courseStage" },
+          { name: "核算规则", value: "accountingRules" },
+          { name: "录播情况", value: "recordedCase" },
+          { name: "授课开始时间", value: "StartTime" },
+          { name: "创建时间", value: "creatTime" },
+          { name: "状态", value: "status" },
+      ]
     };
   },
   mounted() {
@@ -831,8 +874,7 @@ export default {
   },
   methods: {
     goDetails() {
-    
-
+      this.detailVisible = true;
     },
     getAddClassTableData(params = {}) {
       // this.$fetch("chance_campus_list", {

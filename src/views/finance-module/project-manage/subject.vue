@@ -6,8 +6,8 @@
       @onSearch="onSearch"
     ></search-form>
     <div class="w-container mt-15">
-      <el-button type="primary" size="small" @click="handleAdd">
-        +添加项目</el-button
+      <el-button type="primary" size="small" @click="handleAdd"> 
+        +添加科目</el-button
       >
       <div class="mt-15">
         <rd-table
@@ -68,7 +68,7 @@
           type="primary"
           size="small"
           :loading="btnLoading"
-          @click="handleAdd"
+          @click="handleAddClass"
           v-prevent-re-click="2000"
           >添加</el-button
         >
@@ -87,7 +87,7 @@ export default {
   data() {
     return {
       startDateDisabled: {},
-      distributeVisible: true,
+      distributeVisible: false,
       btnLoading: false,
       showNum: 2,
       searchForm: {},
@@ -202,7 +202,7 @@ export default {
           placeholder: "请选择状态",
           label: "状态：",
           options: [
-            { 
+            {
               label: "正常",
               value: "Open",
             },
@@ -222,9 +222,7 @@ export default {
         },
       ],
       addRules: {
-        updateReason: [
-          { required: true, message: "请输入修改事由", trigger: "blur" },
-        ],
+    
       },
       basicInfo: {
         endTime: "",
@@ -246,8 +244,10 @@ export default {
     this.getTableData();
   },
   methods: {
-    handleAdd() {
-      console.log(77);
+    handleAddClass() {
+    },  
+    handleAdd() {  
+      this.distributeVisible = true;
     },
     onSearch(val) {
       this.searchForm = {
@@ -267,9 +267,6 @@ export default {
       //   });
       //   this.pageConfig.totalCount = res.data.count;
       // });
-    },
-    handleAdd() {
-      console.log(77);
     },
     handleEdit() {},
     pageChange(val) {
