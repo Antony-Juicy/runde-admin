@@ -3,22 +3,26 @@
 
     <!-- 搜索栏 -->
     <div class="search">
-      <el-dropdown ref="accountOption" trigger="click" placement="bottom-start">
-        <div class="select-accoumt">
-          <img class="logo" :src='account.appImg'>
-          <div>{{account.appName}}</div>
-          <i class="el-icon-arrow-down el-icon--right"></i>
-        </div>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>
-            <div class="account-option" v-for="(item,index) in officialAccounts" :key="index" @click="handle_select_account(item)">
-              <img :src="item.appImg" class="logo">
-              <span>{{ item.appName }}</span>
-            </div>
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-      <search-form ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch" @onReset="onReset"></search-form>
+      <div class="search-left">
+        <el-dropdown trigger="click" placement="bottom-start" @command="handle_select_account">
+          <div class="select-accoumt">
+            <img class="logo" :src='account.appImg'>
+            <div>{{account.appName}}</div>
+            <i class="el-icon-arrow-down el-icon--right"></i>
+          </div>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item v-for="(item,index) in officialAccounts" :key="index" :command="index">
+              <div class="account-option">
+                <img :src="item.appImg" class="logo">
+                <span>{{ item.appName }}</span>
+              </div>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </div>
+      <div>
+        <search-form ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch" @onReset="onReset"></search-form>
+      </div>
     </div>
 
 		<!-- 表格主体 -->
@@ -156,12 +160,7 @@ export default {
 		);
 		this.officialAccounts = res.data
 		this.account = this.officialAccounts[0];
-		this.$nextTick(() => {
-			// 把选择公众号的东西放到搜索区
-			document.querySelector('.search .search-box').insertBefore(this.$refs.accountOption.$el, document.querySelector('.accountLabel .el-form-item'))
-		})
     this.getTableData();
-    this.getLabel();
 	},
 
   methods: {
@@ -199,8 +198,8 @@ export default {
 		},
 
     
-		handle_select_account(data) {
-			this.account = data;
+		handle_select_account(index) {
+			this.account = this.officialAccounts[index];
 		},
 
     changepageNum(e){
@@ -232,7 +231,8 @@ export default {
     },
 
     //修改标签
-    edit(row){
+    async edit(row){
+      await this.getLabel();
       this.labelId = "";
       let labelList= this.labelList;
       for(let z in row.wechatUserTagModel){
@@ -299,6 +299,9 @@ export default {
   padding-left:15px;
   box-sizing: border-box;
 }
+.search-left{
+  display: inline-block;
+}
 .search-form-box{
   margin-bottom: 0;
 }
@@ -307,9 +310,8 @@ export default {
   align-items: center;
   background-color: #fff;
   border-radius: 4px;
-  height: 32px;
+  height: 33px;
   border: 1px solid #dcdfe6;
-  margin-right: 10px;
   padding:0 15px;
   white-space:nowrap;
   overflow: hidden;
@@ -321,11 +323,21 @@ export default {
     object-fit: contain;
   }
 }
+.select-accoumt div{
+  width: 200px;
+  overflow:hidden;
+  text-overflow:ellipsis; 
+  white-space:nowrap;
+}
 .account-option {
 	display: flex;
 	align-items: center;
 	cursor: pointer;
 	padding: 4px 4px;
+  width: 200px;
+  overflow:hidden;
+  text-overflow:ellipsis; 
+  white-space:nowrap;
 	&:hover {
 		background-color: #f5f7fa;
 	}
@@ -362,18 +374,8 @@ export default {
   font-size: 14px;
   border: 1px solid #333;
   margin-right: 10px;
-}
-.form-label:nth-child(1n){
   color:#2C9EFF;
   border: 1px solid #2C9EFF;
-}
-.form-label:nth-child(2n){
-  color:#FF9823;
-  border: 1px solid #FF9823;
-}
-.form-label:nth-child(3n){
-  color:#FF7D75;
-  border: 1px solid #FF7D75;
 }
 .form-label:nth-last-child(1){
   margin-right: 0;
