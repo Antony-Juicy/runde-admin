@@ -17,7 +17,7 @@
 			</el-dropdown-menu>
 			
 		</el-dropdown>
-		<search-form ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch"></search-form>
+		<search-form ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch" @onReset="onReset"></search-form>
 		<!-- 表格主体 -->
 		<div class="w-container">
 			<rd-table :tableData="tableData" :tableKey="tableKey" :pageConfig.sync="pageConfig" @pageChange="pageChange">
@@ -89,6 +89,10 @@ export default {
 			this.pageConfig.pageNum = 1;
 			this.getTableData();
 		},
+		onReset() {
+			this.account = this.officialAccounts[0];
+			this.searchForm = {};
+		},
 		refresh(val) {
 			this.getTableData({
 				pageNum: val || this.pageConfig.pageNum
@@ -124,7 +128,6 @@ export default {
 		},
 		handle_select_account(data) {
 			this.account = data
-			this.refresh()
 		}
 	},
 	async mounted() {

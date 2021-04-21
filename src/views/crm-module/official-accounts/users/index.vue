@@ -4,7 +4,7 @@
     <!-- 搜索栏 -->
     <div class="search">
       <div class="search-left">
-        <el-dropdown trigger="click" placement="bottom-start" @command="handle_select_account">
+        <el-dropdown trigger="click" placement="bottom-start" @command="handle_select_account" >
           <div class="select-accoumt">
             <img class="logo" :src='account.appImg'>
             <div>{{account.appName}}</div>
@@ -20,8 +20,8 @@
           </el-dropdown-menu>
         </el-dropdown>
       </div>
-      <div>
-        <search-form ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch" @onReset="onReset"></search-form>
+      <div class="search-right">
+        <search-form ref="searchForm" :formOptions="formOptions" @onSearch="onSearch" @onReset="onReset"></search-form>
       </div>
     </div>
 
@@ -36,7 +36,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="微信ID" width="180">
+        <el-table-column prop="name" label="微信ID" width="280">
           <template slot-scope="scope">
             <div class="form">
               <p class="form-text">{{scope.row.openId}}</p>
@@ -58,7 +58,7 @@
             <p class="form-text">某某某（422880）</p>
           </div>
         </el-table-column> -->
-        <el-table-column label="操作">
+        <el-table-column label="操作" width="300">
           <template slot-scope="scope">
             <div class="form">
               <p class="form-edit" @click="edit(scope.row)">修改标签</p>
@@ -131,21 +131,20 @@ export default {
         {
           prop: "labelName",
           element: "el-input",
-          placeholder: "用户标签",
+          placeholder: "请输入用户标签",
         },
         {
           prop: "nickName",
           element: "el-input",
-          placeholder: "用户昵称",
+          placeholder: "请输入用户昵称",
         },
         {
           prop: "openId",
           element: "el-input",
-          placeholder: "微信ID",
+          placeholder: "请输入微信ID",
         },
       ],
       outerVisible:false,
-      labelId:'',
       labelOpenId:'',
       
 			officialAccounts: [],
@@ -192,7 +191,10 @@ export default {
     //获取标签数组
     async getLabel() {
 			let res = await this.$fetch(
-				"wechat_label"
+				"wechat_label",
+        {
+          appId:this.account.appId
+        }
 			);
       this.labelList = res.data;
 		},
@@ -233,7 +235,7 @@ export default {
     //修改标签
     async edit(row){
       await this.getLabel();
-      this.labelId = "";
+      this.labelOpenId = "";
       let labelList= this.labelList;
       for(let z in row.wechatUserTagModel){
         for(let i in labelList){
@@ -243,7 +245,6 @@ export default {
         }
       }
       this.labelList = labelList;
-      this.labelId = row.id;
       this.labelOpenId = row.openId;
       this.outerVisible = true;
     },
@@ -257,18 +258,18 @@ export default {
 
     async changeLabel(){
       let label = [];
-      let index = this.list.findIndex(item => item.id == this.labelId && item.openId == this.labelOpenId);
+      let index = this.list.findIndex(item => item.openId == this.labelOpenId);
       let wechatUserTagModel = [];
       this.labelList.forEach((item)=>{
         if(item.active){
-          label.push({labelName:item.labelName,labelId:this.labelId,openId:this.labelOpenId});
+          label.push({labelName:item.labelName,labelId:item.id,openId:this.labelOpenId});
           wechatUserTagModel.push(item);
         }
       })
       let res = await this.$fetch(
 				"update_label",
         {
-          userTagAddListRequest:JSON.stringify(label)
+          userTagAddListRequest:JSON.stringify(label),
         }
 			);
       if(res.code == 200){
@@ -293,14 +294,17 @@ export default {
 .search{
   width: 100%;
   background: #fff;
-  display: flex;
-  align-items: center;
+  // display: flex;
+  // align-items: center;
   margin-bottom: 15px;
   padding-left:15px;
   box-sizing: border-box;
 }
 .search-left{
-  display: inline-block;
+  float: left;
+  height: 71px;
+  display: flex;
+  align-items: center;
 }
 .search-form-box{
   margin-bottom: 0;
@@ -324,7 +328,7 @@ export default {
   }
 }
 .select-accoumt div{
-  width: 200px;
+  width: 150px;
   overflow:hidden;
   text-overflow:ellipsis; 
   white-space:nowrap;
@@ -334,7 +338,7 @@ export default {
 	align-items: center;
 	cursor: pointer;
 	padding: 4px 4px;
-  width: 200px;
+  width: 150px;
   overflow:hidden;
   text-overflow:ellipsis; 
   white-space:nowrap;
@@ -349,7 +353,7 @@ export default {
 	}
 }
 .el-form{
-  width: 100%;
+  // width: 100%;
   height: 100%;
   padding:0 20px;
   box-sizing: border-box;

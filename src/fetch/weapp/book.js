@@ -17,7 +17,7 @@ export default {
 
     book_get_chapters: { url: '/live/console/book/chapter/page_list', method: 'post' },
     book_add_chapter: { url: '/live/console/book/chapter/add_chapter', method: 'post' },
-    book_add_section: { url: '/live//console/book/chapter/add_section', method: 'post' },
+    book_add_section: { url: '/live/console/book/chapter/add_section', method: 'post' },
     book_delete_chapter: { url: '/live/console/book/chapter/delete', method: 'post' },
     book_update_chapter: { url: '/live/console/book/chapter/update_chapter', method: 'post' },
     book_update_section: { url: '/live/console/book/chapter/update_section', method: 'post' },

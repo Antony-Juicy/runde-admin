@@ -8,15 +8,15 @@
 				<i class="el-icon-arrow-down el-icon--right"></i>
 			</div>
 			<el-dropdown-menu slot="dropdown">
-				<el-dropdown-item>
-					<div class="account-option" v-for="(item,index) in officialAccounts" :key="index" @click="handle_select_account(item)">
+				<el-dropdown-item v-for="(item,index) in officialAccounts" :key="index">
+					<div class="account-option" @click="handle_select_account(item)">
 						<img :src="item.appImg" class="logo">
 						<span>{{ item.appName }}</span>
 					</div>
 				</el-dropdown-item>
 			</el-dropdown-menu>
 		</el-dropdown>
-		<search-form ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch"></search-form>
+		<search-form ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch" @onReset="onReset"></search-form>
 		<!-- 表格主体 -->
 		<div class="w-container">
 			<div class="btn-wrapper">
@@ -149,6 +149,10 @@ export default {
 			this.searchForm = { ...data };
 			this.pageConfig.pageNum = 1;
 			this.getTableData();
+		},
+		onReset() {
+			this.account = this.officialAccounts[0];
+			this.searchForm = {};
 		},
 		pageChange(val) {
 			this.pageConfig.pageNum = val.page;
@@ -288,7 +292,6 @@ export default {
 		handle_select_account(data) {
 			this.account = data
 			this.choseAccountVisible = false
-			this.refresh()
 		}
 	},
 	async mounted() {
