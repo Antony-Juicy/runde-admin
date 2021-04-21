@@ -16,34 +16,54 @@
 					<el-radio v-model="msgtype" label="image">图片</el-radio>
 					<el-radio v-model="msgtype" label="miniprogrampage">小程序</el-radio>
 				</div>
-				<mpnews v-if="msgtype == 'mpnews'"></mpnews>
+				<mpnews v-show="msgtype == 'mpnews'" @msgData='handle_msgData'></mpnews>
+				<textmsg v-show="msgtype == 'text'" @msgData='handle_msgData'></textmsg>
+				<imgmsg v-show="msgtype == 'image'" @msgData='handle_msgData'></imgmsg>
+				<miniprogrampage v-show="msgtype == 'miniprogrampage'" @msgData='handle_msgData'></miniprogrampage>
 			</div>
 			<div class="right">
-				<likePhone :mode="msgtype" :cardData="{}"></likePhone>
+				<likePhone :mode="msgtype" :cardData="cardData[msgtype]"></likePhone>
 			</div>
 
 		</div>
-		<div class="bottom">
-
-		</div>
-
 	</div>
 </template>
 
 <script>
 import mpnews from "./mpnews"
+import textmsg from "./textmsg"
+import imgmsg from "./imgmsg"
+import miniprogrampage from "./miniprogrampage"
 import likePhone from '@/components/likePhone'
 export default {
-	components: { mpnews, likePhone },
+	components: { mpnews, textmsg, imgmsg, miniprogrampage, likePhone },
 	data() {
 		return {
 			msgName: "",
 			msgtype: "mpnews",
-			cardData: {},
+			cardData: {
+				mpnews: {},
+				text: {},
+				image: {},
+				miniprogrampage: {}
+			},
+		}
+	},
+	watch: {
+		msgtype: function (n, o) {
+			this.emitForm()
 		}
 	},
 	methods: {
-
+		handle_msgData(data) {
+			// step1 接收表单信息，转发到预览组件
+			this.cardData[this.msgtype] = data
+			// step2 重新组合一个满足接口形态的数据 ，向上传递
+			this.emitForm()
+		},
+		emitForm() {
+			this.$emit("msgForm", this.cardData[this.msgtype])
+		}
 	},
 	mounted() {
 
@@ -60,7 +80,7 @@ export default {
 		.form-line {
 			display: flex;
 			align-items: center;
-			padding-bottom: 10px;
+			padding-bottom: 30px;
 			.label {
 				width: 100px;
 				text-align: right;
@@ -81,10 +101,16 @@ export default {
 	}
 	.form-content {
 		margin: 10px 0;
-        display: flex;
-        .left{
-            margin-right: 100px;
-        }
+		display: flex;
+		.left {
+			// margin-right: 100px;
+			width: 100%;
+		}
+		.right {
+			flex-shrink: 0;
+			margin-right: 50px;
+			margin-left: 50px;
+		}
 	}
 }
 </style>

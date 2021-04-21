@@ -17,13 +17,13 @@
 		</div>
 		<!-- 编辑公众号 -->
 		<rd-dialog :title="AddEditTitle" :dialogVisible="addEditVisible" :showFooter="false" :width="'1200px'" @handleClose="addEditVisible = false">
-			<editMessage></editMessage>
+			<editMessage @msgForm="handle_msgForm"></editMessage>
 		</rd-dialog>
 	</div>
 </template>
 
 <script>
-import editMessage from './editMessage'
+import editMessage from '../editMessage'
 export default {
 	name: "graphicMessage",
 	components: { editMessage },
@@ -41,6 +41,10 @@ export default {
 		},
 		handle_create() {
 			this.addEditVisible = true
+		},
+		handle_msgForm(data){
+			// 这里接收客服消息编辑区的表单信息
+			console.log(data)
 		}
 	},
 	async mounted() {

@@ -26,7 +26,8 @@
 					<img src="@/assets/logo.png">
 				</div>
 				<div class="msg-card">
-					{{cardData}}
+					<div class="just-text" v-html="cardData.content || '请输入文字消息'"></div>
+					<div class="link-text" v-if="cardData.needUrl" @click="handle_goPage">{{cardData.description || '请输入链接名称'}}</div>
 				</div>
 			</div>
 			<div class="mpnews" v-if="mode == 'mpnews'">
@@ -34,12 +35,10 @@
 					<img src="@/assets/logo.png">
 				</div>
 				<div class="msg-card">
-					<div class="title twoline">
-						{{cardData.title}}
-					</div>
+					<div class="title twoline" v-html="cardData.title || '请输入标题'"></div>
 					<div class="down">
-						<div class="description twoline">{{cardData.description}}</div>
-						<img class="imgUrl" :src="cardData.imgUrl">
+						<div class="description twoline">{{cardData.description || '请输入描述'}}</div>
+						<img class="imgUrl" :src="cardData.picurl || require('@/assets/noPic.png')">
 					</div>
 				</div>
 			</div>
@@ -47,8 +46,8 @@
 				<div class="avatar">
 					<img src="@/assets/logo.png">
 				</div>
-				<img v-if="cardData.length > 0" class="imgUrl" :src="cardData">
-				<div v-else class="default-img">图片</div>
+				<img v-if="cardData.picurl" class="imgUrl" :src="cardData.picurl">
+				<div v-else class="default-img">请上传图片</div>
 			</div>
 			<div class="miniprogrampage" v-if="mode == 'miniprogrampage'">
 				<div class="avatar">
@@ -57,10 +56,11 @@
 				<div class="msg-card">
 					<div class="head">
 						<img class="logo" :src="cardData.appLogo">
-						<div class="appName oneline">{{cardData.appName}}</div>
+						<div class="appName oneline">{{cardData.appName || '请选择小程序'}}</div>
 					</div>
-					<div class="title oneline">{{cardData.title}}</div>
-					<img class="imgUrl" :src="cardData.imgUrl">
+					<div class="title oneline" v-html="cardData.title || '请输入卡片标题'"></div>
+					<img class="imgUrl" v-if="cardData.picurl" :src="cardData.picurl">
+					<div v-else class="default-img">请上传图片</div>
 					<div class="tail">
 						<img src="@/assets/miniprogram.png">
 						<div>小程序</div>
@@ -137,7 +137,11 @@ export default {
 			} else {
 				return 0
 			}
-
+		}
+	},
+	methods: {
+		handle_goPage() {
+			window.open(this.cardData.url)
 		}
 	}
 }
@@ -211,6 +215,15 @@ export default {
 		display: flex;
 		align-items: flex-start;
 		padding: 0 10px;
+		.just-text {
+			margin-bottom: 10px;
+			color: #000;
+			font-size: 15px;
+		}
+		.link-text {
+			color: rgb(0, 0, 238);
+			cursor: pointer;
+		}
 	}
 	.mpnews {
 		display: flex;
@@ -230,10 +243,11 @@ export default {
 				height: 28px;
 			}
 			img {
-				width: 30px;
-				height: 30px;
+				width: 40px;
+				height: 40px;
 				margin-left: 10px;
 				flex-shrink: 0;
+				object-fit: scale-down;
 			}
 		}
 	}
@@ -242,9 +256,10 @@ export default {
 		align-items: flex-start;
 		padding: 0 10px;
 		.imgUrl {
-			max-width: 80%;
+			max-width: 70%;
 			max-height: 300px;
 			margin-left: 10px;
+			object-fit: scale-down;
 		}
 		.default-img {
 			margin-left: 10px;
@@ -265,8 +280,8 @@ export default {
 			align-items: center;
 			margin-bottom: 5px;
 			.logo {
-				width: 12px;
-				height: 12px;
+				width: 20px;
+				height: 20px;
 				margin-right: 5px;
 			}
 			.appName {
@@ -282,6 +297,15 @@ export default {
 			width: 190px;
 			height: 152px;
 			margin-bottom: 10px;
+			object-fit: scale-down;
+		}
+		.default-img{
+			width: 190px;
+			height: 152px;
+			margin-bottom: 10px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 		}
 		.tail {
 			border-top: 1px solid #eee;
@@ -333,6 +357,18 @@ export default {
 			transform: rotateZ(45deg);
 			border-left: 1px solid rgb(207, 207, 207);
 			border-bottom: 1px solid rgb(207, 207, 207);
+		}
+	}
+	/deep/ {
+		.likeBtn {
+			font-weight: initial;
+			font-size: 12px;
+			color: #409eff;
+			padding: 2px 4px;
+			border: 1px solid #409eff;
+			border-radius: 4px;
+			margin-bottom: 3px;
+			display: inline-block;
 		}
 	}
 }
