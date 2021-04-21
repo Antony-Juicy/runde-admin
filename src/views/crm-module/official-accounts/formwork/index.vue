@@ -5,6 +5,7 @@
 			<div class="select-accoumt">
 				<img class="logo" :src='account.appImg'>
 				<div>{{account.appName}}</div>
+				<i class="el-icon-arrow-down el-icon--right"></i>
 			</div>
 			<el-dropdown-menu slot="dropdown">
 				<el-dropdown-item v-for="(item,index) in officialAccounts" :key="index">
@@ -14,6 +15,7 @@
 					</div>
 				</el-dropdown-item>
 			</el-dropdown-menu>
+			
 		</el-dropdown>
 		<search-form ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch"></search-form>
 		<!-- 表格主体 -->

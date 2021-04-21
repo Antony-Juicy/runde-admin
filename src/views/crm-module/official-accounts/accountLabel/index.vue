@@ -5,6 +5,7 @@
 			<div class="select-accoumt">
 				<img class="logo" :src='account.appImg'>
 				<div>{{account.appName}}</div>
+				<i class="el-icon-arrow-down el-icon--right"></i>
 			</div>
 			<el-dropdown-menu slot="dropdown">
 				<el-dropdown-item>
