@@ -32,7 +32,7 @@ export default {
 			officialAccounts: [],
 			account: {},
 			AddEditTitle: "创建客服消息",
-			addEditVisible: true
+			addEditVisible: false
 		}
 	},
 	methods: {

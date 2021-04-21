@@ -7,15 +7,15 @@
 				<div>{{account.appName}}</div>
 			</div>
 			<el-dropdown-menu slot="dropdown">
-				<el-dropdown-item>
-					<div class="account-option" v-for="(item,index) in officialAccounts" :key="index" @click="handle_select_account(item)">
+				<el-dropdown-item v-for="(item,index) in officialAccounts" :key="index">
+					<div class="account-option" @click="handle_select_account(item)">
 						<img :src="item.appImg" class="logo">
 						<span>{{ item.appName }}</span>
 					</div>
 				</el-dropdown-item>
 			</el-dropdown-menu>
 		</el-dropdown>
-		<search-form  ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch"></search-form>
+		<search-form ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch"></search-form>
 		<!-- 表格主体 -->
 		<div class="w-container">
 			<rd-table :tableData="tableData" :tableKey="tableKey" :pageConfig.sync="pageConfig" @pageChange="pageChange">
@@ -26,8 +26,7 @@
 		</div>
 
 		<rd-dialog :title="'模板通知'" :dialogVisible="templateVisible" :showFooter="false" :width="'1200px'" @handleClose="templateVisible = false">
-			<addEditFormwrok :formwork="formwork" v-if="templateVisible" :appName="account.appName"
-				:appId="account.appId" :appSecret="account.appSecret" @refresh="getTableData"
+			<addEditFormwrok :formwork="formwork" v-if="templateVisible" :appName="account.appName" :appId="account.appId" :appSecret="account.appSecret" @refresh="getTableData"
 				@close="templateVisible = false"></addEditFormwrok>
 		</rd-dialog>
 	</div>
@@ -88,11 +87,13 @@ export default {
 			this.pageConfig.pageNum = 1;
 			this.getTableData();
 		},
-
+		refresh(val) {
+			this.getTableData({
+				pageNum: val || this.pageConfig.pageNum
+			});
+		},
 		async getTableData(params = {}) {
 			let searchForm = JSON.parse(JSON.stringify(this.searchForm))
-			// searchForm.appId = this.officialAccounts[this.searchForm.officialAccounts].appId
-			// searchForm.app_Secret = this.officialAccounts[this.searchForm.officialAccounts].appSecret
 			let res = await this.$fetch(
 				"get_official_accounts_formwrok_list",
 				{
@@ -104,7 +105,6 @@ export default {
 					appSecret: this.account.appSecret
 				}
 			);
-			// console.log(res)
 			this.tableData = res.data.template_list
 		},
 		handleAdd() {
@@ -119,6 +119,10 @@ export default {
 		},
 		pageChange() {
 
+		},
+		handle_select_account(data) {
+			this.account = data
+			this.refresh()
 		}
 	},
 	async mounted() {
@@ -130,7 +134,6 @@ export default {
 		this.$nextTick(() => {
 			// 把选择公众号的东西放到搜索区
 			document.querySelector('.formwork-container .search-box').insertBefore(this.$refs.accountOption.$el, document.querySelector('.formwork-container .el-form-item'))
-			// document.querySelector('.formwork-container .search-box').append(this.$refs.accountOption.$el)
 		})
 		// 这里是通过模拟search方法，是的searchFrom里面有值
 		this.onSearch()
