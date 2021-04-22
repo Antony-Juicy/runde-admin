@@ -28,21 +28,178 @@
                 <div><el-tag>面授班</el-tag></div>
               </div>
               <div class="details">执业药师    |    中药    |    协议班   |    退费    |    2021学年</div>
-              <div>
-                <div>汕头（广东校区）</div>
-                <div>￥999.00</div>
+              <div class="content-bottom">
+                <div><i class="el-icon-location-outline" style="color:#409eff;font-size: 16px"></i>汕头（广东校区）</div>
+                <div class="price">￥999.00</div>
                 <div>服务年限2年</div>
               </div>
             </div>
             <div class="content-right">
-              <div>￥999.00</div>
-              <div><el-button type="primary" size="small">报名</el-button></div>
+              <div class="price">￥999.00</div>
+              <div><el-button type="primary" size="small" @click="signUp(scope.row)">报名</el-button></div>
             </div>
           </div>
         </template>
       </rd-table>
     </div>
+    
+    <!-- 报名弹窗 -->
+    <full-dialog
+        v-model="addVisible"
+        :title="'报名信息'"
+        @change="addVisible = false"
+      >
+          <el-card shadow="never" class="card-container">
+            <div class="card-title">学员信息</div>
+            <el-form ref="stuForm" :model="stuForm" label-width="100px" size="small">
+              <el-row>
+                <el-col :span="8">
+                  <el-form-item label="查询学员信息">
+                    <el-input v-model="stuForm.name" style="width: 200px" placeholder="请输入学员身份证"></el-input>
+                    <el-button type="primary">查询</el-button>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                  <el-form-item label="学员姓名">
+                    <el-input v-model="stuForm.name" style="width: 200px" placeholder="请输入学员姓名"></el-input>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                  <el-form-item label="学员类型">
+                    <el-select v-model="stuForm.name" style="width: 200px" placeholder="请选择学员类型"></el-select>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="8">
+                  <el-form-item label="来源类型">
+                    <el-input v-model="stuForm.name" style="width: 200px" placeholder="请选择来源类型"></el-input>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                  <el-form-item label="来源名称">
+                    <el-input v-model="stuForm.name" style="width: 200px" placeholder="请输入来源名称"></el-input>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                  <el-form-item label="学历">
+                    <el-select v-model="stuForm.name" style="width: 200px" placeholder="请选择学历"></el-select>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="8">
+                  <el-form-item label="身份证">
+                    <el-input v-model="stuForm.name" style="width: 200px" placeholder="请输入身份证"></el-input>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                  <el-form-item label="学年">
+                    <el-select v-model="stuForm.name" style="width: 200px" placeholder="请选择学年"></el-select>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-form>
+          </el-card>
 
+          <el-card shadow="never" class="card-container">
+            <div class="card-title">课程列表</div>
+            <el-form ref="stuForm" :model="stuForm" label-width="100px" size="small">
+              <el-row>
+                <el-col :span="8">
+                  <el-form-item label="校区">
+                    <el-select v-model="stuForm.name" style="width: 200px" placeholder="请选择校区"></el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                  <el-form-item label="班次">
+                    <el-select v-model="stuForm.name" style="width: 200px" placeholder="请选择班次"></el-select>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-form-item label="课程">
+                    <el-radio-group v-model="radio">
+                      <el-radio :label="3">中药一</el-radio>
+                      <el-radio :label="6">中药二</el-radio>
+                      <el-radio :label="9">中药综合</el-radio>
+                      <el-radio :label="10">中药法规</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+              </el-row>
+              <el-row>
+                <el-col :span="8">
+                  <el-form-item label="优惠券">
+                    <el-input v-model="stuForm.name" style="width: 200px" placeholder="请选择优惠券"></el-input>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                  <el-form-item label="优惠金额">
+                    <el-select v-model="stuForm.name" style="width: 200px" placeholder="请选择优惠金额"></el-select>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="8">
+                  <el-form-item label="应收">
+                    <el-input v-model="stuForm.name" style="width: 200px" placeholder="请选择课程信息"></el-input>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-form>
+          </el-card>
+
+          <el-card shadow="never" class="card-container">
+            <div class="card-title">服务信息</div>
+            <el-form ref="stuForm" :model="stuForm" label-width="100px" size="small">
+              <el-row>
+                <el-col :span="8">
+                  <el-form-item label="招生老师">
+                    <el-select v-model="stuForm.name" style="width: 200px" placeholder="请选择招生老师"></el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                  <el-form-item label="班主任">
+                    <el-select v-model="stuForm.name" style="width: 200px" placeholder="请选择班主任"></el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                  <el-form-item label="代理人">
+                    <el-select v-model="stuForm.name" style="width: 200px" placeholder="请选择代理人"></el-select>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="8">
+                  <el-form-item label="市场老师">
+                    <el-select v-model="stuForm.name" style="width: 200px" placeholder="请选择市场老师"></el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                  <el-form-item label="教务老师">
+                    <el-select v-model="stuForm.name" style="width: 200px" placeholder="请选择教务老师"></el-select>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-form>
+          </el-card>
+
+          <el-card shadow="never" class="card-container">
+            <div class="card-title">其他</div>
+            <el-form ref="stuForm" :model="stuForm" label-width="100px" size="small">
+              <el-row>
+                  <el-form-item label="备注">
+                    <el-input type="textarea" rows="3" v-model="stuForm.name" placeholder="请输入备注内容"></el-input>
+                  </el-form-item>
+              </el-row>
+            </el-form>
+          </el-card>
+
+          <div class="btn-wrapper" style="text-align:right">
+            <el-button type="primary">提交</el-button>
+          </div>
+
+      </full-dialog>
   </div>
 </template>
 
@@ -52,6 +209,7 @@ export default {
   name:"goods-list",
   data(){
     return {
+      addVisible: false,
       formOptions: [
         {
           prop: "menuName",
@@ -98,7 +256,7 @@ export default {
       ],
       searchForm:{},
       emptyText:"暂无数据",
-      tableData: [{}],
+      tableData: [{},{},{},{},{},{},{},{}],
       tableKey:[
         {
           name: "内容",
@@ -107,107 +265,15 @@ export default {
         }
       ],
        pageConfig: {
-        totalCount: 0,
+        totalCount: 10,
         currentPage: 1,
         pageSize: 10,
       },
-      addVisible: false,
-      addFormOptions: [
-          
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "请输入名称",
-          label: "名称"
-        },
-        {
-          prop: "post",
-          element: "el-input",
-          placeholder: "",
-          label: "上传",
-          operate: true,
-          initValue: 0
-        },
-        {
-          prop: "roleName",
-          element: "el-select",
-          placeholder: "请选择",
-          label: "所属九块九包邮",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-        {
-          prop: "roleName",
-          element: "el-select",
-          placeholder: "请选择",
-          label: "所属活动",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-        {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案一",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案二",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案三",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案四",
-          type:"textarea",
-          rows: 2
-        },
-           {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案五",
-          type:"textarea",
-          rows: 2
-        }
-      ],
-      addRules:{
-        updateReason: [
-          { required: true, message: "请输入修改事由", trigger: "blur" },
-        ]
-      },
-      addStatus: true,
-      editId:""
+      editId:"",
+      visible: true,
+      stuForm: {
+        name:""
+      }
     }
   },
   components:{
@@ -253,30 +319,8 @@ export default {
       }, 0);
       this.editId = data.id;
     },
-    handleDelete(row) {
-      let info = '';
-      this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(async () => {
-          const res = await this.$fetch("projectType_delete", {
-            typeId: row.typeId,
-            loginUserId,
-          }).then((res) => {
-            if (res) {
-              this.$message({
-                message: "删除成功",
-                type: "success",
-              });
-              setTimeout(() => {
-                this.getTableData();
-              }, 50);
-            }
-          });
-        })
-        .catch(() => {});
+    signUp(data){
+      this.addVisible = true;
     }
   }
 }
@@ -289,6 +333,7 @@ export default {
     justify-content: space-between;
     align-items: center;
     padding: 5px;
+    border-bottom: 1px solid #dcdfe6;
     .content-left {
       .title-container {
         display: flex;
@@ -300,8 +345,39 @@ export default {
         }
       }
       .details {
-        line-height: 28px;
+        line-height: 44px;
       }
+      .content-bottom {
+        display: flex;
+        .price {
+          color: red;
+          font-weight: bold;
+          margin: 0 14px;
+          font-size: 14px;
+        }
+      }
+    }
+    .content-right {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-around;
+      .price {
+        color: red;
+          font-weight: bold;
+          font-size: 24px;
+          margin-bottom: 8px;
+      }
+    }
+  }
+  
+  .card-container {
+    margin-bottom: 20px;
+    .card-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: #333333;
+      line-height: 45px;
     }
   }
 }
