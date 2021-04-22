@@ -16,9 +16,10 @@
           :tbodyHeight="600"
           :pageConfig.sync="pageConfig"
           @pageChange="pageChange"
+          :emptyText="emptyText"
         >
           <template slot="edit" slot-scope="scope">
-            <el-button @click="handleEdit()" type="text" size="medium">
+            <el-button @click="handleEdit(scope.row)" type="text" size="medium">
               编辑
             </el-button>
           </template>
@@ -27,7 +28,7 @@
     </div>
     <!-- 添加弹窗 -->
     <rd-dialog
-      title="添加项目"
+      :title="addStatus ? '添加' : '编辑'"
       :dialogVisible="distributeVisible"
       :showFooter="false"
       :width="'990px'"
@@ -40,12 +41,12 @@
         ref="dataForm3"
       >
         <template slot="describe">
-           <el-input 
-              v-model.trim="dataForm.describe"
-              type="textarea"
-              placeholder="请输入项目描述"
-              size="small"
-            />
+          <el-input
+            v-model.trim="dataForm.describe"
+            type="textarea"
+            placeholder="请输入项目描述"
+            size="small"
+          />
         </template>
       </RdForm>
       <div class="btn-wrapper" style="text-align: right; margin-top: 20px">
@@ -53,7 +54,7 @@
           type="primary"
           size="small"
           :loading="btnLoading"
-          @click="handleAddClass"
+          @click="handleAddClass('dataForm3')"
           v-prevent-re-click="2000"
           >添加</el-button
         >
@@ -71,9 +72,12 @@ export default {
   },
   data() {
     return {
+      editId: "",
+      emptyText: "暂无数据",
       dataForm: {
         describe: "",
       },
+      addStatus: true,
       distributeVisible: false,
       btnLoading: false,
       showNum: 2,
@@ -140,7 +144,7 @@ export default {
           element: "el-input",
           placeholder: "请输入项目描述",
           operate: true,
-            label: "项目描述",
+          label: "项目描述",
         },
         {
           prop: "status",
@@ -174,14 +178,52 @@ export default {
           options: [],
         },
       ],
-      addRules: {},
+      addRules: {
+         project: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+         projectNum: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+        //  describe: [
+        //   { required: true, message: "请输入", trigger: "blur" },
+        // ],
+         status: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ],
+         oneCategories: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ],
+        twoCategories: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ]
+      },
     };
   },
   mounted() {
     this.getTableData();
   },
   methods: {
-    handleAddClass() {},
+    handleAddClass(formName) {
+        this.$refs[formName].validate((valid, formData) => {
+        if(valid){
+          console.log(formData, "添加");
+          //TODO
+          this.$fetch(this.addStatus?"secretexamsubject_add":"secretexamsubject_editJsp",{
+            ...formData,
+            time:"",
+            startTime: formData.time?formData.time[0]:"",
+            endTime: formData.time?formData.time[1]:"",
+            id: this.addStatus?"": this.editId
+          }).then(res =>{ 
+            this.$message.success("操作成功")
+            this.distributeVisible = false;
+            this.getTableData();
+          })
+        }
+          
+      });
+    },
     onSearch(val) {
       this.searchForm = {
         ...val,
@@ -189,23 +231,42 @@ export default {
       this.getTableData();
     },
     getTableData(params = {}) {
-      // this.$fetch("posterinfo_listJson", {
-      //   ...this.pageConfig,
-      //   ...this.searchForm,
-      //   ...params,
-      // }).then((res) => {
-      //   this.tableData = res.data.data.map((item) => {
-      //     item.creatTime = this.$common._formatDates(item.createAt);
-      //     return item;
-      //   });
-      //   this.pageConfig.totalCount = res.data.count;
-      // });
+      //TODO  secretexamsubject_list
+      this.$fetch("posterinfo_listJson", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.data.map((item) => {
+          item.creatTime = this.$common._formatDates(item.createAt);
+          return item;
+        });
+        this.pageConfig.totalCount = res.data.count;
+      });
     },
     handleAdd() {
       this.distributeVisible = true;
+      this.addStatus = true;
     },
-    handleEdit() {},
-    pageChange(val) { 
+    handleEdit(data) {
+      this.addStatus = false;
+      this.distributeVisible = true;
+      this.editId = data.id;
+      //TODO 
+      this.$fetch("secretexamsubject_goEdit", {
+        id: data.id,
+      }).then((res) => {
+        this.addFormOptions.forEach((item) => {
+          if(item.prop != "describe"){
+             item.initValue = data[item.prop];
+          }
+          // item.initValue = res.data.pd[item.prop];
+        });
+        this.$refs.dataForm3.addInitValue();
+        console.log(this.addFormOptions, "this.addFormOptions---");
+      });
+    },
+    pageChange(val) {
       console.log(val, "pagechange");
       this.pageConfig.currentPage = val.page;
       this.pageConfig.showCount = val.limit;

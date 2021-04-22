@@ -17,7 +17,7 @@
         :tableKey="tableKey"
         :loading="loading"
         :tbodyHeight="600"
-        :filterColumn="true"
+        :filterColumn="filterColumn"
         :pageConfig.sync="pageConfig"
         @pageChange="pageChange"
       >
@@ -78,7 +78,7 @@
             <el-row style="margin-left: -120px">
               <el-col :span="12">
                 <el-form-item label="项目：" prop="project" inline="true">
-                  <el-select 
+                  <el-select
                     v-model="basicInfo.project"
                     placeholder="请选择"
                     size="small"
@@ -127,7 +127,7 @@
               <el-col :span="3">总学费</el-col>
               <el-col :span="5">
                 <el-input
-                  v-model="basicInfo.sumPrice" 
+                  v-model="basicInfo.sumPrice"
                   placeholder="请输入内容"
                 ></el-input>
               </el-col>
@@ -313,7 +313,7 @@
           type="primary"
           size="small"
           v-text="active == 2 ? '提交' : '下一步'"
-          @click="handleNext('dataForm1')"
+          @click="handleNext(`dataForm${active + 1}`)"
         ></el-button>
       </div>
     </fullDialog>
@@ -374,6 +374,11 @@ export default {
   },
   data() {
     return {
+      filterColumn:[
+        'classTypeGroup',
+        'serviceType',
+        'classGroupNumber',
+      ],
       btnLoading: false,
       detailVisible: false,
       active: 0,
@@ -476,6 +481,28 @@ export default {
           element: "el-select",
           placeholder: "班型年份",
           label: "班型年份:",
+          options: [
+            {
+              value: "选项1",
+              label: "1",
+            },
+            {
+              value: "选项2",
+              label: "2",
+            },
+            {
+              value: "选项3",
+              label: "3",
+            },
+            {
+              value: "选项4",
+              label: "4",
+            },
+            {
+              value: "选项5",
+              label: "5",
+            },
+          ],
         },
         {
           prop: "classType",
@@ -607,7 +634,10 @@ export default {
       addRules: {
         project: [{ required: true, message: "请选择", trigger: "blur" }],
         subject: [{ required: true, message: "请选择", trigger: "blur" }],
-        className: [{ required: true, message: "请输入", trigger: "blur" },  { max: 20, message: '命名，字数上限不超过20字', trigger: 'blur' }],
+        className: [
+          { required: true, message: "请输入", trigger: "blur" },
+          { max: 20, message: "命名，字数上限不超过20字", trigger: "blur" },
+        ],
         classYear: [{ required: true, message: "请选择", trigger: "blur" }],
         classType: [{ required: true, message: "请选择", trigger: "blur" }],
         classGroup: [{ required: true, message: "请选择", trigger: "blur" }],
@@ -615,10 +645,9 @@ export default {
         protocolType: [{ required: true, message: "请选择", trigger: "blur" }],
         refundType: [{ required: true, message: "请选择", trigger: "blur" }],
         status: [{ required: true, message: "请选择", trigger: "blur" }],
-      
       },
-      basicInfo2:{
-        campusVisible:""
+      basicInfo2: {
+        campusVisible: "",
       },
       basicInfo: {
         sumPrice: "",
@@ -683,11 +712,14 @@ export default {
           showCount: 10,
         },
       },
-      rules: { 
-        sumPrice: [{ required: true,  message: "请输入", trigger: "blur" },{ type: 'number', message: '学费必须为数字值'}],
-        refundType: [{  required: true, message: "请选择", trigger: "blur" }],
-        cost: [{  required: true, message: "请输入", trigger: "blur" }],
-        deductingFees: [{  required: true, message: "请输入", trigger: "blur" }],
+      rules: {
+        sumPrice: [
+          { required: true, message: "请输入", trigger: "blur" },
+          { type: "number", message: "学费必须为数字值" },
+        ],
+        refundType: [{ required: true, message: "请选择", trigger: "blur" }],
+        cost: [{ required: true, message: "请输入", trigger: "blur" }],
+        deductingFees: [{ required: true, message: "请输入", trigger: "blur" }],
       },
       projectArr: [
         {
@@ -970,7 +1002,7 @@ export default {
       this.active--;
     },
     handleNext(formName) {
-      console.log("active", this.active);
+      console.log("active", this.active, "formName", formName);
       if (this.active == 2) {
         //step3
         if (this.addStatus == false) {
@@ -1008,7 +1040,7 @@ export default {
                 //TODO
                 this.$fetch("wechatstaffqrcode_sendMessageInfo", {
                   ...formData,
-                }) 
+                })
                   .then((res) => {
                     this.$message.success("操作成功");
                     this.addVisible = false;
@@ -1021,7 +1053,26 @@ export default {
           });
         }
       } else {
-        this.active++;
+        console.log("formName====", formName);
+        this.$refs[formName].validate((valid, formData) => {
+          if (valid) {
+            console.log("jjjjj");
+            this.active++;
+            //TODO
+            // this.$fetch("wechatstaffqrcode_sendMessageInfo", {
+            //   ...formData,
+            // })
+            //   .then((res) => {
+            //     this.$message.success("操作成功");
+            //     this.addVisible = false;
+            //     this.active = 0;
+            //     this.loadSalaryCfg();
+            //   })
+            //   .catch(() => {});
+          } else {
+            console.log("nononno---");
+          }
+        });
       }
     },
   },
