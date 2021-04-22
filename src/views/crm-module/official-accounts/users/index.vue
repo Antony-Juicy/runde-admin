@@ -280,9 +280,18 @@ export default {
         let item = this.list[index];
         item.wechatUserTagModel = wechatUserTagModel;
         this.$set(this.list,index,item);
+        this.$message({
+          message: '恭喜你，这是一条成功消息',
+          type: 'success'
+        });
+      }else{
+        this.$message({
+          message: res.msg,
+          type: 'warning'
+        });
       }
       this.outerVisible = false;
-      this.$message(res.msg);
+      
     },
     
 	},
