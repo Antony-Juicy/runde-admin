@@ -52,7 +52,7 @@
             <el-form-item prop="VerifyCode" style="margin-bottom: 10px;">
               <el-input
                 ref="VerifyCode"
-                v-model="loginForm.VerifyCode"
+                v-model.trim="loginForm.VerifyCode"
                 prefix-icon=" el-icon-help"
                 placeholder="请输入验证码"
                 name="VerifyCode"

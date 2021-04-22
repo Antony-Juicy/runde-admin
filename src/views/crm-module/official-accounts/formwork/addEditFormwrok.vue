@@ -32,39 +32,39 @@
 							<el-radio v-model="fansType" label="labelIds">粉丝标签</el-radio>
 							<el-radio v-model="fansType" label="openIds">指定用户</el-radio>
 						</div>
-						<template v-if="fansType == 'labelIds'">
-							<el-select v-model="fansTages" multiple filterable placeholder="请选择粉丝标签">
-								<el-option v-for="item in tagsOptions" :key="item.value" :label="item.label" :value="item.value">
-								</el-option>
-							</el-select>
-						</template>
+						<div v-if="fansType == 'labelIds'" class="labelIds">
+							<div class="origin-tips">选择标签后，消息将只推送给选中标签组的粉丝</div>
+							<el-tag style="margin-right:10px" v-for="(item,index) in fansLabels" :key="index" @close="handle_removeLabel(index)" disable-transitions closable>
+								{{item.name}}
+							</el-tag>
+							<SelectPop style="width:auto;display:inline-block" key="SelectPop1" v-bind="SelectPopOptions_label" @select="handle_selectLabel">
+								<el-button size="small">添加标签</el-button>
+							</SelectPop>
+						</div>
+						<div v-if="fansType == 'openIds'">
+							<el-tag style="margin-right:10px" v-for="(item,index) in fansOpenIds" :key="index" @close="handle_removeUser(index)" disable-transitions closable>
+								{{item.name}}
+							</el-tag>
+							<SelectPop style="width:auto;display:inline-block" key="SelectPop2" v-bind="SelectPopOptions_user" @select="handle_selectUser">
+								<el-button size="small">添加粉丝</el-button>
+							</SelectPop>
+						</div>
+					</template>
+					<template slot="mark">
+						<div v-if="fansType == 'labelIds'" class="labelIds">
+							<div class="origin-tips">给点击消息的粉丝打标签</div>
+							<el-tag style="margin-right:10px" v-for="(item,index) in fansTags" :key="index" @close="handle_removeLabel2(index)" disable-transitions closable>
+								{{item.name}}
+							</el-tag>
+							<SelectPop style="width:auto;display:inline-block" key="SelectPop3" v-bind="SelectPopOptions_label" @select="handle_selectLabel2">
+								<el-button size="small">添加标签</el-button>
+							</SelectPop>
+						</div>
 					</template>
 				</RdForm>
 			</div>
 			<div class="right">
-				<div class="like-phone">
-					<img src="@/assets/shouji.png" class="bg-shouji">
-					<div class="over">
-						<div class="notice">
-							<div v-for="(item,index) in formwork_content" :key="index">
-								<template v-if="item.key == 'first'">
-									<div class="title" :style="{color:item.color}">{{item.value || '请输入内容'}}</div>
-									<div class="date line">4月14日</div>
-								</template>
-								<template v-else-if="item.key == 'remark'">
-									<div class="remark line" :style="{color:item.color}">{{item.value || '请输入内容'}}</div>
-								</template>
-								<template v-else>
-									<div class="line ">
-										<div class="label">{{item.label}}</div>
-										<div class="value" :style="{color:item.color}">{{item.value || '请输入内容'}}</div>
-									</div>
-								</template>
-								<div class="count" :class="{danger:noticeFontCount > 200}">{{noticeFontCount}} / 200</div>
-							</div>
-						</div>
-					</div>
-				</div>
+				<likePhone mode="notice" :cardData='formwork_content' :accountName="appName"></likePhone>
 			</div>
 		</div>
 		<div class="down">
@@ -77,6 +77,8 @@
 
 <script>
 import RdForm from "@/components/RdForm";
+import SelectPop from '@/components/SelectPop'
+import likePhone from '@/components/likePhone'
 export default {
 	props: {
 		formwork: {
@@ -90,9 +92,13 @@ export default {
 		appSecret: {
 			type: String,
 			require: true
+		},
+		appName: {
+			type: String,
+			require: true
 		}
 	},
-	components: { RdForm },
+	components: { RdForm, SelectPop, likePhone },
 	data() {
 		return {
 			addFormOptions: [
@@ -129,11 +135,15 @@ export default {
 			addRules: {
 				addFormOptions: [{ required: true, message: "模板名称", trigger: "blur" },],
 			},
+			// 模板的内容
 			formwork_content: [],
+			// 可选颜色
 			predefineColors: [
 				'#F4664A', '#FF7D75', '#000000', '#FF9823', '#F6BD16', '#5AD8A6', '#30BF78', '#6DC8EC', '#2C9EFF', '#1E9493', '#945FB9', '#666666', '#999999'
 			],
+			// 链接类型
 			linkType: 'h5',
+			// 链接类型里面要填的东西
 			linkContent: {
 				h5: [
 					{
@@ -164,9 +174,105 @@ export default {
 					}
 				]
 			},
+			// 推送粉丝类型
 			fansType: "allFans",
+			// 可选标签
 			tagsOptions: [],
-			fansTages: ''
+
+			// 选中的粉丝
+			fansOpenIds: [],
+			// 选择用户组件数据 有点复杂
+			SelectPopOptions_user: {
+				searchObj: {
+					api: "wechat_user_page_list",
+					formOptions: [],
+					needType: false,
+					params: {
+						appId: this.appId
+					}
+				},
+				tableObj: {
+					tableKey: [
+						{
+							name: "用户名",
+							value: "nickName",
+							width: 200,
+						},
+						{
+							name: "用户标签",
+							value: "labels",
+						},
+					],
+					transItem: (item) => {
+						try {
+							item.labels = (item.wechatUserTagModel.map(v => {
+								return v.labelName
+							})).join(',')
+						} catch (error) {
+
+						}
+						return item
+					}
+				}
+			},
+			// 选中的标签
+			fansLabels: [],
+			// 选择标签数据组件 
+			SelectPopOptions_label: {
+				searchObj: {
+					api: "get_official_accounts_label_page",
+					formOptions: [
+						{
+							prop: "labelName",
+							element: "el-input",
+							placeholder: "请输入标签名称",
+						},
+						{
+							prop: "labelType",
+							element: "el-select",
+							placeholder: "请选择标签类型",
+							options: [
+								{
+									label: '系统标签',
+									value: '0'
+								},
+								{
+									label: '自定义标签',
+									value: '1'
+								}
+							]
+						},
+					],
+					showNum: 2,
+					needType: false,
+					params: {
+						appId: this.appId,
+					}
+				},
+				tableObj: {
+					tableKey: [
+						{
+							name: "ID主键",
+							value: "id",
+							width: 80
+						},
+						{
+							name: "标签名称",
+							value: "labelName",
+						},
+						{
+							name: "标签类型",
+							value: "labelTypeZH",
+						},
+					],
+					transItem: (item) => {
+						item.labelTypeZH = item.labelType == '0' ? '系统标签' : '自定义标签'
+						return item
+					}
+				}
+			},
+			// 用户点击后添加标签
+			fansTags: []
 		}
 	},
 	computed: {
@@ -178,11 +284,27 @@ export default {
 			return count
 		}
 	},
+	watch: {
+		fansType: function (n, o) {
+			if (n == 'labelIds') {
+				this.addFormOptions.push({
+					prop: "mark",
+					element: "el-input",
+					placeholder: "",
+					label: "粉丝标签",
+					operate: true,
+				})
+			} else {
+				if (this.addFormOptions[4]) {
+					this.addFormOptions.splice(4, 1)
+				}
+			}
+		}
+	},
 	methods: {
 		analysis_content() {
 			let content = this.formwork.content.replace(/ /g, '')
 			let content_keys = content.match(/\{(.+?)\}}/g)
-			console.log(content, content_keys)
 			let formwork_content = []
 			for (const i of content_keys) {
 				i.match(/\{{(.+?)\}}/g)
@@ -222,9 +344,9 @@ export default {
 			this.formwork_content = formwork_content
 		},
 		handle_close() {
-
+			this.$emit('close')
 		},
-		handle_commit() {
+		async handle_commit() {
 			// 实际上 form 里面没有需要提交的数据  坑了
 			if (this.noticeFontCount > 200) {
 				this.$message.error("模板消息内容请在200字以内");
@@ -244,7 +366,7 @@ export default {
 				data: {}
 			}
 			this.formwork_content.forEach(v => {
-                msgTemplate.data[v.key] = {}
+				msgTemplate.data[v.key] = {}
 				msgTemplate.data[v.key].value = v.value
 				msgTemplate.data[v.key].color = v.color
 			})
@@ -253,18 +375,82 @@ export default {
 			}
 			else {
 				msgTemplate.miniprogram = {
-                    appid:this.linkContent.xcx[0].value,
-                    pagepath:this.linkContent.xcx[1].value,
-                    remark:this.linkContent.xcx[3].value,
+					appid: this.linkContent.xcx[0].value,
+					pagepath: this.linkContent.xcx[1].value,
+					remark: this.linkContent.xcx[3].value,
 				}
 			}
+
 			let formData = {
 				appId: this.appId,
 				appSecret: this.appSecret,
 				msgTemplate: JSON.stringify(msgTemplate)
 			}
-			console.log(formData)
-		}
+			if (this.fansType == 'allFans') {
+				formData.allFans = true
+			}
+			else if (this.fansType == 'labelIds') {
+				if (!this.fansLabels.length > 0) {
+					this.$message.error("需要选择推送的粉丝标签");
+					return
+				}
+				formData.labelIds = this.fansLabels.map(v => { return v.id }).join(',')
+				formData.fansTag = this.fansTags.map(v => { return v.id }).join(',')
+			}
+			else if (this.fansType == 'openIds') {
+				if (!this.fansOpenIds.length > 0) {
+					this.$message.error("需要指定推送的粉丝");
+					return
+				}
+
+				formData.openId = this.fansOpenIds.map(v => { return v.openId }).join(',')
+			}
+			let res = await this.$fetch(
+				"send_official_accounts_formwrok",
+				formData);
+			// if (!res || this.$common.isEmpty(res.data)) {
+			// 	return
+			// }
+			this.$message.success('发送成功')
+			this.$emit('close')
+		},
+
+		handle_selectUser(data) {
+			if (this.fansOpenIds.findIndex(v => v.openId == data.openId) > -1) {
+				return
+			}
+			this.fansOpenIds.push({
+				name: data.nickName,
+				openId: data.openId
+			})
+		},
+		handle_selectLabel(data) {
+			if (this.fansLabels.findIndex(v => v.id == data.id) > -1) {
+				return
+			}
+			this.fansLabels.push({
+				name: data.labelName,
+				id: data.id
+			})
+		},
+		handle_selectLabel2(data) {
+			if (this.fansTags.findIndex(v => v.id == data.id) > -1) {
+				return
+			}
+			this.fansTags.push({
+				name: data.labelName,
+				id: data.id
+			})
+		},
+		handle_removeLabel(index) {
+			this.fansLabels.splice(index, 1)
+		},
+		handle_removeUser(index) {
+			this.fansOpenIds.splice(index, 1)
+		},
+		handle_removeLabel2(index) {
+			this.fansTags.splice(index, 1)
+		},
 	},
 	mounted() {
 		this.analysis_content()
@@ -313,69 +499,25 @@ export default {
 					}
 				}
 			}
+			.labelIds {
+				border: 1px solid #ccc;
+				padding: 5px 10px;
+			}
 		}
 		.right {
 			flex-shrink: 0;
 			margin: 0 30px 30px 30px;
 			box-sizing: border-box;
-			.like-phone {
-				width: 100%;
-				height: 100%;
-				position: relative;
-				user-select: none;
-				.bg-shouji {
-					position: absolute;
-					z-index: 1;
-				}
-				.over {
-					width: 345px;
-					height: 696px;
-					position: relative;
-					z-index: 2;
-					padding: 87px 26px;
-				}
-				.notice {
-					background: #fff;
-					width: 80%;
-					padding: 20px 10px;
-					margin: 10px;
-					position: relative;
-					.title {
-						font-size: 16px;
-						font-weight: bold;
-					}
-					.date {
-						color: #ccc !important;
-						margin-top: 5px;
-					}
-					.line {
-						margin-bottom: 15px;
-						display: flex;
-						align-items: flex-start;
-						color: #000;
-						.label {
-							flex-shrink: 0;
-						}
-						&:last-child() {
-							margin-bottom: 0;
-						}
-					}
-					.count {
-						color: #ccc;
-						position: absolute;
-						bottom: 5px;
-						right: 10px;
-					}
-					.count.danger {
-						color: red;
-					}
-				}
-			}
 		}
 	}
 	.down {
 		padding: 20px;
 		text-align: center;
+	}
+	.origin-tips {
+		color: #ffaf53;
+		font-size: 12px;
+		padding-left: 4px;
 	}
 }
 </style>

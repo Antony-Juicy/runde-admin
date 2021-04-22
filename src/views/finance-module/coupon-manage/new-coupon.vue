@@ -1,5 +1,5 @@
 <template>
-  <div class="view-detail">
+  <div class="new-coupon">
       <search-form
       :formOptions="formOptions"
       :showNum="7"
@@ -181,7 +181,7 @@
     </div>
     
     <!-- 添加 -->
-      <rd-dialog
+      <!-- <rd-dialog
           :title="addStatus?'添加':'编辑'"
           :dialogVisible="addVisible"
           @handleClose="handleClose"
@@ -192,7 +192,62 @@
               <el-button size="small" type="primary">添加梯度优惠详情</el-button>
             </template>
           </RdForm>
-        </rd-dialog>
+        </rd-dialog> -->
+
+        <full-dialog
+        v-model="addVisible"
+        :title="addStatus?'添加':'编辑'"
+        @change="handleClose"
+      >
+        <div style="width: 70%" class="add-form-container">
+        <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
+            <template slot="addSkip">
+              <el-button size="small" type="primary" @click="addDomain">添加梯度优惠详情</el-button>
+              <el-form
+                :model="dynamicValidateForm"
+                ref="dynamicValidateForm"
+                label-width="100px"
+                class="demo-dynamic"
+                inline
+              >
+                <template v-for="(domain, index) in dynamicValidateForm.domains">
+                  <el-form-item
+                    :label="'课程数量'"
+                    :key="domain.key"
+                    :prop="'domains.' + index + '.skipKey'"
+                    :rules="{
+                      required: true,
+                      message: '参数名称不能为空',
+                      trigger: 'blur',
+                    }"
+                  >
+                    <el-input v-model="domain.skipKey" size="small" style="width: 150px"></el-input>
+                  </el-form-item>
+                  <el-form-item
+                    :label="'优惠金额'"
+                    :key="domain.key + '2'"
+                    :prop="'domains.' + index + '.skipValue'"
+                    :rules="{
+                      required: true,
+                      message: '参数值不能为空',
+                      trigger: 'blur',
+                    }"
+                  >
+                    <el-input v-model="domain.skipValue" size="small" style="width: 150px"></el-input>
+                  </el-form-item>
+                  <el-button :key="domain.key + '3'" @click.prevent="removeDomain(domain)" 
+                  type="danger" size="small" style="margin-top:5px"
+                    >删除</el-button
+                  >
+                </template>
+              </el-form>
+            </template>
+          </RdForm>
+          <div class="btn-wrapper">
+            <el-button type="primary" size="small" @click="submitAddForm('dataForm3')">保存</el-button>
+          </div>
+          </div>
+      </full-dialog>
 
   </div>
 </template>
@@ -200,7 +255,7 @@
 <script>
 import RdForm from "@/components/RdForm";
 export default {
-  name:"view-detail",
+  name:"new-coupon",
   data(){
     return {
       formOptions: [
@@ -334,7 +389,10 @@ export default {
           options: [
           ],
           filterable: true,
-          multiple: true
+          multiple: true,
+          events: {
+
+          }
         },
         {
           prop: "classTypeId",
@@ -344,7 +402,10 @@ export default {
           options: [
           ],
           multiple: true,
-          filterable: true
+          filterable: true,
+          events: {
+
+          }
         },
         {
           prop: "courseId",
@@ -354,7 +415,10 @@ export default {
           options: [
           ],
           filterable: true,
-          multiple: true
+          multiple: true,
+          events: {
+
+          }
         },
         {
           prop: "frontClassTypeId",
@@ -364,7 +428,10 @@ export default {
           options: [
           ],
           filterable: true,
-          multiple: true
+          multiple: true,
+          events: {
+
+          }
         },
         {
           prop: "campusId",
@@ -391,6 +458,9 @@ export default {
           label: "优惠类型",
           options: [
           ],
+          events: {
+
+          }
         },
         //9
         {
@@ -516,7 +586,15 @@ export default {
       classTypeArr:[],
       courseArr:[],
       frontClassTypeArr:[],
-      campusArr:[]
+      campusArr:[],
+      dynamicValidateForm: {
+        domains: [
+          {
+            skipKey: "",
+            skipValue: "",
+          },
+        ],
+      },
     }
   },
   components:{
@@ -671,46 +749,68 @@ export default {
       }
       //选中的id selIds， 整个下拉，
       const currentArr = [];
-      selIds.forEach(item => {
-        let name = arr.find(ele => (ele.value == item)).label;
+      // selIds.forEach(item => {
+      //   let obj = arr.find(ele => (ele.value == item));
+      //   let name = obj.label;
+      //   currentArr.push({
+      //     name,
+      //     val: item
+      //   })
+      // })
+      for(let item of selIds){
+        let obj = arr.find(ele => (ele.value == item));
+        if(!obj){
+          return;
+        }
+        let name = obj.label;
         currentArr.push({
           name,
           val: item
         })
-      })
+      }
       return currentArr;
     },
     submitAddForm(formName){
       this.$refs[formName].validate((valid, formData) => {
         if(valid){
-          console.log(formData, "提交");
-          const { time,campusId,classTypeId,courseId,frontClassTypeId,subjectId } = formData;
-          let campusInfo = this.getMulInfo(campusId,this.campusArr);
-          let classTypeInfo = this.getMulInfo(classTypeId,this.classTypeArr);
-          let courseInfo = this.getMulInfo(courseId,this.courseArr);
-          let frontClassTypeInfo = this.getMulInfo(frontClassTypeId,this.frontClassTypeArr);
-          let subjectInfo = this.getMulInfo(subjectId,this.subjectArr);
-          this.$fetch(this.addStatus?"coupontemplateversiontwo_save":"coupontemplateversiontwo_editJsp",{
-            ...formData,
-            time:'',
-            startTime: time?time[0]:'',
-            endTime: time?time[1]:'',
-            campusId: campusId&&campusId.join(','),
-            classTypeId: classTypeId&&classTypeId.join(','),
-            courseId: courseId&&courseId.join(','),
-            frontClassTypeId: frontClassTypeId&&frontClassTypeId.join(','),
-            subjectId: subjectId.join(','),
-            campusInfo: JSON.stringify(campusInfo),
-            classTypeInfo: JSON.stringify(classTypeInfo),
-            courseInfo: JSON.stringify(courseInfo),
-            frontClassTypeInfo: JSON.stringify(frontClassTypeInfo),
-            subjectInfo: JSON.stringify(subjectInfo),
-            id: this.addStatus?"":this.editId
-          }).then(res => {
-            this.$message.success("操作成功")
-            this.addVisible = false;
-            this.getTableData();
-          })
+          this.$refs.dynamicValidateForm.validate((valid) => {
+            if (valid) {
+              console.log(this.dynamicValidateForm,'99')
+              const { time,campusId,classTypeId,courseId,frontClassTypeId,subjectId } = formData;
+              let campusInfo = this.getMulInfo(campusId,this.campusArr);
+              let classTypeInfo = this.getMulInfo(classTypeId,this.classTypeArr);
+              let courseInfo = this.getMulInfo(courseId,this.courseArr);
+              let frontClassTypeInfo = this.getMulInfo(frontClassTypeId,this.frontClassTypeArr);
+              let subjectInfo = this.getMulInfo(subjectId,this.subjectArr);
+              this.$fetch(this.addStatus?"coupontemplateversiontwo_save":"coupontemplateversiontwo_editJsp",{
+                ...formData,
+                time:'',
+                startTime: time?time[0]:'',
+                endTime: time?time[1]:'',
+                campusId: campusId&&campusId.join(','),
+                classTypeId: classTypeId&&classTypeId.join(','),
+                courseId: courseId&&courseId.join(','),
+                frontClassTypeId: frontClassTypeId&&frontClassTypeId.join(','),
+                subjectId: subjectId&&subjectId.join(','),
+                campusInfo: JSON.stringify(campusInfo),
+                classTypeInfo: JSON.stringify(classTypeInfo),
+                courseInfo: JSON.stringify(courseInfo),
+                frontClassTypeInfo: JSON.stringify(frontClassTypeInfo),
+                subjectInfo: JSON.stringify(subjectInfo),
+                id: this.addStatus?"":this.editId,
+                gradientInfoMap: JSON.stringify(this.dynamicValidateForm.domains.map(item => ({
+                  key: item.skipKey,
+                  value: item.skipValue
+                })))
+              }).then(res => {
+                this.$message.success("操作成功")
+                this.addVisible = false;
+                this.getTableData();
+              })
+            } else {
+              return false;
+            }
+          });
         }
           
       });
@@ -740,17 +840,27 @@ export default {
           pd,campusIdStr,classTypeIdStr,frontClassTypeIdStr,subjectIdStr,courseIdStr,
           subjectList,classList,courseList,campusList
         } = res.data;
-        const { productId,couponType } = pd;
+        const { productId,couponType,gradientInfo } = pd;
         // 获取下拉
         console.log(productId,'productId---')
         productId&&this.productChange(productId);
         subjectIdStr&&this.subjectChange(subjectIdStr);
         classTypeIdStr&&this.classChange(classTypeIdStr);
+        
         // 赋值
          this.addFormOptions.forEach(item => {
           item.initValue = pd[item.prop];
           if(item.prop == 'couponType'){
              this.couponTypeChange(couponType)
+             if(gradientInfo){
+               this.dynamicValidateForm.domains = JSON.parse(gradientInfo).map(item => ({
+                 skipValue: item.value,
+                 skipKey: item.key
+               }))
+             }else {
+               this.dynamicValidateForm.domains = [];
+             }
+             
            }
            if(item.prop == 'superposition'){
              item.initValue = pd.superposition?'1':'0'
@@ -809,13 +919,36 @@ export default {
     handleClose(){
       this.addVisible = false;
       this.$refs.dataForm3&&this.$refs.dataForm3.onReset();
-    }
+      this.dynamicValidateForm.domains = [];
+    },
+     removeDomain(item) {
+      var index = this.dynamicValidateForm.domains.indexOf(item);
+      if (index !== -1) {
+        this.dynamicValidateForm.domains.splice(index, 1);
+      }
+    },
+    addDomain() {
+      this.dynamicValidateForm.domains.push({
+        skipKey: "",
+        skipValue: "",
+        key: Date.now(),
+      });
+    },
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.view-detail {
-
+.new-coupon {
+  .add-form-container {
+    .btn-wrapper {
+      text-align: right;
+    }
+    /deep/ {
+      .el-form--inline .el-form-item .el-form-item__content {
+        width: 150px;
+      }
+    }
+  }
 }
 </style>

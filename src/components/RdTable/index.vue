@@ -159,9 +159,9 @@ export default {
       type: String,
       default: "暂无数据",
     },
-    // 是否显示筛选列按钮
+    // 是否显示筛选列按钮,如果传入数组，默认隐藏该列
     filterColumn: {
-      type: Boolean,
+      type: Boolean | Array,
       default: false,
     },
     // 固定表头时，设置表体的高度
@@ -208,9 +208,17 @@ export default {
     };
   },
   created() {
-    this.tableKey.forEach((item) => {
-      item.show = true;
-    });
+    if(this.filterColumn instanceof Array && this.filterColumn.length){
+      this.tableKey.forEach((item) => {
+        let target = this.filterColumn.find(ele => ele == item.value);
+        item.show = !target;
+      });
+    }else {
+      this.tableKey.forEach((item) => {
+        item.show = true;
+      });
+    }
+    
     this.tableKeyData = this.tableKey;
     store.dispatch("user/setTableText", this.emptyText)
   },
