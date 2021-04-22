@@ -235,6 +235,10 @@ export default {
     //修改标签
     async edit(row){
       await this.getLabel();
+      if(!this.labelList.length){
+        this.$message('暂无标签');
+        return
+      }
       this.labelOpenId = "";
       let labelList= this.labelList;
       for(let z in row.wechatUserTagModel){
@@ -276,9 +280,18 @@ export default {
         let item = this.list[index];
         item.wechatUserTagModel = wechatUserTagModel;
         this.$set(this.list,index,item);
+        this.$message({
+          message: '恭喜你，这是一条成功消息',
+          type: 'success'
+        });
+      }else{
+        this.$message({
+          message: res.msg,
+          type: 'warning'
+        });
       }
       this.outerVisible = false;
-      this.$message(res.msg);
+      
     },
     
 	},
