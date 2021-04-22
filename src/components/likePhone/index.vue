@@ -247,7 +247,7 @@ export default {
 				height: 40px;
 				margin-left: 10px;
 				flex-shrink: 0;
-				object-fit: scale-down;
+				object-fit: cover;
 			}
 		}
 	}
@@ -297,7 +297,7 @@ export default {
 			width: 190px;
 			height: 152px;
 			margin-bottom: 10px;
-			object-fit: scale-down;
+			object-fit: cover;
 		}
 		.default-img{
 			width: 190px;

@@ -20,7 +20,7 @@
 		</div>
 		<!-- 编辑公众号 -->
 		<rd-dialog :title="AddEditTitle" :dialogVisible="addEditVisible" :showFooter="false" :width="'1200px'" @handleClose="addEditVisible = false">
-			<editMessage @msgForm="handle_msgForm"></editMessage>
+			<editMessage @msgForm="handle_msgForm" :account="account"></editMessage>
 		</rd-dialog>
 	</div>
 </template>

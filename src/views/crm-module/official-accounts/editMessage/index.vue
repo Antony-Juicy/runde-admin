@@ -16,13 +16,13 @@
 					<el-radio v-model="msgtype" label="image">图片</el-radio>
 					<el-radio v-model="msgtype" label="miniprogrampage">小程序</el-radio>
 				</div>
-				<mpnews v-show="msgtype == 'mpnews'" @msgData='handle_msgData'></mpnews>
+				<mpnews v-show="msgtype == 'mpnews'" :account="account" @msgData='handle_msgData'></mpnews>
 				<textmsg v-show="msgtype == 'text'" @msgData='handle_msgData'></textmsg>
 				<imgmsg v-show="msgtype == 'image'" @msgData='handle_msgData'></imgmsg>
 				<miniprogrampage v-show="msgtype == 'miniprogrampage'" @msgData='handle_msgData'></miniprogrampage>
 			</div>
 			<div class="right">
-				<likePhone :mode="msgtype" :cardData="cardData[msgtype]"></likePhone>
+				<likePhone :mode="msgtype" :cardData="cardData[msgtype]" :accountName="account.appName"></likePhone>
 			</div>
 
 		</div>
@@ -36,6 +36,12 @@ import imgmsg from "./imgmsg"
 import miniprogrampage from "./miniprogrampage"
 import likePhone from '@/components/likePhone'
 export default {
+	props: {
+		account: {
+			typeof: Object,
+			require: true
+		}
+	},
 	components: { mpnews, textmsg, imgmsg, miniprogrampage, likePhone },
 	data() {
 		return {

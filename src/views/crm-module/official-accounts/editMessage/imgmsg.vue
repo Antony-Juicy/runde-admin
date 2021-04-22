@@ -10,6 +10,7 @@
 <script>
 import UploadOss from '@/components/UploadOss'
 export default {
+	
 	components: { UploadOss },
 	data() {
 		return {

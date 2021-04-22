@@ -6,6 +6,11 @@
 			<el-table :data="tableData" v-loading="tableLoad">
 				<template v-for="(item,index) in tableObj.tableKey">
 					<el-table-column v-if="!item.operate" :prop="item.value" :label="item.name" :width="item.width" :key="index"></el-table-column>
+					<el-table-column v-else :key="index">
+						<template slot-scope="scope">
+							<slot :name="item.value" :row="scope.row"></slot>
+						</template>
+					</el-table-column>
 				</template>
 				<el-table-column fixed="right" label="操作" width="100">
 					<template slot-scope="scope">
@@ -64,8 +69,10 @@ export default {
 			this.getTableData();
 		},
 		// 使用函数防抖，防止内容加长触发滚动等于在同一时间发起了两次请求
-		getTableData: debounce(async function () {
-
+		async getTableData() {
+			if (this.tableLoad) {
+				return
+			}
 			if (!this.pageConfig.hasNext) {
 				return
 			}
@@ -84,17 +91,23 @@ export default {
 					...this.searchObj.params
 				}
 			).catch(() => { this.tableLoad = false })
-
+			let data = []
+			if (res.data.hasOwnProperty('records')) {
+				data = res.data.records
+				this.pageConfig.hasNext = res.data.hasNext
+			} else if (res.data.hasOwnProperty('item')) {
+				data = res.data.item
+				this.pageConfig.hasNext = res.data.item_count + this.tableData.length < res.data.total_count
+			}
 			if (typeof this.tableObj.transItem == 'function') {
-				res.data.records.map(v => {
+				data.map(v => {
 					return this.tableObj.transItem(v)
 				})
 			}
-			this.pageConfig.hasNext = res.data.hasNext
-			this.tableData = this.tableData.concat(res.data.records)
+			this.tableData = this.tableData.concat(data)
 			this.tableLoad = false
 			this.pageConfig.pageNum++
-		}, 500),
+		},
 		load() {
 			this.getTableData()
 		}

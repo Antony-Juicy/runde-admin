@@ -295,15 +295,13 @@ export default {
 		}
 	},
 	async mounted() {
+		// 把选择公众号的东西放到搜索区
+		document.querySelector('.accountLabel .search-box').insertBefore(this.$refs.accountOption.$el, document.querySelector('.accountLabel .el-form-item'))
 		let res = await this.$fetch(
 			"get_official_accounts_list",
 		);
 		this.officialAccounts = res.data
 		this.account = this.officialAccounts[0]
-		this.$nextTick(() => {
-			// 把选择公众号的东西放到搜索区
-			document.querySelector('.accountLabel .search-box').insertBefore(this.$refs.accountOption.$el, document.querySelector('.accountLabel .el-form-item'))
-		})
 		this.onSearch()
 		// 因为元素层级的原因，要把这个dialog放到body下才能正常显示在遮罩层上面
 		this.dialogId = `accountLabel-dialog-${Date.now()}`

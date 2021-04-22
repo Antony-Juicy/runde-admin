@@ -3,8 +3,14 @@
 		<div class="form-line">
 			<div class="label">图文消息：</div>
 			<div>
-				<el-button>添加图文链接</el-button>
-				<el-button>从素材库导入</el-button>
+				<el-button @click="addEditVisible = true" size="small">添加图文链接</el-button>
+				<SelectPop style="width:auto;display:inline-block" v-bind="SelectPopOptions">
+					<el-button size="small">从素材库导入</el-button>
+					<template slot="thumb_url" slot-scope="scope">
+						<el-image style="width: 100px; height: 100px" :src="scope.row.appImg" fit="contain"></el-image>
+					</template>
+				</SelectPop>
+
 				<span class="tips">（添加链接或素材库导入都将覆盖以下内容）</span>
 			</div>
 		</div>
@@ -30,17 +36,28 @@
 		</div>
 		<div class="form-line">
 			<div class="label">封面图：</div>
-			<Upload-oss v-if="uploadOssElem" :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }" :src.sync="msgForm.picurl" :initGetConfig="initGetConfig" />
+			<Upload-oss v-if="uploadOssElem" :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }" :src.sync="msgForm.picurl" :initGetConfig="initGetConfig"
+				@update:src="handle_uploadFinish" />
 		</div>
-
+		<!-- 编辑公众号 -->
+		<rd-dialog ref="linkInput" :title="'输入链接'" :dialogVisible="addEditVisible" :showFooter="true" :width="'500px'" @submitForm="handle_getLinkHtmlInfo"
+			@handleClose="addEditVisible = false">
+			<el-input v-model="articleLink" placeholder="请输入以 https://mp.weixin.qq.com 开头的文章链接"></el-input>
+		</rd-dialog>
 	</div>
 </template>
 
 <script>
-
 import UploadOss from '@/components/UploadOss'
+import SelectPop from '@/components/SelectPop'
 export default {
-	components: { UploadOss },
+	props: {
+		account: {
+			typeof: Object,
+			require: true
+		}
+	},
+	components: { UploadOss, SelectPop },
 	data() {
 		return {
 			selection: {},
@@ -52,16 +69,48 @@ export default {
 			msgForm: {
 				title: "",
 				picurl: "",
+				picurl_t: "",
 				description: "",
 				url: ""
+			},
+			addEditVisible: false,
+			articleLink: '',
+			SelectPopOptions: {
+				searchObj: {
+					api: "graphic_message_get_material",
+					formOptions: [],
+					needType: false,
+					params: {
+						appId: this.account.appId,
+						appSecret: this.account.appSecret,
+						type: 'news'
+					}
+				},
+				tableObj: {
+					tableKey: [
+						{
+							name: "封面图",
+							value: "thumb_url",
+							width: 100
+						},
+						{
+							name: "标签名称",
+							value: "labelName",
+						},
+						{
+							name: "标签类型",
+							value: "labelTypeZH",
+						},
+					],
+					transItem: (item) => {
+						item.labelTypeZH = item.labelType == '0' ? '系统标签' : '自定义标签'
+						return item
+					}
+				}
 			}
-
 		}
 	},
 	watch: {
-		'msgForm.picurl': function (n, o) {
-			this.emitForm()
-		}
 	},
 	methods: {
 		handle_insertUserName() {
@@ -87,7 +136,7 @@ export default {
 					range.setStartAfter(span)
 					range.collapse(true)
 				}
-				this.$nextTick(()=>{
+				this.$nextTick(() => {
 					this.handle_change()
 				})
 			}
@@ -107,6 +156,51 @@ export default {
 				this.$refs.likeInput.innerHTML = "请输入"
 			}
 		},
+		async handle_getLinkHtmlInfo() {
+			// 通过链接获取文本信息，解析出图片、描述、标题
+			if (/^https:\/\/mp.weixin.qq.com/g.test(this.articleLink)) {
+				// 满足链接条件
+				let res = await this.$fetch(
+					"graphic_message_get_article"
+					, {
+						url: this.articleLink
+					});
+				let htmlInfo = res.msg.replace(/\"/g, "'").replace(/ +/g, ' ')
+				// 获取图片
+				htmlInfo.match(/var cdn_url_1_1 = '(.?|.+?)';/g)
+				let image = RegExp.$1
+				// 获取可以上传的图片
+				htmlInfo.match(/var msg_cdn_url = '(.?|.+?)';/g)
+				let image_t = RegExp.$1
+				// 获取描述
+				htmlInfo.match(/var msg_desc = '(.?|.+?)';/g)
+				let description = RegExp.$1
+				// 获取标题
+				htmlInfo.match(/var msg_title = '(.?|.+?)'./g)
+				let title = RegExp.$1
+				this.$refs.likeInput.innerHTML = title
+				this.msgForm = {
+					title: title,
+					picurl: image,
+					picurl_t: image_t,
+					description: description,
+					url: this.articleLink
+				}
+				this.addEditVisible = false
+				this.articleLink = ''
+			} else {
+				// 不满足链接条件
+				this.$message({
+					message: "输入链接不合法",
+					type: "error",
+				});
+			}
+
+		},
+		handle_uploadFinish() {
+			this.msgForm.picurl_t = this.msgForm.picurl
+			this.emitForm()
+		},
 		emitForm() {
 			this.$emit('msgData', this.msgForm)
 		}
@@ -114,6 +208,14 @@ export default {
 	mounted() {
 		this.selection = document.getSelection()
 		this.range = document.createRange()
+
+		this.dialogId = `mpnews-dialog-${Date.now()}`
+		document.querySelector('.mpnews .dialog-wrapper').id = this.dialogId
+		document.body.append(document.querySelector('.mpnews .dialog-wrapper'))
+	},
+	beforeDestroy() {
+		// 既然要离开页面了，就把这个dialog标签删掉，做好文档流管理
+		document.body.removeChild(document.body.querySelector(`#${this.dialogId}`))
 	}
 }
 </script>
