@@ -8,7 +8,7 @@
         :loading="loading"
         :fixedTwoRow="fixedTwoRow"
         :pageConfig.sync="pageConfig"
-        :filterColumn="true"
+        :filterColumn="filterColumn"
         :tbodyHeight="650"
         @select="handleSelect"
         @pageChange="pageChange"
@@ -47,6 +47,15 @@ export default {
   },
   data () {
     return {
+      filterColumn: [
+        'gender',
+        'intention',
+        'remark',
+        'nextDate',
+        'allotTime',
+        'createAt',
+        'recentFeedbackContent'
+      ],
       drawerVisible:false,
       drawerId:"",
       drawerPhone:"",
@@ -115,6 +124,7 @@ export default {
   mounted(){
     this.getTableData();
     this.getSelectList();
+
   },
   methods: {
     openDrawer(data){
