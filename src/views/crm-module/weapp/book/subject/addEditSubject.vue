@@ -77,6 +77,12 @@ export default {
 					initValue: "Open",
 				},
 				{
+					prop: "teacherId",
+					element: "el-input-number",
+					placeholder: "请输入",
+					label: "营销老师ID",
+				},
+				{
 					prop: "orderValue",
 					element: "el-input-number",
 					placeholder: "请输入",
@@ -96,7 +102,7 @@ export default {
 				bookSubjectTotalEnrolment: [{ required: true, message: "请输入报名人数", trigger: "blur" },],
 				bookSubjectStatus: [{ required: true, message: "请输入", trigger: "blur" },],
 				orderValue: [{ required: true, message: "请输入", trigger: "blur" },],
-				// bookSubjectPurchaseUrl: [{ required: true, message: "请输入", trigger: "blur" },],
+				teacherId: [{ required: true, message: "请输入", trigger: "blur" },],
 			},
 			btnLoading: false,
 			mode: "add",// add 新增 edit 修改

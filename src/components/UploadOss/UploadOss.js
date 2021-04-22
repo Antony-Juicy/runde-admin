@@ -28,8 +28,8 @@ export const mixinUpload = {
     methods: {
         uploadOss(uploaderInput, isMult, objConfig = {}) {
             return new Promise((resolve, reject)=>{
-            // thePath 代表处理后台上传, 默认到'web/runde_console' 之外，还有一部分是上传到 cmsuserinfo/yxy上的
-            let thePath =  objConfig.module? 'web/runde_jiaowu/'+ objConfig.module + '/' + $common.getCurrentDate() : 'web/runde_jiaowu' + '/' + $common.getCurrentDate();
+            let currentDate = objConfig.raw? '': '/' + $common.getCurrentDate();
+            let thePath =  objConfig.module? 'web/runde_jiaowu/'+ objConfig.module + currentDate : 'web/runde_jiaowu' + currentDate;
             axios.post('https://h5.rundejy.com/aliyunoss/getAliyunOssConfig', qs.stringify({path: thePath})).then(({data}) => {
                 multipart_params = data.data;
                 baseKey = data.data.key;
@@ -51,12 +51,17 @@ export const mixinUpload = {
                         options.files = files;
                         defaultSetting.chooseFile = files[0];
                         if(Object.keys(objConfig).length > 0) {
-                            if(objConfig.name) {
-                                this.set_upload_param(uploader,  objConfig.dir +"/"+ objConfig.project || '' + objConfig.name, false);
+                            if(objConfig.name && !objConfig.raw) {
+                                this.set_upload_param(uploader,  objConfig.dir +"/"+ ( objConfig.project || '') + objConfig.name, false);
                                 return;
                             }else {
-                                // 修改了图片上传的名称为随机的32为字符 解决了图片是中文的问题
-                                this.set_upload_param(uploader,baseKey + this.randomString()+"."+files[0].name.split(".")[1], false);
+                                if(objConfig.raw){
+                                    this.set_upload_param(uploader, baseKey + objConfig.name, false);
+                                }else {
+                                    // 修改了图片上传的名称为随机的32为字符 解决了图片是中文的问题
+                                    this.set_upload_param(uploader,baseKey + this.randomString()+"."+files[0].name.split(".")[1], false);
+                                }
+                                
                                 return;
                             }
                         }else {
@@ -70,7 +75,7 @@ export const mixinUpload = {
                         if(info.status === 200) {
                             if(!isMult) {
                                 // 非多选的情况下 可以不要reload
-
+                                this.$emit("change")
                                 this.uploadConfig = uploadConfig;
                                 resolve(uploadConfig);
                             }else{

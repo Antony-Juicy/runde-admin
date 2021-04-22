@@ -8,7 +8,7 @@
 				<el-button type="primary" size="small" @click="handleAdd">创建科目</el-button>
 			</div>
 			<!-- 表格主体 -->
-			<rd-table :tableData="tableData" :tableKey="tableKey" :pageConfig.sync="pageConfig" fixedTwoRow @pageChange="pageChange">
+			<rd-table :tableData="tableData" :tableKey="tableKey" :pageConfig.sync="pageConfig" @pageChange="pageChange">
 				<template slot="defaultImageUrl" slot-scope="scope">
 					<el-image style="width: 100px; height: 100px" :src="scope.row.defaultImageUrl" fit="contain"></el-image>
 				</template>
@@ -22,8 +22,10 @@
 				<template slot="edit" slot-scope="scope">
 					<el-button @click="handleEdit(scope.row)" type="text" size="small">查阅/编辑</el-button>
 					<el-button @click="handleImport(scope.row)" type="text" size="small" style="color: rgb(255, 165, 0)">导入章</el-button>
-					<br />
+					<br>
 					<el-button @click="handleChapter(scope.row)" type="text" style="color: #67c23a" size="small">章节目录</el-button>
+					<el-button @click="handleDownload(scope.row)" type="text" size="small" style="color: #8e44ad">二维码导出</el-button>
+					<br>
 					<el-button @click="handleDelete(scope.row)" type="text" style="color: #ec5b56" size="small">删除</el-button>
 				</template>
 			</rd-table>
@@ -48,6 +50,7 @@ import chapter from './chapter'
 import addEditSubject from './addEditSubject'
 import { scrollTo } from "@/utils/scroll-to";
 import importFile from './importFile'
+import { getToken } from '@/utils/auth'
 export default {
 
 	props: {
@@ -171,10 +174,6 @@ export default {
 		},
 		getTableData(params = {}) {
 			return new Promise((resolve, reject) => {
-				const loading = this.$loading({
-					lock: true,
-					target: ".el-table",
-				});
 				// 深拷贝
 				let searchForm = JSON.parse(JSON.stringify(this.searchForm))
 				if (searchForm.typeId && searchForm.typeId.constructor == Array) {
@@ -202,12 +201,8 @@ export default {
 						return item;
 					});
 					this.pageConfig.totalCount = res.data.totalCount;
-					setTimeout(() => {
-						loading.close();
-					}, 200);
 					resolve();
 				}).catch(err => {
-					loading.close();
 					console.log(err)
 					reject();
 				});
@@ -303,6 +298,16 @@ export default {
 			this.importFileBookSubjectId = data.bookSubjectId
 			this.importVisible = true
 		},
+		handleDownload(data) {
+			console.log(data)
+			const link = document.createElement('a')
+			link.style.display = 'none'
+			link.href = `${process.env.VUE_APP_BASE_API}/live/console/book/subject/batch_download_miniprogram_QR_code?bookSubjectId=${data.bookSubjectId}&token=${getToken()}&loginUserId=${this.$common.getUserId()}` 
+			// link.setAttribute('download', `${data.bookSubjectName}.zip`)
+			document.body.appendChild(link)
+			link.click()
+			document.body.removeChild(link)
+		},
 		// 上传文件 请求
 		handleImportExcel(data) {
 			let obj = new FormData();
@@ -366,7 +371,7 @@ export default {
 		}
 
 		.chapter {
-			.full-dialog-container{
+			.full-dialog-container {
 				bottom: 0;
 			}
 			.full-dialog-container .content {

@@ -27,7 +27,7 @@ const getParam = () => {
 // request interceptor
 service.interceptors.request.use(
   config => {
-    if(!config.hideLoading){
+    if (!config.hideLoading) {
       showLoading()
     }
 
@@ -43,7 +43,7 @@ service.interceptors.request.use(
       config.data.token = getToken()
       config.data.loginUserId = common.getUserId()
     }
-    else{
+    else {
       config.data = qs.stringify({
         token: getToken(),
         loginUserId: common.getUserId(),
@@ -55,7 +55,7 @@ service.interceptors.request.use(
     return config
   },
   error => {
-    
+
     // do something with request error
     console.log(error) // for debug
     return Promise.reject(error)
@@ -65,10 +65,10 @@ service.interceptors.request.use(
 // response interceptor
 service.interceptors.response.use(
   response => {
-      hideLoading()
+    hideLoading()
     const res = response.data
     // 文件流直接返回
-    if(res.code == undefined){
+    if (res.code == undefined) {
       return res
     }
     // if the custom code is not 1, it is judged as an error.
@@ -83,7 +83,7 @@ service.interceptors.response.use(
           type: 'error',
           duration: 3 * 1000
         })
-        store.dispatch("user/setTableText","您没有权限访问")
+        store.dispatch("user/setTableText", "您没有权限访问")
       } else if (res.code == 402) {
         let msg = '您的登录已过期，请重新登录。'
         // to re-login
@@ -110,7 +110,7 @@ service.interceptors.response.use(
         })
       } else {
         // 如果是账号注销失败 不用提示
-        if(res.msg == "账号注销失败"){
+        if (res.msg == "账号注销失败") {
           return
         }
         Message.closeAll()
@@ -132,7 +132,7 @@ service.interceptors.response.use(
       return;
     }
     let status = error.response.status;
-    
+
     if (status === 401) {
       Message.closeAll()
       Message({
@@ -140,7 +140,7 @@ service.interceptors.response.use(
         type: 'error',
         duration: 3 * 1000
       })
-      store.dispatch("user/setTableText","您没有权限访问")
+      store.dispatch("user/setTableText", "您没有权限访问")
     } else if (status === 402) {
       let msg = '您的登录已过期，请重新登录。'
       // to re-login
@@ -203,7 +203,7 @@ const $fetch = async (apiName, params, config) => {
   }
 
   let newConfig = JSON.parse(JSON.stringify(apiConfig[apiName]));
-  const { headers = [], paramType , method } = newConfig;
+  const { headers = [], paramType, method } = newConfig;
   newConfig.headers = {};
 
   if (headers.length > 0) {
@@ -213,11 +213,10 @@ const $fetch = async (apiName, params, config) => {
   }
 
   if (getToken()) {
-    // newConfig.headers["Authorization"] = getToken();
-    newConfig.headers["Authorization"] = 'rd_superadmin';
+    newConfig.headers["Authorization"] =  process.env.NODE_ENV == 'development' ? 'rd_superadmin' : getToken();
   }
 
-  if(paramType == "body"){
+  if (paramType == "body") {
     newConfig.headers["Content-Type"] = 'application/json';
   }
 

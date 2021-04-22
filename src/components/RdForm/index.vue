@@ -11,7 +11,7 @@
       >
         <template v-for="(item, index) in formOptions">
             <el-form-item
-              :key="newKeys[index]"
+              :key="index"
               :prop="item.prop"
               :label="item.label ? item.label : ''"
               :rules="item.rules"

@@ -17,7 +17,7 @@ export default {
 
     book_get_chapters: { url: '/live/console/book/chapter/page_list', method: 'post' },
     book_add_chapter: { url: '/live/console/book/chapter/add_chapter', method: 'post' },
-    book_add_section: { url: '/live//console/book/chapter/add_section', method: 'post' },
+    book_add_section: { url: '/live/console/book/chapter/add_section', method: 'post' },
     book_delete_chapter: { url: '/live/console/book/chapter/delete', method: 'post' },
     book_update_chapter: { url: '/live/console/book/chapter/update_chapter', method: 'post' },
     book_update_section: { url: '/live/console/book/chapter/update_section', method: 'post' },
@@ -29,4 +29,7 @@ export default {
     book_import_section: { url: '/live/console/book/chapter/import_section', method: 'post' },
 
     book_check_chapter_name: { url: '/live/console/book/chapter/is_have_chapter_name', method: 'post' },
+
+    // 下载二维码
+    book_download_qrCode: { url: '/live/console/book/subject/batch_download_miniprogram_QR_code', method: 'get', headers: [{ key: 'responseType', value: 'blob' }] },
 }

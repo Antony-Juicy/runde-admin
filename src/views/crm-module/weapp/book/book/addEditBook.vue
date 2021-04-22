@@ -136,6 +136,41 @@ export default {
 					initValue: 'Open',
 				},
 				{
+					prop: 'activityId',
+					element: 'el-input-number',
+					placeholder: '请输入',
+					label: '活动ID',
+					initValue: '',
+				},
+				{
+					prop: 'labelInfo',
+					element: 'el-input',
+					placeholder: '请输入',
+					label: '活动标志',
+					initValue: '',
+				},
+				{
+					prop: 'staffId',
+					element: 'el-input-number',
+					placeholder: '请输入',
+					label: '员工ID',
+					initValue: '',
+				},
+				{
+					prop: 'title',
+					element: 'el-input',
+					placeholder: '请输入',
+					label: '分享标题',
+					initValue: '',
+				},
+				{
+					prop: 'content',
+					element: 'el-input',
+					placeholder: '请输入',
+					label: '分享描述',
+					initValue: '',
+				},
+				{
 					prop: 'orderValue',
 					element: 'el-input-number',
 					placeholder: '请输入',
@@ -258,6 +293,13 @@ export default {
 						this.$message.error("请选择授课讲师");
 						return;
 					}
+
+					if (!data.activityId) {
+						delete data.activityId
+					}
+					if (!data.staffId) {
+						delete data.staffId
+					}
 					// else if (this.bookTeacherArray.length > 5) {
 					// 	this.$message.error("授课老师不能多于5个");
 					// 	return;
@@ -289,10 +331,12 @@ export default {
 								this.$emit('close')
 								this.$emit('refresh')
 							}
+							data.bookLabel = data.bookLabel.split(',')
 						})
 						.catch((err) => {
 							console.log(err)
 							this.btnLoading = false
+							data.bookLabel = data.bookLabel.split(',')
 						})
 				}
 			})
@@ -333,6 +377,14 @@ export default {
 							this.bookTeacherArray.map((v) => JSON.parse(v))
 						)
 					}
+
+					if (!data.activityId) {
+						delete data.activityId
+					}
+					if (!data.staffId) {
+						delete data.staffId
+					}
+					
 					data.bookType = this.bookType
 
 					data.bookId = this.bookId

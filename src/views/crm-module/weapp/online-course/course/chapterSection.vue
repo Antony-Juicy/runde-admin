@@ -139,10 +139,6 @@ export default {
 		},
 		getTableData(params = {}) {
 			return new Promise((resolve, reject) => {
-				const loading = this.$loading({
-					lock: true,
-					target: ".el-table",
-				});
 				this.$fetch(
 					"online_course_get_chapters",
 					{
@@ -158,12 +154,8 @@ export default {
 						return item;
 					});
 					this.pageConfig.totalCount = res.data.totalCount;
-					setTimeout(() => {
-						loading.close();
-					}, 200);
 					resolve();
 				}).catch(err => {
-					loading.close();
 					console.log(err)
 					reject();
 				});

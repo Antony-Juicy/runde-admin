@@ -55,8 +55,8 @@
       style="width:100%"
       clearable>
       <el-option
-        v-for="item in itemOptions.options"
-        :key="item.value"
+        v-for="(item,index) in itemOptions.options"
+        :key="item.value + '-' +index"
         :label="item.label"
         :value="item.value"
         :style="{'min-width': minWidth + 2 + 'px'}">
