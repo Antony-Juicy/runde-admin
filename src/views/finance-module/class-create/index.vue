@@ -15,14 +15,14 @@
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
-        :loading="loading" 
+        :loading="loading"
         :tbodyHeight="600"
         :filterColumn="true"
         :pageConfig.sync="pageConfig"
         @pageChange="pageChange"
       >
-        <template slot="value10" slot-scope="scope">
-          {{ scope.row.value10 }}<br />
+        <template slot="classtypeContent" slot-scope="scope">
+          {{ scope.row.classtypeContent }}<br />
           <el-button
             type="text"
             style="height: 40px"
@@ -67,7 +67,7 @@
         </el-steps>
       </div>
 
-      <div class="class-step1 class-moudle" v-if="active == 0">
+      <div class="class-step1 class-moudle" v-show="active == 0">
         <RdForm
           :formOptions="addFormOptions"
           :rules="addRules"
@@ -78,7 +78,7 @@
             <el-row style="margin-left: -120px">
               <el-col :span="12">
                 <el-form-item label="项目：" prop="project" inline="true">
-                  <el-select
+                  <el-select 
                     v-model="basicInfo.project"
                     placeholder="请选择"
                     size="small"
@@ -113,21 +113,9 @@
             </el-row>
           </template>
         </RdForm>
-
-        <div class="btn-wrapper btn-wrap">
-          <el-button
-            class="el-btn"
-            type="primary"
-            size="small"
-            :loading="btnLoading"
-            @click="handleNext"
-            v-prevent-re-click="2000"
-            >下一步</el-button
-          >
-        </div>
       </div>
 
-      <div class="class-step2 class-moudle" v-if="active == 1">
+      <div class="class-step2 class-moudle" v-show="active == 1">
         <el-form
           ref="dataForm2"
           :model="basicInfo"
@@ -139,7 +127,7 @@
               <el-col :span="3">总学费</el-col>
               <el-col :span="5">
                 <el-input
-                  v-model="basicInfo.sumPrice"
+                  v-model="basicInfo.sumPrice" 
                   placeholder="请输入内容"
                 ></el-input>
               </el-col>
@@ -161,7 +149,7 @@
               <el-col :span="3">中药二</el-col>
               <el-col :span="8">
                 <el-input
-                  v-model="basicInfo.price1"
+                  v-model="basicInfo.price2"
                   placeholder="请输入价格"
                 ></el-input>
               </el-col>
@@ -173,7 +161,7 @@
               <el-col :span="3">中药综合</el-col>
               <el-col :span="8">
                 <el-input
-                  v-model="basicInfo.price1"
+                  v-model="basicInfo.price3"
                   placeholder="请输入价格"
                 ></el-input>
               </el-col>
@@ -185,7 +173,7 @@
               <el-col :span="3">中药法规</el-col>
               <el-col :span="8">
                 <el-input
-                  v-model="basicInfo.price1"
+                  v-model="basicInfo.price4"
                   placeholder="请输入价格"
                 ></el-input>
               </el-col>
@@ -213,11 +201,11 @@
           </el-row>
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="成本费用：" prop="value14" inline="true">
+              <el-form-item label="不可退金额：" prop="cost" inline="true">
                 <el-row :gutter="12">
                   <el-col :span="12">
                     <el-input
-                      v-model="basicInfo.value14"
+                      v-model="basicInfo.cost"
                       placeholder="请输入价格"
                       size="small"
                     >
@@ -228,11 +216,15 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="通过扣除费用：" prop="value15" inline="true">
+              <el-form-item
+                label="通过扣除费用："
+                prop="deductingFees"
+                inline="true"
+              >
                 <el-row :gutter="12">
                   <el-col :span="12">
                     <el-input
-                      v-model="basicInfo.value15"
+                      v-model="basicInfo.deductingFees"
                       placeholder="请输入价格"
                       size="small"
                     >
@@ -244,7 +236,11 @@
             </el-col>
           </el-row>
 
-          <el-form-item label="班型内容：" prop="value10" :inline="true">
+          <el-form-item
+            label="班型内容："
+            prop="classtypeContent"
+            :inline="true"
+          >
             <div>
               <el-button
                 @click="handleAddContent()"
@@ -273,38 +269,19 @@
             </div>
           </el-form-item>
         </el-form>
-
-        <div class="btn-wrapper btn-wrap">
-          <el-button
-            class="el-btn"
-            type="primary"
-            size="small"
-            @click="handlePre('step2')"
-            v-prevent-re-click="2000"
-            >上一步</el-button
-          >
-          <el-button
-            class="el-btn"
-            type="primary"
-            size="small"
-            @click="handleNext('step2')"
-            v-prevent-re-click="2000"
-            >下一步</el-button
-          >
-        </div>
       </div>
 
-      <div class="class-step3 class-moudle" v-if="active == 2">
+      <div class="class-step3 class-moudle" v-show="active == 2">
         <RdForm
           :formOptions="step3FormOptions"
-          :rules="step3Rules"
-          ref="dataForm1"
+          :rules="addRules"
+          ref="dataForm3"
           formLabelWidth="160px"
         >
           <template slot="campusVisible" slot-scope="scope">
             <el-form-item label="校区可见" prop="campusVisible">
               <el-select
-                v-model="basicInfo.campusVisible"
+                v-model="basicInfo2.campusVisible"
                 placeholder="请选择"
                 multiple
               >
@@ -319,25 +296,25 @@
             </el-form-item>
           </template>
         </RdForm>
+      </div>
 
-        <div class="btn-wrapper btn-wrap">
-          <el-button
-            class="el-btn"
-            type="primary"
-            size="small"
-            @click="handlePre('step3')"
-            v-prevent-re-click="2000"
-            >上一步</el-button
-          >
-          <el-button
-            class="el-btn"
-            type="primary"
-            size="small"
-            @click="handleNext('step3')"
-            v-prevent-re-click="2000"
-            >提交</el-button
-          >
-        </div>
+      <!-- 按钮 -->
+      <div class="btn-wrapper btn-wrap">
+        <el-button
+          class="el-btn"
+          type="primary"
+          size="small"
+          @click="handlePre()"
+          v-if="active != 0"
+          >上一步</el-button
+        >
+        <el-button
+          class="el-btn"
+          type="primary"
+          size="small"
+          v-text="active == 2 ? '提交' : '下一步'"
+          @click="handleNext('dataForm1')"
+        ></el-button>
       </div>
     </fullDialog>
     <!-- 添加内容弹窗 -->
@@ -421,7 +398,11 @@ export default {
           element: "el-select",
           placeholder: "请选择退费类型",
         },
-        { prop: "refundRulers", element: "el-select", placeholder: "请选择退费规则" },
+        {
+          prop: "refundRulers",
+          element: "el-select",
+          placeholder: "请选择退费规则",
+        },
         {
           prop: "serviceTime",
           element: "el-select",
@@ -453,7 +434,7 @@ export default {
         { name: "班型内容", value: "classtypeContent", operate: true },
         { name: "学费/元", value: " tuitionFees" },
         { name: "服务年限", value: "serviceTime" },
-        { name: "成本费用/元", value: " cost" },
+        { name: "不可退金额/元", value: " cost" },
         { name: "通过扣除费用", value: "deductingFees" },
         { name: "班型分组", value: "classTypeGroup" },
         { name: "班型阶段", value: "classStage" },
@@ -623,12 +604,28 @@ export default {
           initValue: "Open",
         },
       ],
-      addRules: {},
+      addRules: {
+        project: [{ required: true, message: "请选择", trigger: "blur" }],
+        subject: [{ required: true, message: "请选择", trigger: "blur" }],
+        className: [{ required: true, message: "请输入", trigger: "blur" },  { max: 20, message: '命名，字数上限不超过20字', trigger: 'blur' }],
+        classYear: [{ required: true, message: "请选择", trigger: "blur" }],
+        classType: [{ required: true, message: "请选择", trigger: "blur" }],
+        classGroup: [{ required: true, message: "请选择", trigger: "blur" }],
+        serviceYear: [{ required: true, message: "请选择", trigger: "blur" }],
+        protocolType: [{ required: true, message: "请选择", trigger: "blur" }],
+        refundType: [{ required: true, message: "请选择", trigger: "blur" }],
+        status: [{ required: true, message: "请选择", trigger: "blur" }],
+      
+      },
+      basicInfo2:{
+        campusVisible:""
+      },
       basicInfo: {
-        project: "",
-        subject: "",
         sumPrice: "",
         price1: "",
+        price2: "",
+        price3: "",
+        price4: "",
         checked1: "",
         checked2: "",
         checked3: "",
@@ -641,8 +638,8 @@ export default {
         nextTime: "",
         detail: "",
         refundType: "",
-        value14: "",
-        value15: "",
+        cost: "",
+        deductingFees: "",
         tableData: [
           {
             id: 1,
@@ -686,9 +683,11 @@ export default {
           showCount: 10,
         },
       },
-      rules: {
-        project: [{ message: "请选择项目", trigger: "blur" }],
-        subject: [{ message: "请选择科目", trigger: "blur" }],
+      rules: { 
+        sumPrice: [{ required: true,  message: "请输入", trigger: "blur" },{ type: 'number', message: '学费必须为数字值'}],
+        refundType: [{  required: true, message: "请选择", trigger: "blur" }],
+        cost: [{  required: true, message: "请输入", trigger: "blur" }],
+        deductingFees: [{  required: true, message: "请输入", trigger: "blur" }],
       },
       projectArr: [
         {
@@ -869,6 +868,7 @@ export default {
     this.getAddClassTableData();
   },
   methods: {
+    loadSalaryCfg() {},
     goDetails() {
       this.detailVisible = true;
     },
@@ -969,9 +969,60 @@ export default {
     handlePre() {
       this.active--;
     },
-    handleNext() {
-      this.active++;
+    handleNext(formName) {
       console.log("active", this.active);
+      if (this.active == 2) {
+        //step3
+        if (this.addStatus == false) {
+          //编辑
+          this.$refs[formName].validate((valid, formData) => {
+            if (valid) {
+              this.$confirm(`确认提交吗？`, "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "success",
+              }).then(async () => {
+                //TODO
+                this.$fetch("wechatstaffqrcode_sendMessageInfo", {
+                  ...formData,
+                })
+                  .then((res) => {
+                    this.$message.success("操作成功");
+                    this.addVisible = false;
+                    this.active = 0;
+                    this.loadSalaryCfg();
+                  })
+                  .catch(() => {});
+              });
+            }
+          });
+        } else {
+          //添加
+          this.$refs[formName].validate((valid, formData) => {
+            if (valid) {
+              this.$confirm(`确认提交吗？`, "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "success",
+              }).then(async () => {
+                //TODO
+                this.$fetch("wechatstaffqrcode_sendMessageInfo", {
+                  ...formData,
+                }) 
+                  .then((res) => {
+                    this.$message.success("操作成功");
+                    this.addVisible = false;
+                    this.active = 0;
+                    this.loadSalaryCfg();
+                  })
+                  .catch(() => {});
+              });
+            }
+          });
+        }
+      } else {
+        this.active++;
+      }
     },
   },
 };
