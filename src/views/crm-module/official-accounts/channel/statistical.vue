@@ -72,7 +72,7 @@
           <p>最近30天</p>
         </div>
       </div>
-      <!-- <line-chart :chart-data="lineChartData" /> -->
+      <line-chart :chart-data="lineChartData" />
     </div>
 
     <!-- 表格主体 -->
@@ -97,14 +97,14 @@
 
 <script>
 
-// import LineChart from './components/LineChart';
+import LineChart from './components/LineChart';
 import Pagination from "@/components/Pagination/index.vue";
 export default {
   props: {
     
   },
   components: {
-    // LineChart,
+    LineChart,
     Pagination
   },
   
