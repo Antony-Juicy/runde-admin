@@ -30,7 +30,7 @@
 					<div class="link-text" v-if="cardData.needUrl" @click="handle_goPage">{{cardData.description || '请输入链接名称'}}</div>
 				</div>
 			</div>
-			<div class="mpnews" v-if="mode == 'mpnews'">
+			<div class="mpnews" v-if="mode == 'mpnews'" @click="handle_goPage">
 				<div class="avatar">
 					<img src="@/assets/logo.png">
 				</div>
@@ -99,7 +99,7 @@ export default {
 			cardData={
 				title:"标题",
 				description:"描述",
-				imgUrl:"图片地址"
+				picurl:"图片地址"
 			}
 		*/
 		/* 
@@ -107,7 +107,7 @@ export default {
 			cardData = {
 				appName:"小程序名称",
 				title:"小程序标题",
-				imgUrl:"封面图"
+				picurl:"封面图"
 			}
 		*/
 		mode: {
