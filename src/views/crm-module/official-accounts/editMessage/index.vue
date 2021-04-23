@@ -1,16 +1,16 @@
 <template>
 	<div class="editMessage">
-		<div class="head">
+		<div class="head" v-if="showName">
 			<div class="form-line" style="width:600px;margin-right:30px">
 				<div class="label">推送名称：</div>
-				<el-input placeholder="名称用于区别不通过推送，仅自己可见，可自行设置" v-model="msgName"></el-input>
-				<div class="count" :class="{danger:msgName.length > 30}">{{msgName.length}}/30</div>
+				<el-input placeholder="名称用于区别不通过推送，仅自己可见，可自行设置" v-model="msgName" maxlength="30" show-word-limit></el-input>
+				<!-- <div class="count" :class="{danger:msgName.length > 30}">{{msgName.length}}/30</div> -->
 			</div>
 		</div>
 		<div class="form-content">
 			<div class="left">
 				<div class="form-line">
-					<div class="label">推送名称：</div>
+					<div class="label">消息类型：</div>
 					<el-radio v-model="msgtype" label="mpnews">图文信息</el-radio>
 					<el-radio v-model="msgtype" label="text">文字</el-radio>
 					<el-radio v-model="msgtype" label="image">图片</el-radio>
@@ -40,6 +40,10 @@ export default {
 		account: {
 			typeof: Object,
 			require: true
+		},
+		showName: {
+			typeof: Boolean,
+			default: false
 		}
 	},
 	components: { mpnews, textmsg, imgmsg, miniprogrampage, likePhone },
@@ -119,6 +123,7 @@ export default {
 				width: 100px;
 				text-align: right;
 				flex-shrink: 0;
+				// padding-top:8px;
 			}
 		}
 	}

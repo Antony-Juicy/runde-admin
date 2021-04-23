@@ -7,7 +7,7 @@
 				<i class="el-icon-arrow-down el-icon--right"></i>
 			</div>
 			<el-dropdown-menu slot="dropdown">
-				<el-dropdown-item v-for="(item,index) in officialAccounts" :key="index" >
+				<el-dropdown-item v-for="(item,index) in officialAccounts" :key="index">
 					<div class="account-option" @click="handle_select_account(item)">
 						<img :src="item.appImg" class="logo">
 						<span>{{ item.appName }}</span>
@@ -20,7 +20,25 @@
 		</div>
 		<!-- 编辑公众号 -->
 		<rd-dialog :title="AddEditTitle" :dialogVisible="addEditVisible" :showFooter="false" :width="'1200px'" @handleClose="addEditVisible = false">
-			<editMessage @msgForm="handle_msgForm" :account="account"></editMessage>
+			<!-- 组件 -->
+			<editMessage @msgForm="handle_msgForm" :showName="true" :account="account" v-if="addEditVisible"></editMessage>
+			<div class="form-line">
+				<div class="label"></div>
+			</div>
+			<!-- 推送给谁 -->
+			<!-- <div class="form-line">
+				<div class="label">推送给谁：</div>
+				<div class="labelIds">
+					<div class="origin-tips">选择标签后，消息将只推送给选中标签组的粉丝</div>
+					<el-tag style="margin-right:10px" v-for="(item,index) in fansLabels" :key="index" @close="handle_removeLabel(index)" disable-transitions closable>
+						{{item.name}}
+					</el-tag>
+					<SelectPop style="width:auto;display:inline-block" key="SelectPop1" v-bind="SelectPopOptions_label" @select="handle_selectLabel">
+						<el-button size="small">添加标签</el-button>
+					</SelectPop>
+				</div>
+			</div> -->
+
 		</rd-dialog>
 	</div>
 </template>
@@ -35,7 +53,9 @@ export default {
 			officialAccounts: [],
 			account: {},
 			AddEditTitle: "创建客服消息",
-			addEditVisible: false
+			addEditVisible: true,
+			SelectPopOptions_label:{},
+			fansLabels:[]
 		}
 	},
 	methods: {
@@ -104,6 +124,19 @@ export default {
 		height: 40px;
 		object-fit: contain;
 		margin-right: 10px;
+	}
+}
+.form-line {
+	display: flex;
+	padding: 20px 30px;
+	.labelIds {
+		padding: 0px 10px;
+	}
+	.origin-tips {
+		color: #ffaf53;
+		font-size: 12px;
+		padding-left: 4px;
+		padding-bottom: 10px;
 	}
 }
 </style>
