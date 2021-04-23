@@ -27,7 +27,7 @@
 
 		<!-- 表格主体 -->
     <div class="el-form">
-      <el-table :data="realList" style="width: 100%">
+      <el-table :data="list" style="width: 100%">
         <el-table-column prop="date" label="用户昵称" width="180">
           <template slot-scope="scope">
             <div class="form">
@@ -111,13 +111,6 @@ export default {
     Pagination
   },
 
-  computed: {
-    // 计算属性的 getter
-    realList() {
-      return this.list.slice((this.pageNum-1) * this.pageSize,(this.pageNum*this.pageSize-1))
-    }
-  },
-
   data() {
     return {
       list:[],
@@ -166,10 +159,7 @@ export default {
 
     //获取表格数据
 		async getTableData() {
-      if(this.pageNum == 1){
-        this.list = [];
-        this.hasNext = true;
-      }
+      this.list = [];
       let postData = {
         pageNum:this.pageNum,
         pageSize:this.pageSize,
@@ -182,10 +172,8 @@ export default {
           ...this.searchForm
         }
 			);
-			// console.log(res)
-      this.list = this.list.concat(res.data.records);
+      this.list = res.data.records;
       this.total = res.data.totalCount;
-      this.hasNext = res.data.hasNext;
 		},
 
     //获取标签数组
@@ -205,10 +193,8 @@ export default {
 		},
 
     changepageNum(e){
-      if(e.page > this.pageNum && this.hasNext){
-        this.pageNum = e.page;
-        this.getTableData();
-      }
+      this.pageNum = e.page;
+      this.getTableData();
     },
 
     onSearch(data){
