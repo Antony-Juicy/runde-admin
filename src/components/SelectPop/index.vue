@@ -3,10 +3,10 @@
 	<el-popover v-model="show" class="select-pop" placement="bottom-start" width="700" trigger="click" :append-to-body="false">
 		<search-form v-if="searchObj.formOptions.length > 0" :formOptions="searchObj.formOptions" :showNum="searchObj.showNum" @onSearch="onSearch" ref="searchForm"></search-form>
 		<div class="scroll-box" v-infinite-scroll="getTableData">
-			<el-table :data="tableData" v-loading="tableLoad">
+			<el-table :data="tableData">
 				<template v-for="(item,index) in tableObj.tableKey">
 					<el-table-column v-if="!item.operate" :prop="item.value" :label="item.name" :width="item.width" :key="index"></el-table-column>
-					<el-table-column v-else :key="index">
+					<el-table-column v-else :key="index" :label="item.name">
 						<template slot-scope="scope">
 							<slot :name="item.value" :row="scope.row"></slot>
 						</template>
@@ -76,7 +76,6 @@ export default {
 			if (!this.pageConfig.hasNext) {
 				return
 			}
-			this.tableLoad = true
 			// 深拷贝
 			let searchForm = JSON.parse(JSON.stringify(this.searchForm))
 			if (searchForm.typeId && searchForm.typeId.constructor == Array) {
@@ -91,16 +90,24 @@ export default {
 					...this.searchObj.params
 				}
 			).catch(() => { this.tableLoad = false })
+			if(!res || this.$common.isEmpty(res.data)){
+				return
+			}
 			let data = []
 			if (res.data.hasOwnProperty('records')) {
 				data = res.data.records
 				this.pageConfig.hasNext = res.data.hasNext
 			} else if (res.data.hasOwnProperty('item')) {
-				data = res.data.item
-				this.pageConfig.hasNext = res.data.item_count + this.tableData.length < res.data.total_count
+				// data = res.data.item.map(v=>{
+				// 	return v.news_item
+				// })
+				res.data.item.forEach(v => {
+					data = data.concat(v.content.news_item)
+				})
+				this.pageConfig.hasNext = res.data.item.length > 0
 			}
 			if (typeof this.tableObj.transItem == 'function') {
-				data.map(v => {
+				data = data.map(v => {
 					return this.tableObj.transItem(v)
 				})
 			}
@@ -161,7 +168,7 @@ function debounce(fn, wait) {
 	}
 }
 .scroll-box {
-	height: 200px;
+	height: 300px;
 	overflow: auto;
 }
 </style>

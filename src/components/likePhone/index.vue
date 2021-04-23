@@ -23,7 +23,7 @@
 			</div>
 			<div class="text" v-if="mode == 'text'">
 				<div class="avatar">
-					<img src="@/assets/logo.png">
+					<img :src="accountLogo || require('@/assets/logo.png')">
 				</div>
 				<div class="msg-card">
 					<div class="just-text" v-html="cardData.content || '请输入文字消息'"></div>
@@ -32,7 +32,7 @@
 			</div>
 			<div class="mpnews" v-if="mode == 'mpnews'" @click="handle_goPage">
 				<div class="avatar">
-					<img src="@/assets/logo.png">
+					<img :src="accountLogo || require('@/assets/logo.png')">
 				</div>
 				<div class="msg-card">
 					<div class="title twoline" v-html="cardData.title || '请输入标题'"></div>
@@ -44,14 +44,14 @@
 			</div>
 			<div class="image" v-if="mode == 'image'">
 				<div class="avatar">
-					<img src="@/assets/logo.png">
+					<img :src="accountLogo || require('@/assets/logo.png')">
 				</div>
 				<img v-if="cardData.picurl" class="imgUrl" :src="cardData.picurl">
 				<div v-else class="default-img">请上传图片</div>
 			</div>
 			<div class="miniprogrampage" v-if="mode == 'miniprogrampage'">
 				<div class="avatar">
-					<img src="@/assets/logo.png">
+					<img :src="accountLogo || require('@/assets/logo.png')">
 				</div>
 				<div class="msg-card">
 					<div class="head">
@@ -121,6 +121,9 @@ export default {
 		accountName: {
 			type: String,
 			require: true
+		},
+		accountLogo: {
+			type: String,
 		}
 	},
 	computed: {
@@ -141,7 +144,9 @@ export default {
 	},
 	methods: {
 		handle_goPage() {
-			window.open(this.cardData.url)
+			if (/^(https|http):\/\//g.test(this.cardData.url)) {
+				window.open(this.cardData.url)
+			}
 		}
 	}
 }
@@ -299,7 +304,7 @@ export default {
 			margin-bottom: 10px;
 			object-fit: cover;
 		}
-		.default-img{
+		.default-img {
 			width: 190px;
 			height: 152px;
 			margin-bottom: 10px;

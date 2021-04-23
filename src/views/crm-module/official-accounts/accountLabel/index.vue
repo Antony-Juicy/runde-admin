@@ -292,6 +292,7 @@ export default {
 		handle_select_account(data) {
 			this.account = data
 			this.choseAccountVisible = false
+			this.refresh()
 		}
 	},
 	async mounted() {
@@ -307,9 +308,6 @@ export default {
 		this.dialogId = `accountLabel-dialog-${Date.now()}`
 		document.querySelector('.accountLabel .dialog-wrapper').id = this.dialogId
 		document.body.append(document.querySelector('.accountLabel .dialog-wrapper'))
-
-
-
 	},
 	beforeDestroy() {
 		// 既然要离开页面了，就把这个dialog标签删掉，做好文档流管理

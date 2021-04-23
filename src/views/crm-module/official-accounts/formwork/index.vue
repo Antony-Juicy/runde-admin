@@ -128,6 +128,7 @@ export default {
 		},
 		handle_select_account(data) {
 			this.account = data
+			this.refresh()
 		}
 	},
 	async mounted() {

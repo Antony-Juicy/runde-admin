@@ -3,11 +3,11 @@
 		<div class="form-line">
 			<div class="label">图文消息：</div>
 			<div>
-				<el-button @click="addEditVisible = true" size="small">添加图文链接</el-button>
-				<SelectPop style="width:auto;display:inline-block" v-bind="SelectPopOptions">
+				<el-button @click="addEditVisible = true" size="small" style="margin-right:10px">添加图文链接</el-button>
+				<SelectPop style="width:auto;display:inline-block" :key="'SelectPop4399'" v-bind="SelectPopOptions" @select="handle_select">
 					<el-button size="small">从素材库导入</el-button>
 					<template slot="thumb_url" slot-scope="scope">
-						<el-image style="width: 100px; height: 100px" :src="scope.row.appImg" fit="contain"></el-image>
+						<el-image style="width: 100px; height: 100px" :src="scope.row.thumb_url" fit="contain"></el-image>
 					</template>
 				</SelectPop>
 
@@ -26,19 +26,20 @@
 				<el-button size="mini" plain @click="handle_insertUserName">用户昵称</el-button>
 			</div>
 		</div>
-		<div class="form-line">
-			<div class="label">描述：</div>
+		<div class="form-line" style="align-items:flex-start">
+			<div class="label" >描述：</div>
 			<el-input type="textarea" placeholder="请输入内容" v-model="msgForm.description" :rows="2" resize="none" @input="emitForm"></el-input>
 		</div>
 		<div class="form-line">
 			<div class="label">跳转链接：</div>
-			<el-input placeholder="请输入内容" v-model="msgForm.url" @input="emitForm"></el-input>
+			<el-input placeholder="请以http://或https://开头" v-model="msgForm.url" @input="emitForm"></el-input>
 		</div>
-		<div class="form-line">
+		<div class="form-line" style="align-items:flex-start">
 			<div class="label">封面图：</div>
 			<Upload-oss v-if="uploadOssElem" :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }" :src.sync="msgForm.picurl" :initGetConfig="initGetConfig"
 				@update:src="handle_uploadFinish" />
 		</div>
+		<img src="" />
 		<!-- 编辑公众号 -->
 		<rd-dialog ref="linkInput" :title="'输入链接'" :dialogVisible="addEditVisible" :showFooter="true" :width="'500px'" @submitForm="handle_getLinkHtmlInfo"
 			@handleClose="addEditVisible = false">
@@ -81,8 +82,8 @@ export default {
 					formOptions: [],
 					needType: false,
 					params: {
-						appId: this.account.appId,
-						appSecret: this.account.appSecret,
+						appId: '',
+						appSecret: '',
 						type: 'news'
 					}
 				},
@@ -91,20 +92,27 @@ export default {
 						{
 							name: "封面图",
 							value: "thumb_url",
-							width: 100
+							width: 100,
+							operate: true,
 						},
 						{
-							name: "标签名称",
-							value: "labelName",
+							name: "标题",
+							value: "title",
 						},
 						{
-							name: "标签类型",
-							value: "labelTypeZH",
+							name: "描述",
+							value: "digest",
 						},
 					],
 					transItem: (item) => {
-						item.labelTypeZH = item.labelType == '0' ? '系统标签' : '自定义标签'
-						return item
+						return {
+							thumb_url: `${process.env.VUE_APP_BASE_API}/wechat/console/wechat_material/handle_img?src=${encodeURIComponent(item.thumb_url)}`, // 投机一把 看看情况
+							// thumb_url: `https://mcdn.yiban.io/img_proxy?src=${encodeURIComponent(item.thumb_url)}`,
+							thumb_url_t: item.thumb_url,
+							title: item.title,
+							digest: item.digest,
+							url: item.url,
+						}
 					}
 				}
 			}
@@ -201,6 +209,17 @@ export default {
 			this.msgForm.picurl_t = this.msgForm.picurl
 			this.emitForm()
 		},
+		handle_select(data) {
+			// 选择素材
+			this.msgForm = {
+				title: data.title,
+				picurl: data.thumb_url,
+				picurl_t: data.thumb_url_t,
+				description: data.digest,
+				url: data.url
+			}
+			this.$refs.likeInput.innerHTML = this.msgForm.title
+		},
 		emitForm() {
 			this.$emit('msgData', this.msgForm)
 		}
@@ -208,6 +227,9 @@ export default {
 	mounted() {
 		this.selection = document.getSelection()
 		this.range = document.createRange()
+
+		this.SelectPopOptions.searchObj.params.appId = this.account.appId
+		this.SelectPopOptions.searchObj.params.appSecret = this.account.appSecret
 
 		this.dialogId = `mpnews-dialog-${Date.now()}`
 		document.querySelector('.mpnews .dialog-wrapper').id = this.dialogId
