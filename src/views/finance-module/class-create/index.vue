@@ -37,16 +37,20 @@
             编辑
           </el-button>
           <el-divider direction="vertical"></el-divider>
-          <el-button @click="handleDelete(scope.row)" type="text" size="small"
+          <el-button @click="handleSet(scope.row, 1)" type="text" size="small"
             >设置网课编码</el-button
           >
 
           <el-divider direction="vertical"></el-divider>
-          <el-button @click="handleDelete(scope.row)" type="text" size="small"
-            >设置图书编码</el-button
+          <el-button @click="handleSet(scope.row, 2)" type="text" size="small"
+            >设置直播编码</el-button
           >
           <el-divider direction="vertical"></el-divider>
-          <el-button @click="handleDelete(scope.row)" type="text" size="small"
+          <el-button @click="handleSet(scope.row, 3)" type="text" size="small"
+            >设置音频编码</el-button
+          >
+          <el-divider direction="vertical"></el-divider>
+          <el-button @click="handleSet(scope.row, 4)" type="text" size="small"
             >设置配送图书</el-button
           >
         </template>
@@ -327,7 +331,7 @@
     >
       <addClass
         :opportunityIds="opportunityIds"
-        @refresh="getAddClassTableData"
+        @refresh="getTableData"
         @close="distributeVisible = false"
         v-if="distributeVisible"
       />
@@ -358,6 +362,61 @@
       >
       </rd-table>
     </fullDialog>
+
+    <!-- 添加设置网课编码弹窗 -->
+    <fullDialog
+      v-model="setVisible1"
+      title="设置网课编码"
+      @change="setVisible1 = false"
+    >
+      <netClass
+        ref="netClass"
+        @close="setVisible1 = false"
+        v-if="setVisible1"
+        @refresh="getTableData"
+      />
+    </fullDialog>
+
+    <!-- 添加设置直播编码弹窗 -->
+    <fullDialog
+      v-model="setVisible2"
+      title="设置直播编码"
+      @change="setVisible2 = false"
+    >
+      <liveClass
+        ref="liveClass"
+        @close="setVisible2 = false"
+        v-if="setVisible2"
+        @refresh="getTableData"
+      />
+    </fullDialog>
+    <!-- 添加设置音频编码弹窗 -->
+    <fullDialog
+      v-model="setVisible3"
+      title="设置音频编码"
+      @change="setVisible3 = false"
+    >
+      <videoClass
+        ref="videoClass"
+        @close="setVisible3 = false"
+        v-if="setVisible3"
+        @refresh="getTableData"
+      />
+    </fullDialog>
+
+    <!-- 添加设置配送图书弹窗 -->
+    <fullDialog
+      v-model="setVisible4"
+      title="设置配送图书"
+      @change="setVisible4 = false"
+    >
+      <distribeClass
+        ref="videoClass"
+        @close="setVisible4 = false"
+        v-if="setVisible4"
+        @refresh="getTableData"
+      />
+    </fullDialog>
   </div>
 </template>
 
@@ -365,22 +424,30 @@
 import fullDialog from "@/components/FullDialog";
 import RdForm from "@/components/RdForm";
 import addClass from "./add-class";
+import netClass from "./net-class";
+import liveClass from "./live-class";
+import videoClass from "./video-class";
+import distribeClass from "./distribe-class";
 export default {
   name: "class-create",
   components: {
     fullDialog,
     RdForm,
     addClass,
+    netClass,
+    liveClass,
+    videoClass,
+    distribeClass,
   },
   data() {
     return {
-      filterColumn:[
-        'classTypeGroup',
-        'serviceType',
-        'classGroupNumber',
-      ],
+      filterColumn: ["classTypeGroup", "serviceType", "classGroupNumber"],
       btnLoading: false,
       detailVisible: false,
+      setVisible1: false,
+      setVisible2: false,
+      setVisible3: false,
+      setVisible4: false,
       active: 0,
       showNum: 5,
       formOptions: [
@@ -632,8 +699,8 @@ export default {
         },
       ],
       addRules: {
-        project: [{ required: true, message: "请选择", trigger: "blur" }],
-        subject: [{ required: true, message: "请选择", trigger: "blur" }],
+        // project: [{ required: true, message: "请选择", trigger: "blur" }],
+        // subject: [{ required: true, message: "请选择", trigger: "blur" }],
         className: [
           { required: true, message: "请输入", trigger: "blur" },
           { max: 20, message: "命名，字数上限不超过20字", trigger: "blur" },
@@ -897,33 +964,37 @@ export default {
     };
   },
   mounted() {
-    this.getAddClassTableData();
+    this.getTableData();
   },
   methods: {
+    handleSet(row, index) {
+      //设置配送图书
+      this[`setVisible${index}`] = true;
+    },
     loadSalaryCfg() {},
     goDetails() {
       this.detailVisible = true;
     },
-    getAddClassTableData(params = {}) {
-      // this.$fetch("chance_campus_list", {
-      //   ...this.pageConfig,
-      //   ...this.searchForm,
-      //   ...params,
-      // }).then((res) => {
-      //   this.tableData = res.data.data.map((item) => {
-      //     item.createAt = this.$common._formatDates(item.createAt);
-      //     item.updateAt = this.$common._formatDates(item.updateAt);
-      //     item.campusPoolTime = this.$common._formatDates(item.campusPoolTime);
-      //     item.recentFeedbackTime = this.$common._formatDates(item.recentFeedbackTime);
-      //     // item.phone = this.$common.hidePhone(item.phone);
-      //     item.enquireClassOne =
-      //       item.enquireClassOne &&
-      //       item.enquireClassOne.map((item) => item.name).join(",");
-      //     return item;
-      //   });
-      //   this.pageConfig.totalCount = res.data.count;
-      // });
-    },
+    // getAddClassTableData(params = {}) {
+    // this.$fetch("chance_campus_list", {
+    //   ...this.pageConfig,
+    //   ...this.searchForm,
+    //   ...params,
+    // }).then((res) => {
+    //   this.tableData = res.data.data.map((item) => {
+    //     item.createAt = this.$common._formatDates(item.createAt);
+    //     item.updateAt = this.$common._formatDates(item.updateAt);
+    //     item.campusPoolTime = this.$common._formatDates(item.campusPoolTime);
+    //     item.recentFeedbackTime = this.$common._formatDates(item.recentFeedbackTime);
+    //     // item.phone = this.$common.hidePhone(item.phone);
+    //     item.enquireClassOne =
+    //       item.enquireClassOne &&
+    //       item.enquireClassOne.map((item) => item.name).join(",");
+    //     return item;
+    //   });
+    //   this.pageConfig.totalCount = res.data.count;
+    // });
+    // },
     handleAddClass() {
       console.log(77);
     },
@@ -967,7 +1038,7 @@ export default {
       this.addVisible = true;
       // TODO 编辑
     },
-    handleDelete(row) {
+    handleDelete() {
       let info = "";
       this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
         confirmButtonText: "确定",
