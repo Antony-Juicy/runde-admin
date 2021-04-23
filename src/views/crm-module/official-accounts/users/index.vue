@@ -27,52 +27,19 @@
 
 		<!-- 表格主体 -->
     <div class="el-form">
-      <el-table :data="list" style="width: 100%">
-        <el-table-column prop="date" label="用户昵称" width="180">
-          <template slot-scope="scope">
-            <div class="form">
-              <img class="form-avatar" :src="scope.row.headimgurl">
-              <p class="form-text">{{scope.row.nickName}}</p>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column prop="name" label="微信ID" width="280">
-          <template slot-scope="scope">
-            <div class="form">
-              <p class="form-text">{{scope.row.openId}}</p>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="用户标签">
-          <template slot-scope="scope">
-            <div class="form form-label-list" v-if="scope.row.wechatUserTagModel.length">
-              <p class="form-label" v-for="item in scope.row.wechatUserTagModel" :key="item.id">{{item.labelName}}</p>
-            </div>
-            <div class="form" v-else>
-              <p class="form-label" style="border:none;">无标签</p>
-            </div>
-          </template>
-        </el-table-column>
-        <!-- <el-table-column prop="address" label="关联老师">
-          <div class="form">
-            <p class="form-text">某某某（422880）</p>
+			<rd-table :tableData="list" :tableKey="tableKey" :pageConfig.sync="pageConfig" @pageChange="pageChange">
+				<template slot="label" slot-scope="scope">
+          <div class="el-form-list">
+					  <span class="el-form-label" v-for="item in scope.row.wechatUserTagModel">{{item.labelName}}</span>
           </div>
-        </el-table-column> -->
-        <el-table-column label="操作" width="300">
-          <template slot-scope="scope">
-            <div class="form">
-              <p class="form-edit" @click="edit(scope.row)">修改标签</p>
-            </div>
-          </template>
-        </el-table-column>
-      </el-table>
-        
-      <div class="pages">
-        <Pagination :total="total" @pagination="changepageNum" :layout="'total, prev, pager, next'" />
-      </div>
-    
+				</template>
+				<template slot="edit" slot-scope="scope">
+					<el-button @click="handleEdit(scope.row)" type="text" size="small">修改标签</el-button>
+				</template>
+			</rd-table>
     </div>
 
+    <!-- 修改标签 -->
     <el-dialog  :visible.sync="outerVisible" :show-close="false">
       <div style="background:#fff">
       <div class="label-title">
@@ -113,11 +80,6 @@ export default {
 
   data() {
     return {
-      list:[],
-      pageNum:1,
-      hasNext:true,
-      total:0,
-      pageSize:10,
       searchForm:{},
       labelList:[],
       formOptions: [
@@ -139,10 +101,47 @@ export default {
       ],
       outerVisible:false,
       labelOpenId:'',
+
+      // 表格数据
+      list: [],
+			tableKey: [
+				{
+					name: "用户昵称",
+					value: "nickName",
+					width: 130
+				},
+				{
+					name: "微信ID",
+					value: "openId",
+					width: 250
+				},
+				{
+					name: "用户标签",
+					value: "label",
+					operate: true,
+				},
+				// {
+				// 	name: "关联老师ID",
+				// 	value: "labelTypeZH",
+				// },
+				{
+					name: "操作",
+					value: "edit",
+					operate: true,
+					width: 180
+				},
+			],
+			pageConfig: {
+				totalCount: 0,
+				pageNum: 1,
+				pageSize: 10,
+			},
       
+      //公众号菜单
 			officialAccounts: [],
 			account: {},
 			label: {},
+      
     }
   },
 
@@ -159,10 +158,10 @@ export default {
 
     //获取表格数据
 		async getTableData() {
-      this.list = [];
+      this.tableData = [];
       let postData = {
-        pageNum:this.pageNum,
-        pageSize:this.pageSize,
+        pageNum:this.pageConfig.pageNum,
+        pageSize:this.pageConfig.pageSize,
         appId:this.account.appId
       }
 			let res = await this.$fetch(
@@ -173,7 +172,7 @@ export default {
         }
 			);
       this.list = res.data.records;
-      this.total = res.data.totalCount;
+      this.pageConfig.totalCount = res.data.totalCount;
 		},
 
     //获取标签数组
@@ -192,9 +191,10 @@ export default {
 			this.account = this.officialAccounts[index];
 		},
 
-    changepageNum(e){
-      this.pageNum = e.page;
-      this.getTableData();
+    pageChange(e){
+			this.pageConfig.pageNum = e.page;
+			this.pageConfig.pageSize = e.limit;
+			this.getTableData();
     },
 
     onSearch(data){
@@ -219,7 +219,7 @@ export default {
     },
 
     //修改标签
-    async edit(row){
+    async handleEdit(row){
       await this.getLabel();
       if(!this.labelList.length){
         this.$message('暂无标签');
@@ -256,18 +256,20 @@ export default {
           wechatUserTagModel.push(item);
         }
       })
+      let postData = {};
+      if(label.length){
+        postData.userTagAddListRequest = JSON.stringify(label);
+      }
       let res = await this.$fetch(
 				"update_label",
-        {
-          userTagAddListRequest:JSON.stringify(label),
-        }
+        postData
 			);
       if(res.code == 200){
         let item = this.list[index];
         item.wechatUserTagModel = wechatUserTagModel;
         this.$set(this.list,index,item);
         this.$message({
-          message: '恭喜你，这是一条成功消息',
+          message: res.msg,
           type: 'success'
         });
       }else{
@@ -327,7 +329,7 @@ export default {
   }
 }
 .select-accoumt div{
-  width: 150px;
+  min-width: 150px;
   overflow:hidden;
   text-overflow:ellipsis; 
   white-space:nowrap;
@@ -337,7 +339,7 @@ export default {
 	align-items: center;
 	cursor: pointer;
 	padding: 4px 4px;
-  width: 150px;
+  min-width: 150px;
   overflow:hidden;
   text-overflow:ellipsis; 
   white-space:nowrap;
@@ -354,44 +356,20 @@ export default {
 .el-form{
   // width: 100%;
   height: 100%;
-  padding:0 20px;
+  padding:20px;
   box-sizing: border-box;
   background:#fff;
 }
-.form{
-  display: flex;
-  align-items: center;
+.el-form-list{
+  padding:3px 0;
 }
-.form-avatar{
-  width: 30px;
-  height: 30px;
-  margin-right: 10px;
-}
-.form-text{
-  font-size: 14px;
-  color:#333;
-}
-.form-label{
-  display:inline-block ;
-  padding:3px 5px;
-  font-size: 14px;
-  border: 1px solid #333;
-  margin-right: 10px;
+.el-form-label{
+  padding:1px 3px;
   color:#2C9EFF;
-  border: 1px solid #2C9EFF;
-}
-.form-label:nth-last-child(1){
-  margin-right: 0;
-}
-.form-label-list{
-  display: flex;
-  flex-wrap: wrap;
-  margin-bottom:0  !important;
-}
-.form-edit{
-  font-size: 14px;
-  color:#006FFF;
-  cursor:pointer;
+  border:1px solid #2C9EFF;
+  margin:0 5px 5px 0;
+  display: inline-block;
+  font-size: 12px;
 }
 .pages{
   padding:30px 0 70px 0;
