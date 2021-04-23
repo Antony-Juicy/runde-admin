@@ -18,6 +18,11 @@
           @pageChange="pageChange"
           :emptyText="emptyText"
         >
+          <template slot="projectName" slot-scope="scope">
+            <el-button @click="detailVisible = true" type="text" size="small">{{
+              scope.row.projectName
+            }}</el-button>
+          </template>
           <template slot="edit" slot-scope="scope">
             <el-button @click="handleEdit(scope.row)" type="text" size="medium">
               编辑
@@ -60,18 +65,36 @@
         >
       </div>
     </rd-dialog>
+    <!-- 添加弹窗 -->
+    <fullDialog
+      v-model="detailVisible"
+      title="医师"
+      @change="detailVisible = false"
+    >
+      <subjectRecord
+        ref="subjectRecord"
+        @close="detailVisible = false"
+        v-if="detailVisible"
+        :id="detailId"
+      />
+    </fullDialog>
   </div>
 </template>
 
 <script>
 import RdForm from "@/components/RdForm";
+import fullDialog from "@/components/FullDialog";
+import subjectRecord from "./subject";
 export default {
   name: "project-manage",
   components: {
     RdForm,
+    fullDialog,
+    subjectRecord,
   },
   data() {
     return {
+      detailId: "",
       editId: "",
       emptyText: "暂无数据",
       dataForm: {
@@ -112,7 +135,7 @@ export default {
       ],
       tableKey: [
         { name: "id", value: "id" },
-        { name: "项目名", value: "projectName" },
+        { name: "项目名", value: "projectName", operate: true },
         { name: "技能考试时间", value: "tecTime" },
         { name: "理论考试时间", value: "TheoryTestTime" },
         { name: "关课时间", value: "closeTime" },
@@ -179,49 +202,45 @@ export default {
         },
       ],
       addRules: {
-         project: [
-          { required: true, message: "请输入", trigger: "blur" },
-        ],
-         projectNum: [
-          { required: true, message: "请输入", trigger: "blur" },
-        ],
+        project: [{ required: true, message: "请输入", trigger: "blur" }],
+        projectNum: [{ required: true, message: "请输入", trigger: "blur" }],
         //  describe: [
         //   { required: true, message: "请输入", trigger: "blur" },
         // ],
-         status: [
-          { required: true, message: "请选择", trigger: "blur" },
-        ],
-         oneCategories: [
-          { required: true, message: "请选择", trigger: "blur" },
-        ],
-        twoCategories: [
-          { required: true, message: "请选择", trigger: "blur" },
-        ]
+        status: [{ required: true, message: "请选择", trigger: "blur" }],
+        oneCategories: [{ required: true, message: "请选择", trigger: "blur" }],
+        twoCategories: [{ required: true, message: "请选择", trigger: "blur" }],
       },
+      detailVisible: false,
     };
   },
   mounted() {
     this.getTableData();
   },
   methods: {
+    refresh() {},
     handleAddClass(formName) {
-        this.$refs[formName].validate((valid, formData) => {
-        if(valid){
+      this.$refs[formName].validate((valid, formData) => {
+        if (valid) {
           console.log(formData, "添加");
           //TODO
-          this.$fetch(this.addStatus?"secretexamsubject_add":"secretexamsubject_editJsp",{
-            ...formData,
-            time:"",
-            startTime: formData.time?formData.time[0]:"",
-            endTime: formData.time?formData.time[1]:"",
-            id: this.addStatus?"": this.editId
-          }).then(res =>{ 
-            this.$message.success("操作成功")
+          this.$fetch(
+            this.addStatus
+              ? "secretexamsubject_add"
+              : "secretexamsubject_editJsp",
+            {
+              ...formData,
+              time: "",
+              startTime: formData.time ? formData.time[0] : "",
+              endTime: formData.time ? formData.time[1] : "",
+              id: this.addStatus ? "" : this.editId,
+            }
+          ).then((res) => {
+            this.$message.success("操作成功");
             this.distributeVisible = false;
             this.getTableData();
-          })
+          });
         }
-          
       });
     },
     onSearch(val) {
@@ -244,6 +263,7 @@ export default {
         this.pageConfig.totalCount = res.data.count;
       });
     },
+    handleEnter() {},
     handleAdd() {
       this.distributeVisible = true;
       this.addStatus = true;
@@ -252,13 +272,13 @@ export default {
       this.addStatus = false;
       this.distributeVisible = true;
       this.editId = data.id;
-      //TODO 
+      //TODO
       this.$fetch("secretexamsubject_goEdit", {
         id: data.id,
       }).then((res) => {
         this.addFormOptions.forEach((item) => {
-          if(item.prop != "describe"){
-             item.initValue = data[item.prop];
+          if (item.prop != "describe") {
+            item.initValue = data[item.prop];
           }
           // item.initValue = res.data.pd[item.prop];
         });

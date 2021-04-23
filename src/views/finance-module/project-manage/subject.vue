@@ -6,7 +6,7 @@
       @onSearch="onSearch"
     ></search-form>
     <div class="w-container mt-15">
-      <el-button type="primary" size="small" @click="handleAdd"> 
+      <el-button type="primary" size="small" @click="handleAdd">
         +添加科目</el-button
       >
       <div class="mt-15">
@@ -18,7 +18,7 @@
           @pageChange="pageChange"
         >
           <template slot="edit" slot-scope="scope">
-            <el-button @click="handleEdit()" type="text" size="medium">
+            <el-button @click="handleEdit(scope.row)" type="text" size="medium">
               编辑
             </el-button>
           </template>
@@ -27,11 +27,12 @@
     </div>
     <!-- 添加弹窗 -->
     <rd-dialog
-      title="添加科目"
-      :dialogVisible="distributeVisible"
+      :title="addStatus ? '添加科目' : '编辑科目'"
+      :dialogVisible="addVisible"
       :showFooter="false"
       :width="'990px'"
-      @handleClose="distributeVisible = false"
+      appendToBody
+      @handleClose="addVisible = false"
     >
       <RdForm
         :formOptions="addFormOptions"
@@ -68,7 +69,7 @@
           type="primary"
           size="small"
           :loading="btnLoading"
-          @click="handleAddClass"
+          @click="handleAddClass('dataForm3')"
           v-prevent-re-click="2000"
           >添加</el-button
         >
@@ -87,7 +88,8 @@ export default {
   data() {
     return {
       startDateDisabled: {},
-      distributeVisible: false,
+      addVisible: false,
+      addStatus: true,
       btnLoading: false,
       showNum: 2,
       searchForm: {},
@@ -221,9 +223,7 @@ export default {
           options: [],
         },
       ],
-      addRules: {
-    
-      },
+      addRules: {},
       basicInfo: {
         endTime: "",
         checked1: false,
@@ -244,10 +244,53 @@ export default {
     this.getTableData();
   },
   methods: {
-    handleAddClass() {
-    },  
-    handleAdd() {  
-      this.distributeVisible = true;
+    handleEdit(data) {
+      //TODO
+      console.log(77555);
+      this.addStatus = false;
+      this.addVisible = true;
+      //TODO
+      this.$fetch("secretexamsubject_goEdit", {
+        id: data.id,
+      }).then((res) => {
+        this.addFormOptions.forEach((item) => {
+          // if (item.prop != "describe") {
+          //   item.initValue = data[item.prop];
+          // }
+          // item.initValue = res.data.pd[item.prop];
+        });
+        this.$refs.dataForm3.addInitValue();
+        console.log(this.addFormOptions, "this.addFormOptions---");
+      });
+    },
+    handleAddClass(formName) {
+      //TODO
+      this.$refs[formName].validate((valid, formData) => {
+        if (valid) {
+          console.log(formData, "添加");
+          //TODO
+          this.$fetch(
+            this.addStatus
+              ? "secretexamsubject_add"
+              : "secretexamsubject_editJsp",
+            {
+              ...formData,
+              time: "",
+              startTime: formData.time ? formData.time[0] : "",
+              endTime: formData.time ? formData.time[1] : "",
+              id: this.addStatus ? "" : this.editId,
+            }
+          ).then((res) => {
+            this.$message.success("操作成功");
+            this.distributeVisible = false;
+            this.getTableData();
+          });
+        }
+      });
+    },
+    handleAdd() {
+      this.addVisible = true;
+      this.addStatus = true;
     },
     onSearch(val) {
       this.searchForm = {
@@ -268,7 +311,6 @@ export default {
       //   this.pageConfig.totalCount = res.data.count;
       // });
     },
-    handleEdit() {},
     pageChange(val) {
       console.log(val, "pagechange");
       this.pageConfig.currentPage = val.page;
