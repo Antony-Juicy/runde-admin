@@ -212,8 +212,8 @@ const $fetch = async (apiName, params, config) => {
   }
 
   if (getToken()) {
-    // newConfig.headers["Authorization"] = getToken();
-    newConfig.headers["Authorization"] = process.env.NODE_ENV == 'development' ? 'rd_superadmin' : getToken();
+    newConfig.headers["Authorization"] = getToken();
+    // newConfig.headers["Authorization"] = process.env.NODE_ENV == 'development' ? 'rd_superadmin' : getToken();
   }
 
   if (paramType == "body") {

@@ -11,7 +11,7 @@ export default {
     // 微信公众号添加标签
     add_official_accounts_label: { url: '/wechat/console/wechat_label/add', method: 'post' },
 
-    // 微信公众号添加标签
+    // 微信公众号添加修改
     update_official_accounts_label: { url: '/wechat/console/wechat_label/update', method: 'post' },
 
 

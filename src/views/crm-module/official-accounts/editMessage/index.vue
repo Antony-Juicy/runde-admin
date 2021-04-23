@@ -98,6 +98,7 @@ export default {
 					break;
 				}
 			}
+			data.msgName = this.msgName
 			data.appId = this.account.appId
 			data.appSecret = this.account.appSecret
 			this.$emit("msgForm", data)
