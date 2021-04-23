@@ -3,11 +3,11 @@
 		<div class="form-line">
 			<div class="label">图文消息：</div>
 			<div>
-				<el-button @click="addEditVisible = true" size="small">添加图文链接</el-button>
-				<SelectPop style="width:auto;display:inline-block" v-bind="SelectPopOptions">
+				<el-button @click="addEditVisible = true" size="small" style="margin-right:10px">添加图文链接</el-button>
+				<SelectPop style="width:auto;display:inline-block" v-bind="SelectPopOptions" @select="handle_select">
 					<el-button size="small">从素材库导入</el-button>
 					<template slot="thumb_url" slot-scope="scope">
-						<el-image style="width: 100px; height: 100px" :src="scope.row.appImg" fit="contain"></el-image>
+						<el-image style="width: 100px; height: 100px" :src="scope.row.thumb_url" fit="contain"></el-image>
 					</template>
 				</SelectPop>
 
@@ -91,20 +91,26 @@ export default {
 						{
 							name: "封面图",
 							value: "thumb_url",
-							width: 100
+							width: 100,
+							operate: true,
 						},
 						{
-							name: "标签名称",
-							value: "labelName",
+							name: "标题",
+							value: "title",
 						},
 						{
-							name: "标签类型",
-							value: "labelTypeZH",
+							name: "描述",
+							value: "digest",
 						},
 					],
 					transItem: (item) => {
-						item.labelTypeZH = item.labelType == '0' ? '系统标签' : '自定义标签'
-						return item
+						return {
+							thumb_url: item.content.news_item[0].thumb_url.replace('http://mmbiz.qpic.cn', 'https://mmbiz.qlogo.cn'), // 投机一把 看看情况
+							thumb_url_t: item.content.news_item[0].thumb_url,
+							title: item.content.news_item[0].title,
+							digest: item.content.news_item[0].digest,
+							url: item.content.news_item[0].url,
+						}
 					}
 				}
 			}
@@ -200,6 +206,17 @@ export default {
 		handle_uploadFinish() {
 			this.msgForm.picurl_t = this.msgForm.picurl
 			this.emitForm()
+		},
+		handle_select(data) {
+			// 选择素材
+			this.msgForm = {
+				title: data.title,
+				picurl: data.thumb_url,
+				picurl_t: data.thumb_url_t,
+				description: data.digest,
+				url: data.url
+			}
+			this.$refs.likeInput.innerHTML = this.msgForm.title
 		},
 		emitForm() {
 			this.$emit('msgData', this.msgForm)

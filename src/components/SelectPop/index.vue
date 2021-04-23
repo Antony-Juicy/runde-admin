@@ -6,7 +6,7 @@
 			<el-table :data="tableData" v-loading="tableLoad">
 				<template v-for="(item,index) in tableObj.tableKey">
 					<el-table-column v-if="!item.operate" :prop="item.value" :label="item.name" :width="item.width" :key="index"></el-table-column>
-					<el-table-column v-else :key="index">
+					<el-table-column v-else :key="index" :label="item.name">
 						<template slot-scope="scope">
 							<slot :name="item.value" :row="scope.row"></slot>
 						</template>
@@ -100,7 +100,7 @@ export default {
 				this.pageConfig.hasNext = res.data.item_count + this.tableData.length < res.data.total_count
 			}
 			if (typeof this.tableObj.transItem == 'function') {
-				data.map(v => {
+				data = data.map(v => {
 					return this.tableObj.transItem(v)
 				})
 			}

@@ -22,7 +22,7 @@
 				<miniprogrampage v-show="msgtype == 'miniprogrampage'" @msgData='handle_msgData'></miniprogrampage>
 			</div>
 			<div class="right">
-				<likePhone :mode="msgtype" :cardData="cardData[msgtype]" :accountName="account.appName"></likePhone>
+				<likePhone :mode="msgtype" :cardData="cardData[msgtype]" :accountLogo="account.appImg" :accountName="account.appName"></likePhone>
 			</div>
 
 		</div>
@@ -68,7 +68,35 @@ export default {
 			this.emitForm()
 		},
 		emitForm() {
-			this.$emit("msgForm", this.cardData[this.msgtype])
+			let data = {}
+			switch (this.msgtype) {
+				case 'text': {
+					data.content = this.cardData.text.content
+					data.description = this.cardData.text.content
+					data.url = this.cardData.text.url
+					data.msgType = 'text'
+					break;
+				}
+				case 'image': {
+					data.mediaId = this.cardData.image.picurl
+					data.msgType = 'image'
+					break;
+				}
+				case 'mpnews': {
+					data.title = this.cardData.mpnews.title
+					data.picurl = this.cardData.mpnews.picurl_t
+					data.description = this.cardData.mpnews.description
+					data.msgType = 'news'
+					break;
+				}
+				case 'miniprogrampage': {
+					// 暂时不知道小程序的结构是怎样的
+					break;
+				}
+			}
+			data.appId = this.account.appId
+			data.appSecret = this.account.appSecret
+			this.$emit("msgForm", data)
 		}
 	},
 	mounted() {
