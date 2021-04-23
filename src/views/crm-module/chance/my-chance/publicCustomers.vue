@@ -452,7 +452,7 @@ export default {
       ],
       invalidRules: {
         invalidReason: [
-          { required: true, message: "请选择失效原因", trigger: "blur" },
+          { required: true, message: "请选择失效原因", trigger: "change" },
         ],
          remark: [
           { required: true, message: "请输入备注", trigger: "blur" },

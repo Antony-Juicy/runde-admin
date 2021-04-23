@@ -476,7 +476,6 @@ export default {
       this.getSubjectList(enquireProductIdOne);
       this.getCourseList(enquireSubjectIdOne);
       this.getClassList(enquireSubjectIdOne);
-      console.log(enquireClassOne,'enquireClassOne')
       this.basicInfo2 = {
         saleSource,
         labelInfoName,

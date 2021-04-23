@@ -72,7 +72,7 @@ export default {
     handleChange(file, fileList) {
       this.importFile = file.raw;
       this.$emit("update:file",file.raw);
-
+      this.$emit("change",file.raw)
     },
      // 导入上传之前的文件格式校验
     beforeAvatarUpload(file) {

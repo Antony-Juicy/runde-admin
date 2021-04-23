@@ -137,11 +137,21 @@ export default {
         if (v.initValue !== undefined) {
           obj[v.prop] = v.initValue;
         }
+        if(v.multiple){
+           obj[v.prop] = [];
+        }
       });
       this.formData = obj;
+    },
+
+    // 给表单的任意一个赋值
+    setValue(obj){
+      this.formData = {
+        ...this.formData,
+        ...obj
+      }
     }
   },
-
   computed: {
     newKeys() {
       return this.formOptions.map((v) => {

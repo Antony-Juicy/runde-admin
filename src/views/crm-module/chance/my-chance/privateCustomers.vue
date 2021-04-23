@@ -99,58 +99,6 @@
       @submitForm="submitAddForm('dataForm3')"
     >
       <RdForm :formOptions="addFormOptions" :rules="addRules" ref="dataForm3" v-if="addVisible">
-        <template slot="product">
-          <el-select
-            v-model="productId"
-            placeholder="请选择"
-            size="small"
-            @change="productChange"
-            filterable
-          >
-            <el-option
-              v-for="item in productArr"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
-        </template>
-        <template slot="subject">
-          <el-select
-            v-model="subjectId"
-            placeholder="请选择"
-            size="small"
-            @change="subjectChange"
-            filterable
-          >
-            <el-option
-              v-for="item in subjectArr"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
-        </template>
-        <template slot="class">
-          <el-select
-            v-model="classId"
-            placeholder="请选择"
-            size="small"
-            multiple
-            filterable
-            @change="testData"
-          >
-            <el-option
-              v-for="item in classArr"
-              :key="item.value"
-              :label="item.name"
-              :value="item"
-            >
-            </el-option>
-          </el-select>
-        </template>
       </RdForm>
     </rd-dialog>
 
@@ -165,64 +113,12 @@
         :formOptions="importFormOptions"
         :rules="importRules"
         ref="dataForm4"
-        
       >
-        <template slot="campusId">
-          <el-select v-model="importCampusId" placeholder="请选择" filterable>
-            <el-option
-              v-for="item in campusArr"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
-        </template>
-        <template slot="productOne">
-          <el-select
-            v-model="productOne"
-            placeholder="请选择"
-            filterable
-            @change="importProductChange"
-          >
-            <el-option
-              v-for="item in productArr"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
-        </template>
-        <template slot="subjectOne">
-          <el-select v-model="subjectOne" placeholder="请选择">
-            <el-option
-              v-for="item in importSubjectArr"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
-        </template>
         <template slot="temp">
           <el-button size="small" type="primary" @click="downloadTemp">点击下载模板</el-button>
         </template>
         <template slot="file">
-          <el-upload
-            class="upload-demo"
-            action="#"
-            :before-remove="beforeRemove"
-            :limit="1"
-            :on-exceed="handleExceed"
-            :on-change="handleChange"
-            :file-list="fileList"
-            :before-upload="beforeAvatarUpload"
-            :auto-upload="false"
-            accept=".xls, .xlsx"
-          >
-            <el-button size="small" type="primary">点击上传</el-button>
-          </el-upload>
+          <uploadFile :file.sync="importFile" @change="fileChange"/>
         </template>
         <template slot="tips">
           <span style="color: red"
@@ -262,8 +158,8 @@
 let id = 0;
 import rdDrawer from "@/components/RdDrawer";
 import RdForm from "@/components/RdForm";
-import Fetch from "@/utils/fetch";
 import Common from "@/utils/common";
+import uploadFile from '@/components/Activity/uploadFile';
 export default {
   name: "temp",
   data() {
@@ -501,7 +397,7 @@ export default {
       ],
       invalidRules: {
         invalidReason: [
-          { required: true, message: "请选择失效原因", trigger: "blur" },
+          { required: true, message: "请选择失效原因", trigger: "change" },
         ],
         remark: [{ required: true, message: "请输入备注", trigger: "blur" }],
       },
@@ -540,42 +436,43 @@ export default {
           label: "销售来源",
         },
         {
-          prop: "product",
+          prop: "productId",
           element: "el-select",
           placeholder: "请选择咨询项目",
           label: "咨询项目",
-          operate: true,
-          initValue: 0,
+          options: [],
+          events: {}
         },
         {
-          prop: "subject",
+          prop: "subjectId",
           element: "el-select",
           placeholder: "请选择咨询科目",
           label: "咨询科目",
-          operate: true,
-          initValue: 0,
+          options: [],
+          events: {}
         },
         {
-          prop: "class",
+          prop: "classId",
           element: "el-select",
           placeholder: "请选择咨询班型",
           label: "咨询班型",
-          operate: true,
-          initValue: 0,
+          multiple: true,
+          options: [],
+          events: {}
         },
       ],
       addRules: {
-        campusId: [{ required: true, message: "请选择", trigger: "blur" }],
+        campusId: [{ required: true, message: "请选择", trigger: "change" }],
         studentName: [{ required: true, message: "请输入", trigger: "blur" }],
         phone: [
           { required: true, message: "请输入", trigger: "blur" },
           { validator: Common._validatorPhone, trigger: "blur" },
         ],
-        eduBackground: [{ required: true, message: "请选择", trigger: "blur" }],
-        saleSource: [{ required: true, message: "请选择", trigger: "blur" }],
-        product: [{ required: true, message: "请选择", trigger: "blur" }],
-        subject: [{ required: true, message: "请选择", trigger: "blur" }],
-        class: [{ required: true, message: "请选择", trigger: "blur" }],
+        eduBackground: [{ required: true, message: "请选择", trigger: "change" }],
+        saleSource: [{ required: true, message: "请选择", trigger: "change" }],
+        productId: [{ required: true, message: "请选择", trigger: "change" }],
+        subjectId: [{ required: true, message: "请选择", trigger: "change" }],
+        classId: [{ type:"array", required: true, message: "请选择", trigger: ['blur', 'change'] }],
       },
       subjectArr: [],
       subjectId: "",
@@ -596,24 +493,24 @@ export default {
           element: "el-select",
           placeholder: "校区名(所属组织)",
           label: "就近校区",
-          operate: true,
-          initValue: 0,
+           options: [],
+           filterable: true
         },
         {
           prop: "productOne",
           element: "el-select",
           placeholder: "请选择",
           label: "咨询项目一",
-          operate: true,
-          initValue: 0,
+          options: [],
+          events: {}
         },
         {
           prop: "subjectOne",
           element: "el-select",
           placeholder: "请选择",
           label: "咨询科目一",
-          operate: true,
-          initValue: 0,
+          options: [],
+          events: {}
         },
         {
           prop: "temp",
@@ -638,10 +535,10 @@ export default {
         },
       ],
       importRules: {
-        campusId: [{ required: true, message: "请选择", trigger: "blur" }],
-        productOne: [{ required: true, message: "请选择", trigger: "blur" }],
-        subjectOne: [{ required: true, message: "请选择", trigger: "blur" }],
-        file: [{ required: true, message: "请选择", trigger: "blur" }],
+        campusId: [{ required: true, message: "请选择", trigger: "change" }],
+        productOne: [{ required: true, message: "请选择", trigger: "change" }],
+        subjectOne: [{ required: true, message: "请选择", trigger: "change" }],
+        file: [{ required: true, message: "请选择", trigger: "change" }],
       },
       importFile: "",
 
@@ -665,6 +562,7 @@ export default {
   components: {
     rdDrawer,
     RdForm,
+    uploadFile
   },
   props: {
     newFormOptions: {
@@ -686,9 +584,6 @@ export default {
     },
   },
   methods: {
-    testData(val) {
-      console.log(val,'val----')
-    },
     importProductChange(val) {
       this.$fetch("chance_subject_list", {
         enquireProductIdOne: val,
@@ -704,6 +599,7 @@ export default {
           }));
         }
         this.importSubjectArr = nodes;
+        this.importFormOptions[2].options = nodes;
         this.subjectOne = "";
       });
     },
@@ -721,6 +617,17 @@ export default {
             label: item.subjectName,
           }));
         }
+        this.addFormOptions[6].options = nodes;
+        this.addFormOptions[6].initValue = "";
+        this.addFormOptions[6].events = {
+          change: this.subjectChange
+        };
+        this.$refs.dataForm3.setValue({
+          subjectId: ''
+        })
+         this.$refs.dataForm3.setValue({
+          classId: []
+        })
         this.subjectArr = nodes;
         this.subjectId = "";
       });
@@ -736,10 +643,14 @@ export default {
           let data = JSON.parse(res.msg);
           nodes = data.map((item) => ({
             value: item.id,
-            name: item.className,
+            label: item.className,
           }));
         }
+        this.addFormOptions[7].options = nodes;
         this.classArr = nodes;
+        this.$refs.dataForm3.setValue({
+          classId: []
+        });
         this.classId = [];
       });
     },
@@ -752,6 +663,7 @@ export default {
           value: item.id,
           nature: item.campusNature,
         }));
+        this.importFormOptions[0].options = campusOptions;
         this.addFormOptions[0].options = campusOptions;
         this.addFormOptions[0].filterable = true;
         this.campusArr = campusOptions;
@@ -765,6 +677,14 @@ export default {
           label: item.productName,
         }));
         this.productArr = productOptions;
+        this.importFormOptions[1].options = productOptions;
+        this.importFormOptions[1].events = {
+          change: this.importProductChange
+        };
+        this.addFormOptions[5].options = productOptions;
+        this.addFormOptions[5].events = {
+          change: this.productChange
+        };
       });
     },
     openDrawer(data) {
@@ -804,8 +724,8 @@ export default {
     },
     getCutdown() {
       this.newArr = this.tableData.map((item) => {
-        if (item.createAt) {
-          item.newCutdown = this.$common.showtime(item.createAt);
+        if (item.recoveryTime) {
+          item.newCutdown = this.$common.showCutDown(item.recoveryTime);
         }
         return item;
       });
@@ -978,36 +898,26 @@ export default {
       this.$refs[formName].validate((valid, formData) => {
         if (valid) {
           console.log(formData, "提交");
-          if(!this.productId){
-            this.$message.error("请选择咨询项目")
-            return
-          }
-          if(!this.subjectId){
-            this.$message.error("请选择咨询科目")
-            return
-          }
-          if(!this.classId.length){
-            this.$message.error("请选择咨询班型")
-            return
-          }
-          if(formData.studentName.length > 20){
-            this.$message.error("学员姓名不能超过20个字数")
-            return
-          }
           // campusName enquireProductNameOne enquireSubjectNameOne
+         let arr = [];
+         this.classArr.forEach(item => {
+           let target = formData.classId.find(ele => ele == item.value);
+           if(target){
+             arr.push({
+               name: item.label,
+               val: item.value
+             });
+           }
+         })
           this.$fetch("chance_my_add", {
             ...formData,
-            productId: this.productId,
-            enquireProductIdOne: this.productId,
-            enquireSubjectIdOne: this.subjectId,
-            enquireClassOne: JSON.stringify(this.classId.map(item => ({
-              name: item.name,
-              val: item.value
-            }))),
-            undefined: this.classId.map(item => (item.value)).join(","),
+            enquireProductIdOne: formData.productId,
+            enquireSubjectIdOne: formData.subjectId,
+            enquireClassOne: JSON.stringify(arr),
+            undefined: formData.classId.join(","),
             campusName: this.campusArr.find(item => (item.value == formData.campusId)).label,
-            enquireProductNameOne: this.productArr.find(item => (item.value == this.productId)).label,
-            enquireSubjectNameOne: this.subjectArr.find(item => (item.value == this.subjectId)).label,
+            enquireProductNameOne: this.productArr.find(item => (item.value == formData.productId)).label,
+            enquireSubjectNameOne: this.subjectArr.find(item => (item.value == formData.subjectId)).label,
           }).then((res) => {
             if (res.code == 200) {
               this.$message.success("添加成功");
@@ -1029,30 +939,18 @@ export default {
     submitImportForm(formName) {
       this.$refs[formName].validate((valid, formData) => {
         if (valid) {
-          if(!this.importCampusId){
-            this.$message.warning("请选择校区");
-            return;
-          }
-          if(!this.productOne){
-            this.$message.warning("请选择项目");
-            return;
-          }
-          if(!this.subjectOne){
-            this.$message.warning("请选择科目");
-            return;
-          }
           if(!this.importFile){
-            this.$message.warning("请上传文件");
-            return;
+            this.$message.error("请上传文件")
+            return
           }
           let obj = new FormData();
           obj.append("file", this.importFile);
-          obj.append("campusId", this.importCampusId);
-          obj.append("campusName", this.campusArr.find(item => (item.value == this.importCampusId)).label);
-          obj.append("enquireProductIdOne", this.productOne);
-          obj.append("enquireProductNameOne", this.productArr.find(item => (item.value == this.productOne)).label);
-          obj.append("enquireSubjectIdOne", this.subjectOne);
-          obj.append("enquireSubjectNameOne", this.importSubjectArr.find(item => (item.value == this.subjectOne)).label);
+          obj.append("campusId", formData.campusId);
+          obj.append("campusName", this.campusArr.find(item => (item.value == formData.campusId)).label);
+          obj.append("enquireProductIdOne", formData.productOne);
+          obj.append("enquireProductNameOne", this.productArr.find(item => (item.value == formData.productOne)).label);
+          obj.append("enquireSubjectIdOne", formData.subjectOne);
+          obj.append("enquireSubjectNameOne", this.importSubjectArr.find(item => (item.value == formData.subjectOne)).label);
           this.$fetch("chance_my_import", obj).then((res) => {
             if(res.code == 200){
               this.$message.success("操作成功")
@@ -1106,22 +1004,13 @@ export default {
       });
     },
 
-    // 上传文件
-    handleExceed(files, fileList) {
-      this.$message.warning(
-        `当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${
-          files.length + fileList.length
-        } 个文件`
-      );
-    },
-    beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${file.name}？`);
-    },
-    handleChange(file, fileList) {
-      this.importFile = file.raw;
-    },
     downloadTemp(){
       window.location.href = "/temp/opportunity_import.xlsx"
+    },
+    fileChange(){
+      this.$refs['dataForm4'].validateField("importFile",(errorMessage)=> {
+        console.log(errorMessage,'errorMessage')
+      })
     }
   },
 };
