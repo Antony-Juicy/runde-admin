@@ -1,7 +1,23 @@
 <template>
 	<div class='formwork-container'>
 		<!-- 搜索栏 -->
-		<search-form v-if="formOptions.length > 0" ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch"></search-form>
+		<el-dropdown ref="accountOption" trigger="click" placement="bottom-start">
+			<div class="select-accoumt">
+				<img class="logo" :src='account.appImg'>
+				<div>{{account.appName}}</div>
+				<i class="el-icon-arrow-down el-icon--right"></i>
+			</div>
+			<el-dropdown-menu slot="dropdown">
+				<el-dropdown-item v-for="(item,index) in officialAccounts" :key="index">
+					<div class="account-option" @click="handle_select_account(item)">
+						<img :src="item.appImg" class="logo">
+						<span>{{ item.appName }}</span>
+					</div>
+				</el-dropdown-item>
+			</el-dropdown-menu>
+			
+		</el-dropdown>
+		<search-form ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch" @onReset="onReset"></search-form>
 		<!-- 表格主体 -->
 		<div class="w-container">
 			<rd-table :tableData="tableData" :tableKey="tableKey" :pageConfig.sync="pageConfig" @pageChange="pageChange">
@@ -12,8 +28,7 @@
 		</div>
 
 		<rd-dialog :title="'模板通知'" :dialogVisible="templateVisible" :showFooter="false" :width="'1200px'" @handleClose="templateVisible = false">
-			<addEditFormwrok :formwork="formwork" v-if="templateVisible" :appName="official_accounts[searchForm.officialAccounts].appName"
-				:appId="official_accounts[searchForm.officialAccounts].appId" :appSecret="official_accounts[searchForm.officialAccounts].appSecret" @refresh="getTableData"
+			<addEditFormwrok :formwork="formwork" v-if="templateVisible" :appName="account.appName" :appId="account.appId" :appSecret="account.appSecret" @refresh="getTableData"
 				@close="templateVisible = false"></addEditFormwrok>
 		</rd-dialog>
 	</div>
@@ -27,6 +42,7 @@ export default {
 	data() {
 		return {
 			formOptions: [
+				{}
 			],
 			tableData: [],
 			tableKey: [
@@ -63,7 +79,8 @@ export default {
 			book: {},
 			markScroll: 0,
 			formwork: {},
-			official_accounts: []
+			officialAccounts: [],
+			account: {}
 		}
 	},
 	methods: {
@@ -72,11 +89,17 @@ export default {
 			this.pageConfig.pageNum = 1;
 			this.getTableData();
 		},
-
+		onReset() {
+			this.account = this.officialAccounts[0];
+			this.searchForm = {};
+		},
+		refresh(val) {
+			this.getTableData({
+				pageNum: val || this.pageConfig.pageNum
+			});
+		},
 		async getTableData(params = {}) {
 			let searchForm = JSON.parse(JSON.stringify(this.searchForm))
-			searchForm.appId = this.official_accounts[this.searchForm.officialAccounts].appId
-			searchForm.app_Secret = this.official_accounts[this.searchForm.officialAccounts].appSecret
 			let res = await this.$fetch(
 				"get_official_accounts_formwrok_list",
 				{
@@ -84,9 +107,10 @@ export default {
 					...this.pageConfig,
 					...searchForm,
 					...params,
+					appId: this.account.appId,
+					appSecret: this.account.appSecret
 				}
 			);
-			// console.log(res)
 			this.tableData = res.data.template_list
 		},
 		handleAdd() {
@@ -101,39 +125,63 @@ export default {
 		},
 		pageChange() {
 
+		},
+		handle_select_account(data) {
+			this.account = data
 		}
 	},
 	async mounted() {
 		let res = await this.$fetch(
 			"get_official_accounts_list",
 		);
-		let official_accounts = {
-			prop: "officialAccounts",
-			element: "el-select",
-			placeholder: "选择公众号",
-			unClearable: true,
-			options: res.data.map((v, i) => {
-				return {
-					label: v.appName,
-					value: i
-				}
-			}),
-			// 需要指定一个公众号，默认就选第一个
-			initValue: 0
-		}
-		this.formOptions.unshift(official_accounts);
-		this.official_accounts = res.data
+		this.officialAccounts = res.data
+		this.account = this.officialAccounts[0]
 		this.$nextTick(() => {
-			this.$refs.searchForm.addInitValue()
-			// 这里是通过模拟search方法，是的searchFrom里面有值
-			this.onSearch({ officialAccounts: 0 })
+			// 把选择公众号的东西放到搜索区
+			document.querySelector('.formwork-container .search-box').insertBefore(this.$refs.accountOption.$el, document.querySelector('.formwork-container .el-form-item'))
 		})
+		// 这里是通过模拟search方法，是的searchFrom里面有值
+		this.onSearch()
 
 	}
 }
 </script>
 
 <style lang='scss' scoped>
+.formwork-container {
+	.select-accoumt {
+		display: flex;
+		align-items: center;
+		background-color: #fff;
+		border-radius: 4px;
+		height: 32px;
+		padding: 0 10px;
+		border: 1px solid #dcdfe6;
+		margin-top: 4px;
+		margin-right: 10px;
+		.logo {
+			height: 20px;
+			width: 20px;
+			margin-right: 10px;
+			object-fit: contain;
+		}
+	}
+}
+.account-option {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	padding: 4px 4px;
+	&:hover {
+		background-color: #f5f7fa;
+	}
+	.logo {
+		width: 40px;
+		height: 40px;
+		object-fit: contain;
+		margin-right: 10px;
+	}
+}
 .formwork-container {
 	/deep/ {
 		.el-input__icon {

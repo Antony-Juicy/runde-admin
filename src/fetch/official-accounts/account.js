@@ -16,9 +16,4 @@ export default {
     // 微信公众号修改
     update_official_account: { url: '/wechat/console/wechat_name/update', method: 'post' },
 
-
-
-
-
-
 }

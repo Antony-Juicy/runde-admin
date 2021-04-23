@@ -22,11 +22,10 @@
 				</RdForm>
 				<div class="btns">
 					<el-button @click="dialog_handleClose">取消</el-button>
-					<el-button v-if="mode=='add'" @click="dialog_handleAdd" type="primary">新增</el-button>
+					<el-button v-if="mode=='add'" @click="dialog_handleAdd" type="primary">保存</el-button>
 					<el-button v-if="mode=='save'" @click="dialog_handleSave" type="primary">保存</el-button>
 				</div>
 			</div>
-
 		</rd-dialog>
 	</div>
 </template>

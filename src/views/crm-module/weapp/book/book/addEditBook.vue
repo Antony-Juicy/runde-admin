@@ -293,6 +293,13 @@ export default {
 						this.$message.error("请选择授课讲师");
 						return;
 					}
+
+					if (!data.activityId) {
+						delete data.activityId
+					}
+					if (!data.staffId) {
+						delete data.staffId
+					}
 					// else if (this.bookTeacherArray.length > 5) {
 					// 	this.$message.error("授课老师不能多于5个");
 					// 	return;
@@ -370,6 +377,14 @@ export default {
 							this.bookTeacherArray.map((v) => JSON.parse(v))
 						)
 					}
+
+					if (!data.activityId) {
+						delete data.activityId
+					}
+					if (!data.staffId) {
+						delete data.staffId
+					}
+					
 					data.bookType = this.bookType
 
 					data.bookId = this.bookId

@@ -5,17 +5,18 @@
 			<div class="select-accoumt">
 				<img class="logo" :src='account.appImg'>
 				<div>{{account.appName}}</div>
+				<i class="el-icon-arrow-down el-icon--right"></i>
 			</div>
 			<el-dropdown-menu slot="dropdown">
-				<el-dropdown-item>
-					<div class="account-option" v-for="(item,index) in officialAccounts" :key="index" @click="handle_select_account(item)">
+				<el-dropdown-item v-for="(item,index) in officialAccounts" :key="index">
+					<div class="account-option" @click="handle_select_account(item)">
 						<img :src="item.appImg" class="logo">
 						<span>{{ item.appName }}</span>
 					</div>
 				</el-dropdown-item>
 			</el-dropdown-menu>
 		</el-dropdown>
-		<search-form ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch"></search-form>
+		<search-form ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch" @onReset="onReset"></search-form>
 		<!-- 表格主体 -->
 		<div class="w-container">
 			<div class="btn-wrapper">
@@ -148,6 +149,10 @@ export default {
 			this.searchForm = { ...data };
 			this.pageConfig.pageNum = 1;
 			this.getTableData();
+		},
+		onReset() {
+			this.account = this.officialAccounts[0];
+			this.searchForm = {};
 		},
 		pageChange(val) {
 			this.pageConfig.pageNum = val.page;
@@ -287,19 +292,16 @@ export default {
 		handle_select_account(data) {
 			this.account = data
 			this.choseAccountVisible = false
-			this.refresh()
 		}
 	},
 	async mounted() {
+		// 把选择公众号的东西放到搜索区
+		document.querySelector('.accountLabel .search-box').insertBefore(this.$refs.accountOption.$el, document.querySelector('.accountLabel .el-form-item'))
 		let res = await this.$fetch(
 			"get_official_accounts_list",
 		);
 		this.officialAccounts = res.data
 		this.account = this.officialAccounts[0]
-		this.$nextTick(() => {
-			// 把选择公众号的东西放到搜索区
-			document.querySelector('.accountLabel .search-box').insertBefore(this.$refs.accountOption.$el, document.querySelector('.accountLabel .el-form-item'))
-		})
 		this.onSearch()
 		// 因为元素层级的原因，要把这个dialog放到body下才能正常显示在遮罩层上面
 		this.dialogId = `accountLabel-dialog-${Date.now()}`

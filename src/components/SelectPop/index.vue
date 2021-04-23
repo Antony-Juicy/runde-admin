@@ -6,6 +6,11 @@
 			<el-table :data="tableData" v-loading="tableLoad">
 				<template v-for="(item,index) in tableObj.tableKey">
 					<el-table-column v-if="!item.operate" :prop="item.value" :label="item.name" :width="item.width" :key="index"></el-table-column>
+					<el-table-column v-else :key="index">
+						<template slot-scope="scope">
+							<slot :name="item.value" :row="scope.row"></slot>
+						</template>
+					</el-table-column>
 				</template>
 				<el-table-column fixed="right" label="操作" width="100">
 					<template slot-scope="scope">
@@ -14,7 +19,7 @@
 				</el-table-column>
 			</el-table>
 		</div>
-		<div slot="reference" class="reference">
+		<div slot="reference" class="reference" @click="load">
 			<slot></slot>
 		</div>
 		<!-- <el-button slot="reference">click 激活</el-button> -->
@@ -63,8 +68,11 @@ export default {
 			this.tableData = JSON.parse(JSON.stringify([]))
 			this.getTableData();
 		},
+		// 使用函数防抖，防止内容加长触发滚动等于在同一时间发起了两次请求
 		async getTableData() {
-
+			if (this.tableLoad) {
+				return
+			}
 			if (!this.pageConfig.hasNext) {
 				return
 			}
@@ -83,19 +91,25 @@ export default {
 					...this.searchObj.params
 				}
 			).catch(() => { this.tableLoad = false })
-
+			let data = []
+			if (res.data.hasOwnProperty('records')) {
+				data = res.data.records
+				this.pageConfig.hasNext = res.data.hasNext
+			} else if (res.data.hasOwnProperty('item')) {
+				data = res.data.item
+				this.pageConfig.hasNext = res.data.item_count + this.tableData.length < res.data.total_count
+			}
 			if (typeof this.tableObj.transItem == 'function') {
-				res.data.records.map(v => {
+				data.map(v => {
 					return this.tableObj.transItem(v)
 				})
 			}
-			this.pageConfig.hasNext = res.data.hasNext
-			// console.log(this.tableData)
-			await this.$common.sleep(1000)
-			this.tableData = this.tableData.concat(res.data.records)
+			this.tableData = this.tableData.concat(data)
 			this.tableLoad = false
 			this.pageConfig.pageNum++
-			// console.log(res)
+		},
+		load() {
+			this.getTableData()
 		}
 	},
 	async created() {
@@ -113,8 +127,28 @@ export default {
 			this.searchObj.formOptions.push(typeId_select);
 			this.$refs.searchForm.addInitValue()
 		}
-		this.getTableData()
 	}
+}
+/**
+ *  函数防抖 设定时间内多次事件一次相应
+ *
+ * @param {Function} fn
+ * @param {number} wait
+ * @returns
+ */
+function debounce(fn, wait) {
+	let timer;
+	return function () {
+		var context = this;
+		var args = arguments;
+		if (timer) {
+			clearTimeout(timer);
+			timer = null;
+		}
+		timer = setTimeout(function () {
+			fn.apply(context, args);
+		}, wait);
+	};
 }
 </script>
 

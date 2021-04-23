@@ -12,7 +12,7 @@
 		</RdForm>
 		<div class="btns">
 			<el-button @click="handle_close">取消</el-button>
-			<el-button v-if="mode=='add'" @click="handle_add" type="primary">新增</el-button>
+			<el-button v-if="mode=='add'" @click="handle_add" type="primary">保存</el-button>
 			<el-button v-if="mode=='save'" @click="handle_save" type="primary">保存</el-button>
 		</div>
 
