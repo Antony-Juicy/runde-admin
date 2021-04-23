@@ -103,9 +103,17 @@
 
 
     <!-- 二维码统计 -->
-		<fullDialog class="accountLabel" :title="'渠道码数据统计'" v-model="staVisible">
+		<fullDialog class="accountLabel" :title="'渠道码数据统计'" v-model="staVisible" @change="staVisible = false">
 			<statistical ref="accountLabel"></statistical>
 		</fullDialog>
+
+
+
+    <div>
+      <input type="text" name="" id="">
+    </div>
+
+
     
   </div>
 
@@ -114,7 +122,7 @@
 
 <script>
 import Pagination from "@/components/Pagination/index.vue";
-import statistical from './components/statistical';
+import statistical from './statistical.vue';
 import fullDialog from "@/components/FullDialog";
 
 export default {
