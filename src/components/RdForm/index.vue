@@ -105,7 +105,7 @@ export default {
   methods: {
     // 校验单个表单
     validateField(props,callback){
-      this.$refs.formRef.validateField(props,callback())
+      this.$refs.formRef.validateField(props,callback&&callback())
     },
     // 校验
     validate(callback) {
