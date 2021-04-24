@@ -1013,9 +1013,7 @@ export default {
       })
       // 文件一上传 就校验该条表单
       setTimeout(() => {
-        this.$refs['dataForm4'].validateField("file",(errorMessage)=> {
-          console.log(errorMessage,'errorMessage')
-        })
+        this.$refs['dataForm4'].validateField("file");
       }, 0);
     },
     fileRemove(){
