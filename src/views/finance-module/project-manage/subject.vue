@@ -41,35 +41,69 @@
         ref="dataForm3"
       >
         <template slot="endTime">
-          <el-form-item>
-            <el-date-picker
-              style="margin-right: 30px"
-              v-model="basicInfo.endTime"
-              type="datetime"
-              placeholder="选择日期时间"
-              :picker-options="startDateDisabled"
-            >
-            </el-date-picker>
-            <el-checkbox v-model="basicInfo.checked1">技能考试</el-checkbox>
-            <el-checkbox v-model="basicInfo.checked2">理论二考</el-checkbox>
-          </el-form-item>
-        </template>
-        <template slot="secondEndTime">
           <el-date-picker
             style="margin-right: 30px"
-            v-model="basicInfo.secondEndTime"
+            v-model="basicInfo.endTime"
             type="datetime"
-            placeholder="关闭课程时间"
+            placeholder="选择日期时间"
+            @change="handleChange('endTime', basicInfo.endTime)"
+            :picker-options="startDateDisabled"
+          >
+          </el-date-picker>
+          <el-checkbox v-model="basicInfo.checked1" @change="handleCheck1"
+            >技能考试</el-checkbox
+          >
+          <el-checkbox v-model="basicInfo.checked2" @change="handleCheck2"
+            >理论二考</el-checkbox
+          >
+        </template>
+        <template slot="secondEndTime" v-if="basicInfo.checked2">
+          <div class="closeSecondTime">
+            <span style="font-weight: bold">
+              <i class="requireTag"></i>理论二考关课时间</span
+            >
+            <el-date-picker
+              style="margin-left: 4px"
+              @change="handleChange('secondEndTime', basicInfo.secondEndTime)"
+              v-model="basicInfo.secondEndTime"
+              type="datetime"
+              placeholder="关闭课程时间"
+              :picker-options="startDateDisabled"
+            ></el-date-picker>
+          </div>
+        </template>
+        <!-- <template slot="tectestTime">
+          <el-date-picker
+             v-if="basicInfo.checked1"
+            style="margin-right: 30px"
+            v-model="basicInfo.tectestTime"
+            type="datetimerange"
+            range-separator="至"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间" 
             :picker-options="startDateDisabled"
           ></el-date-picker>
         </template>
+          <template slot="secondtestTime" >
+          <el-date-picker
+            v-if="basicInfo.checked2"
+            style="margin-right: 30px"
+            v-model="basicInfo.secondtestTime"
+            type="datetimerange"
+            range-separator="至"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间" 
+            :picker-options="startDateDisabled"
+          ></el-date-picker>
+
+        </template> -->
       </RdForm>
       <div class="btn-wrapper" style="text-align: right; margin-top: 20px">
         <el-button
           type="primary"
           size="small"
           :loading="btnLoading"
-          @click="handleAddClass('dataForm3')"
+          @click="submitAddForm('dataForm3')"
           v-prevent-re-click="2000"
           >添加</el-button
         >
@@ -80,10 +114,12 @@
 
 <script>
 import RdForm from "@/components/RdForm";
+import Temp from "../../temp.vue";
 export default {
   name: "project-manage",
   components: {
     RdForm,
+    Temp,
   },
   data() {
     return {
@@ -114,9 +150,9 @@ export default {
         {
           id: 1,
           subjectName: "医师",
-          tecTime: "/",
-          TheoryTestTime: "10-30",
-          closeTime: "11-30",
+          tectestTime: "/",
+          testTime: "10-30",
+          endTime: "11-30",
           status: "正常",
           creatTime: "2021-2.-1 09：32",
         },
@@ -124,12 +160,12 @@ export default {
       tableKey: [
         { name: "id", value: "id" },
         { name: "科目名", value: "subjectName" },
-        { name: "所属项目", value: "SubProject" },
-        { name: "技能考试时间", value: "tecTime" },
-        { name: "理论考试时间", value: "TheoryTestTime" },
-        { name: "理论考试关课时间", value: "closeTime" },
-        { name: "理论二考时间", value: "TwotestTime" },
-        { name: "理论二考关课时间", value: "TwotestcloseTime" },
+        { name: "所属项目", value: "project" },
+        { name: "技能考试时间", value: "tectestTime" },
+        { name: "理论考试时间", value: "testTime" },
+        { name: "理论考试关课时间", value: "endTime" },
+        { name: "理论二考时间", value: "secondtestTime" },
+        { name: "理论二考关课时间", value: "secondEndTime" },
         { name: "状态", value: "status" },
         { name: "创建时间", value: "creatTime" },
 
@@ -147,7 +183,16 @@ export default {
           element: "el-select",
           placeholder: "请选择",
           label: "项目",
-          options: [],
+          options: [
+            {
+              label: "收费",
+              value: "Charge",
+            },
+            {
+              label: "免费",
+              value: "Free",
+            },
+          ],
         },
         {
           prop: "subjectName",
@@ -176,26 +221,28 @@ export default {
           label: "理论考试关课时间",
           operate: true,
         },
-        {
-          prop: "tectestTime",
-          element: "el-date-picker",
-          startPlaceholder: "开始时间",
-          endPlaceholder: "结束时间",
-          label: "技能考试时间",
-        },
-        {
-          prop: "secondtestTime",
-          element: "el-date-picker",
-          startPlaceholder: "开始时间",
-          endPlaceholder: "结束时间",
-          label: "理论二考时间",
-        },
+        // {
+        //   prop: "tectestTime",
+        //   element: "el-date-picker",
+        //   startPlaceholder: "开始时间",
+        //   endPlaceholder: "结束时间",
+        //   label: "技能考试时间",
+        //   // operate: true,
+        // },
+        // {
+        //   prop: "secondtestTime",
+        //   element: "el-date-picker",
+        //   startPlaceholder: "开始时间",
+        //   endPlaceholder: "结束时间",
+        //   label: "理论二考时间",
+        //   // operate: true,
+        // },
         {
           prop: "secondEndTime",
           element: "el-date-picker",
           startPlaceholder: "开始时间",
           endPlaceholder: "结束时间",
-          label: "理论二考关课时间",
+          // label: "理论二考关课时间",
           operate: true,
         },
         {
@@ -220,14 +267,46 @@ export default {
           element: "el-select",
           placeholder: "请选择",
           label: "三级类目",
-          options: [],
+          options: [
+            {
+              label: "收费",
+              value: "Charge",
+            },
+            {
+              label: "免费",
+              value: "Free",
+            },
+          ],
         },
       ],
-      addRules: {},
+      addRules: {
+        project: [{ required: true, message: "请选择", trigger: "change" }],
+        subjectName: [{ required: true, message: "请输入", trigger: "blur" }],
+        subjectNumber: [{ required: true, message: "请输入", trigger: "blur" }],
+        testTime: [{ required: true, message: "请选择", trigger: "change" }],
+        endTime: [{ required: true, message: "请选择", trigger: "change" }],
+        tectestTime: [
+          { required: true, message: "请选择技能考试时间", trigger: "change" },
+        ],
+        secondtestTime: [
+          { required: true, message: "请选择理论二考时间", trigger: "change" },
+        ],
+        secondEndTime: [
+          {
+            required: true,
+            message: "请选择理论二考关课时间",
+            trigger: "change",
+          },
+        ],
+        status: [{ required: true, message: "请选择", trigger: "change" }],
+        threeCategories: [
+          { required: true, message: "请选择", trigger: "change" },
+        ],
+      },
       basicInfo: {
         endTime: "",
         checked1: false,
-        checked2: true,
+        checked2: false,
         tectestTime: "",
         secondtestTime: "",
         secondEndTime: "",
@@ -244,6 +323,108 @@ export default {
     this.getTableData();
   },
   methods: {
+    handleCheck1(val) {
+      console.log(val);
+
+      if (val) {
+        //选中
+        if (!this.addRules.tectestTime) {
+          this.addRules.tectestTime = [
+            {
+              required: true,
+              message: "请选择技能考试时间1",
+              trigger: "change",
+            },
+          ];
+        }
+
+        console.log("hghgh addRules===", this.addRules);
+        this.addFormOptions.forEach((item, index) => {
+          if (item.prop == "endTime") {
+            var idex = index + 1;
+            if (this.addFormOptions[idex].prop != "tectestTime") {
+              this.addFormOptions.splice(idex, 0, {
+                prop: "tectestTime",
+                element: "el-date-picker",
+                startPlaceholder: "开始时间",
+                endPlaceholder: "结束时间",
+                label: "技能考试时间",
+              }); //
+            }
+          }
+        });
+      } else {
+        //不选
+        if (
+          this.addRules.tectestTime &&
+          this.addRules.tectestTime.length != 0
+        ) {
+          delete this.addRules.tectestTime;
+        }
+        this.addFormOptions = this.addFormOptions.filter((item, index) => {
+          return item.prop != "tectestTime";
+        });
+      }
+    },
+    handleCheck2(val) {
+      console.log(val);
+      // secondtestTime
+      if (val) {
+        //选中
+        // if (!this.addRules.secondtestTime) {
+        //   this.addRules.secondtestTime = [
+        //     { required: true, message: "请选择 secondtestTime", trigger: "change" },
+        //   ];
+        // }
+        // if (!this.addRules.secondEndTime) {
+        //   this.addRules.secondEndTime = [
+        //     { required: true, message: "请选择 secondEndTime", trigger: "change" },
+        //   ];
+        // }
+        this.addFormOptions.forEach((item, index) => {
+          if (item.prop == "endTime") {
+            var idex = this.basicInfo.checked1 ? index + 2 : index + 1;
+            if (this.addFormOptions[idex].prop != "secondtestTime") {
+              this.addFormOptions.splice(idex, 0, {
+                prop: "secondtestTime",
+                element: "el-date-picker",
+                startPlaceholder: "开始时间",
+                endPlaceholder: "结束时间",
+                label: "理论二考时间",
+                // operate: true,
+              }); //
+            }
+          }
+        });
+      } else {
+        //不选 
+        // if (
+        //   this.addRules.secondtestTime &&
+        //   this.addRules.secondtestTime.length != 0
+        // ) {
+        //   delete this.addRules.secondtestTime;
+        // }
+        // if (
+        //   this.addRules.secondEndTime &&
+        //   this.addRules.secondEndTime.length != 0
+        // ) {
+        //   delete this.addRules.secondEndTime;
+        // }
+        this.addFormOptions = this.addFormOptions.filter((item, index) => {
+          return item.prop != "secondtestTime";
+        });
+      }
+    },
+    handleChange(soltName, val) {
+      this.$refs.dataForm3.setValue({
+        [soltName]: val,
+      });
+      setTimeout(() => {
+        this.$refs["dataForm3"].validateField([soltName], (errorMessage) => {
+          console.log(errorMessage, "errorMessage");
+        });
+      }, 0);
+    },
     handleEdit(data) {
       //TODO
       console.log(77555);
@@ -263,12 +444,46 @@ export default {
         console.log(this.addFormOptions, "this.addFormOptions---");
       });
     },
-    handleAddClass(formName) {
+    submitAddForm(formName) {
+      if (this.basicInfo.checked2 == false) {
+        //不选
+        if (
+          this.addRules.secondEndTime &&
+          this.addRules.secondEndTime.length != 0
+        ) {
+          delete this.addRules.secondEndTime;
+        }
+        if (
+          this.addRules.secondtestTime &&
+          this.addRules.secondtestTime.length != 0
+        ) {
+          delete this.addRules.secondtestTime;
+        }
+      } else {
+        if (!this.addRules.secondEndTime) {
+          this.addRules.secondEndTime = [
+            { required: true, message: "请选择", trigger: "change" },
+          ];
+        }
+        if (!this.addRules.secondtestTime) {
+          this.addRules.secondtestTime = [
+            {
+              required: true,
+              message: "请选择 secondtestTime",
+              trigger: "change",
+            },
+          ];
+        }
+      }
       //TODO
       this.$refs[formName].validate((valid, formData) => {
         if (valid) {
           console.log(formData, "添加");
           //TODO
+          // if (!this.basicInfo.endTime) {
+          //   this.$message.error("请选择理论考试关课时间");
+          //   return;
+          // }
           this.$fetch(
             this.addStatus
               ? "secretexamsubject_add"
@@ -322,4 +537,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.closeSecondTime {
+  margin-left: -130px !important;
+  .requireTag {
+    &::before {
+      display: inline-block;
+      content: "*";
+      color: #f56c6c;
+      margin-right: 4px;
+    }
+  }
+}
 </style>
