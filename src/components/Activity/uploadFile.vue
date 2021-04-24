@@ -67,6 +67,7 @@ export default {
     onRemove(file, fileList){
       if(file){
         this.$emit("update:file","");
+        this.$emit("onRemove")
       }
     },
     handleChange(file, fileList) {

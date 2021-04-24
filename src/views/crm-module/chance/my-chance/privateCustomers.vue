@@ -118,7 +118,7 @@
           <el-button size="small" type="primary" @click="downloadTemp">点击下载模板</el-button>
         </template>
         <template slot="file">
-          <uploadFile :file.sync="importFile" @change="fileChange"/>
+          <uploadFile :file.sync="importFile" @change="fileChange" @onRemove="fileRemove"/>
         </template>
         <template slot="tips">
           <span style="color: red"
@@ -524,7 +524,7 @@ export default {
           element: "el-input",
           label: "文件",
           operate: true,
-          initValue: 0,
+          // initValue: 0,
         },
         {
           prop: "tips",
@@ -939,10 +939,10 @@ export default {
     submitImportForm(formName) {
       this.$refs[formName].validate((valid, formData) => {
         if (valid) {
-          if(!this.importFile){
-            this.$message.error("请上传文件")
-            return
-          }
+          // if(!this.importFile){
+          //   this.$message.error("请上传文件")
+          //   return
+          // }
           let obj = new FormData();
           obj.append("file", this.importFile);
           obj.append("campusId", formData.campusId);
@@ -1008,9 +1008,26 @@ export default {
       window.location.href = "/temp/opportunity_import.xlsx"
     },
     fileChange(){
-      this.$refs['dataForm4'].validateField("importFile",(errorMessage)=> {
-        console.log(errorMessage,'errorMessage')
+      this.$refs.dataForm4.setValue({
+        file: this.importFile
       })
+      // 文件一上传 就校验该条表单
+      setTimeout(() => {
+        this.$refs['dataForm4'].validateField("file",(errorMessage)=> {
+          console.log(errorMessage,'errorMessage')
+        })
+      }, 0);
+    },
+    fileRemove(){
+      this.$refs.dataForm4.setValue({
+        file: this.importFile
+      })
+      // 文件一上传 就校验该条表单
+      setTimeout(() => {
+        this.$refs['dataForm4'].validateField("file",(errorMessage)=> {
+          console.log(errorMessage,'errorMessage')
+        })
+      }, 0);
     }
   },
 };

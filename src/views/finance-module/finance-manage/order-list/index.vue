@@ -279,12 +279,15 @@
             <el-radio-button label="9">用户组开通记录</el-radio-button>
             <el-radio-button label="10">收入确认</el-radio-button>
         </el-radio-group>
+        <!-- 订单课程 -->
+        <orderCourse/>
+        
       </full-dialog>
   </div>
 </template>
 
 <script>
-
+import orderCourse from './orderCourse';
 export default {
   name:"order-list",
   data(){
@@ -345,6 +348,9 @@ export default {
   },
   mounted(){
       this.getTableData();
+  },
+  components: {
+      orderCourse
   },
    methods: {
        tabClick(e){

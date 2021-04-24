@@ -22,6 +22,7 @@
               <div v-else>
                  <slot
                   :name="item.prop"
+                  :data="formData[item.prop]"
                 ></slot>
               </div>
             </el-form-item>
@@ -102,6 +103,10 @@ export default {
   },
   
   methods: {
+    // 校验单个表单
+    validateField(props,callback){
+      this.$refs.formRef.validateField(props,callback())
+    },
     // 校验
     validate(callback) {
       this.$refs.formRef.validate((valid) => {
