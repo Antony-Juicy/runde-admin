@@ -190,6 +190,8 @@ export default {
     
 		handle_select_account(index) {
 			this.account = this.officialAccounts[index];
+			this.pageConfig.pageNum = 1;
+			this.getTableData();
 		},
 
     pageChange(e){
