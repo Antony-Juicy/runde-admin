@@ -5,21 +5,6 @@
             <el-row :gutter="20">
                     <el-col :span="2">
                         <div class="label-wrapper">
-                            查看类型：
-                        </div>
-                    </el-col>
-                    <el-col :span="9">
-                        <el-radio-group v-model="form.type" size="small">
-                            <el-radio-button label="我招生的"></el-radio-button>
-                            <el-radio-button label="我服务的"></el-radio-button>
-                            <el-radio-button label="我管理的"></el-radio-button>
-                        </el-radio-group>
-                    </el-col>
-            </el-row>
-            <div class="line-divider"></div>
-            <el-row :gutter="20">
-                    <el-col :span="2">
-                        <div class="label-wrapper">
                             学员信息：
                         </div>
                     </el-col>
@@ -30,10 +15,10 @@
                         <el-input size="small" placeholder="学员姓名"></el-input>
                     </el-col>
                     <el-col :span="3">
-                        <el-input size="small" placeholder="手机号码"></el-input>
+                        <el-input size="small" placeholder="付款方账户名"></el-input>
                     </el-col>
                     <el-col :span="3">
-                        <el-select size="small" v-model="form.type" placeholder="报班学年">
+                        <el-select size="small" v-model="form.type" placeholder="学年">
                         </el-select>
                     </el-col>
             </el-row>
@@ -57,62 +42,21 @@
                         </el-select>
                     </el-col>
                     <el-col :span="3">
-                        <el-select size="small" v-model="form.type" placeholder="班型状态">
-                            <el-option label="正常" value="shanghai"></el-option>
-                            <el-option label="暂停" value="beijing"></el-option>
+                        <el-select size="small" v-model="form.type" placeholder="课程信息">
                         </el-select>
                     </el-col>
                     <el-col :span="3">
-                        <el-select size="small" v-model="form.type" placeholder="班次年份">
+                        <el-select size="small" v-model="form.type" placeholder="校区">
                         </el-select>
                     </el-col>
-                    <el-col :span="3">
-                        <el-select size="small" v-model="form.type" placeholder="全科状态">
-                            <el-option label="正常" value="shanghai"></el-option>
-                            <el-option label="暂停" value="beijing"></el-option>
-                        </el-select>
-                    </el-col>
-                    
             </el-row>
             <div class="line-divider"></div>
             <template v-if="showAll">
                 <el-row :gutter="20">
                         <el-col :span="2">
                             <div class="label-wrapper">
-                                服务信息：
+                                缴费信息：
                             </div>
-                        </el-col>
-                        <el-col :span="3">
-                            <el-select size="small" v-model="form.type" placeholder="校区">
-                            </el-select>
-                        </el-col>
-                        <el-col :span="3">
-                            <el-select size="small" v-model="form.type" placeholder="招生老师">
-                            </el-select>
-                        </el-col>
-                        <el-col :span="3">
-                            <el-select size="small" v-model="form.type" placeholder="市场老师">
-                            </el-select>
-                        </el-col>
-                        <el-col :span="3">
-                            <el-select size="small" v-model="form.type" placeholder="教务老师">
-                            </el-select>
-                        </el-col>
-                        <el-col :span="3">
-                            <el-select size="small" v-model="form.type" placeholder="班主任">
-                            </el-select>
-                        </el-col>
-                </el-row>
-                <div class="line-divider"></div>
-                <el-row :gutter="20">
-                        <el-col :span="2">
-                            <div class="label-wrapper">
-                                订单信息：
-                            </div>
-                        </el-col>
-                        <el-col :span="3">
-                            <el-select size="small" v-model="form.type" placeholder="订单状态">
-                            </el-select>
                         </el-col>
                         <el-col :span="6">
                             <el-date-picker size="small"
@@ -132,8 +76,58 @@
                                 end-placeholder="缴费日期(结束)">
                             </el-date-picker>
                         </el-col>
+                        <el-col :span="6">
+                            <el-date-picker size="small"
+                                v-model="form.type"
+                                type="datetimerange"
+                                range-separator="至"
+                                start-placeholder="审批完成日期(开始)"
+                                end-placeholder="审批完成日期(结束)">
+                            </el-date-picker>
+                        </el-col>
                 </el-row>
                 <div class="line-divider"></div>
+                <el-row :gutter="20">
+                        <el-col :span="2">
+                            <div class="label-wrapper">
+                                订单信息：
+                            </div>
+                        </el-col>
+                        <el-col :span="3">
+                            <el-select size="small" v-model="form.type" placeholder="收款银行">
+                            </el-select>
+                        </el-col>
+                        <el-col :span="3">
+                            <el-select size="small" v-model="form.type" placeholder="订单类型">
+                            </el-select>
+                        </el-col>
+                        <el-col :span="3">
+                            <el-select size="small" v-model="form.type" placeholder="到账时间">
+                            </el-select>
+                        </el-col>
+                </el-row>
+                <div class="line-divider"></div>
+                <el-row :gutter="20">
+                        <el-col :span="2">
+                            <div class="label-wrapper">
+                                服务信息：
+                            </div>
+                        </el-col>
+                        <el-col :span="3">
+                            <el-select size="small" v-model="form.type" placeholder="招生老师">
+                            </el-select>
+                        </el-col>
+                        <el-col :span="3">
+                            <el-select size="small" v-model="form.type" placeholder="市场老师">
+                            </el-select>
+                        </el-col>
+                        <el-col :span="3">
+                            <el-select size="small" v-model="form.type" placeholder="教务老师">
+                            </el-select>
+                        </el-col>
+                </el-row>
+                <div class="line-divider"></div>
+                
                 <el-row :gutter="20">
                         <el-col :span="2">
                             <div class="label-wrapper">
@@ -141,19 +135,19 @@
                             </div>
                         </el-col>
                         <el-col :span="3">
-                            <el-select size="small" v-model="form.type" placeholder="考试状态">
+                            <el-select size="small" v-model="form.type" placeholder="缴费类型">
                             </el-select>
                         </el-col>
                         <el-col :span="3">
-                            <el-select size="small" v-model="form.type" placeholder="考试退费">
+                            <el-select size="small" v-model="form.type" placeholder="钱款类型">
                             </el-select>
                         </el-col>
                         <el-col :span="3">
-                            <el-select size="small" v-model="form.type" placeholder="是否新学历">
+                            <el-select size="small" v-model="form.type" placeholder="支付方式">
                             </el-select>
                         </el-col>
                         <el-col :span="3">
-                            <el-select size="small" v-model="form.type" placeholder="是否进班群">
+                            <el-select size="small" v-model="form.type" placeholder="审核状态">
                             </el-select>
                         </el-col>
                 </el-row>
@@ -176,6 +170,17 @@
             
       </div>
       <div class="w-container">
+          <el-radio-group v-model="payType" style="margin-bottom: 30px;" @change="tabClick">
+            <el-radio-button label="1">全部</el-radio-button>
+            <el-radio-button label="2">在线支付</el-radio-button>
+            <el-radio-button label="3">学员余额</el-radio-button>
+            <el-radio-button label="4">实收</el-radio-button>
+            <el-radio-button label="5">优惠</el-radio-button>
+            <el-radio-button label="6">免费</el-radio-button>
+            <el-radio-button label="7">退班</el-radio-button>
+            <el-radio-button label="8">退费</el-radio-button>
+            <el-radio-button label="9">休学</el-radio-button>
+        </el-radio-group>
           <rd-table
                 :tableData="tableData"
                 :tableKey="tableKey"
@@ -233,29 +238,15 @@
                 </template>
                 <template slot="edit" slot-scope="scope">
                     <el-button @click="handleEdit(scope.row)" type="text" size="small"
-                        >缴费</el-button
+                        >设置到账时间</el-button
                     >
                     <el-divider direction="vertical"></el-divider>
-                    <el-dropdown trigger="click">
-                        <el-button @click="handleEdit(scope.row)" type="text" size="small"
-                        >异动<i class="el-icon-arrow-down el-icon--right"></i></el-button
-                            >
-                        <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item icon="el-icon-plus">申请优惠</el-dropdown-item>
-                            <el-dropdown-item icon="el-icon-circle-plus">申请免费</el-dropdown-item>
-                            <el-dropdown-item icon="el-icon-circle-plus-outline">申请退费</el-dropdown-item>
-                            <el-dropdown-item icon="el-icon-check">退班退费</el-dropdown-item>
-                            <el-dropdown-item icon="el-icon-circle-check">申请转班</el-dropdown-item>
-                            <el-dropdown-item icon="el-icon-circle-close">申请休学</el-dropdown-item>
-                        </el-dropdown-menu>
-                    </el-dropdown>
-                     <el-divider direction="vertical"></el-divider>
                     <el-button @click="handleEdit(scope.row)" type="text" size="small"
-                        >协议列表</el-button
+                        >下载收据</el-button
                     >
                      <el-divider direction="vertical"></el-divider>
                     <el-button @click="handleEdit(scope.row)" type="text" size="small"
-                        >进入班群</el-button
+                        >重新生成收据</el-button
                     >
                 </template>
             </rd-table>
@@ -279,31 +270,17 @@
             <el-radio-button label="9">用户组开通记录</el-radio-button>
             <el-radio-button label="10">收入确认</el-radio-button>
         </el-radio-group>
-        <!-- 订单课程 -->
-        <orderCourse v-if="tabPosition == '1'"/>
-        <!-- 缴费记录 -->
-        <paymentRecord v-if="tabPosition == '2'"/>
-        <!-- 订单日志 -->
-        <orderLog v-if="tabPosition == '3'"/>
-        <!-- 协议列表 -->
-        <protocolList v-if="tabPosition == '7'"/>
-        <!-- 收入确认 -->
-        <revenueConfirm v-if="tabPosition == '10'"/>
         
       </full-dialog>
   </div>
 </template>
 
 <script>
-import orderCourse from './orderCourse';
-import paymentRecord from './paymentRecord';
-import orderLog from './orderLog';
-import protocolList from './protocolList';
-import revenueConfirm from './revenueConfirm';
 export default {
   name:"order-list",
   data(){
     return {
+        payType:"1",
         tabPosition:"1",
         addVisible: false,
         form: {
@@ -329,26 +306,39 @@ export default {
                 value: "salesName",
                 operate: true
             },
-            {
-                name: "订单信息",
-                value: "orderId",
-                operate: true
-            },
+            // {
+            //     name: "订单信息",
+            //     value: "orderId",
+            //     operate: true
+            // },
             {
                 name: "缴费信息",
                 value: "realPrice",
                 operate: true,
                 width: 230
             },
-            {
-                name: "备注",
-                value: "remark",
-                operate: true
+             {
+                name: "审核状态",
+                value: "realPrice",
+                // operate: true,
+                width: 100
             },
+             {
+                name: "业绩",
+                value: "realPrice",
+                // operate: true,
+                width: 100
+            },
+            // {
+            //     name: "备注",
+            //     value: "remark",
+            //     operate: true
+            // },
             {
                 name: "操作",
                 value: "edit",
-                operate: true
+                operate: true,
+                width: 120
             }
         ],
         pageConfig: {
@@ -360,13 +350,6 @@ export default {
   },
   mounted(){
       this.getTableData();
-  },
-  components: {
-      orderCourse,
-      paymentRecord,
-      orderLog,
-      protocolList,
-      revenueConfirm
   },
    methods: {
        tabClick(e){
