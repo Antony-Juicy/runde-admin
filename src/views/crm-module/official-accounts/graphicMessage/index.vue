@@ -32,7 +32,7 @@
 				<div>
 					<el-radio v-model="fansType" label="allFans">全部粉丝</el-radio>
 					<el-radio v-model="fansType" label="labelIds">粉丝标签</el-radio>
-					<el-radio v-model="fansType" label="openIds">指定用户</el-radio>
+					<!-- <el-radio v-model="fansType" label="openIds">指定用户</el-radio> -->
 				</div>
 			</div>
 			<!-- 推送给谁 -->
@@ -57,6 +57,10 @@
 					</el-tag>
 					<SelectPop style="width:auto;display:inline-block" key="SelectPop2" v-bind="SelectPopOptions_user" @select="handle_selectUser">
 						<el-button size="small">添加粉丝</el-button>
+						<template slot="labels" slot-scope="scope">
+							<el-tag v-for="(item,index) in scope.row.labels" :key="index">{{item}}</el-tag>
+							<div v-if="scope.row.labels.length == 0">无标签</div>
+						</template>
 					</SelectPop>
 				</div>
 			</div>

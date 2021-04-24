@@ -292,7 +292,7 @@ export default {
 		handle_select_account(data) {
 			this.account = data
 			this.choseAccountVisible = false
-			this.refresh()
+			this.refresh(0)
 		}
 	},
 	async mounted() {

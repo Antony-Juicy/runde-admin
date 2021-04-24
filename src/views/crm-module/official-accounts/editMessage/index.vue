@@ -59,11 +59,7 @@ export default {
 			},
 		}
 	},
-	watch: {
-		msgtype: function (n, o) {
-			this.emitForm()
-		}
-	},
+	watch: {},
 	methods: {
 		handle_msgData(data) {
 			// step1 接收表单信息，转发到预览组件

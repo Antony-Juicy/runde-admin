@@ -10,7 +10,7 @@
 								<div class="label">{{item.label}}</div>
 								<el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="item.value" resize="none">
 								</el-input>
-								<el-color-picker class="color-picker" v-model="item.color" size='small' show-alpha :predefine="predefineColors"></el-color-picker>
+								<el-color-picker class="color-picker" v-model="item.color" size='small' :color-format='"hex"' :predefine="predefineColors"></el-color-picker>
 							</div>
 						</div>
 					</template>
@@ -30,7 +30,7 @@
 						<div>
 							<el-radio v-model="fansType" label="allFans">全部粉丝</el-radio>
 							<el-radio v-model="fansType" label="labelIds">粉丝标签</el-radio>
-							<el-radio v-model="fansType" label="openIds">指定用户</el-radio>
+							<!-- <el-radio v-model="fansType" label="openIds">指定用户</el-radio> -->
 						</div>
 						<div v-if="fansType == 'labelIds'" class="labelIds">
 							<div class="origin-tips">选择标签后，消息将只推送给选中标签组的粉丝</div>
@@ -48,7 +48,8 @@
 							<SelectPop style="width:auto;display:inline-block" key="SelectPop2" v-bind="SelectPopOptions_user" @select="handle_selectUser">
 								<el-button size="small">添加粉丝</el-button>
 								<template slot="labels" slot-scope="scope">
-									<el-tag v-for="(item,index) in scope.row.labels" :key="index">{{item}}</el-tag>
+									<el-tag  v-for="(item,index) in scope.row.labels" :key="index">{{item}}</el-tag>
+									<div v-if="scope.row.labels.length == 0">无标签</div>
 								</template>
 							</SelectPop>
 						</div>
@@ -351,6 +352,42 @@ export default {
 			}
 			this.formwork_content = formwork_content
 		},
+		handle_selectUser(data) {
+			if (this.fansOpenIds.findIndex(v => v.openId == data.openId) > -1) {
+				return
+			}
+			this.fansOpenIds.push({
+				name: data.nickName,
+				openId: data.openId
+			})
+		},
+		handle_removeUser(index) {
+			this.fansOpenIds.splice(index, 1)
+		},
+		handle_selectLabel(data) {
+			if (this.fansLabels.findIndex(v => v.id == data.id) > -1) {
+				return
+			}
+			this.fansLabels.push({
+				name: data.labelName,
+				id: data.id
+			})
+		},
+		handle_removeLabel(index) {
+			this.fansLabels.splice(index, 1)
+		},
+		handle_selectLabel2(data) {
+			if (this.fansTags.findIndex(v => v.id == data.id) > -1) {
+				return
+			}
+			this.fansTags.push({
+				name: data.labelName,
+				id: data.id
+			})
+		},
+		handle_removeLabel2(index) {
+			this.fansTags.splice(index, 1)
+		},
 		handle_close() {
 			this.$emit('close')
 		},
@@ -392,7 +429,8 @@ export default {
 			let formData = {
 				appId: this.appId,
 				appSecret: this.appSecret,
-				msgTemplate: JSON.stringify(msgTemplate)
+				msgTemplate: JSON.stringify(msgTemplate),
+				password:undefined, // 全部发送 或者 标签发送时需要填写验证密码
 			}
 			if (this.fansType == 'allFans') {
 				formData.allFans = true
@@ -418,49 +456,10 @@ export default {
 			}
 			let res = await this.$fetch(
 				"send_official_accounts_formwrok",
-				formData);
-			// if (!res || this.$common.isEmpty(res.data)) {
-			// 	return
-			// }
+				formData
+			);
 			this.$message.success('发送成功')
 			this.$emit('close')
-		},
-
-		handle_selectUser(data) {
-			if (this.fansOpenIds.findIndex(v => v.openId == data.openId) > -1) {
-				return
-			}
-			this.fansOpenIds.push({
-				name: data.nickName,
-				openId: data.openId
-			})
-		},
-		handle_selectLabel(data) {
-			if (this.fansLabels.findIndex(v => v.id == data.id) > -1) {
-				return
-			}
-			this.fansLabels.push({
-				name: data.labelName,
-				id: data.id
-			})
-		},
-		handle_selectLabel2(data) {
-			if (this.fansTags.findIndex(v => v.id == data.id) > -1) {
-				return
-			}
-			this.fansTags.push({
-				name: data.labelName,
-				id: data.id
-			})
-		},
-		handle_removeLabel(index) {
-			this.fansLabels.splice(index, 1)
-		},
-		handle_removeUser(index) {
-			this.fansOpenIds.splice(index, 1)
-		},
-		handle_removeLabel2(index) {
-			this.fansTags.splice(index, 1)
 		},
 	},
 	mounted() {

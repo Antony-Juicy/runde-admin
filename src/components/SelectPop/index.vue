@@ -2,7 +2,7 @@
 
 	<el-popover v-model="show" class="select-pop" placement="bottom-start" width="700" trigger="click" :append-to-body="false">
 		<search-form v-if="searchObj.formOptions.length > 0" :formOptions="searchObj.formOptions" :showNum="searchObj.showNum" @onSearch="onSearch" ref="searchForm"></search-form>
-		<div class="scroll-box" v-infinite-scroll="getTableData">
+		<div class="scroll-box" ref="scrollBox" v-infinite-scroll="getTableData">
 			<el-table :data="tableData">
 				<template v-for="(item,index) in tableObj.tableKey">
 					<el-table-column v-if="!item.operate" :prop="item.value" :label="item.name" :width="item.width" :key="index"></el-table-column>
@@ -113,14 +113,18 @@ export default {
 				})
 			}
 
-			let markScollHeight = this.tableData.length == 0 ? 0 : document.querySelector('.scroll-box').scrollHeight
-			let trHeight = document.querySelector('.scroll-box tr').offsetHeight || 0
+			let markScollHeight = this.tableData.length == 0 ? 0 : this.$refs.scrollBox.scrollHeight
+			let trHeight = this.$refs.scrollBox.querySelector('tr').offsetHeight || 0
 			this.tableData = this.tableData.concat(data)
 			this.pageConfig.pageNum++
 			this.$nextTick(() => {
-				document.querySelector('.scroll-box').scrollTo(0, markScollHeight - trHeight)
+				this.$refs.scrollBox.scrollTo(0, markScollHeight - trHeight)
 				this.tableLoad = false
 			})
+			// setTimeout(() => {
+
+			// }, 300)
+
 
 
 		},
