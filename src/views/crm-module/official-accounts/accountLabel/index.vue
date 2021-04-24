@@ -328,11 +328,15 @@ export default {
 		border: 1px solid #dcdfe6;
 		margin-top: 4px;
 		margin-right: 10px;
+		min-width: 200px;
 		.logo {
 			height: 20px;
 			width: 20px;
 			margin-right: 10px;
 			object-fit: contain;
+		}
+		.el-icon-arrow-down{
+			margin-left: auto;
 		}
 	}
 }
@@ -346,6 +350,7 @@ export default {
 	align-items: center;
 	cursor: pointer;
 	padding: 4px 4px;
+	min-width: 200px;
 	&:hover {
 		background-color: #f5f7fa;
 	}

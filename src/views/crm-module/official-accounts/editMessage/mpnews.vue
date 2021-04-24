@@ -27,7 +27,7 @@
 			</div>
 		</div>
 		<div class="form-line" style="align-items:flex-start">
-			<div class="label" >描述：</div>
+			<div class="label">描述：</div>
 			<el-input type="textarea" placeholder="请输入内容" v-model="msgForm.description" :rows="2" resize="none" @input="emitForm"></el-input>
 		</div>
 		<div class="form-line">
@@ -176,9 +176,10 @@ export default {
 				let htmlInfo = res.msg.replace(/\"/g, "'").replace(/ +/g, ' ')
 				// 获取图片
 				htmlInfo.match(/var cdn_url_1_1 = '(.?|.+?)';/g)
-				let image = RegExp.$1
+
+				let image = `${process.env.VUE_APP_BASE_API}/wechat/console/wechat_material/handle_img?src=${encodeURIComponent(RegExp.$1)}`
 				// 获取可以上传的图片
-				htmlInfo.match(/var msg_cdn_url = '(.?|.+?)';/g)
+				htmlInfo.match(/var cdn_url_1_1 = '(.?|.+?)';/g)
 				let image_t = RegExp.$1
 				// 获取描述
 				htmlInfo.match(/var msg_desc = '(.?|.+?)';/g)

@@ -195,7 +195,19 @@ export default {
 			SelectPopOptions_user: {
 				searchObj: {
 					api: "wechat_user_page_list",
-					formOptions: [],
+					formOptions: [
+						{
+							prop: "nickName",
+							element: "el-input",
+							placeholder: "请输入用户名",
+						},
+						{
+							prop: "labelName",
+							element: "el-input",
+							placeholder: "请输入标签名称",
+						},
+					],
+					showNum: 2,
 					needType: false,
 					params: {
 						appId: this.appId
@@ -391,7 +403,7 @@ export default {
 					return
 				}
 				formData.labelIds = this.fansLabels.map(v => { return v.id }).join(',')
-				formData.fansTag = this.fansTags.map(v => { return v.id }).join(',')
+
 			}
 			else if (this.fansType == 'openIds') {
 				if (!this.fansOpenIds.length > 0) {
@@ -399,7 +411,10 @@ export default {
 					return
 				}
 
-				formData.openId = this.fansOpenIds.map(v => { return v.openId }).join(',')
+				formData.openIds = this.fansOpenIds.map(v => { return v.openId }).join(',')
+			}
+			if (this.fansTags.length > 0) {
+				formData.fansTags = this.fansTags.map(v => { return v.id }).join(',')
 			}
 			let res = await this.$fetch(
 				"send_official_accounts_formwrok",

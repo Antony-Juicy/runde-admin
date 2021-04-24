@@ -3,7 +3,7 @@
 		<div class="head" v-if="showName">
 			<div class="form-line" style="width:600px;margin-right:30px">
 				<div class="label">推送名称：</div>
-				<el-input placeholder="名称用于区别不通过推送，仅自己可见，可自行设置" v-model="msgName" maxlength="30" show-word-limit></el-input>
+				<el-input placeholder="名称用于区别不通过推送，仅自己可见，可自行设置" v-model="msgName" @input="emitForm()" maxlength="30" show-word-limit></el-input>
 				<!-- <div class="count" :class="{danger:msgName.length > 30}">{{msgName.length}}/30</div> -->
 			</div>
 		</div>
@@ -69,24 +69,46 @@ export default {
 			// step1 接收表单信息，转发到预览组件
 			this.cardData[this.msgtype] = data
 			// step2 重新组合一个满足接口形态的数据 ，向上传递
-			this.emitForm()
+			// this.emitForm()
 		},
 		emitForm() {
 			let data = {}
+			let acceptFlag = true
 			switch (this.msgtype) {
 				case 'text': {
+					if (this.$common.isEmpty(this.cardData.text.content)) {
+						this.$message.error("请输入推送的文字内容");
+						acceptFlag = false
+					}
+					if (this.cardData.text.needUrl && this.$common.isEmpty(this.cardData.text.description)) {
+						this.$message.error("请输入推送的链接内容");
+						acceptFlag = false
+					}
 					data.content = this.cardData.text.content
-					data.description = this.cardData.text.content
+					data.description = this.cardData.text.description
 					data.url = this.cardData.text.url
 					data.msgType = 'text'
 					break;
 				}
 				case 'image': {
+					if (this.$common.isEmpty(this.cardData.image.picurl)) {
+						this.$message.error("请上传图片");
+						acceptFlag = false
+					}
 					data.mediaId = this.cardData.image.picurl
 					data.msgType = 'image'
 					break;
 				}
 				case 'mpnews': {
+					if (this.$common.isEmpty(this.cardData.mpnews.title)) {
+						this.$message.error("请输入推送的标题");
+						acceptFlag = false
+					}
+					if (this.$common.isEmpty(this.cardData.mpnews.picurl_t)) {
+						this.$message.error("请上传图片");
+						acceptFlag = false
+					}
+					data.url = this.cardData.mpnews.url
 					data.title = this.cardData.mpnews.title
 					data.picurl = this.cardData.mpnews.picurl_t
 					data.description = this.cardData.mpnews.description
@@ -101,8 +123,21 @@ export default {
 			data.msgName = this.msgName
 			data.appId = this.account.appId
 			data.appSecret = this.account.appSecret
-			this.$emit("msgForm", data)
-		}
+			// this.$emit("msgForm", data)
+			if (acceptFlag) {
+				return data
+			} else {
+				return false
+			}
+		},
+		val(callback) {
+			let data = this.emitForm()
+			if (!data) {
+				return
+			} else {
+				callback(data)
+			}
+		},
 	},
 	mounted() {
 
