@@ -76,6 +76,7 @@ export default {
 			if (!this.pageConfig.hasNext) {
 				return
 			}
+			this.tableLoad = true
 			// 深拷贝
 			let searchForm = JSON.parse(JSON.stringify(this.searchForm))
 			if (searchForm.typeId && searchForm.typeId.constructor == Array) {
@@ -90,7 +91,7 @@ export default {
 					...this.searchObj.params
 				}
 			).catch(() => { this.tableLoad = false })
-			if(!res || this.$common.isEmpty(res.data)){
+			if (!res || this.$common.isEmpty(res.data)) {
 				return
 			}
 			let data = []
@@ -111,12 +112,22 @@ export default {
 					return this.tableObj.transItem(v)
 				})
 			}
+
+			let markScollHeight = this.tableData.length == 0 ? 0 : document.querySelector('.scroll-box').scrollHeight
+			let trHeight = document.querySelector('.scroll-box tr').offsetHeight || 0
 			this.tableData = this.tableData.concat(data)
-			this.tableLoad = false
 			this.pageConfig.pageNum++
+			this.$nextTick(() => {
+				document.querySelector('.scroll-box').scrollTo(0, markScollHeight - trHeight)
+				this.tableLoad = false
+			})
+
+
 		},
 		load() {
-			this.getTableData()
+			if (this.tableData.length == 0) {
+				this.getTableData()
+			}
 		}
 	},
 	async created() {
@@ -164,6 +175,11 @@ function debounce(fn, wait) {
 	/deep/ {
 		.el-form--inline {
 			width: 100% !important;
+		}
+		// 清除穿透样式内容
+		.scroll-box .el-table {
+			max-height: none !important;
+			overflow: hidden;
 		}
 	}
 }

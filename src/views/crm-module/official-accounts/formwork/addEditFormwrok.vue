@@ -47,11 +47,14 @@
 							</el-tag>
 							<SelectPop style="width:auto;display:inline-block" key="SelectPop2" v-bind="SelectPopOptions_user" @select="handle_selectUser">
 								<el-button size="small">添加粉丝</el-button>
+								<template slot="labels" slot-scope="scope">
+									<el-tag v-for="(item,index) in scope.row.labels" :key="index">{{item}}</el-tag>
+								</template>
 							</SelectPop>
 						</div>
 					</template>
 					<template slot="mark">
-						<div v-if="fansType == 'labelIds'" class="labelIds">
+						<div class="labelIds">
 							<div class="origin-tips">给点击消息的粉丝打标签</div>
 							<el-tag style="margin-right:10px" v-for="(item,index) in fansTags" :key="index" @close="handle_removeLabel2(index)" disable-transitions closable>
 								{{item.name}}
@@ -131,6 +134,13 @@ export default {
 					label: "推送给谁",
 					operate: true,
 				},
+				{
+					prop: "mark",
+					element: "el-input",
+					placeholder: "",
+					label: "粉丝标签",
+					operate: true,
+				}
 			],
 			addRules: {
 				addFormOptions: [{ required: true, message: "模板名称", trigger: "blur" },],
@@ -185,7 +195,19 @@ export default {
 			SelectPopOptions_user: {
 				searchObj: {
 					api: "wechat_user_page_list",
-					formOptions: [],
+					formOptions: [
+						{
+							prop: "nickName",
+							element: "el-input",
+							placeholder: "请输入用户名",
+						},
+						{
+							prop: "labelName",
+							element: "el-input",
+							placeholder: "请输入标签名称",
+						},
+					],
+					showNum: 2,
 					needType: false,
 					params: {
 						appId: this.appId
@@ -201,13 +223,14 @@ export default {
 						{
 							name: "用户标签",
 							value: "labels",
+							operate: true,
 						},
 					],
 					transItem: (item) => {
 						try {
 							item.labels = (item.wechatUserTagModel.map(v => {
 								return v.labelName
-							})).join(',')
+							}))
 						} catch (error) {
 
 						}
@@ -285,21 +308,6 @@ export default {
 		}
 	},
 	watch: {
-		fansType: function (n, o) {
-			if (n == 'labelIds') {
-				this.addFormOptions.push({
-					prop: "mark",
-					element: "el-input",
-					placeholder: "",
-					label: "粉丝标签",
-					operate: true,
-				})
-			} else {
-				if (this.addFormOptions[4]) {
-					this.addFormOptions.splice(4, 1)
-				}
-			}
-		}
 	},
 	methods: {
 		analysis_content() {
@@ -395,7 +403,7 @@ export default {
 					return
 				}
 				formData.labelIds = this.fansLabels.map(v => { return v.id }).join(',')
-				formData.fansTag = this.fansTags.map(v => { return v.id }).join(',')
+
 			}
 			else if (this.fansType == 'openIds') {
 				if (!this.fansOpenIds.length > 0) {
@@ -403,7 +411,10 @@ export default {
 					return
 				}
 
-				formData.openId = this.fansOpenIds.map(v => { return v.openId }).join(',')
+				formData.openIds = this.fansOpenIds.map(v => { return v.openId }).join(',')
+			}
+			if (this.fansTags.length > 0) {
+				formData.fansTags = this.fansTags.map(v => { return v.id }).join(',')
 			}
 			let res = await this.$fetch(
 				"send_official_accounts_formwrok",
