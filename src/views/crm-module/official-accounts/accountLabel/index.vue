@@ -292,26 +292,22 @@ export default {
 		handle_select_account(data) {
 			this.account = data
 			this.choseAccountVisible = false
+			this.refresh()
 		}
 	},
 	async mounted() {
+		// 把选择公众号的东西放到搜索区
+		document.querySelector('.accountLabel .search-box').insertBefore(this.$refs.accountOption.$el, document.querySelector('.accountLabel .el-form-item'))
 		let res = await this.$fetch(
 			"get_official_accounts_list",
 		);
 		this.officialAccounts = res.data
 		this.account = this.officialAccounts[0]
-		this.$nextTick(() => {
-			// 把选择公众号的东西放到搜索区
-			document.querySelector('.accountLabel .search-box').insertBefore(this.$refs.accountOption.$el, document.querySelector('.accountLabel .el-form-item'))
-		})
 		this.onSearch()
 		// 因为元素层级的原因，要把这个dialog放到body下才能正常显示在遮罩层上面
 		this.dialogId = `accountLabel-dialog-${Date.now()}`
 		document.querySelector('.accountLabel .dialog-wrapper').id = this.dialogId
 		document.body.append(document.querySelector('.accountLabel .dialog-wrapper'))
-
-
-
 	},
 	beforeDestroy() {
 		// 既然要离开页面了，就把这个dialog标签删掉，做好文档流管理
@@ -332,11 +328,15 @@ export default {
 		border: 1px solid #dcdfe6;
 		margin-top: 4px;
 		margin-right: 10px;
+		min-width: 200px;
 		.logo {
 			height: 20px;
 			width: 20px;
 			margin-right: 10px;
 			object-fit: contain;
+		}
+		.el-icon-arrow-down{
+			margin-left: auto;
 		}
 	}
 }
@@ -350,6 +350,7 @@ export default {
 	align-items: center;
 	cursor: pointer;
 	padding: 4px 4px;
+	min-width: 200px;
 	&:hover {
 		background-color: #f5f7fa;
 	}

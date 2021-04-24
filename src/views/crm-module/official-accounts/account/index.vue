@@ -15,7 +15,7 @@
 				<template slot="edit" slot-scope="scope">
 					<el-button @click="handleEdit(scope.row)" type="text" size="small">查阅/编辑</el-button>
 					<el-button @click="handleLabel(scope.row)" type="text" style="color: #67c23a" size="small">查看标签</el-button>
-					<!-- <el-button @click="handleDelete(scope.row)" type="text" style="color: #ec5b56" size="small">删除</el-button> -->
+					<el-button @click="handleDelete(scope.row)" type="text" style="color: #ec5b56" size="small">删除</el-button>
 
 				</template>
 
@@ -163,7 +163,7 @@ export default {
 		handleLabel(data) {
 			this.labelVisible = true
 			this.appId = data.appId
-
+			
 		}
 	},
 	mounted() {

@@ -75,15 +75,20 @@
       <line-chart :chart-data="lineChartData" />
     </div>
 
-    <!-- 表格 -->
-    <div class="form">
-
-
-
-
-
-
-      
+    <!-- 表格主体 -->
+    <div class="el-form">
+      <el-table :data="realList" style="width: 100%">
+        <el-table-column :property="item.key" :label="item.label" v-for="(item,index) in labelList" :key="realList.key">
+          <template slot-scope="scope">
+            <div :class="scope.column.property == 'time' ? '': 'form-text'">{{scope.row[scope.column.property]}}</div>
+          </template>
+        </el-table-column>
+      </el-table>
+        
+      <div class="pages">
+        <Pagination :total="total" @pagination="changepageNum" :layout="'total, prev, pager, next'" />
+      </div>
+    
     </div>
 
 
@@ -92,18 +97,36 @@
 
 <script>
 
-import LineChart from '../components/LineChart';
+import LineChart from './components/LineChart';
+import Pagination from "@/components/Pagination/index.vue";
 export default {
   props: {
     
   },
-  
-
   components: {
-    LineChart
+    LineChart,
+    Pagination
   },
+  
   data() {
     return {
+      total:1,
+      labelList:[
+        {label:'时间',key:'time'},
+        {label:'扫码人数',key:'total'},
+        {label:'关注人数',key:'total1'},
+        {label:'取关人数',key:'total2'},
+        {label:'净关注人数',key:'total3'},
+      ],
+      realList:[
+        {time:'2020-02-01',total:20,total1:20,total2:20,total3:20},
+        {time:'2020-02-01',total:20,total1:20,total2:20,total3:20},
+        {time:'2020-02-01',total:20,total1:20,total2:20,total3:20},
+        {time:'2020-02-01',total:20,total1:20,total2:20,total3:20},
+        {time:'2020-02-01',total:20,total1:20,total2:20,total3:20},
+        {time:'2020-02-01',total:20,total1:20,total2:20,total3:20},
+        {time:'2020-02-01',total:20,total1:20,total2:20,total3:20},
+      ],
       options: [{
           value: '选项1',
           label: '黄金糕'
@@ -127,6 +150,12 @@ export default {
       },
     }
   },
+  computed: {
+    // 计算属性的 getter
+    // realList() {
+    //   return this.list.slice((this.pageNum-1) * this.pageSize,(this.pageNum*this.pageSize-1))
+    // }
+  },
   mounted() {
 
   },
@@ -134,6 +163,11 @@ export default {
 
   },
   methods: {
+
+
+    changepageNum(){
+      console.log(1111)
+    },
 
   }
 }
@@ -237,9 +271,10 @@ export default {
     background: #F3F3F7;
     font-size: 12px;
 }
-
-
-
+.form-text{
+  padding-left: 15px;
+  box-sizing: border-box;
+}
 
 
 

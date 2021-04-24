@@ -15,7 +15,7 @@
 					</div>
 				</el-dropdown-item>
 			</el-dropdown-menu>
-			
+
 		</el-dropdown>
 		<search-form ref="searchForm" :formOptions="formOptions" :showNum="5" @onSearch="onSearch" @onReset="onReset"></search-form>
 		<!-- 表格主体 -->
@@ -128,18 +128,17 @@ export default {
 		},
 		handle_select_account(data) {
 			this.account = data
+			this.refresh()
 		}
 	},
 	async mounted() {
+		// 把选择公众号的东西放到搜索区
+		document.querySelector('.formwork-container .search-box').insertBefore(this.$refs.accountOption.$el, document.querySelector('.formwork-container .el-form-item'))
 		let res = await this.$fetch(
 			"get_official_accounts_list",
 		);
 		this.officialAccounts = res.data
 		this.account = this.officialAccounts[0]
-		this.$nextTick(() => {
-			// 把选择公众号的东西放到搜索区
-			document.querySelector('.formwork-container .search-box').insertBefore(this.$refs.accountOption.$el, document.querySelector('.formwork-container .el-form-item'))
-		})
 		// 这里是通过模拟search方法，是的searchFrom里面有值
 		this.onSearch()
 
@@ -159,11 +158,15 @@ export default {
 		border: 1px solid #dcdfe6;
 		margin-top: 4px;
 		margin-right: 10px;
+		min-width: 200px;
 		.logo {
 			height: 20px;
 			width: 20px;
 			margin-right: 10px;
 			object-fit: contain;
+		}
+		.el-icon-arrow-down {
+			margin-left: auto;
 		}
 	}
 }
@@ -172,6 +175,7 @@ export default {
 	align-items: center;
 	cursor: pointer;
 	padding: 4px 4px;
+	min-width: 200px;
 	&:hover {
 		background-color: #f5f7fa;
 	}
