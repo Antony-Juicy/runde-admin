@@ -47,6 +47,7 @@
     <full-dialog
         v-model="addVisible"
         :title="'报名信息'"
+        hideTitle
         @change="addVisible = false"
       >
           <el-card shadow="never" class="card-container">

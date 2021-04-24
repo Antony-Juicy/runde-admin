@@ -67,12 +67,13 @@ export default {
     onRemove(file, fileList){
       if(file){
         this.$emit("update:file","");
+        this.$emit("onRemove")
       }
     },
     handleChange(file, fileList) {
       this.importFile = file.raw;
       this.$emit("update:file",file.raw);
-
+      this.$emit("change",file.raw)
     },
      // 导入上传之前的文件格式校验
     beforeAvatarUpload(file) {

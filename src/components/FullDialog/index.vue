@@ -2,10 +2,10 @@
   <div>
     <div :class="{ show: value, hide: !value, 'full-dialog-container': true }">
       <!-- 标题 -->
-      <div class="top-title">
+      <div class="top-title" v-if="!hideTitle">
         {{ title }}
       </div>
-      <div class="content">
+      <div class="content" :class="{'hideTitle':hideTitle}">
         <slot></slot>
       </div>
       <div @click="cancelClick" class="close-btn">
@@ -26,6 +26,11 @@ export default {
       type: String,
       default: "详情",
     },
+    // hideTitle 隐藏弹窗标题
+    hideTitle: {
+      type: Boolean,
+      default: false
+    }
   },
   watch: {
     value(val){
@@ -75,6 +80,9 @@ export default {
   }
   .content {
     padding: 20px 10px;
+  }
+  .hideTitle {
+    padding-top: 44px;
   }
 }
 .show {

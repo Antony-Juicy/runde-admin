@@ -192,7 +192,7 @@
                 <template slot="productName" slot-scope="scope">
                    项目：{{scope.row.studentName}}<br/>
                    科目：{{scope.row.subjectName}}<br/>
-                   班型：<el-button type="text" style="padding: 0">{{scope.row.classTypeName}}</el-button><br/>
+                   班型：<el-button type="text" style="padding: 0" @click="addVisible = true">{{scope.row.classTypeName}}</el-button><br/>
                    班次年份：{{scope.row.classBatch}}<br/>
                    课程：{{scope.row.courseName}}<br/>
                    邮寄图书发放类型：{{scope.row.bookType}}<br/>
@@ -260,15 +260,40 @@
                 </template>
             </rd-table>
       </div>
+
+      <!-- 订单详情 -->
+       <full-dialog
+        v-model="addVisible"
+        hideTitle
+        @change="addVisible = false"
+      >
+        <el-radio-group v-model="tabPosition" style="margin-bottom: 30px;" @change="tabClick">
+            <el-radio-button label="1">订单课程</el-radio-button>
+            <el-radio-button label="2">缴费记录</el-radio-button>
+            <el-radio-button label="3">订单日志</el-radio-button>
+            <el-radio-button label="4">网课开通记录</el-radio-button>
+            <el-radio-button label="5">直播开通记录</el-radio-button>
+            <el-radio-button label="6">看课进度记录</el-radio-button>
+            <el-radio-button label="7">协议列表</el-radio-button>
+            <el-radio-button label="8">图书快递记录</el-radio-button>
+            <el-radio-button label="9">用户组开通记录</el-radio-button>
+            <el-radio-button label="10">收入确认</el-radio-button>
+        </el-radio-group>
+        <!-- 订单课程 -->
+        <orderCourse/>
+        
+      </full-dialog>
   </div>
 </template>
 
 <script>
-
+import orderCourse from './orderCourse';
 export default {
   name:"order-list",
   data(){
     return {
+        tabPosition:"1",
+        addVisible: true,
         form: {
 
         },
@@ -324,7 +349,13 @@ export default {
   mounted(){
       this.getTableData();
   },
+  components: {
+      orderCourse
+  },
    methods: {
+       tabClick(e){
+           console.log(e,'---')
+       },
        onSearch(){
            this.getTableData();
        },
