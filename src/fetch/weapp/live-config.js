@@ -39,11 +39,21 @@ export default {
 
   projectType_select: { url: '/live/console/type/get_select_types', method: 'post' },
 
+  // 白名单词
   white_word_getList: { url: '/live/console/im_whitelist_word/get', method: 'post' },
   white_word_delete: { url: '/live/console/im_whitelist_word/delete', method: 'post' },
   white_word_update: { url:'/live/console/im_whitelist_word/update', method: 'post' },
   white_word_list: { url: '/live/console/im_whitelist_word/page_list', method: 'post' },
   white_word_add: { url: '/live/console/im_whitelist_word/add', method: 'post' },
   white_word_add_import: { url: '/live/console/im_whitelist_word/import_whitelist_word', method: 'post' },
-  white_word_delete_import: { url: '/live/console/im_whitelist_word/import_delete_whitelist_word', method: 'post' }
+  white_word_delete_import: { url: '/live/console/im_whitelist_word/import_delete_whitelist_word', method: 'post' },
+
+  // 敏感单词
+  sensitive_word_getList: { url: '/live/console/im_blacklist_word/get', method: 'post'},
+  sensitive_word_delete: { url: '/live/console/im_blacklist_word/delete', method: 'post' },
+  sensitive_word_update: { url:'/live/console/im_blacklist_word/update', method: 'post' },
+  sensitive_word_list: { url: '/live/console/im_blacklist_word/page_list', method: 'post' },
+  sensitive_word_add: { url: '/live/console/im_blacklist_word/add', method: 'post' },
+  sensitive_word_add_import: { url: '/live/console/im_blacklist_word/import_blacklist_word', method: 'post' },
+  sensitive_word_delete_import: { url: '/live/console/im_blacklist_word/import_delete_blacklist_word', method: 'post' }
 }
