@@ -18,7 +18,7 @@
 				</div>
 				<mpnews v-show="msgtype == 'mpnews'" :account="account" @msgData='handle_msgData'></mpnews>
 				<textmsg v-show="msgtype == 'text'" @msgData='handle_msgData'></textmsg>
-				<imgmsg v-show="msgtype == 'image'" @msgData='handle_msgData'></imgmsg>
+				<imgmsg v-show="msgtype == 'image'" :account="account" @msgData='handle_msgData'></imgmsg>
 				<miniprogrampage v-show="msgtype == 'miniprogrampage'" @msgData='handle_msgData'></miniprogrampage>
 			</div>
 			<div class="right">

@@ -1,9 +1,16 @@
 <template>
 
 	<el-popover v-model="show" class="select-pop" placement="bottom-start" width="700" trigger="click" :append-to-body="false">
+		<slot name="header"></slot>
 		<search-form v-if="searchObj.formOptions.length > 0" :formOptions="searchObj.formOptions" :showNum="searchObj.showNum" @onSearch="onSearch" ref="searchForm"></search-form>
 		<div class="scroll-box" ref="scrollBox" v-infinite-scroll="getTableData">
 			<el-table :data="tableData">
+				<el-table-column width="55" v-if="tableObj.multiple">
+					<template slot-scope="scope">
+						<el-checkbox v-model="scope.row.select" @change="handleMultiple(scope.row)"></el-checkbox>
+					</template>
+				</el-table-column>
+
 				<template v-for="(item,index) in tableObj.tableKey">
 					<el-table-column v-if="!item.operate" :prop="item.value" :label="item.name" :width="item.width" :key="index"></el-table-column>
 					<el-table-column v-else :key="index" :label="item.name">
@@ -22,11 +29,76 @@
 		<div slot="reference" class="reference" @click="load">
 			<slot></slot>
 		</div>
+		<slot name="footer"></slot>
 		<!-- <el-button slot="reference">click 激活</el-button> -->
 	</el-popover>
 </template>
 
 <script>
+/* 
+// 这个是搜索相关的配置，包含搜索条件配置
+searchObj: {
+	api: "填写配置的api名",
+	// 这个是筛选条件配置举例 当前可筛选条件 labelName 和 labelType ，且labelType是选择类型，提供了两个可选项
+	formOptions: [
+		{
+			prop: "labelName",
+			element: "el-input",
+			placeholder: "请输入标签名称",
+		},
+		{
+			prop: "labelType",
+			element: "el-select",
+			placeholder: "请选择标签类型",
+			options: [
+				{
+					label: '系统标签',
+					value: '0'
+				},
+				{
+					label: '自定义标签',
+					value: '1'
+				}
+			]
+		},
+	],
+	// 显示多少个筛选条件
+	showNum: 2,
+	// 是否需要显示项目分类筛选条件
+	needType: false,
+	// api接口的额外参数
+	params: {
+		appId: '',
+	}
+},
+// 这里是表格内数据配置
+tableObj: {
+	// 这个是表格内显示的内容是什么
+	tableKey: [
+		{
+			name: "ID主键",
+			value: "id",
+			width: 80
+		},
+		{
+			name: "标签名称",
+			value: "labelName",
+		},
+		{
+			name: "标签类型",
+			value: "labelTypeZH",
+		},
+	],
+	// 多选
+	multiple:true,
+	// 这个是对表格元素可以再进行改动
+	transItem: (item) => {
+		item.labelTypeZH = item.labelType == '0' ? '系统标签' : '自定义标签'
+		return item
+	}
+}
+
+*/
 export default {
 	props: {
 		searchObj: {
@@ -58,8 +130,14 @@ export default {
 	},
 	methods: {
 		handleClick(data) {
-			this.show = false
-			this.$emit('select', data)
+			if (this.tableObj.multiple) {
+				data.select = !data.select
+				this.$emit('select', data)
+			} else {
+				this.show = false
+				this.$emit('select', data)
+			}
+
 		},
 		onSearch(data) {
 			this.searchForm = { ...data };
@@ -95,43 +173,54 @@ export default {
 				return
 			}
 			let data = []
-			if (res.data.hasOwnProperty('records')) {
+			// 暂时的话 只有这个获取公众号素材接口是需要特殊处理的，它返回的结构并不是和其他通用的分页请求格式保持风格统一。
+			if (this.searchObj.api == 'graphic_message_get_material') {
+				if (this.searchObj.params.type == 'news') {
+					res.data.item.forEach(v => {
+						data = data.concat(v.content.news_item)
+					})
+				} else {
+					data = res.data.item
+				}
+				this.pageConfig.hasNext = res.data.item.length > 0
+			} else {
 				data = res.data.records
 				this.pageConfig.hasNext = res.data.hasNext
-			} else if (res.data.hasOwnProperty('item')) {
-				// data = res.data.item.map(v=>{
-				// 	return v.news_item
-				// })
-				res.data.item.forEach(v => {
-					data = data.concat(v.content.news_item)
-				})
-				this.pageConfig.hasNext = res.data.item.length > 0
-			}
-			if (typeof this.tableObj.transItem == 'function') {
-				data = data.map(v => {
-					return this.tableObj.transItem(v)
-				})
 			}
 
+			data = data.map(v => {
+				let item = {}
+				if (typeof this.tableObj.transItem == 'function') {
+					Object.assign(item, this.tableObj.transItem(v))
+				}
+				if (this.tableObj.multiple) {
+					item.select = false
+				}
+				return item
+			})
+			// 记录下新增数据前的滚动区是滚到了哪里
 			let markScollHeight = this.tableData.length == 0 ? 0 : this.$refs.scrollBox.scrollHeight
+			// 记录一下表单的每一栏是多高，这个一般都是固定的，可以随便选一个
 			let trHeight = this.$refs.scrollBox.querySelector('tr').offsetHeight || 0
 			this.tableData = this.tableData.concat(data)
 			this.pageConfig.pageNum++
 			this.$nextTick(() => {
+				// 数据更新之后，把滚动条滚动到上一个滚动的地方，且再往上一个tr，这样用户大概会感知到继续往下滚的内容是新加载出来的。
+				// 做这个操作的最根本原因是，这个表单新加数据之后，其实并不会触发滚动区文档流往下新增，导致的问题就是用户滚动到底部之后，每次数据新增之后又触发了一个新的
+				// 页面滚动到底部的事件，这就导致了请求会无休止的加载直至再无更多数据。这个问题比较严重，所以要做个特殊处理。
 				this.$refs.scrollBox.scrollTo(0, markScollHeight - trHeight)
 				this.tableLoad = false
 			})
-			// setTimeout(() => {
-
-			// }, 300)
-
-
-
 		},
 		load() {
 			if (this.tableData.length == 0) {
 				this.getTableData()
 			}
+		},
+		handleMultiple(data) {
+			// console.log(data)
+			data.select = !data.select
+			this.$emit('select', data)
 		}
 	},
 	async created() {
