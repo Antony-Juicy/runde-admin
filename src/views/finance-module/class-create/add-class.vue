@@ -118,7 +118,7 @@ export default {
   props: {
     opportunityIds: {
       type: String,
-      default: 0,
+      default: '',
     },
   },
   mounted() {

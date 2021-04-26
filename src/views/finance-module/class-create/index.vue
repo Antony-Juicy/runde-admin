@@ -72,51 +72,7 @@
       </div>
 
       <div class="class-step1 class-moudle" v-show="active == 0">
-        <RdForm
-          :formOptions="addFormOptions"
-          :rules="addRules"
-          ref="dataForm1"
-          formLabelWidth="120px"
-        >
-          <template slot="project" slot-scope="scope">
-            <el-row style="margin-left: -120px">
-              <el-col :span="12">
-                <el-form-item label="项目：" prop="project" inline="true">
-                  <el-select
-                    v-model="basicInfo.project"
-                    placeholder="请选择"
-                    size="small"
-                  >
-                    <el-option
-                      v-for="item in projectArr"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    >
-                    </el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="科目：" prop="subject" inline="true">
-                  <el-select
-                    v-model="basicInfo.subject"
-                    placeholder="请选择"
-                    size="small"
-                  >
-                    <el-option
-                      v-for="item in projectArr"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    >
-                    </el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </template>
-        </RdForm>
+        <firstStep ref="dataForm1"></firstStep>
       </div>
 
       <div class="class-step2 class-moudle" v-show="active == 1">
@@ -187,9 +143,9 @@
             </el-row>
           </el-form-item>
           <el-row :gutter="20">
-            <el-form-item label="退费规则：" prop="refundType">
+            <el-form-item label="退费规则：" prop="refundRulers">
               <el-select
-                v-model="basicInfo.refundType"
+                v-model="basicInfo.refundRulers"
                 placeholder="请选择退费规则"
                 size="small"
               >
@@ -330,7 +286,7 @@
       @handleClose="distributeVisible = false"
     >
       <addClass
-        :opportunityIds="opportunityIds"
+        :opportunityIds="opportunityIds" 
         @refresh="getTableData"
         @close="distributeVisible = false"
         v-if="distributeVisible"
@@ -428,6 +384,7 @@ import netClass from "./net-class";
 import liveClass from "./live-class";
 import videoClass from "./video-class";
 import distribeClass from "./distribe-class";
+import firstStep from "./first-step";
 export default {
   name: "class-create",
   components: {
@@ -438,10 +395,11 @@ export default {
     liveClass,
     videoClass,
     distribeClass,
+    firstStep,
   },
   data() {
     return {
-      filterColumn: ["classTypeGroup", "serviceType", "classGroupNumber"],
+      filterColumn: ["classTypeGroup", "serviceType", "classGroupSize"],
       btnLoading: false,
       detailVisible: false,
       setVisible1: false,
@@ -459,7 +417,7 @@ export default {
         { prop: "project", element: "el-select", placeholder: "请选择项目" },
         { prop: "subject", element: "el-select", placeholder: "请选择科目" },
         { prop: "status", element: "el-select", placeholder: "请选择状态" },
-        { prop: "year", element: "el-select", placeholder: "请选择年份" },
+        { prop: "classYear", element: "el-select", placeholder: "请选择年份" },
         {
           prop: "protocolTypeId",
           element: "el-select",
@@ -476,12 +434,12 @@ export default {
           placeholder: "请选择退费规则",
         },
         {
-          prop: "serviceTime",
+          prop: "serviceYear",
           element: "el-select",
           placeholder: "请选择服务年限",
         },
         {
-          prop: "classGroupNumber",
+          prop: "classTypeGroup",
           element: "el-select",
           placeholder: "请选择班型分组",
         },
@@ -495,7 +453,7 @@ export default {
       tableKey: [
         { name: "ID", value: "id" },
         { name: "班型名称", value: "classTypeName" },
-        { name: "年份", value: "year" },
+        { name: "年份", value: "classYear" },
         { name: "项目", value: "project" },
         { name: "科目", value: "subject" },
         { name: "班型类型", value: "classTypeId" },
@@ -505,13 +463,13 @@ export default {
         { name: "课程", value: "course" },
         { name: "班型内容", value: "classtypeContent", operate: true },
         { name: "学费/元", value: " tuitionFees" },
-        { name: "服务年限", value: "serviceTime" },
+        { name: "服务年限", value: "serviceYear" },
         { name: "不可退金额/元", value: " cost" },
         { name: "通过扣除费用", value: "deductingFees" },
         { name: "班型分组", value: "classTypeGroup" },
         { name: "班型阶段", value: "classStage" },
         { name: "班群服务类型", value: "serviceType" },
-        { name: "班群人数", value: "classGroupNumber" },
+        { name: "班群人数", value: "classGroupSize" },
         { name: "状态", value: "status" },
         {
           name: "操作",
@@ -530,188 +488,30 @@ export default {
       loading: false,
       addVisible: false,
       addStatus: true,
-      addFormOptions: [
-        {
-          prop: "project",
-          element: "el-input",
-          placeholder: "项目",
-          operate: true,
-        },
-        {
-          prop: "className",
-          element: "el-input",
-          placeholder: "请输入班型名称",
-          label: "班型名称：",
-        },
-        {
-          prop: "classYear",
-          element: "el-select",
-          placeholder: "班型年份",
-          label: "班型年份:",
-          options: [
-            {
-              value: "选项1",
-              label: "1",
-            },
-            {
-              value: "选项2",
-              label: "2",
-            },
-            {
-              value: "选项3",
-              label: "3",
-            },
-            {
-              value: "选项4",
-              label: "4",
-            },
-            {
-              value: "选项5",
-              label: "5",
-            },
-          ],
-        },
-        {
-          prop: "classType",
-          element: "el-radio",
-          placeholder: "请选择类型",
-          label: "班型类型：",
-          options: [
-            {
-              label: "网课",
-              value: "1",
-            },
-            {
-              label: "直播",
-              value: "2",
-            },
-            {
-              label: "面授",
-              value: "3",
-            },
-            {
-              label: "证书",
-              value: "4",
-            },
-            {
-              label: "公开课",
-              value: "5",
-            },
-          ],
-          initValue: "0",
-        },
-        {
-          prop: "classGroup",
-          element: "el-radio",
-          placeholder: "请选择类型",
-          label: "班型分组：",
-          options: [
-            {
-              label: "高端班",
-              value: "1",
-            },
-            {
-              label: "非高端班",
-              value: "2",
-            },
-            {
-              label: "定制班",
-              value: "3",
-            },
-          ],
-          initValue: "0",
-        },
-        {
-          prop: "serviceYear",
-          element: "el-radio",
-          placeholder: "请选择类型",
-          label: "服务年限：",
-          options: [
-            {
-              label: "1年",
-              value: "1",
-            },
-            {
-              label: "2年",
-              value: "2",
-            },
-            {
-              label: "3年",
-              value: "3",
-            },
-            {
-              label: "4年",
-              value: "4",
-            },
-          ],
-          initValue: "0",
-        },
-        {
-          prop: "protocolType",
-          element: "el-radio",
-          placeholder: "请选择协议类型",
-          label: "协议类型：",
-          options: [
-            {
-              label: "协议班",
-              value: "Open",
-            },
-            {
-              label: "非协议班",
-              value: "Close",
-            },
-          ],
-          initValue: "Open",
-        },
-        {
-          prop: "refundType",
-          element: "el-radio",
-          placeholder: "请选择退费类型",
-          label: "退费类型：",
-          options: [
-            {
-              label: "退费",
-              value: "Open",
-            },
-            {
-              label: "不退费",
-              value: "Close",
-            },
-          ],
-          initValue: "Open",
-        },
-        {
-          prop: "status",
-          element: "el-radio",
-          placeholder: "请选择状态",
-          label: "状态：",
-          options: [
-            {
-              label: "正常",
-              value: "Open",
-            },
-            {
-              label: "暂停",
-              value: "Close",
-            },
-          ],
-          initValue: "Open",
-        },
-      ],
       addRules: {
-        // project: [{ required: true, message: "请选择", trigger: "blur" }],
-        // subject: [{ required: true, message: "请选择", trigger: "blur" }],
-        className: [
-          { required: true, message: "请输入", trigger: "blur" },
-          { max: 20, message: "命名，字数上限不超过20字", trigger: "blur" },
-        ],
-        classYear: [{ required: true, message: "请选择", trigger: "blur" }],
-        classType: [{ required: true, message: "请选择", trigger: "blur" }],
-        classGroup: [{ required: true, message: "请选择", trigger: "blur" }],
-        serviceYear: [{ required: true, message: "请选择", trigger: "blur" }],
-        protocolType: [{ required: true, message: "请选择", trigger: "blur" }],
-        refundType: [{ required: true, message: "请选择", trigger: "blur" }],
-        status: [{ required: true, message: "请选择", trigger: "blur" }],
+        // project: [
+        //   { required: true, message: "请选择project", trigger: "change" },
+        // ],
+        // subject: [
+        //   { required: true, message: "请选择subject", trigger: "change" },
+        // ],
+        // classTypeName: [
+        //   { required: true, message: "请输入", trigger: "blur" },
+        //   { max: 20, message: "命名，字数上限不超过20字", trigger: "blur" },
+        // ],
+        // classYear: [{ required: true, message: "请选择", trigger: "blur" }],
+        // classTypeId: [{ required: true, message: "请选择", trigger: "change" }],
+        // classTypeGroup: [
+        //   { required: true, message: "请选择", trigger: "change" },
+        // ],
+        // serviceYear: [{ required: true, message: "请选择", trigger: "change" }],
+        // protocolTypeId: [
+        //   { required: true, message: "请选择", trigger: "change" },
+        // ],
+        // refundTypeId: [
+        //   { required: true, message: "请选择", trigger: "change" },
+        // ],
+        // status: [{ required: true, message: "请选择", trigger: "change" }],
       },
       basicInfo2: {
         campusVisible: "",
@@ -733,7 +533,7 @@ export default {
         status: "",
         nextTime: "",
         detail: "",
-        refundType: "",
+        refundRulers: "",
         cost: "",
         deductingFees: "",
         tableData: [
@@ -784,7 +584,7 @@ export default {
           { required: true, message: "请输入", trigger: "blur" },
           { type: "number", message: "学费必须为数字值" },
         ],
-        refundType: [{ required: true, message: "请选择", trigger: "blur" }],
+        refundTypeId: [{ required: true, message: "请选择", trigger: "blur" }],
         cost: [{ required: true, message: "请输入", trigger: "blur" }],
         deductingFees: [{ required: true, message: "请输入", trigger: "blur" }],
       },
@@ -880,13 +680,13 @@ export default {
           initValue: "Open",
         },
         {
-          prop: "ClassTypeService",
+          prop: "serviceType",
           element: "el-select",
           placeholder: "班型服务",
           label: "班型服务：",
         },
         {
-          prop: "ClassGroupSize",
+          prop: "classGroupSize",
           element: "el-input",
           placeholder: "班级群人数",
           label: "班级群人数：",
@@ -930,7 +730,7 @@ export default {
       },
       campusArr: [],
       distributeVisible: false,
-      opportunityIds: "",
+      opportunityIds: '',
       detailTableData: [
         {
           id: 1,
@@ -967,6 +767,17 @@ export default {
     this.getTableData();
   },
   methods: {
+    // handleChange(soltName, val) {
+    //   console.log("jjjj");
+    //   this.$refs.dataForm1.setValue({
+    //     [soltName]: val,
+    //   });
+    //   setTimeout(() => {
+    //     this.$refs["dataForm1"].validateField([soltName], (errorMessage) => {
+    //       console.log(errorMessage, "errorMessage");
+    //     });
+    //   }, 0);
+    // },
     handleSet(row, index) {
       //设置配送图书
       this[`setVisible${index}`] = true;
@@ -1125,9 +936,15 @@ export default {
         }
       } else {
         console.log("formName====", formName);
-        this.$refs[formName].validate((valid, formData) => {
+        let dataForm;
+        if (formName == "dataForm1") {
+          dataForm = this.$refs.dataForm1.$refs.dataForm;
+        } else {
+          dataForm = this.$refs[formName];
+        }
+        dataForm.validate((valid, formData) => {
+          console.log("formData + formData", valid, formData);
           if (valid) {
-            console.log("jjjjj");
             this.active++;
             //TODO
             // this.$fetch("wechatstaffqrcode_sendMessageInfo", {
