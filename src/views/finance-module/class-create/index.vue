@@ -82,72 +82,130 @@
           :rules="rules"
           label-width="120px"
         >
-          <el-form-item label="学费价格：">
-            <el-row :gutter="6" class="mb20">
-              <el-col :span="3">总学费</el-col>
-              <el-col :span="5">
-                <el-input
-                  v-model="basicInfo.sumPrice"
-                  placeholder="请输入内容"
-                ></el-input>
-              </el-col>
-              <el-col :span="8">元</el-col>
-            </el-row>
-            <el-row :gutter="20" class="mb20">
-              <el-col :span="3">中药一</el-col>
-              <el-col :span="8">
-                <el-input
-                  v-model="basicInfo.price1"
-                  placeholder="请输入价格"
-                ></el-input>
-              </el-col>
-              <el-col :span="3">
-                <el-checkbox v-model="basicInfo.checked1">计算业绩</el-checkbox>
-              </el-col>
-            </el-row>
-            <el-row :gutter="20" class="mb20">
-              <el-col :span="3">中药二</el-col>
-              <el-col :span="8">
-                <el-input
-                  v-model="basicInfo.price2"
-                  placeholder="请输入价格"
-                ></el-input>
-              </el-col>
-              <el-col :span="3">
-                <el-checkbox v-model="basicInfo.checked2">计算业绩</el-checkbox>
-              </el-col>
-            </el-row>
-            <el-row :gutter="20" class="mb20">
-              <el-col :span="3">中药综合</el-col>
-              <el-col :span="8">
-                <el-input
-                  v-model="basicInfo.price3"
-                  placeholder="请输入价格"
-                ></el-input>
-              </el-col>
-              <el-col :span="3">
-                <el-checkbox v-model="basicInfo.checked3">计算业绩</el-checkbox>
-              </el-col>
-            </el-row>
-            <el-row :gutter="20">
-              <el-col :span="3">中药法规</el-col>
-              <el-col :span="8">
-                <el-input
-                  v-model="basicInfo.price4"
-                  placeholder="请输入价格"
-                ></el-input>
-              </el-col>
-              <el-col :span="3">
-                <el-checkbox v-model="basicInfo.checked4">计算业绩</el-checkbox>
-              </el-col>
-            </el-row>
-          </el-form-item>
+          <!-- start -->
+          <div class="">
+            <div class="row-item">
+              <span class="sumPriceRow" style="">学费价格：</span>
+              <div class="right-block">
+                <div class="param-item">
+                  <el-form-item
+                    label="总学费"
+                    label-width="80px"
+                    prop="sumPrice"
+                    :rules="{
+                      required: true,
+                      message: '不能为空',
+                      trigger: 'blur',
+                    }"
+                  >
+                    <el-input
+                      v-model="basicInfo.sumPrice"
+                      size="small"
+                      style="width: 300px"
+                    ></el-input>
+                    <span style="margin-left: 10px">元</span>
+                  </el-form-item>
+                </div>
+
+                <div class="param-item">
+                  <el-form-item
+                    label="中药一"
+                    label-width="80px"
+                    prop="price1"
+                    :rules="{
+                      required: true,
+                      message: '不能为空',
+                      trigger: 'blur',
+                    }"
+                  >
+                    <el-input
+                      v-model="basicInfo.price1"
+                      size="small"
+                      style="width: 300px"
+                    ></el-input>
+                    <!-- <span>元</span> -->
+                    <el-checkbox class="ml10" v-model="basicInfo.checked1"
+                      >计算业绩</el-checkbox
+                    >
+                  </el-form-item>
+                </div>
+
+                <div class="param-item">
+                  <el-form-item
+                    label="中药二"
+                    label-width="80px"
+                    prop="price2"
+                    :rules="{
+                      required: true,
+                      message: '不能为空',
+                      trigger: 'blur',
+                    }"
+                  >
+                    <el-input
+                      v-model="basicInfo.price2"
+                      size="small"
+                      style="width: 300px"
+                    ></el-input>
+                    <el-checkbox class="ml10" v-model="basicInfo.checked2"
+                      >计算业绩</el-checkbox
+                    >
+                  </el-form-item>
+                </div>
+
+                <div class="param-item">
+                  <el-form-item
+                    label="中药综合"
+                    label-width="80px"
+                    prop="price3"
+                    :rules="{
+                      required: true,
+                      message: '不能为空',
+                      trigger: 'blur',
+                    }"
+                  >
+                    <el-input
+                      v-model="basicInfo.price3"
+                      size="small"
+                      style="width: 300px"
+                    ></el-input>
+                    <el-checkbox class="ml10" v-model="basicInfo.checked3"
+                      >计算业绩</el-checkbox
+                    >
+                  </el-form-item>
+                </div>
+
+                <div class="param-item">
+                  <el-form-item
+                    label="中药综合"
+                    label-width="80px"
+                    prop="price4"
+                    :rules="{
+                      required: true,
+                      message: '不能为空',
+                      trigger: 'blur',
+                    }"
+                  >
+                    <el-input
+                      v-model="basicInfo.price4"
+                      size="small"
+                      style="width: 300px"
+                    ></el-input>
+                    <el-checkbox class="ml10" v-model="basicInfo.checked4"
+                      >计算业绩</el-checkbox
+                    >
+                  </el-form-item>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end -->
           <el-row :gutter="20">
             <el-form-item label="退费规则：" prop="refundRulers">
               <el-select
                 v-model="basicInfo.refundRulers"
                 placeholder="请选择退费规则"
                 size="small"
+                style="width:400px"
               >
                 <el-option
                   v-for="item in projectArr"
@@ -286,7 +344,7 @@
       @handleClose="distributeVisible = false"
     >
       <addClass
-        :opportunityIds="opportunityIds" 
+        :opportunityIds="opportunityIds"
         @refresh="getTableData"
         @close="distributeVisible = false"
         v-if="distributeVisible"
@@ -584,7 +642,9 @@ export default {
           { required: true, message: "请输入", trigger: "blur" },
           { type: "number", message: "学费必须为数字值" },
         ],
-        refundTypeId: [{ required: true, message: "请选择", trigger: "blur" }],
+        refundRulers: [
+          { required: true, message: "请选择", trigger: "change" },
+        ],
         cost: [{ required: true, message: "请输入", trigger: "blur" }],
         deductingFees: [{ required: true, message: "请输入", trigger: "blur" }],
       },
@@ -730,7 +790,7 @@ export default {
       },
       campusArr: [],
       distributeVisible: false,
-      opportunityIds: '',
+      opportunityIds: "",
       detailTableData: [
         {
           id: 1,
@@ -969,6 +1029,24 @@ export default {
 
 <style lang="scss" scoped>
 .class-create {
+  .row-item {
+    display: flex;
+    font-size: 14px;
+    align-items: flex-start;
+    .sumPriceRow {
+      margin-left: 30px;
+      display: inline-block;
+      padding-top: 10px;
+    }
+    .ml10 {
+      margin-left: 10px;
+    }
+  }
+  .param-item {
+    display: flex;
+    align-items: center;
+    // margin-bottom: 20px;
+  }
   .steps-box {
     width: 80%;
     margin: 0 auto;
