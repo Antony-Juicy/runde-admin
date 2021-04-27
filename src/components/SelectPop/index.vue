@@ -78,7 +78,7 @@ tableObj: {
 		{
 			name: "ID主键",
 			value: "id",
-			width: 80
+			width: 80,
 		},
 		{
 			name: "标签名称",
@@ -87,6 +87,8 @@ tableObj: {
 		{
 			name: "标签类型",
 			value: "labelTypeZH",
+			// 当 operate 为true 的时候，组价标签内可以通过 <template slot="labelTypeZH" slot-scope="scope"></template> 来填写自定义插槽显示的内容。且会附带作用域数据
+			operate:true,
 		},
 	],
 	// 多选
