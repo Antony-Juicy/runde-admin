@@ -103,10 +103,52 @@
 
 
     <!-- 二维码统计 -->
-		<fullDialog class="accountLabel" :title="'渠道码数据统计'" v-model="staVisible">
+		<fullDialog class="accountLabel" :title="'渠道码数据统计'" v-model="staVisible" @change="staVisible = false">
 			<statistical ref="accountLabel"></statistical>
 		</fullDialog>
     
+    
+		<!-- 编辑公众号 -->
+		<rd-dialog :title="AddEditTitle" :dialogVisible="addEditVisible" :showFooter="false" :width="'1200px'" @handleClose="addEditVisible = false">
+      <div class="line">
+        <p class="line-title">二维码名称:</p>
+        <div class="line-name">
+          <el-input type="text" placeholder="名称仅后台可见" v-model="msgtype.msgName" maxlength="20" show-word-limit />
+        </div>
+      </div>
+      <div class="line">
+        <p class="line-title">有效期:</p>
+        <div class="line-info">
+					<el-radio v-model="msgtype.time" label="1">永久（最多创建10万个）</el-radio>
+					<el-radio v-model="msgtype.time" label="2">30天（过期后将不能再扫码）</el-radio>
+        </div>
+      </div>
+      <div class="line lineTextarea">
+        <p class="line-title">粉丝标签:</p>
+        <div class="line-info textarea">
+          <p>选择下方标签即可给扫描此渠道码的粉丝打标签，方便粉丝管理。</p>
+          <div class="line-label">
+            <span class="line-label-title">已选标签：</span>
+            <div class="line-label-list">
+              <span class="line-label-text" v-for="item in [1,1,1,1,1,1,1,1]">标签</span>
+              <span class="line-label-add">
+                <i class="el-icon-circle-plus"></i>
+                添加标签
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="line">
+        <p class="line-title">关注后回复:</p>
+        <div class="line-info">
+					<el-radio v-model="msgtype.replay" label="1">新建特定回复</el-radio>
+					<el-radio v-model="msgtype.replay" label="2">不回复</el-radio>
+        </div>
+      </div>
+			<editMessage @msgForm="handle_msgForm" :account="account"></editMessage>
+		</rd-dialog>
+
   </div>
 
 
@@ -114,8 +156,9 @@
 
 <script>
 import Pagination from "@/components/Pagination/index.vue";
-import statistical from './components/statistical';
+import statistical from './statistical.vue';
 import fullDialog from "@/components/FullDialog";
+import editMessage from '../editMessage'
 
 export default {
     name:'users',
@@ -123,7 +166,8 @@ export default {
     components: {
         Pagination,
         statistical,
-        fullDialog
+        fullDialog,
+        editMessage
     },
 
     computed: {
@@ -154,10 +198,27 @@ export default {
             labelId:'',
             labelOpenId:'',
 
-            staVisible:false
-
+            staVisible:false,
+            
+            AddEditTitle: "新建渠道码",
+            addEditVisible: true,
+            account: {},
+            msgtype:{
+              msgName:'',
+              time:'1',
+              replay:'1'
+            },
         }
     },
+
+    
+	async mounted() {
+		let res = await this.$fetch(
+			"get_official_accounts_list",
+		);
+		this.officialAccounts = res.data
+		this.account = this.officialAccounts[0]
+	},
 
     // async mounted() {
     //     let res = await this.$fetch(
@@ -185,6 +246,12 @@ export default {
 	// },
 
   methods: {
+
+    
+		handle_msgForm(data) {
+			// 这里接收客服消息编辑区的表单信息
+			console.log(data)
+		},
 
     //获取表格数据
 		async getTableData() {
@@ -474,17 +541,81 @@ export default {
   margin-right: 0;
 }
 
-
-
-
-
-
-
-
-
-
-
-
+.line{
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.line-title{
+  width: 100px;
+  flex:0 0 100px;
+  font-size: 14px;
+  color:#333;
+  text-align: right;
+  padding-right:20px;
+  box-sizing: border-box;
+}
+.line-info{
+  flex:1;
+}
+.line-name{
+  width: 360px;
+  flex:0 0 360px;
+}
+/deep/ .el-input__inner{
+  height: 30px;
+  line-height: 30px;
+}
+.lineTextarea{
+  align-items: flex-start;
+  > p{
+    margin: 0 ;
+  }
+}
+.textarea{
+  padding:8px 10px 20px 10px;
+  box-sizing: border-box;
+  border:1px solid #DDDDDD;
+  > p{
+    margin: 0 0 10px 0;
+    color:#FFAF53;
+    font-size: 12px;
+  }
+}
+.line-label{
+  display: flex;
+  align-items: flex-start;
+}
+.line-label-title{
+  color:#333333;
+  font-size: 12px;
+  display: inline-block;
+  width: 80px;
+  flex: 0 0 80px;
+  margin-bottom: 0;
+  text-align: left;
+  padding:3px 0;
+}
+.line-label-list:after {
+  content: '';
+  height: 0;
+  line-height: 0;
+  display: block;
+  visibility: hidden;
+  clear: both;
+}
+.line-label-text{
+  padding:3px 5px ;
+  background:#EEEEEE;
+  margin:0 7px 7px 0;
+  color:#333333;
+  font-size: 12px;
+}
+.line-label-add{
+  padding:3px 5px ;
+  border: 1px solid #EEEEEE;
+  font-size: 12px;
+}
 
 
 

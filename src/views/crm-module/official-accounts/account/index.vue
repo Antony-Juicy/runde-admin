@@ -163,7 +163,7 @@ export default {
 		handleLabel(data) {
 			this.labelVisible = true
 			this.appId = data.appId
-
+			
 		}
 	},
 	mounted() {
