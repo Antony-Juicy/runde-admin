@@ -262,6 +262,8 @@ export default {
       let postData = {};
       if(label.length){
         postData.userTagAddListRequest = JSON.stringify(label);
+      }else{
+        postData.userTagAddListRequest = JSON.stringify([{labelName:'',labelId:'',openId:this.labelOpenId}]);
       }
       let res = await this.$fetch(
 				"update_label",
