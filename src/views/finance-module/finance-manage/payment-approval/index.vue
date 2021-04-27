@@ -189,32 +189,36 @@
             >
                 <template slot="studentName" slot-scope="scope">
                    姓名：{{scope.row.studentName}}<br/>
-                   手机：{{scope.row.phone}}<br/>
+                   <!-- 手机：{{scope.row.phone}}<br/>
                    学历：{{scope.row.education}}<br/>
-                   学年：{{scope.row.studentBatch}}<br/>
+                   学年：{{scope.row.studentBatch}}<br/> -->
                    <!-- 代理人：{{scope.row.studentName}}<br/> -->
                 </template>
                 <template slot="productName" slot-scope="scope">
+                   订单id：<br/>
                    项目：{{scope.row.studentName}}<br/>
                    科目：{{scope.row.subjectName}}<br/>
                    班型：<el-button type="text" style="padding: 0" @click="addVisible = true">{{scope.row.classTypeName}}</el-button><br/>
                    班次年份：{{scope.row.classBatch}}<br/>
                    课程：{{scope.row.courseName}}<br/>
-                   邮寄图书发放类型：{{scope.row.bookType}}<br/>
+                   订单创建时间：{{scope.row.bookType}}<br/>
                 </template>
                 <template slot="salesName" slot-scope="scope">
                    市场老师：{{scope.row.salesName}}<br/>
                    教务老师：{{scope.row.eduName}}<br/>
                    招生老师：{{scope.row.enrollName}}<br/>
                    班主任：{{scope.row.classTeacherName}}<br/>
-                   <!-- 订单创建：{{scope.row.courseName}}<br/> -->
+                   订单创建：{{scope.row.courseName}}<br/>
                 </template>
                 <template slot="orderId" slot-scope="scope">
-                   订单id：{{scope.row.orderId}}<br/>
-                   订单状态：{{scope.row.status}}<br/>
-                   订单流水：<el-button type="text" style="padding: 0">查看详情</el-button><br/>
-                   创建日期：{{scope.row.createAt}}<br/>
-                   更新时间：{{scope.row.updateAt}}<br/>
+                   缴费类型：{{scope.row.orderId}}<br/>
+                   支付类型：{{scope.row.status}}<br/>
+                   收款分校：<el-button type="text" style="padding: 0">查看详情</el-button><br/>
+                   付款金额：{{scope.row.createAt}}<br/>
+                   手续费：{{scope.row.updateAt}}<br/>
+                   收款方式：{{scope.row.updateAt}}<br/>
+                   缴费时间：{{scope.row.updateAt}}<br/>
+                   到账时间：{{scope.row.updateAt}}<br/>
                 </template>
                  <template slot="realPrice" slot-scope="scope">
                     原价：{{scope.row.realPrice}}<br/>
@@ -313,7 +317,7 @@ export default {
             // },
             {
                 name: "缴费信息",
-                value: "realPrice",
+                value: "orderId",
                 operate: true,
                 width: 230
             },
