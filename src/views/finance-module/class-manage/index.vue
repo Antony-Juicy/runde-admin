@@ -58,7 +58,7 @@
           formLabelWidth="120px"
         >
           <template slot="stage">
-            <el-checkbox-group v-model="checkList">
+            <el-checkbox-group v-model="checkList"  @change="handleCheckedChange('stage',checkList)">
               <el-checkbox label="基础阶段"></el-checkbox>
               <el-checkbox label="强化阶段"></el-checkbox>
               <el-checkbox label="冲刺阶段"></el-checkbox>
@@ -327,15 +327,15 @@ export default {
         },
       ],
       addRules: {
-        projectName: [{ required: true, message: "请选择", trigger: "blur" }],
+        projectName: [{ required: true, message: "请选择", trigger: "change" }],
         className: [{ required: true, message: "请输入", trigger: "blur" }],
-        elType: [{ required: true, message: "请选择", trigger: "blur" }],
+        elType: [{ required: true, message: "请选择", trigger: "change" }],
         eduAmount: [{ required: true, message: "请输入", trigger: "blur" }],
-        computedRules: [{ required: true, message: "请选择", trigger: "blur" }],
-        time: [{ required: true, message: "请选择", trigger: "blur" }],
-        videoStatus: [{ required: true, message: "请选择", trigger: "blur" }],
-        stage: [{ required: true, message: "请选择", trigger: "blur" }],
-        courseStatus: [{ required: true, message: "请选择", trigger: "blur" }],
+        computedRules: [{ required: true, message: "请选择", trigger: "change" }],
+        time: [{ required: true, message: "请选择", trigger: "change" }],
+        videoStatus: [{ required: true, message: "请选择", trigger: "change" }],
+        stage: [{ required: true, message: "请选择", trigger: "change" }],  
+        courseStatus: [{ required: true, message: "请选择", trigger: "change" }],
       },
       btnLoading: false,
       dynamicValidateForm: {
@@ -352,7 +352,22 @@ export default {
       rulesArr: [],
     };
   },
+  mounted(){
+    this.getTableData()
+  },
   methods: {
+    handleCheckedChange(soltName, val) {
+      console.log('hahh',val)
+      this.$refs.dataForm3.setValue({
+        [soltName]: val,
+      });
+      setTimeout(() => {
+        this.$refs["dataForm3"].validateField([soltName], (errorMessage) => {
+          console.log(errorMessage, "errorMessage");
+        });
+      }, 0);
+    },
+
     getMulInfo(selIds, arr) {
       if (!selIds) {
         return [];
@@ -376,7 +391,7 @@ export default {
     },
     handleSubmit(formName) {
       // TODO 保存
-      // this.$refs[formName].validate((valid, formData) => {
+      this.$refs[formName].validate((valid, formData) => {
       //   if (valid) {
       //     console.log(formData, "提交 11");
       //     const {time, projectName, computedRules } = formData;
@@ -404,7 +419,7 @@ export default {
       //       this.getTableData();
       //     });
       //   }
-      // });
+      });
     },
     onSearch(val) {
       this.searchForm = { ...val };
@@ -415,12 +430,20 @@ export default {
       this.addVisible = true;
     },
     getTableData(params = {}) {
-      this.$fetch("posterinfo_listJson", {
+      // posterinfo_listJson
+      this.$fetch("courseProductContent_listJsp", { 
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
       }).then((res) => {
         console.log("res0000", res.data.data);
+      });
+
+          this.$fetch("getProductList", { 
+
+        ...params,
+      }).then((res) => {
+        console.log("res00001", res.data.data);
       });
     },
     pageChange(val) {

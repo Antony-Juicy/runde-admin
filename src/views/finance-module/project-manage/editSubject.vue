@@ -297,22 +297,22 @@
         });
       },
       getData(){
-        this.$fetch("lookpicture_goEditDetails",{
-          id: this.id,
-          issuseId: this.issuseId
-        }).then(res => {
-          let { issuseId,issue,issuesType } = res.data.pd;
-          this.dynamicValidateForm = {
-            option: [...issue.option],
-            issuseId,
-            issuesType,
-            issuse: issue.issuse,
-            imageIssuse: issue.imageIssuse,
-            textAnalysis: issue.textAnalysis,
-            imageAnalysis: issue.imageAnalysis,
-            answer: issue.answer
-          }
-        })
+        // this.$fetch("lookpicture_goEditDetails",{
+        //   id: this.id,
+        //   issuseId: this.issuseId
+        // }).then(res => {
+        //   let { issuseId,issue,issuesType } = res.data.pd;
+        //   this.dynamicValidateForm = {
+        //     option: [...issue.option],
+        //     issuseId,
+        //     issuesType,
+        //     issuse: issue.issuse,
+        //     imageIssuse: issue.imageIssuse,
+        //     textAnalysis: issue.textAnalysis,
+        //     imageAnalysis: issue.imageAnalysis,
+        //     answer: issue.answer
+        //   }
+        // })
       }
     }
   }

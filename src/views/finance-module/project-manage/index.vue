@@ -18,9 +18,9 @@
           @pageChange="pageChange"
           :emptyText="emptyText"
         >
-          <template slot="projectName" slot-scope="scope">
+          <template slot="productName" slot-scope="scope">
             <el-button @click="detailVisible = true" type="text" size="small">{{
-              scope.row.projectName
+              scope.row.productName
             }}</el-button>
           </template>
           <template slot="edit" slot-scope="scope">
@@ -45,9 +45,9 @@
         :rules="addRules"
         ref="dataForm3"
       >
-        <template slot="describe">
+        <template slot="productDetail">
           <el-input
-            v-model.trim="dataForm.describe"
+            v-model.trim="dataForm.productDetail"
             type="textarea"
             placeholder="请输入项目描述"
             size="small"
@@ -59,7 +59,7 @@
           type="primary"
           size="small"
           :loading="btnLoading"
-          @click="handleAddClass('dataForm3')"
+          @click="handleSubmit('dataForm3')"
           v-prevent-re-click="2000"
           >添加</el-button
         >
@@ -98,7 +98,7 @@ export default {
       editId: "",
       emptyText: "暂无数据",
       dataForm: {
-        describe: "",
+        productDetail: "",
       },
       addStatus: true,
       distributeVisible: false,
@@ -112,35 +112,44 @@ export default {
       },
       formOptions: [
         {
-          prop: "project",
+          prop: "productName",
           element: "el-select",
           placeholder: "请选择项目",
+          options: [],
         },
         {
-          prop: "projectType",
+          prop: "productStatus",
           element: "el-select",
-          placeholder: "请选择类型",
+          placeholder: "请选择状态",
+          options: [
+            {
+              label: "正常",
+              value: 0,
+            },
+            {
+              label: "暂停",
+              value: 1,
+            },
+          ],
         },
       ],
       tableData: [
-        {
-          id: 1,
-          projectName: "医师",
-          tecTime: "/",
-          TheoryTestTime: "10-30",
-          closeTime: "11-30",
-          status: "正常",
-          creatTime: "2021-2.-1 09：32",
-        },
+        // {
+        //   id: 1,
+        //   productName: "医师",
+        //   tecTime: "/",
+        //   TheoryTestTime: "10-30",
+        //   closeTime: "11-30",
+        //   status: "正常",
+        //   createAt: "2021-2.-1 09：32",
+        // },
       ],
       tableKey: [
         { name: "id", value: "id" },
-        { name: "项目名", value: "projectName", operate: true },
-        { name: "技能考试时间", value: "tecTime" },
-        { name: "理论考试时间", value: "TheoryTestTime" },
-        { name: "关课时间", value: "closeTime" },
-        { name: "状态", value: "status" },
-        { name: "创建时间", value: "creatTime" },
+        { name: "项目名", value: "productName", operate: true },
+        { name: "备注", value: "productDetail" },
+        { name: "状态", value: "productStatus" },
+        { name: "创建时间", value: "createAt" },
         {
           name: "操作",
           value: "edit",
@@ -151,50 +160,50 @@ export default {
       ],
       addFormOptions: [
         {
-          prop: "project",
+          prop: "productName",
           element: "el-input",
           placeholder: "请输入项目名称",
           label: "项目",
         },
         {
-          prop: "projectNum",
+          prop: "productNumber",
           element: "el-input",
           placeholder: "请输入项目编号",
           label: "项目编号",
         },
         {
-          prop: "describe",
+          prop: "productDetail",
           element: "el-input",
           placeholder: "请输入项目描述",
           operate: true,
           label: "项目描述",
         },
         {
-          prop: "status",
+          prop: "productStatus",
           element: "el-radio",
           placeholder: "请选择状态",
           label: "状态：",
           options: [
             {
-              label: "正常",
-              value: "Open",
+              label: "正常111111111111111",
+              value: "0",
             },
             {
-              label: "暂停",
-              value: "Close",
+              label: "暂停11111111111",
+              value: "1",
             },
           ],
-          initValue: "Open",
+          initValue: "0",
         },
         {
-          prop: "oneCategories",
+          prop: "financeCodeName1",
           element: "el-select",
           placeholder: "请选择",
           label: "一级类目",
           options: [],
         },
         {
-          prop: "twoCategories",
+          prop: "financeCodeName2",
           element: "el-select",
           placeholder: "请选择",
           label: "二级类目",
@@ -202,37 +211,47 @@ export default {
         },
       ],
       addRules: {
-        project: [{ required: true, message: "请输入", trigger: "blur" }],
-        projectNum: [{ required: true, message: "请输入", trigger: "blur" }],
-        //  describe: [
+        productName: [{ required: true, message: "请输入", trigger: "blur" }],
+        productNumber: [{ required: true, message: "请输入", trigger: "blur" }],
+        //  productDetail: [
         //   { required: true, message: "请输入", trigger: "blur" },
         // ],
-        status: [{ required: true, message: "请选择", trigger: "blur" }],
-        oneCategories: [{ required: true, message: "请选择", trigger: "blur" }],
-        twoCategories: [{ required: true, message: "请选择", trigger: "blur" }],
+        productStatus: [
+          { required: true, message: "请选择", trigger: "change" },
+        ],
+        financeCodeName1: [
+          { required: true, message: "请选择", trigger: "change" },
+        ],
+        financeCodeName2: [
+          { required: true, message: "请选择", trigger: "change" },
+        ],
       },
       detailVisible: false,
+      financeCode1List: [], //一级类目
+      financeCode2List: [], //二级类目
     };
   },
   mounted() {
     this.getTableData();
+    this.getSelectList();
   },
   methods: {
     refresh() {},
-    handleAddClass(formName) {
+    handleSubmit(formName) {
       this.$refs[formName].validate((valid, formData) => {
         if (valid) {
-          console.log(formData, "添加");
-          //TODO
+          console.log(formData, "添加", this.addFormOptions[4].options );
+          let financeCode1,financeCode2;
+          let obj1 = this.addFormOptions[4].options.find(item => (item.value == formData.financeCodeName1));
+          financeCode1 =  obj1&&obj1.financeCode1;
+          let obj2 = this.addFormOptions[5].options.find(item => (item.value == formData.financeCodeName2));
+          financeCode2 =  obj2&&obj2.financeCode2;
           this.$fetch(
-            this.addStatus
-              ? "secretexamsubject_add"
-              : "secretexamsubject_editJsp",
+            this.addStatus ? "courseProduct_save" : "courseProduct_editJsp",
             {
               ...formData,
-              time: "",
-              startTime: formData.time ? formData.time[0] : "",
-              endTime: formData.time ? formData.time[1] : "",
+              financeCode1,
+              financeCode2,
               id: this.addStatus ? "" : this.editId,
             }
           ).then((res) => {
@@ -247,23 +266,50 @@ export default {
       this.searchForm = {
         ...val,
       };
+      console.log(val, this.searchForm, "val---");
       this.getTableData();
     },
+    getSelectList() {
+      //项目
+      this.$fetch("courseProduct_listJsp").then((res) => {
+        console.log("hhhhh999", res);
+        this.formOptions[0].options = res.data.productList.map((item) => ({
+          label: item.productName,
+          value: item.id,
+        }));
+      });
+      //一级、二级类目
+      this.$fetch("courseProduct_goAdd").then((res) => {
+        this.financeCode1List = res.data.financeCode1List.map((item) => ({
+          label: item.value,
+          value: item.value,
+          financeCode1: item.key,
+        }));
+        this.financeCode2List = res.data.financeCode2List.map((item) => ({
+          label: item.value,
+          value: item.value,
+          financeCode2: item.key,
+        }));
+
+        this.addFormOptions[4].options = this.financeCode1List;
+        this.addFormOptions[5].options = this.financeCode2List;
+      });
+    },
     getTableData(params = {}) {
-      //TODO  secretexamsubject_list
-      this.$fetch("posterinfo_listJson", {
+      // TODO  secretexamsubject_list
+      this.$fetch("courseProduct_listJspn", {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
       }).then((res) => {
         this.tableData = res.data.data.map((item) => {
-          item.creatTime = this.$common._formatDates(item.createAt);
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.productStatus = item.productStatus == 0 ? "正常" : "暂停";
           return item;
         });
-        this.pageConfig.totalCount = res.data.count;
+        this.pageConfig.totalCount = res.data.pager.totalRows;
       });
     },
-    handleEnter() {},
     handleAdd() {
       this.distributeVisible = true;
       this.addStatus = true;
@@ -271,20 +317,27 @@ export default {
     handleEdit(data) {
       this.addStatus = false;
       this.distributeVisible = true;
+           this.addFormOptions.forEach(item => {
+             console.log('打印item',item)
+           item.initValue = data[item.prop];
+      })
+      setTimeout(() => {
+        this.$refs.dataForm3.addInitValue();
+      }, 0);
       this.editId = data.id;
       //TODO
-      this.$fetch("secretexamsubject_goEdit", {
-        id: data.id,
-      }).then((res) => {
-        this.addFormOptions.forEach((item) => {
-          if (item.prop != "describe") {
-            item.initValue = data[item.prop];
-          }
-          // item.initValue = res.data.pd[item.prop];
-        });
-        this.$refs.dataForm3.addInitValue();
-        console.log(this.addFormOptions, "this.addFormOptions---");
-      });
+      // this.$fetch("courseProduct_goEdit", {
+      //   id: data.id,
+      // }).then((res) => {
+      //   this.addFormOptions.forEach((item) => {
+      //     if (item.prop != "productDetail") {
+      //       item.initValue = data[item.prop];
+      //     }
+      //     // item.initValue = res.data.pd[item.prop];
+      //   });
+      //   this.$refs.dataForm3.addInitValue();
+      //   console.log(this.addFormOptions, "this.addFormOptions---");
+      // });
     },
     pageChange(val) {
       console.log(val, "pagechange");

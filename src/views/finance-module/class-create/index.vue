@@ -205,7 +205,7 @@
                 v-model="basicInfo.refundRulers"
                 placeholder="请选择退费规则"
                 size="small"
-                style="width:400px"
+                style="width: 400px"
               >
                 <el-option
                   v-for="item in projectArr"
@@ -292,16 +292,16 @@
       <div class="class-step3 class-moudle" v-show="active == 2">
         <RdForm
           :formOptions="step3FormOptions"
-          :rules="addRules"
+          :rules="step3Rules"
           ref="dataForm3"
-          formLabelWidth="160px"
+          formLabelWidth="180px"
         >
           <template slot="campusVisible" slot-scope="scope">
             <el-form-item label="校区可见" prop="campusVisible">
               <el-select
                 v-model="basicInfo2.campusVisible"
                 placeholder="请选择"
-                multiple
+                :multiple='true'
               >
                 <el-option
                   :label="item.label"
@@ -464,7 +464,7 @@ export default {
       setVisible2: false,
       setVisible3: false,
       setVisible4: false,
-      active: 0,
+      active: 2,
       showNum: 5,
       formOptions: [
         {
@@ -744,6 +744,12 @@ export default {
           element: "el-select",
           placeholder: "班型服务",
           label: "班型服务：",
+          options: [
+            {
+              label: "1",
+              value: "1",
+            },
+          ],
         },
         {
           prop: "classGroupSize",
@@ -757,36 +763,141 @@ export default {
           placeholder: "校区可见",
           initWidth: true,
           label: "校区可见：",
+          options: [
+            {
+              value: 1,
+              label: "东南",
+              children: [
+                {
+                  value: 2,
+                  label: "上海",
+                  children: [
+                    { value: 3, label: "普陀" },
+                    { value: 4, label: "黄埔" },
+                    { value: 5, label: "徐汇" },
+                  ],
+                },
+                {
+                  value: 7,
+                  label: "江苏",
+                  children: [
+                    { value: 8, label: "南京" },
+                    { value: 9, label: "苏州" },
+                    { value: 10, label: "无锡" },
+                  ],
+                },
+                {
+                  value: 12,
+                  label: "浙江",
+                  children: [
+                    { value: 13, label: "杭州" },
+                    { value: 14, label: "宁波" },
+                    { value: 15, label: "嘉兴" },
+                  ],
+                },
+              ],
+            },
+            {
+              value: 17,
+              label: "西北",
+              children: [
+                {
+                  value: 18,
+                  label: "陕西",
+                  children: [
+                    { value: 19, label: "西安" },
+                    { value: 20, label: "延安" },
+                  ],
+                },
+                {
+                  value: 21,
+                  label: "新疆维吾尔族自治区",
+                  children: [
+                    { value: 22, label: "乌鲁木齐" },
+                    { value: 23, label: "克拉玛依" },
+                  ],
+                },
+              ],
+            },
+          ],
         },
         {
           prop: "RevenueCategory1",
           element: "el-select",
           placeholder: "营收一级类目",
           label: "营收一级类目：",
+          options: [
+            {
+              label: "1",
+              value: "1",
+            },
+          ],
         },
         {
           prop: "secondaryCategory",
           element: "el-select",
           placeholder: "二级类目",
           label: "二级类目：",
+          options: [
+            {
+              label: "1",
+              value: "1",
+            },
+          ],
         },
         {
           prop: "ThirdCategory",
           element: "el-select",
           placeholder: "三级类目",
           label: "三级类目",
+          options: [
+            {
+              label: "1",
+              value: "1",
+            },
+          ],
         },
         {
           prop: "ClassType",
           element: "el-select",
           placeholder: "班型",
           label: "班型：",
+          options: [
+            {
+              label: "1",
+              value: "1",
+            },
+          ],
         },
       ],
       step3Rules: {
-        campusVisible: [
-          { required: false, message: "请选择", trigger: "blur" },
+        WeeklyPermissions: [
+          { required: true, message: "请选择", trigger: "change" },
         ],
+        exchange: [{ required: true, message: "请选择", trigger: "change" }],
+        testAuthority: [
+          { required: true, message: "请选择", trigger: "change" },
+        ],
+        studyAuthority: [
+          { required: true, message: "请选择", trigger: "change" },
+        ],
+        serviceType: [{ required: true, message: "请选择", trigger: "change" }],
+        classGroupSize: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+        campusVisible: [
+          { required: true, message: "请选择", trigger: "change" },
+        ],
+        RevenueCategory1: [
+          { required: true, message: "请选择", trigger: "change" },
+        ],
+        secondaryCategory: [
+          { required: true, message: "请选择", trigger: "change" },
+        ],
+        ThirdCategory: [
+          { required: true, message: "请选择", trigger: "change" },
+        ],
+        ClassType: [{ required: true, message: "请选择", trigger: "change" }],
       },
       campusArr: [],
       distributeVisible: false,
