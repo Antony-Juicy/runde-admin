@@ -57,7 +57,7 @@
         @select="handleSelect"
         @pageChange="pageChange">
         <template slot="liveCover" slot-scope="scope">
-          <img :src="scope.row.liveCover" style="width:60px;height:60px;" alt="">
+          <img :src="scope.row.liveCover" style="width:200px;height:84px;" alt="">
         </template>
         <template slot="liveChargeMode" slot-scope="scope">
           <span>{{ scope.row.liveChargeMode | liveChargeModeFilter }}</span>
@@ -123,7 +123,7 @@ export default {
       tableData: [],
       tableKey: [
         { name: '直播id',value: 'liveId' },
-        { name: '直播展示图',value: 'liveCover',operate: true },
+        { name: '直播展示图',value: 'liveCover',operate: true,width: 220 },
         { name: '项目类型',value: 'typeName' },
         { name: '直播名称',value: 'liveName' },
         { name: '收费类型',value: 'liveChargeMode',operate: true },
