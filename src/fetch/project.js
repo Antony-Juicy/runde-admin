@@ -5,5 +5,10 @@ export default {
     courseProduct_editJsp: {url: '/admin/courseproduct/editJsp', method: 'post'}, //修改页面
     courseProduct_save: {url: '/admin/courseproduct/save', method: 'post'}, //新增
     courseProduct_goEdit: {url: ' /admin/courseproduct/goEdit', method: 'get'}, //修改页面
-    
+    coursesubject_courseList: {url: '/admin/coursesubject/courseList', method: 'get'}, //根据科目id获取subject
+    coursesubject_getProductList: {url: '/admin/coursesubject/getProductList', method: 'get'}, //获取项目列表
+    coursesubject_listJspn: {url: '/admin/coursesubject/listJson', method: 'post'}, //listJson
+    coursesubject_editJsp: {url: '/admin/coursesubject/editJsp', method: 'post'}, //修改
+    coursesubject_save: {url: '/admin/coursesubject/save', method: 'post'}, //新增
+    coursesubject_goEdit: {url: ' /admin/coursesubject/goEdit', method: 'get'}, //修改页面
 }
