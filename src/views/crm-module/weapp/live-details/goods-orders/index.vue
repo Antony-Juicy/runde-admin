@@ -16,6 +16,9 @@
         <template slot="orderStatus" slot-scope="scope">
           <span>{{ scope.row.orderStatus | orderStatusFilter }}</span>
         </template>
+        <template slot="jwSyncStatus" slot-scope="scope">
+          <span>{{ scope.row.jwSyncStatus | jwSyncStatusFilter }}</span>
+        </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="openConfig(scope.row)" type="text" size="small">查看明细</el-button>
         </template>
@@ -168,6 +171,25 @@ export default {
             }
           ],
         },
+        { 
+          prop: 'jwSyncStatus',
+          element: 'el-select',
+          placeholder: '同步状态',
+          options: [
+            {
+              label: "未同步",
+              value: "UnSynchronized",
+            },
+            {
+              label: "同步成功",
+              value: "SyncSuccess",
+            },
+            {
+              label: "同步失败",
+              value: "SyncFail",
+            }
+          ],
+        },
         { prop: 'ordersTime', element: 'el-date-picker', startPlaceholder: "下单开始时间", endPlaceholder: "下单结束时间" }
       ],
       tableData: [],
@@ -181,6 +203,7 @@ export default {
         { name: '订单状态',value: 'orderStatus',operate: true },
         { name: '下单时间',value: 'createAt' },
         { name: '邀请老师',value: 'teacherName' },
+        { name: '同步状态',value: 'jwSyncStatus',operate: true },
         { name: '操作',value: 'edit',operate: true,width: 120 }
       ],
       emptyText: '暂无数据',
@@ -332,6 +355,18 @@ export default {
           return '已支付';
         case "Cancel":
           return '已失效';
+        default:
+          return '';
+      }
+    },
+    jwSyncStatusFilter(status){
+      switch(status){
+        case "UnSynchronized":
+          return '未同步';
+        case "SyncSuccess":
+          return '同步成功';
+        case "SyncFail":
+          return '同步失败';
         default:
           return '';
       }
