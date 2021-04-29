@@ -2,14 +2,17 @@
 	<div class="imgmsg">
 		<div class="form-line" style="align-items:flex-start">
 			<div class="label">添加图片：</div>
-			<SelectPop v-bind="SelectPopOptions" @select="handle_select" :key="'SelectPop4397'">
+			<SelectPop ref="SelectPop" v-bind="SelectPopOptions" @select="handle_select" :key="'SelectPop4397'">
 				<img class="img180" :src="msgForm.picurl ?msgForm.picurl : `https://rdimg.rundejy.com/cmsuserInfo/20200624163441upload_oss.png`" alt="" />
 				<template slot="thumb_url" slot-scope="scope">
 					<el-image style="width: 100px; height: 100px" :src="scope.row.thumb_url" fit="contain"></el-image>
 				</template>
 				<template slot="header">
 					<div class="upload-line">
-						<Upload-oss v-if="uploadOssElem" :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }" :src.sync="msgForm.picurl" :initGetConfig="initGetConfig" />
+						<div class="choseFileForm">
+							<input class="btn-hidden" ref="fileInput" type="file" accept="image/*" @change="handle_uploadFile" />
+							<el-button class="btn-over" @click="handle_hackFileInput"><i class="el-icon-upload"></i>本地上传</el-button>
+						</div>
 						<div class="origin-tips">选择本地图片上传到公众号素材库</div>
 					</div>
 
@@ -73,7 +76,8 @@ export default {
 						}
 					}
 				}
-			}
+			},
+			fileList: []
 		}
 	},
 	watch: {
@@ -88,6 +92,23 @@ export default {
 		handle_select(data) {
 			this.msgForm.media_id = data.media_id
 			this.msgForm.picurl = data.thumb_url
+		},
+		handle_hackFileInput() {
+			this.$refs.fileInput.click()
+		},
+		async handle_uploadFile() {
+			let formData = new FormData()
+			formData.append('img', this.$refs.fileInput.files[0])
+			formData.append('type', 'image')
+			formData.append('appSecret',this.account.appSecret)
+			formData.append('appId',this.account.appId)
+			// 避免出现点击取消也触发change导致文件多次上传
+			this.$refs.fileInput.value = ''
+
+			let res = await this.$fetch(
+				"graphic_message_upload_img"
+				, formData);
+			console.log(res)
 		}
 	},
 	mounted() {
@@ -99,16 +120,29 @@ export default {
 
 <style lang='scss' scoped>
 .imgmsg {
+	.choseFileForm {
+		position: relative;
+		.btn-hidden {
+			position: absolute;
+			height: 100%;
+			width: 100%;
+			z-index: 1;
+			opacity: 0;
+		}
+		.btn-over {
+			position: relative;
+			z-index: 2;
+		}
+	}
 }
 .upload-line {
 	display: flex;
 	align-items: center;
-	padding-bottom:10px;
+	padding-bottom: 10px;
 	.origin-tips {
 		color: #ffaf53;
 		font-size: 12px;
 		padding-left: 10px;
-
 	}
 }
 </style>
