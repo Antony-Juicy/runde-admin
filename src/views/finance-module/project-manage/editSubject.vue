@@ -24,6 +24,7 @@
             size="small"
             placeholder="请选择"
             style="width: 300px"
+            @change="changeSelect"
           >
             <el-option
               :label="item.label"
@@ -111,15 +112,22 @@
             :picker-options="startDateDisabled"
           >
           </el-date-picker>
-          <el-checkbox v-model="dynamicValidateForm.checked1"
+          <el-checkbox
+            v-show="showCheckbox"
+            v-model="dynamicValidateForm.checked1"
             >技能考试</el-checkbox
           >
-          <el-checkbox v-model="dynamicValidateForm.checked2"
+          <el-checkbox
+            v-show="showCheckbox"
+            v-model="dynamicValidateForm.checked2"
             >理论二考</el-checkbox
           >
         </el-form-item>
       </div>
-      <div class="param-item" v-if="dynamicValidateForm.checked1">
+      <div
+        class="param-item"
+        v-if="dynamicValidateForm.checked1 && showCheckbox"
+      >
         <el-form-item
           label="技能考试"
           prop="skillTestStart"
@@ -143,7 +151,10 @@
         </el-form-item>
       </div>
       <!--二考-->
-      <div class="param-item" v-if="dynamicValidateForm.checked2">
+      <div
+        class="param-item"
+        v-if="dynamicValidateForm.checked2 && showCheckbox"
+      >
         <el-form-item
           label="理论二考时间"
           prop="secondtestTime"
@@ -167,7 +178,10 @@
         </el-form-item>
       </div>
       <!--二考关闭时间-->
-      <div class="param-item" v-if="dynamicValidateForm.checked2">
+      <div
+        class="param-item"
+        v-if="dynamicValidateForm.checked2 && showCheckbox"
+      >
         <el-form-item
           label="理论二考关考时间"
           prop="theoryTest2ClosingTime"
@@ -256,6 +270,7 @@ export default {
   name: "edit-subject",
   data() {
     return {
+      showCheckbox: false,
       startDateDisabled: {},
       productArr: [],
       threeCategoriesArr: [],
@@ -275,6 +290,7 @@ export default {
         theoryTestClosingTime: "",
         secondtestTime: "",
         subjectStatus: "",
+        theoryTestEnd:"",
       },
     };
   },
@@ -284,12 +300,17 @@ export default {
       type: Number || String,
     },
     issuseId: {
-      type: Number || String,
-      default:0
+      type: Number || String
     },
+     addStatus: {
+      type: Boolean
+    },
+    tableData:{
+      type:Array
+    }
   },
   created() {
-    console.log('issueID',this.issuseId)
+    console.log('哈哈哈哈试试',this.id)
     // 限制开始日期不能超过当前日期
     this.startDateDisabled.disabledDate = function (time) {
       return time.getTime() + 24 * 3600 * 1000 < Date.now();
@@ -300,10 +321,16 @@ export default {
     this.getSelectList();
   },
   methods: {
+    changeSelect(val) {
+      if (val == 2) {
+        this.showCheckbox = true;
+      } else {
+        this.showCheckbox = false;
+      }
+    },
     getSelectList() {
       this.$fetch("coursesubject_getProductList", {}).then((res) => {
-        console.log("list====？",res.data.data);
-       this.productArr = res.data.data.map((item) => ({
+        this.productArr = res.data.data.map((item) => ({
           label: item.productName,
           value: item.id,
         }));
@@ -315,23 +342,53 @@ export default {
       // this.$refs.dataForm3.addInitValue();
     },
     partChange() {},
-    // 动态添加
+    // 添加 
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-   
-          this.dynamicValidateForm.theoryTestStart[0] =  this.$common._formatDates(this.dynamicValidateForm.theoryTestStart[0])
-          this.dynamicValidateForm.theoryTestStart[1] =  this.$common._formatDates(this.dynamicValidateForm.theoryTestStart[1])
-          this.dynamicValidateForm.theoryTestClosingTime =  this.$common._formatDates(this.dynamicValidateForm.theoryTestClosingTime)
-          let skillTestStart = this.$common._formatDates(this.dynamicValidateForm.theoryTestStart[0]);
-          let skillTestEnd = this.$common._formatDates(this.dynamicValidateForm.theoryTestStart[1]);
-          console.log(this.dynamicValidateForm, "99",   this.dynamicValidateForm.theoryTestStart[0] );
-          // let newObj = Object.assign(this.dynamicValidateForm,{})
-          this.$fetch("coursesubject_save", {
+          this.dynamicValidateForm.theoryTestStart[0] = this.$common._formatDates(
+            this.dynamicValidateForm.theoryTestStart[0]
+          );
+          this.dynamicValidateForm.theoryTestStart[1] = this.$common._formatDates(
+            this.dynamicValidateForm.theoryTestStart[1]
+          );
+          this.dynamicValidateForm.theoryTestClosingTime = this.$common._formatDates(
+            this.dynamicValidateForm.theoryTestClosingTime
+          );
+          let skillTestStart = this.$common._formatDates(
+            this.dynamicValidateForm.skillTestStart[0] 
+          );
+          let skillTestEnd = this.$common._formatDates(
+            this.dynamicValidateForm.skillTestStart[1]
+          );
+            let theoryTestStart = this.$common._formatDates(
+              this.dynamicValidateForm.theoryTestStart[0]
+          );
+             let theoryTestEnd = this.$common._formatDates(
+              this.dynamicValidateForm.theoryTestStart[1]
+          );
+          let financeCode3;
+          let obj1 = this.threeCategoriesArr.find((item) => {
+            return item.value == this.dynamicValidateForm.financeCodeName3;
+          });
+
+          financeCode3 = obj1 && obj1.value;
+          let issuseId;
+              let obj2 = this.productArr.find((item) => {
+            return item.value == this.dynamicValidateForm.productName;
+          });
+           issuseId= obj2 && obj2.value;
+          this.$fetch(
+            this.addStatus?
+            "coursesubject_save" : "coursesubject_editJsp", {
             ...this.dynamicValidateForm,
             skillTestStart,
             skillTestEnd,
-            id: this.id,
+            theoryTestStart,
+            theoryTestEnd,
+            financeCode3,
+            productId: this.issuseId ?this.issuseId:issuseId, 
+            id:this.id,
           }).then((res) => {
             this.$message.success("操作成功");
             this.$emit("close");
@@ -346,38 +403,14 @@ export default {
     // resetForm(formName) {
     //   this.$refs[formName].resetFields();
     // },
-    removeDomain(item) {
-      var index = this.dynamicValidateForm.option.indexOf(item);
-      if (index !== -1) {
-        this.dynamicValidateForm.option.splice(index, 1);
-      }
-    },
-    addDomain() {
-      console.log("datenNow===", Date.now());
-      this.dynamicValidateForm.option.push({
-        name: "",
-        value: "",
-        image: "",
-        key: Date.now(),
-      });
-    },
     getData() {
-      // this.$fetch("lookpicture_goEditDetails",{
-      //   id: this.id,
-      //   issuseId: this.issuseId
-      // }).then(res => {
-      //   let { issuseId,issue,issuesType } = res.data.pd;
-      //   this.dynamicValidateForm = {
-      //     option: [...issue.option],
-      //     issuseId,
-      //     issuesType,
-      //     issuse: issue.issuse,
-      //     imageIssuse: issue.imageIssuse,
-      //     textAnalysis: issue.textAnalysis,
-      //     imageAnalysis: issue.imageAnalysis,
-      //     answer: issue.answer
-      //   }
-      // })
+      this.$fetch("coursesubject_goEdit",{
+        id: this.issuseId,
+      }).then(res => {
+        let theoryTestStart = [new Date(res.data.theoryTestStart),new Date(res.data.theoryTestEnd)]
+          let obj = {...res.data,theoryTestStart:theoryTestStart}
+        this.dynamicValidateForm = obj;
+      })
     },
   },
 };

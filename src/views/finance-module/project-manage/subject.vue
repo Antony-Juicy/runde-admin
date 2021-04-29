@@ -25,7 +25,7 @@
         </rd-table>
       </div>
     </div>
-    <!--添加彈窗-->
+    <!--添加彈窗  -->
     <rd-dialog
       :title="addStatus ? '添加科目' : '编辑科目'"
       :dialogVisible="editVisible"
@@ -34,14 +34,16 @@
       top="5vh"
       append-to-body
       @handleClose="editVisible = false"
-      @submitForm="submitAddForm('dataForm3')"
+  
     >
       <editSubject
         :id="id"
         :issuseId="issuseId"
+        :addStatus="addStatus"
         v-if="editVisible"
         @close="editVisible = false"
         @refresh="refresh"
+        :tableData="tableData"
       />
     </rd-dialog>
   </div>
@@ -144,7 +146,6 @@ export default {
       this.getTableData();
     },
     handleEdit(data) {
-      console.log('大大大大大大大大',data,data.id)
       this.issuseId = data.id;
       this.addStatus = false;
       this.editVisible = true;
@@ -154,27 +155,6 @@ export default {
       //   this.$refs.dataForm3.addInitValue();
       //   console.log(this.addFormOptions, "this.addFormOptions---");
       // });
-    },
-    submitAddForm(formName) {
-      this.$refs[formName].validate((valid, formData) => {
-        if (valid) {
-          console.log(formData, "添加");
-
-          this.$fetch(
-            this.addStatus
-              ? "coursesubject_save"
-              : "coursesubject_editJsp",
-            {
-              ...formData,
-              id: this.addStatus ? "" : this.editId,
-            }
-          ).then((res) => {
-            this.$message.success("操作成功");
-            this.distributeVisible = false;
-            this.getTableData();
-          });
-        }
-      });
     },
     handleAdd() {
       this.editVisible = true;
@@ -190,6 +170,7 @@ export default {
       this.$fetch("coursesubject_listJspn", {
         ...this.pageConfig,
         ...this.searchForm,
+        productId:this.id,
         ...params,
       }).then((res) => {
         this.tableData = res.data.data.map((item) => {

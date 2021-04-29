@@ -21,13 +21,13 @@
         :pageConfig.sync="pageConfig"
         @pageChange="pageChange"
       >
-        <template slot="classtypeContent" slot-scope="scope">
-          {{ scope.row.classtypeContent }}<br />
+        <template slot="courseContentId" slot-scope="scope">
+          {{ scope.row.courseContentId }}<br />
           <el-button
             type="text"
             style="height: 40px"
             id="closeSearchBtn"
-            @click="goDetails"
+            @click="goDetails(scope.row)"
           >
             查看详情
           </el-button>
@@ -200,9 +200,9 @@
           </div>
           <!-- end -->
           <el-row :gutter="20">
-            <el-form-item label="退费规则：" prop="refundRulers">
+            <el-form-item label="退费规则：" prop="refundRules">
               <el-select
-                v-model="basicInfo.refundRulers"
+                v-model="basicInfo.refundRules"
                 placeholder="请选择退费规则"
                 size="small"
                 style="width: 400px"
@@ -219,11 +219,15 @@
           </el-row>
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="不可退金额：" prop="cost" inline="true">
+              <el-form-item
+                label="不可退金额："
+                prop="norefundFee"
+                inline="true"
+              >
                 <el-row :gutter="12">
                   <el-col :span="12">
                     <el-input
-                      v-model="basicInfo.cost"
+                      v-model="basicInfo.norefundFee"
                       placeholder="请输入价格"
                       size="small"
                     >
@@ -236,13 +240,13 @@
             <el-col :span="12">
               <el-form-item
                 label="通过扣除费用："
-                prop="deductingFees"
+                prop="passDeductFee"
                 inline="true"
               >
                 <el-row :gutter="12">
                   <el-col :span="12">
                     <el-input
-                      v-model="basicInfo.deductingFees"
+                      v-model="basicInfo.passDeductFee"
                       placeholder="请输入价格"
                       size="small"
                     >
@@ -256,7 +260,7 @@
 
           <el-form-item
             label="班型内容："
-            prop="classtypeContent"
+            prop="courseContentId"
             :inline="true"
           >
             <div>
@@ -301,7 +305,7 @@
               <el-select
                 v-model="basicInfo2.campusVisible"
                 placeholder="请选择"
-                :multiple='true'
+                :multiple="true"
               >
                 <el-option
                   :label="item.label"
@@ -457,7 +461,8 @@ export default {
   },
   data() {
     return {
-      filterColumn: ["classTypeGroup", "serviceType", "classGroupSize"],
+      currentProductId: "",
+      filterColumn: ["classtypeGroupName", "crowdType", "crowdNum"],
       btnLoading: false,
       detailVisible: false,
       setVisible1: false,
@@ -468,66 +473,103 @@ export default {
       showNum: 5,
       formOptions: [
         {
-          prop: "classTypeName",
+          prop: "className",
           element: "el-input",
           placeholder: "请输入班型名称",
         },
-        { prop: "project", element: "el-select", placeholder: "请选择项目" },
-        { prop: "subject", element: "el-select", placeholder: "请选择科目" },
-        { prop: "status", element: "el-select", placeholder: "请选择状态" },
-        { prop: "classYear", element: "el-select", placeholder: "请选择年份" },
         {
-          prop: "protocolTypeId",
+          prop: "productName",
+          element: "el-select",
+          placeholder: "请选择项目",
+          options: [],
+          events: {},
+        },
+        {
+          prop: "subjectName",
+          element: "el-select",
+          placeholder: "请选择科目",
+          options: [],
+        },
+        {
+          prop: "status",
+          element: "el-select",
+          placeholder: "请选择状态",
+          options: [
+            {
+              label: "正常",
+              value: 1,
+            },
+            {
+              label: "暂停",
+              value: 0,
+            },
+          ],
+        },
+        {
+          prop: "classTypeBatch",
+          element: "el-select",
+          placeholder: "请选择年份",
+          options: [
+           
+          ],
+        },
+        {
+          prop: "protocolType",
           element: "el-select",
           placeholder: "请选择协议类型",
+          options: [],
         },
         {
           prop: "refundTypeId",
           element: "el-select",
           placeholder: "请选择退费类型",
+          options: [],
         },
         {
-          prop: "refundRulers",
+          prop: "refundRules",
           element: "el-select",
           placeholder: "请选择退费规则",
+          options: [],
         },
         {
           prop: "serviceYear",
           element: "el-select",
           placeholder: "请选择服务年限",
+          options: [],
         },
         {
-          prop: "classTypeGroup",
+          prop: "classtypeGroupName",
           element: "el-select",
           placeholder: "请选择班型分组",
+          options: [],
         },
       ],
       tableData: [
         {
           id: 1,
-          classTypeName: "啊哈哈",
+          className: "啊哈哈",
         },
       ],
       tableKey: [
         { name: "ID", value: "id" },
-        { name: "班型名称", value: "classTypeName" },
-        { name: "年份", value: "classYear" },
-        { name: "项目", value: "project" },
-        { name: "科目", value: "subject" },
-        { name: "班型类型", value: "classTypeId" },
-        { name: "协议类型", value: "protocolTypeId" },
+        { name: "班型名称", value: "className" },
+        { name: "年份", value: "classTypeBatch" },
+        { name: "项目", value: "productName" },
+        { name: "科目", value: "subjectName" },
+        { name: "班型类型", value: "classType" },
+        { name: "协议类型", value: "protocolType" },
         { name: "退费类型", value: "refundTypeId" },
-        { name: "退费规则", value: "refundRulers" },
+        { name: "退费规则", value: "refundRules" },
         { name: "课程", value: "course" },
-        { name: "班型内容", value: "classtypeContent", operate: true },
+        { name: "班型内容", value: "courseContentId", operate: true },
         { name: "学费/元", value: " tuitionFees" },
         { name: "服务年限", value: "serviceYear" },
-        { name: "不可退金额/元", value: " cost" },
-        { name: "通过扣除费用", value: "deductingFees" },
-        { name: "班型分组", value: "classTypeGroup" },
-        { name: "班型阶段", value: "classStage" },
-        { name: "班群服务类型", value: "serviceType" },
-        { name: "班群人数", value: "classGroupSize" },
+        { name: "不可退金额/元", value: " norefundFee" },
+        { name: "通过扣除费用", value: "passDeductFee" },
+        { name: "班型分组", value: "classtypeGroupName" },
+        { name: "班型阶段", value: "classTypeStage" },
+        { name: "班群服务类型", value: "crowdType" },
+        { name: "班群人数", value: "crowdNum" },
         { name: "状态", value: "status" },
         {
           name: "操作",
@@ -553,17 +595,17 @@ export default {
         // subject: [
         //   { required: true, message: "请选择subject", trigger: "change" },
         // ],
-        // classTypeName: [
+        // className: [
         //   { required: true, message: "请输入", trigger: "blur" },
         //   { max: 20, message: "命名，字数上限不超过20字", trigger: "blur" },
         // ],
-        // classYear: [{ required: true, message: "请选择", trigger: "blur" }],
-        // classTypeId: [{ required: true, message: "请选择", trigger: "change" }],
-        // classTypeGroup: [
+        // classTypeBatch: [{ required: true, message: "请选择", trigger: "blur" }],
+        // classType: [{ required: true, message: "请选择", trigger: "change" }],
+        // classtypeGroupName: [
         //   { required: true, message: "请选择", trigger: "change" },
         // ],
         // serviceYear: [{ required: true, message: "请选择", trigger: "change" }],
-        // protocolTypeId: [
+        // protocolType: [
         //   { required: true, message: "请选择", trigger: "change" },
         // ],
         // refundTypeId: [
@@ -591,9 +633,9 @@ export default {
         status: "",
         nextTime: "",
         detail: "",
-        refundRulers: "",
-        cost: "",
-        deductingFees: "",
+        refundRules: "",
+        norefundFee: "",
+        passDeductFee: "",
         tableData: [
           {
             id: 1,
@@ -642,11 +684,9 @@ export default {
           { required: true, message: "请输入", trigger: "blur" },
           { type: "number", message: "学费必须为数字值" },
         ],
-        refundRulers: [
-          { required: true, message: "请选择", trigger: "change" },
-        ],
-        cost: [{ required: true, message: "请输入", trigger: "blur" }],
-        deductingFees: [{ required: true, message: "请输入", trigger: "blur" }],
+        refundRules: [{ required: true, message: "请选择", trigger: "change" }],
+        norefundFee: [{ required: true, message: "请输入", trigger: "blur" }],
+        passDeductFee: [{ required: true, message: "请输入", trigger: "blur" }],
       },
       projectArr: [
         {
@@ -740,7 +780,7 @@ export default {
           initValue: "Open",
         },
         {
-          prop: "serviceType",
+          prop: "crowdType",
           element: "el-select",
           placeholder: "班型服务",
           label: "班型服务：",
@@ -752,7 +792,7 @@ export default {
           ],
         },
         {
-          prop: "classGroupSize",
+          prop: "crowdNum",
           element: "el-input",
           placeholder: "班级群人数",
           label: "班级群人数：",
@@ -881,10 +921,8 @@ export default {
         studyAuthority: [
           { required: true, message: "请选择", trigger: "change" },
         ],
-        serviceType: [{ required: true, message: "请选择", trigger: "change" }],
-        classGroupSize: [
-          { required: true, message: "请输入", trigger: "blur" },
-        ],
+        crowdType: [{ required: true, message: "请选择", trigger: "change" }],
+        crowdNum: [{ required: true, message: "请输入", trigger: "blur" }],
         campusVisible: [
           { required: true, message: "请选择", trigger: "change" },
         ],
@@ -934,7 +972,9 @@ export default {
       ],
     };
   },
+
   mounted() {
+    this.getSelectList();
     this.getTableData();
   },
   methods: {
@@ -949,13 +989,73 @@ export default {
     //     });
     //   }, 0);
     // },
+    getSelectList() {
+      // courseProduct_listJsp
+      this.$fetch("courseProduct_listJsp").then((res) => {
+        console.log("就哈哈哈", res.data.productList);
+        let productNameOptions = res.data.productList.map((item) => ({
+          label: item.productName,
+          value: item.id,
+          productId: item.productId,
+        }));
+        this.formOptions[1].options = productNameOptions;
+        this.formOptions[1].events = {
+          change: this.productChange,
+        };
+      });
+
+       this.$fetch("courseclasstype_goSearch").then((res) => {
+        console.log('resssss0',res)
+       });
+      // Promise.all(
+      //   [this.$fetch("courseProduct_listJsp")].map((p) => {
+      //     return p.catch((error) => error);
+      //   })
+      // ).then((result) => {
+      //   console.log("resuuu", result[0].data.productList);
+      //   let productNameOptions = result[0].data.productList.map((item) => ({
+      //     label: item.productName,
+      //     value: item.id,
+      //     id: item.id,
+      //     productId: item.productId,
+      //   }));
+      //   this.formOptions[0].options = productNameOptions;
+
+      // });
+    },
+    productChange(val) {
+      console.log("val", val, this.formOptions[1].options);
+      this.currentProductId = val;
+      //  获取科目下拉
+      let productId = this.formOptions[1].options.find((item) => {
+        if (val == item.value) {
+          return item.productId;
+        }
+      });
+      this.$fetch("courseclasstype_subjectList", { productId, id: val }).then(
+        (res) => {
+          this.formOptions[2].options = res.data.list.map((item) => ({
+            label: item.subjectName,
+            value: item.id,
+          }));
+        }
+      );
+    },
     handleSet(row, index) {
       //设置配送图书
       this[`setVisible${index}`] = true;
     },
     loadSalaryCfg() {},
-    goDetails() {
+    goDetails(data) {
       this.detailVisible = true;
+      console.log('data',data) 
+      let  {className,id,productId,subjectId} = data;
+         this.$fetch("courseclasstype_getclassType", {className,subjectId, productId, classTypeId: id }).then(
+        (res) => {
+          // detailTableData
+         console.log('112221',res.data) 
+        }
+      );
     },
     // getAddClassTableData(params = {}) {
     // this.$fetch("chance_campus_list", {
@@ -1004,15 +1104,15 @@ export default {
     getTableData(params = {}) {
       // TODO
       return new Promise((resolve, reject) => {
-        // this.$fetch("", {
-        //   ...this.pageConfig,
-        //   ...this.searchForm,
-        //   ...params,
-        // }).then((res) => {
-        //   this.tableData = res.data.records;
-        //   this.pageConfig.totalCount = res.data.totalCount;
-        //   resolve();
-        // });
+        this.$fetch("courseclasstype_listJson", {
+          ...this.pageConfig,
+          ...this.searchForm,
+          ...params,
+        }).then((res) => {
+          this.tableData = res.data.list;
+          this.pageConfig.totalCount = res.data.pager.totalRows;
+          resolve();
+        });
       });
     },
     handleEdit(data) {
