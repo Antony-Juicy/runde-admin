@@ -20,26 +20,29 @@
         @pageChange="pageChange"
         :emptyText="emptyText"
       >
+        <template slot="courseStartTime" slot-scope="scope">
+          {{scope.row.courseStartTime}} ~ {{scope.row.courseEndTime}}
+        </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small">
             编辑
           </el-button>
+           <el-divider direction="vertical"></el-divider>
           <el-button
-            @click="changeTable(scope.row.buttonVisible, scope.$index)"
+            @click="changeTable(scope.row)"
             type="text"
             size="small"
             style="color: #ec5b56"
-            v-if="scope.row.buttonVisible"
-            >启用</el-button
+            >{{scope.row.status_text == 'Normal'? '暂停': '启用'}}</el-button
           >
-          <el-button
+          <!-- <el-button
             @click="changeTable(scope.row.buttonVisible, scope.$index)"
             type="text"
             size="small"
             style="color: #ec5b56"
             v-else
             >暂停</el-button
-          >
+          > -->
         </template>
       </rd-table>
     </div>
@@ -50,20 +53,20 @@
       :title="addStatus ? '添加班型内容' : '编辑班型内容'"
       @change="handleClose('dataForm3')"
     >
-      <div>
+      <div v-if="addVisible">
         <RdForm
           :formOptions="addFormOptions"
           :rules="addRules"
           ref="dataForm3"
           formLabelWidth="120px"
         >
-          <template slot="stage">
+          <!-- <template slot="stage">
             <el-checkbox-group v-model="checkList"  @change="handleCheckedChange('stage',checkList)">
               <el-checkbox label="基础阶段"></el-checkbox>
               <el-checkbox label="强化阶段"></el-checkbox>
               <el-checkbox label="冲刺阶段"></el-checkbox>
             </el-checkbox-group>
-          </template>
+          </template> -->
         </RdForm>
 
         <div class="btn-wrapper btn-wrap">
@@ -96,33 +99,64 @@ export default {
       showNum: 5,
       formOptions: [
         {
-          prop: "className",
+          prop: "contentName",
           element: "el-input",
-          placeholder: "请输入班型名称",
+          placeholder: "班型内容名称",
         },
         {
-          prop: "projectName",
+          prop: "productId",
           element: "el-select",
-          placeholder: "请选择项目",
+          placeholder: "项目",
           options: [],
         },
         {
-          prop: "elType",
+          prop: "contentType",
           element: "el-select",
-          placeholder: "请选择类型",
-          options: [],
+          placeholder: "类型",
+          options: [
+            {
+              label: "网课",
+              value: "NetClass",
+            },
+            {
+              label: "直播",
+              value: "Live",
+            },
+            {
+              label: "面授",
+              value: "FaceTo",
+            },
+            {
+              label: "证书",
+              value: "Certificate"
+            },
+            {
+              label: "公开课",
+              value: "OpenClass"
+            }
+          ],
         },
         {
-          prop: "classTime",
+          prop: "accountingRules",
           element: "el-select",
-          placeholder: "请选择确认时点",
-          options: [],
+          placeholder: "核算规则",
+          options: [
+          ],
         },
         {
           prop: "status",
           element: "el-select",
           placeholder: "请选择状态",
-          options: [],
+          options: [
+            {
+              label: "正常",
+              value: "Normal",
+            },
+            {
+              label: "暂停",
+              value: "Stop",
+            },
+          ],
         },
       ],
       addVisible: false,
@@ -154,47 +188,56 @@ export default {
         },
         {
           name: "年份",
-          value: "year",
+          value: "contentYear",
+          width: 80,
         },
           {
           name: "所属项目",
-          value: "belongSubject",
+          value: "productName",
+          // width: 80,
         },
         {
           name: "内容名称",
-          value: "name",
+          value: "contentName",
         },
         {
           name: "类型",
-          value: "type",
+          value: "contentType",
+          // width: 80,
         },
         {
           name: "单科学费/元",
-          value: "money",
+          value: "contentPrice",
+          // width: 80,
         },
         {
           name: "课程阶段",
-          value: "stage",
+          value: "stageGroupName",
+          // width: 80,
         },
         {
           name: "核算规则",
-          value: "rules",
+          value: "accountingRules",
         },
         {
           name: "录播情况",
-          value: "video",
+          value: "playbackCn",
+          width: 80,
         },
         {
           name: "授课起止时间",
-          value: "classTime",
+          value: "courseStartTime",
+          operate: true,
+          width: 180
         },
         {
           name: "创建时间",
-          value: "createTime",
+          value: "createAt",
         },
         {
           name: "状态",
           value: "status",
+          width: 80,
         },
         {
           name: "操作",
@@ -211,51 +254,60 @@ export default {
       },
       addFormOptions: [
         {
-          prop: "projectName",
+          prop: "productId",
           element: "el-select",
           placeholder: "所属项目",
           label: "所属项目:",
           options: [],
+          events: {}
         },
         {
-          prop: "className",
+          prop: "contentName",
           element: "el-input",
           placeholder: "请输入班型内容名称",
           label: "班型内容名称：",
         },
         {
-          prop: "elType",
+          prop: "contentType",
           element: "el-radio",
           placeholder: "请选择类型",
           label: "类型：",
           options: [
             {
               label: "网课",
-              value: "Open",
+              value: "NetClass",
             },
             {
               label: "直播",
-              value: "Close",
+              value: "Live",
             },
             {
               label: "面授",
-              value: "Hidden",
+              value: "FaceTo",
             },
+            {
+              label: "证书",
+              value: "Certificate"
+            },
+            {
+              label: "公开课",
+              value: "OpenClass"
+            }
           ],
-          initValue: "Open",
         },
         {
-          prop: "eduAmount",
+          prop: "contentPrice",
           element: "el-input",
           placeholder: "请输入具体金额",
           label: "学费金额：",
         },
         {
-          prop: "computedRules",
+          prop: "accountingRules",
           element: "el-select",
           placeholder: "核算规则",
           label: "核算规则：",
-          options: [],
+          options: [
+          ],
         },
         {
           prop: "time",
@@ -267,75 +319,77 @@ export default {
           //   clearable: false
         },
         {
-          prop: "videoStatus",
+          prop: "playback",
           element: "el-radio",
           placeholder: "请选择",
           label: "录播情况：",
           options: [
             {
               label: "有录播",
-              value: "Open",
+              value: true,
             },
             {
               label: "无",
-              value: "Close",
+              value: false,
             },
           ],
-          initValue: "Open",
         },
         {
-          prop: "stage",
-          element: "el-input",
+          prop: "stageGroupId",
+          element: "el-checkbox",
           placeholder: "",
           label: "学习阶段：",
-          operate: true,
-          initValue: 0,
-          tableKey: [
-            {
-              value: "基础",
-              show: true,
-              name: "基础",
-            },
-            {
-              value: "基础",
-              show: true,
-              name: "基础",
-            },
-            {
-              value: "基础",
-              show: true,
-              name: "基础",
-            },
+          // operate: true,
+          initValue: [],
+          options: [
+            // {
+            //   label: "基础阶段",
+            //   value: "基础"
+            // }
+            // {
+            //   value: "基础",
+            //   show: true,
+            //   name: "基础",
+            // },
+            // {
+            //   value: "基础",
+            //   show: true,
+            //   name: "基础",
+            // },
+            // {
+            //   value: "基础",
+            //   show: true,
+            //   name: "基础",
+            // },
           ],
         },
         {
-          prop: "courseStatus",
+          prop: "status",
           element: "el-radio",
           placeholder: "请选择显示状态",
           label: "状态：",
           options: [
             {
               label: "正常",
-              value: "Open",
+              value: "Normal",
             },
             {
               label: "暂停",
-              value: "Close",
+              value: "Stop",
             },
-          ],
-          initValue: "Open",
+          ]
         },
       ],
       addRules: {
-        projectName: [{ required: true, message: "请选择", trigger: "change" }],
-        className: [{ required: true, message: "请输入", trigger: "blur" }],
-        elType: [{ required: true, message: "请选择", trigger: "change" }],
-        eduAmount: [{ required: true, message: "请输入", trigger: "blur" }],
-        computedRules: [{ required: true, message: "请选择", trigger: "change" }],
+        productId: [{ required: true, message: "请选择", trigger: "change" }],
+        contentName: [{ required: true, message: "请输入", trigger: "blur" }],
+        contentType: [{ required: true, message: "请选择", trigger: "change" }],
+        contentPrice: [{ required: true, message: "请输入", trigger: "blur" }],
+        accountingRules: [{ required: true, message: "请选择", trigger: "change" }],
         time: [{ required: true, message: "请选择", trigger: "change" }],
-        videoStatus: [{ required: true, message: "请选择", trigger: "change" }],
-        stage: [{ required: true, message: "请选择", trigger: "change" }],  
-        courseStatus: [{ required: true, message: "请选择", trigger: "change" }],
+        playback: [{ required: true, message: "请选择", trigger: "change" }],
+        stageGroupId: [{ required: true, message: "请选择", trigger: "blur" }],  
+        status: [{ required: true, message: "请选择", trigger: "change" }],
       },
       btnLoading: false,
       dynamicValidateForm: {
@@ -350,10 +404,16 @@ export default {
       checkList: [],
       subjectArr: [],
       rulesArr: [],
+      stageArr: [],
+      productArr:[],
+      editId: ""
     };
   },
   mounted(){
     this.getTableData()
+    this.getProductList()
+    this.getRulesList()
+    // this.getClassTypeList()
   },
   methods: {
     handleCheckedChange(soltName, val) {
@@ -367,6 +427,61 @@ export default {
         });
       }, 0);
     },
+
+    getProductList(){
+       this.$fetch("courseProductContent_getProductList").then((res) => {
+         this.productArr = res.data.data.map(item => ({
+          label: item.productName,
+          value: item.id
+        }));
+        this.addFormOptions[0].options = this.productArr;
+        this.formOptions[1].options = this.productArr;
+        this.addFormOptions[0].events = {
+          change: this.productChange
+        }
+      });
+    },
+
+    productChange(val){
+      return new Promise(resolve => {
+        this.$fetch("courseProductContent_stageGroupList",{
+          productId: val
+        }).then(res => {
+          this.stageArr = res.dataJson.list?res.dataJson.list.map(item => ({
+            label: item.id,
+            value: item.stageGroupName
+          })):[];
+          this.addFormOptions[7].options = this.stageArr;
+          this.$refs.dataForm3.setValue({
+            stageGroupId: []
+          })
+          resolve();
+        })
+      })
+    },
+
+    getRulesList(){
+      return new Promise(resolve => {
+        this.$fetch("courseProductContent_goAccountingRulesSelects").then(res => {
+          this.rulesArr = res.data.protocolTypeList?res.data.protocolTypeList.map(item => ({
+            label: item.value,
+            value: item.key
+          })):[];
+          this.addFormOptions[4].options = this.rulesArr;
+          this.formOptions[3].options = this.rulesArr;
+          resolve();
+        })
+      })
+    },
+
+    // getClassTypeList(){
+    //   this.$fetch("courseProductContent_stageGroupList").then((res) => {
+    //     this.addFormOptions[7].options = res.dataJson.list&&res.dataJson.list.map(item => ({
+    //       label: item.id,
+    //       value: item.stageGroupName
+    //     }))
+    //   });
+    // },
 
     getMulInfo(selIds, arr) {
       if (!selIds) {
@@ -384,41 +499,47 @@ export default {
       return currentArr;
     },
     handleClose(formName) {
-      this.$refs[formName] && this.$refs[formName].onReset();
-      this.checkList = [];
+      // this.$refs[formName] && this.$refs[formName].resetFields();
+      // this.checkList = [];
       this.addVisible = false;
       //   this.dynamicValidateForm.domains = [];
     },
     handleSubmit(formName) {
       // TODO 保存
       this.$refs[formName].validate((valid, formData) => {
-      //   if (valid) {
-      //     console.log(formData, "提交 11");
-      //     const {time, projectName, computedRules } = formData;
-      //     let belongSubject = this.getMulInfo(projectName, this.subjectArr);
-      //     let rulesInfo = this.getMulInfo(computedRules, this.rulesArr);
-  
-      //     this.$fetch(
-      //       this.addStatus
-      //         ? "coupontemplateversiontwo_save"
-      //         : "coupontemplateversiontwo_editJsp",
-      //       {
-      //         ...formData,
-      //         time: "",
-      //         startTime: time ? time[0] : "",
-      //         endTime: time ? time[1] : "",
-      //         projectName: projectName && projectName.join(","),
-      //         computedRules: computedRules && computedRules.join(","),
-      //         belongSubject:JSON.stringify(belongSubject),
-      //         rulesInfo:JSON.stringify(rulesInfo),
-              
-      //       }
-      //     ).then((res) => {
-      //       this.$message.success("操作成功");
-      //       this.addVisible = false;
-      //       this.getTableData();
-      //     });
-      //   }
+        if (valid) {
+          console.log(formData, "提交 11");
+          const { time, stageGroupId,productId,accountingRules } = formData;
+          let stageGroupName = [],productName,accountingRules_text;
+          stageGroupId.forEach(item => {  
+            let obj = this.stageArr.find(ele => (item == ele.label));
+            if(obj){
+              stageGroupName.push(obj.value);
+            }
+          });
+          productName = this.productArr.find(ele => (productId == ele.value)).label;
+          accountingRules_text = accountingRules == 'LineAverage'?'直线分摊':'授课结束当月确认';
+          this.$fetch(
+            this.addStatus
+              ? "courseProductContent_save"
+              : "courseProductContent_edit",
+            {
+              ...formData,
+              time: "",
+              courseStartTime: time ? time[0] : "",
+              courseEndTime: time ? time[1] : "",
+              stageGroupId: stageGroupId.join(","),
+              stageGroupName: stageGroupName.join(","),
+              productName,
+              id: this.addStatus?"":this.editId,
+              accountingRules_text
+            }
+          ).then((res) => {
+            this.$message.success("操作成功");
+            this.addVisible = false;
+            this.getTableData();
+          });
+        }
       });
     },
     onSearch(val) {
@@ -427,6 +548,7 @@ export default {
       this.getTableData();
     },
     handleAdd() {
+      this.addStatus = true;
       this.addVisible = true;
     },
     getTableData(params = {}) {
@@ -436,14 +558,14 @@ export default {
         ...this.searchForm,
         ...params,
       }).then((res) => {
-        console.log("res0000", res.data.data);
-      });
-
-          this.$fetch("getProductList", { 
-
-        ...params,
-      }).then((res) => {
-        console.log("res00001", res.data.data);
+        this.tableData = res.data.list.map(item => {
+          item.playbackCn = item.playback?'有':'无';
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.courseStartTime = this.$common._formatDates(item.courseStartTime);
+          item.courseEndTime = this.$common._formatDates(item.courseEndTime);
+          return item;
+        });
+        this.pageConfig.totalCount = res.data.pager.totalRows;
       });
     },
     pageChange(val) {
@@ -452,13 +574,34 @@ export default {
       this.pageConfig.showCount = val.limit;
       this.getTableData();
     },
-    handleEdit(data) {
+    async handleEdit(data) {
       this.addStatus = false;
       this.addVisible = true;
+        // 先获取学习阶段下拉
+      await this.productChange(data.productId);
+      setTimeout(() => {
+        this.$refs.dataForm3.setValue({
+          ...data,
+          contentType: data.contentType_text,
+          time: [new Date(data.courseStartTime) , new Date(data.courseEndTime)],
+          status: data.status_text,
+          stageGroupId: String(data.stageGroupId).split(",").map(item => (Number(item))),
+          accountingRules: data.accountingRules_text,
+          accountingRules_text: data.accountingRules,
+        })
+      }, 0);
+      this.editId = data.id;
       //TODO 编辑
     },
-    changeTable(buttonVisible, index) {
-      this.tableData[index].buttonVisible = !buttonVisible;
+    changeTable(data) {
+      this.$fetch("courseProductContent_udpateStatus",{
+        status: data.status_text == 'Normal'?'Stop':'Normal',
+        id: data.id
+      }).then(res => {
+        this.$message.success("操作成功")
+        this.getTableData()
+      })
+      // this.tableData[index].buttonVisible = !buttonVisible;
     },
     handleDelete(row) {
       let info = "";
