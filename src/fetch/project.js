@@ -18,6 +18,11 @@ export default {
     courseclasstype_subjectList:{url: '/admin/courseclasstype/subjectList', method: 'get'}, //根据项目Id获取科目
     courseclasstype_getclassType:{url: '/admin/courseclasstype/getclassType', method: 'get'}, //根据班型ID查询班型信息
     courseclasstype_goSearch:{url: '/admin/courseclasstype/goSearch', method: 'get'}, //搜索框条件查询
+    courseclasstype_contentDetails:{url: '/admin/courseclasstype/contentDetails', method: 'get'}, //根据班型ID查询班型信息
+    courseclasstype_goAddWindows:{url: '/admin/courseclasstype/goAddWindows', method: 'get'}, //新增班型弹窗
+    courseclasstype_courseClasstypeGroupList:{url: '/admin/courseclasstype/courseClasstypeGroupList', method: 'get'}, //获取班型分組
+    courseclasstype_courseClasstypeStageGroup:{url: '/admin/courseclasstype/courseClasstypeStageGroup', method: 'get'}, //获取班型分組
+    // 
     
    
 }

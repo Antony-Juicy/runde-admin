@@ -72,7 +72,17 @@
       </div>
 
       <div class="class-step1 class-moudle" v-show="active == 0">
-        <firstStep ref="dataForm1"></firstStep>
+        <firstStep
+          :yearArr="yearArr"
+          :classTypeArr="classTypeArr"
+          :protocolTypeArr="protocolTypeArr"
+          :classtypeGroupArr="classtypeGroupArr"
+          :refundTypeArr="refundTypeArr"
+          :serviceYearArr="serviceYearArr"
+          :statusArr="statusArr"
+          :projectArr="projectArr"
+          ref="dataForm1"
+        ></firstStep>
       </div>
 
       <div class="class-step2 class-moudle" v-show="active == 1">
@@ -373,6 +383,7 @@
         :tableData="detailTableData"
         :tableKey="detailTableKey"
         :tbodyHeight="600"
+        :emptyText="emptyText"
       >
       </rd-table>
     </fullDialog>
@@ -465,7 +476,7 @@ export default {
       setVisible2: false,
       setVisible3: false,
       setVisible4: false,
-      active: 2,
+      active: 0,
       showNum: 5,
       formOptions: [
         {
@@ -688,28 +699,14 @@ export default {
         norefundFee: [{ required: true, message: "请输入", trigger: "blur" }],
         passDeductFee: [{ required: true, message: "请输入", trigger: "blur" }],
       },
-      projectArr: [
-        {
-          value: "选项1",
-          label: "1",
-        },
-        {
-          value: "选项2",
-          label: "2",
-        },
-        {
-          value: "选项3",
-          label: "3",
-        },
-        {
-          value: "选项4",
-          label: "4",
-        },
-        {
-          value: "选项5",
-          label: "5",
-        },
-      ],
+      projectArr: [], //项目
+      yearArr: [], //班型年份
+      classTypeArr: [], //班型类型
+      classtypeGroupArr: [], //班型分组
+      serviceYearArr: [], //服务年限
+      protocolTypeArr: [], //协议类型
+      refundTypeArr: [], //退费类型
+      statusArr: [], //状态
       step3FormOptions: [
         {
           prop: "WeeklyPermissions",
@@ -943,30 +940,30 @@ export default {
       detailTableData: [
         {
           id: 1,
-          classTypeBatch: "啊哈哈11",
+          contentYear: "啊哈哈11",
           productName: 1995,
           contentName: 1995,
-          classType: 1995,
-          tuitionFees: 1995,
-          classTypeStage: 1995,
+          contentType: 1995,
+          contentPrice: 1995,
+          stageGroupName: 1995,
           accountingRules: 1995,
-          audioStatus: 1995,
-          StartTime: 1995,
+          playback: 1995,
+          courseStartTime: 1995,
           createAt: 1995,
           status: 1995,
         },
       ],
       detailTableKey: [
         { name: "id", value: "id" },
-        { name: "年份", value: "classTypeBatch" },
+        { name: "年份", value: "contentYear" },
         { name: "所属项目", value: "productName" },
         { name: "内容名称", value: "contentName" },
-        { name: "类型", value: "classType" },
-        { name: "单科学费/元", value: "tuitionFees" },
-        { name: "课程阶段", value: "classTypeStage" },
+        { name: "类型", value: "contentType" },
+        { name: "单科学费/元", value: "contentPrice" },
+        { name: "课程阶段", value: "stageGroupName" },
         { name: "核算规则", value: "accountingRules" },
-        { name: "录播情况", value: "audioStatus" },
-        { name: "授课开始时间", value: "StartTime" },
+        { name: "录播情况", value: "playback" },
+        { name: "授课开始时间", value: "courseStartTime" },
         { name: "创建时间", value: "createAt" },
         { name: "状态", value: "status" },
       ],
@@ -981,7 +978,7 @@ export default {
   methods: {
     getSelectList() {
       //获取最近前5年的数组
-      this.formOptions[5].options = this.formOptions[9].options = this.$common
+      this.serviceYearArr = this.yearArr = this.formOptions[5].options = this.formOptions[9].options = this.$common
         .addYearArr()
         .map((item) => ({
           label: item,
@@ -989,52 +986,75 @@ export default {
         }));
 
       this.$fetch("courseclasstype_goSearch").then((res) => {
-        console.log("resssss0", res);
-        this.formOptions[1].options = res.data.productList.map((item) => ({
-          label: item.productName,
-          value: item.id,
-          productId: item.productId,
-        }));
+        this.projectArr = this.formOptions[1].options = res.data.productList.map(
+          (item) => ({
+            label: item.productName,
+            value: item.id,
+          })
+        );
+        console.log("projectArr-==", this.projectArr);
         this.formOptions[1].events = {
           change: this.productChange,
         };
-        this.formOptions[6].options = res.data.protocolTypeList.map((item) => ({
-          label: item.value,
-          value: item.key,
-        }));
-        this.formOptions[6].options = res.data.protocolTypeList.map((item) => ({
-          label: item.value,
-          value: item.key,
-        }));
-
-        this.formOptions[4].options = res.data.classTypeList.map((item) => ({
-          label: item.value,
-          value: item.key,
-        }));
+        // 状态
+        this.statusArr = this.formOptions[3].options = res.data.statusList.map(
+          (item) => ({
+            label: item.value,
+            value: item.key,
+          })
+        );
+        //协议类型
+        this.protocolTypeArr = this.formOptions[6].options = res.data.protocolTypeList.map(
+          (item) => ({
+            label: item.value,
+            value: item.key,
+          })
+        );
+        //班型类型
+        this.classTypeArr = this.formOptions[4].options = res.data.classTypeList.map(
+          (item) => ({
+            label: item.value,
+            value: item.key,
+          })
+        );
+        //请选择退费规则
         this.formOptions[8].options = res.data.refundRulesionList.map(
           (item) => ({
             label: item.value,
             value: item.key,
           })
         );
-        this.formOptions[10].options = res.data.classTypeGroupList.map(
+        //班型分组
+        this.classtypeGroupArr = this.formOptions[10].options = res.data.classTypeGroupList.map(
           (item) => ({
             label: item.classtypeGroupName,
             value: item.id,
           })
         );
+        // 退费类型
+        this.refundTypeArr = this.formOptions[7].options = res.data.refundTypeList.map(
+          (item) => ({
+            label: item.value,
+            value: item.key,
+          })
+        );
+      });
+
+      this.$fetch("courseclasstype_goAddWindows").then((res) => {
+        console.log("goAddWindows 111", res.data);
       });
     },
     productChange(val) {
       console.log("val", val, this.formOptions[1].options);
       this.currentProductId = val;
       //  获取科目下拉
-      let productId = this.formOptions[1].options.find((item) => {
-        if (val == item.value) {
-          return item.productId;
-        }
-      });
-      this.$fetch("courseclasstype_subjectList", { productId, id: val }).then(
+      // let productId = this.formOptions[1].options.find((item) => {
+      //   if (val == item.value) {
+      //     return item.productId;
+      //   }
+      // });
+      // { productId, id: val }
+      this.$fetch("courseclasstype_subjectList", { productId: val }).then(
         (res) => {
           this.formOptions[2].options = res.data.list.map((item) => ({
             label: item.subjectName,
@@ -1042,6 +1062,16 @@ export default {
           }));
         }
       );
+      //获取班型分組
+      this.$fetch("courseclasstype_courseClasstypeGroupList", {
+        productId: val,
+      }).then((res) => {
+        console.log('data2222222',res.data)
+        // this.formOptions[2].options = res.data.list.map((item) => ({
+        //   label: item.subjectName,
+        //   value: item.id,
+        // })); 
+      });
     },
     handleSet(row, index) {
       //设置配送图书
@@ -1049,18 +1079,26 @@ export default {
     },
     loadSalaryCfg() {},
     goDetails(data) {
+      //查看班型详情内容
       this.title = data.className;
       this.detailVisible = true;
       console.log("data", data);
-      let { id, productId, subjectId } = data;
-      this.$fetch("courseclasstype_getclassType", {
-        subjectId,
-        productId,
-        classTypeId: 2806,
+      let { id } = data;
+      this.$fetch("courseclasstype_contentDetails", {
+        classTypeId: id,
       }).then((res) => {
         // detailTableData
-        console.log("112221", res.data.dataJson.listModel);
-        this.detailTableData = res.data.dataJson.listModel;
+        console.log("data  res.data.list", res.data.list);
+        this.detailTableData = res.data.list.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.courseStartTime = this.$common._formatDates(
+            item.courseStartTime
+          );
+          item.playback = item.playback ? "有录播" : "无录播";
+          item.status = item.status == "Normal" ? "正常" : "暂停";
+          console.log("data item", item);
+          return item;
+        });
       });
     },
     // getAddClassTableData(params = {}) {
