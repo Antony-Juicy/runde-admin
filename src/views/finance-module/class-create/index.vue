@@ -21,8 +21,8 @@
         :pageConfig.sync="pageConfig"
         @pageChange="pageChange"
       >
-        <template slot="courseContentId" slot-scope="scope">
-          {{ scope.row.courseContentId }}<br />
+        <template slot="contentName" slot-scope="scope">
+          {{ scope.row.contentName }}<br />
           <el-button
             type="text"
             style="height: 40px"
@@ -258,11 +258,7 @@
             </el-col>
           </el-row>
 
-          <el-form-item
-            label="班型内容："
-            prop="courseContentId"
-            :inline="true"
-          >
+          <el-form-item label="班型内容：" prop="contentName" :inline="true">
             <div>
               <el-button
                 @click="handleAddContent()"
@@ -370,7 +366,7 @@
     <!-- 添加查看详情弹窗 -->
     <fullDialog
       v-model="detailVisible"
-      title="金牌通关班"
+      :title="title"
       @change="detailVisible = false"
     >
       <rd-table
@@ -506,12 +502,16 @@ export default {
           ],
         },
         {
+          prop: "classType",
+          element: "el-select",
+          placeholder: "请选择班型类型",
+          options: [],
+        },
+        {
           prop: "classTypeBatch",
           element: "el-select",
           placeholder: "请选择年份",
-          options: [
-           
-          ],
+          options: [],
         },
         {
           prop: "protocolType",
@@ -561,7 +561,7 @@ export default {
         { name: "退费类型", value: "refundTypeId" },
         { name: "退费规则", value: "refundRules" },
         { name: "课程", value: "course" },
-        { name: "班型内容", value: "courseContentId", operate: true },
+        { name: "班型内容", value: "contentName", operate: true },
         { name: "学费/元", value: " tuitionFees" },
         { name: "服务年限", value: "serviceYear" },
         { name: "不可退金额/元", value: " norefundFee" },
@@ -943,33 +943,34 @@ export default {
       detailTableData: [
         {
           id: 1,
-          year: "啊哈哈11",
-          subProject: 1995,
+          classTypeBatch: "啊哈哈11",
+          productName: 1995,
           contentName: 1995,
-          type: 1995,
-          SingleCourseFee: 1995,
-          courseStage: 1995,
+          classType: 1995,
+          tuitionFees: 1995,
+          classTypeStage: 1995,
           accountingRules: 1995,
-          recordedCase: 1995,
+          audioStatus: 1995,
           StartTime: 1995,
-          creatTime: 1995,
+          createAt: 1995,
           status: 1995,
         },
       ],
       detailTableKey: [
         { name: "id", value: "id" },
-        { name: "年份", value: "year" },
-        { name: "所属项目", value: "subProject" },
+        { name: "年份", value: "classTypeBatch" },
+        { name: "所属项目", value: "productName" },
         { name: "内容名称", value: "contentName" },
-        { name: "类型", value: "type" },
-        { name: "单科学费/元", value: "SingleCourseFee" },
-        { name: "课程阶段", value: "courseStage" },
+        { name: "类型", value: "classType" },
+        { name: "单科学费/元", value: "tuitionFees" },
+        { name: "课程阶段", value: "classTypeStage" },
         { name: "核算规则", value: "accountingRules" },
-        { name: "录播情况", value: "recordedCase" },
+        { name: "录播情况", value: "audioStatus" },
         { name: "授课开始时间", value: "StartTime" },
-        { name: "创建时间", value: "creatTime" },
+        { name: "创建时间", value: "createAt" },
         { name: "状态", value: "status" },
       ],
+      title: "",
     };
   },
 
@@ -978,50 +979,51 @@ export default {
     this.getTableData();
   },
   methods: {
-    // handleChange(soltName, val) {
-    //   console.log("jjjj");
-    //   this.$refs.dataForm1.setValue({
-    //     [soltName]: val,
-    //   });
-    //   setTimeout(() => {
-    //     this.$refs["dataForm1"].validateField([soltName], (errorMessage) => {
-    //       console.log(errorMessage, "errorMessage");
-    //     });
-    //   }, 0);
-    // },
     getSelectList() {
-      // courseProduct_listJsp
-      this.$fetch("courseProduct_listJsp").then((res) => {
-        console.log("就哈哈哈", res.data.productList);
-        let productNameOptions = res.data.productList.map((item) => ({
+      //获取最近前5年的数组
+      this.formOptions[5].options = this.formOptions[9].options = this.$common
+        .addYearArr()
+        .map((item) => ({
+          label: item,
+          value: item,
+        }));
+
+      this.$fetch("courseclasstype_goSearch").then((res) => {
+        console.log("resssss0", res);
+        this.formOptions[1].options = res.data.productList.map((item) => ({
           label: item.productName,
           value: item.id,
           productId: item.productId,
         }));
-        this.formOptions[1].options = productNameOptions;
         this.formOptions[1].events = {
           change: this.productChange,
         };
+        this.formOptions[6].options = res.data.protocolTypeList.map((item) => ({
+          label: item.value,
+          value: item.key,
+        }));
+        this.formOptions[6].options = res.data.protocolTypeList.map((item) => ({
+          label: item.value,
+          value: item.key,
+        }));
+
+        this.formOptions[4].options = res.data.classTypeList.map((item) => ({
+          label: item.value,
+          value: item.key,
+        }));
+        this.formOptions[8].options = res.data.refundRulesionList.map(
+          (item) => ({
+            label: item.value,
+            value: item.key,
+          })
+        );
+        this.formOptions[10].options = res.data.classTypeGroupList.map(
+          (item) => ({
+            label: item.classtypeGroupName,
+            value: item.id,
+          })
+        );
       });
-
-       this.$fetch("courseclasstype_goSearch").then((res) => {
-        console.log('resssss0',res)
-       });
-      // Promise.all(
-      //   [this.$fetch("courseProduct_listJsp")].map((p) => {
-      //     return p.catch((error) => error);
-      //   })
-      // ).then((result) => {
-      //   console.log("resuuu", result[0].data.productList);
-      //   let productNameOptions = result[0].data.productList.map((item) => ({
-      //     label: item.productName,
-      //     value: item.id,
-      //     id: item.id,
-      //     productId: item.productId,
-      //   }));
-      //   this.formOptions[0].options = productNameOptions;
-
-      // });
     },
     productChange(val) {
       console.log("val", val, this.formOptions[1].options);
@@ -1047,15 +1049,19 @@ export default {
     },
     loadSalaryCfg() {},
     goDetails(data) {
+      this.title = data.className;
       this.detailVisible = true;
-      console.log('data',data) 
-      let  {className,id,productId,subjectId} = data;
-         this.$fetch("courseclasstype_getclassType", {className,subjectId, productId, classTypeId: id }).then(
-        (res) => {
-          // detailTableData
-         console.log('112221',res.data) 
-        }
-      );
+      console.log("data", data);
+      let { id, productId, subjectId } = data;
+      this.$fetch("courseclasstype_getclassType", {
+        subjectId,
+        productId,
+        classTypeId: 2806,
+      }).then((res) => {
+        // detailTableData
+        console.log("112221", res.data.dataJson.listModel);
+        this.detailTableData = res.data.dataJson.listModel;
+      });
     },
     // getAddClassTableData(params = {}) {
     // this.$fetch("chance_campus_list", {

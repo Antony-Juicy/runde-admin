@@ -78,7 +78,7 @@ const $common = {
     showCutDown(endtime) {
         let nowtime = new Date();
         let lefttime = new Date(endtime).getTime() - nowtime.getTime(); //距离结束时间的毫秒数
-        if(lefttime <= 0) {
+        if (lefttime <= 0) {
             return '';
         }
         let leftd = Math.floor(lefttime / (1000 * 60 * 60 * 24)),  //计算天数
@@ -316,6 +316,30 @@ const $common = {
         }
         return dateText;
     },
+    /**
+ * 获取时间公共方法
+ * startYear 开始年份 null为当前年份前5年
+ * endYear 结束年份 null为当前年份
+ */
+    addYearArr(startYear, endYear) {
+        var yearArr = [];
+        var myDate = new Date();
+      let  nowYear = myDate.getFullYear();//当前年
+        if (endYear) {
+        } else {//为空为当前年
+            endYear = nowYear;
+        }
+        if (startYear) {
+        } else {//为空为当前年前5年
+            startYear = nowYear - 4;
+        }
+        for (var int = startYear; int <= endYear; int++) {
+            yearArr.push(int);
+        }
+        return yearArr; 
+    }
+
+
 
 }
 
