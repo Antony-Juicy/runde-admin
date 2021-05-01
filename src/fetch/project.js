@@ -21,8 +21,10 @@ export default {
     courseclasstype_contentDetails:{url: '/admin/courseclasstype/contentDetails', method: 'get'}, //根据班型ID查询班型信息
     courseclasstype_goAddWindows:{url: '/admin/courseclasstype/goAddWindows', method: 'get'}, //新增班型弹窗
     courseclasstype_courseClasstypeGroupList:{url: '/admin/courseclasstype/courseClasstypeGroupList', method: 'get'}, //获取班型分組
-    courseclasstype_courseClasstypeStageGroup:{url: '/admin/courseclasstype/courseClasstypeStageGroup', method: 'get'}, //获取班型分組
-    // 
+    courseclasstype_courseClasstypeStageGroup:{url: '/admin/courseclasstype/courseClasstypeStageGroup', method: 'get'}, //获取班型阶段
+    courseclasstype_courseList:{url: '/admin/courseclasstype/courseList', method: 'get'}, // 根据条件查找对应课程
+    courseProductContent_listJsp:{url: '/admin/courseProductContent/listJsp', method: 'get'}, // 获取项目内容列表
+    
     
    
 }

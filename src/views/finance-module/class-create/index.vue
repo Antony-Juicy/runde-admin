@@ -76,12 +76,13 @@
           :yearArr="yearArr"
           :classTypeArr="classTypeArr"
           :protocolTypeArr="protocolTypeArr"
-          :classtypeGroupArr="classtypeGroupArr"
           :refundTypeArr="refundTypeArr"
           :serviceYearArr="serviceYearArr"
           :statusArr="statusArr"
           :projectArr="projectArr"
           ref="dataForm1"
+          @getStageListFunc="getStageListFunc"
+          @getCourseListFunc="getCourseListFunc"
         ></firstStep>
       </div>
 
@@ -94,6 +95,43 @@
         >
           <!-- start -->
           <div class="">
+            <el-row :gutter="20" v-if="basicInfo.courseStageArr.length > 0">
+              <el-form-item
+                label="班型阶段："
+                prop="courseStageList"
+                :rules="{
+                  required: basicInfo.courseStageArr.length > 0 ? true : false,
+                  message: '不能为空',
+                  trigger: 'change',
+                }"
+              >
+                <el-checkbox-group
+                  v-model="basicInfo.courseStageList"
+                  @change="handleCheckedStageChange"
+                >
+                  <el-checkbox
+                    v-for="item in basicInfo.courseStageArr"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-checkbox>
+                </el-checkbox-group>
+                <!-- <el-select
+                  v-model="basicInfo.classTypeStage"
+                  placeholder="请选择班型阶段"
+                  size="small"
+                  style="width: 400px"
+                >
+                  <el-option
+                    v-for="item in projectArr"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  > -->
+                <!-- </el-option>
+                </el-select> -->
+              </el-form-item>
+            </el-row>
             <div class="row-item">
               <span class="sumPriceRow" style="">学费价格：</span>
               <div class="right-block">
@@ -101,116 +139,84 @@
                   <el-form-item
                     label="总学费"
                     label-width="80px"
-                    prop="sumPrice"
+                    prop="totalPrice"
                     :rules="{
-                      required: true,
+                      required: false,
                       message: '不能为空',
                       trigger: 'blur',
                     }"
                   >
                     <el-input
-                      v-model="basicInfo.sumPrice"
+                      readonly
+                      v-model="totalPrice"
                       size="small"
                       style="width: 300px"
                     ></el-input>
                     <span style="margin-left: 10px">元</span>
                   </el-form-item>
                 </div>
-
-                <div class="param-item">
-                  <el-form-item
-                    label="中药一"
-                    label-width="80px"
-                    prop="price1"
-                    :rules="{
-                      required: true,
-                      message: '不能为空',
-                      trigger: 'blur',
-                    }"
+                <template v-if="courseList.length > 0">
+                  <div
+                    class="param-item"
+                    v-for="(item, index) in courseList"
+                    :key="item.value"
                   >
-                    <el-input
-                      v-model="basicInfo.price1"
-                      size="small"
-                      style="width: 300px"
-                    ></el-input>
-                    <!-- <span>元</span> -->
-                    <el-checkbox class="ml10" v-model="basicInfo.checked1"
-                      >计算业绩</el-checkbox
+                    <el-form-item
+                      :prop="'courseList.' + index + '.price'"
+                      label-width="0"
+                      :rules="{
+                        required: basicInfo.courseList[index].checked
+                          ? true
+                          : false,
+                        message: '请输入价格',
+                        trigger: 'blur',
+                      }"
                     >
-                  </el-form-item>
-                </div>
+                      <el-checkbox
+                        v-model="basicInfo.courseList[index].checked"
+                        :label="item.label"
+                      ></el-checkbox>
 
-                <div class="param-item">
-                  <el-form-item
-                    label="中药二"
-                    label-width="80px"
-                    prop="price2"
-                    :rules="{
-                      required: true,
-                      message: '不能为空',
-                      trigger: 'blur',
-                    }"
-                  >
-                    <el-input
-                      v-model="basicInfo.price2"
-                      size="small"
-                      style="width: 300px"
-                    ></el-input>
-                    <el-checkbox class="ml10" v-model="basicInfo.checked2"
+                      <el-input
+                        v-model="basicInfo.courseList[index].price"
+                        size="small"
+                        placeholder="请输入价格"
+                        style="width: 200px; margin-left: 20px"
+                      ></el-input>
+                      <!-- <span>元</span> -->
+                      <!-- <el-checkbox class="ml10" v-model="basicInfo.checked1"
                       >计算业绩</el-checkbox
-                    >
-                  </el-form-item>
-                </div>
-
-                <div class="param-item">
-                  <el-form-item
-                    label="中药综合"
-                    label-width="80px"
-                    prop="price3"
-                    :rules="{
-                      required: true,
-                      message: '不能为空',
-                      trigger: 'blur',
-                    }"
-                  >
-                    <el-input
-                      v-model="basicInfo.price3"
-                      size="small"
-                      style="width: 300px"
-                    ></el-input>
-                    <el-checkbox class="ml10" v-model="basicInfo.checked3"
-                      >计算业绩</el-checkbox
-                    >
-                  </el-form-item>
-                </div>
-
-                <div class="param-item">
-                  <el-form-item
-                    label="中药综合"
-                    label-width="80px"
-                    prop="price4"
-                    :rules="{
-                      required: true,
-                      message: '不能为空',
-                      trigger: 'blur',
-                    }"
-                  >
-                    <el-input
-                      v-model="basicInfo.price4"
-                      size="small"
-                      style="width: 300px"
-                    ></el-input>
-                    <el-checkbox class="ml10" v-model="basicInfo.checked4"
-                      >计算业绩</el-checkbox
-                    >
-                  </el-form-item>
-                </div>
+                    > -->
+                      <el-switch
+                        active-text="计算业绩"
+                        style="margin-left: 20px"
+                        v-model="basicInfo.courseList[index].checked2"
+                        active-color="#13ce66"
+                        inactive-color="#dcdfe6"
+                        @change="
+                          handleSwitchChange(
+                            basicInfo.courseList[index].checked2
+                          )
+                        "
+                      >
+                      </el-switch>
+                    </el-form-item>
+                  </div>
+                </template>
               </div>
             </div>
           </div>
           <!-- end -->
           <el-row :gutter="20">
-            <el-form-item label="退费规则：" prop="refundRules">
+            <el-form-item
+              label="退费规则："
+              prop="refundRules"
+              :rules="{
+                required: true,
+                message: '不能为空',
+                trigger: 'change',
+              }"
+            >
               <el-select
                 v-model="basicInfo.refundRules"
                 placeholder="请选择退费规则"
@@ -218,7 +224,7 @@
                 style="width: 400px"
               >
                 <el-option
-                  v-for="item in projectArr"
+                  v-for="item in refundRulesionArr"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -230,7 +236,17 @@
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item
+                v-if="
+                  basicInfo.refundRules == 'NOPASSREFUNDFULL' ||
+                  basicInfo.refundRules == 'NOPASSREFUNDDEDUCT' ||
+                  basicInfo.refundRules == 'YISHIONEANDTWO'
+                "
                 label="不可退金额："
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'change',
+                }"
                 prop="norefundFee"
                 inline="true"
               >
@@ -249,6 +265,12 @@
             </el-col>
             <el-col :span="12">
               <el-form-item
+                v-if="basicInfo.refundRules == 'PASSREFUNDDEDUCT'"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'change',
+                }"
                 label="通过扣除费用："
                 prop="passDeductFee"
                 inline="true"
@@ -354,10 +376,13 @@
       @handleClose="distributeVisible = false"
     >
       <addClass
+        :classTypeArr="classTypeArr"
+        :projectArr="projectArr" 
         :opportunityIds="opportunityIds"
         @refresh="getTableData"
         @close="distributeVisible = false"
         v-if="distributeVisible"
+        :currentProductId="currentProductId"
       />
       <div class="btn-wrapper" style="text-align: right; margin-top: 20px">
         <el-button size="small" @click="distributeVisible = false"
@@ -468,6 +493,11 @@ export default {
   },
   data() {
     return {
+      courseGroupArr: [], //班型分组
+      // courseStageArr: [], //班型阶段
+      // courseStageList: [],
+      courseList: [], //课程
+      refundRulesionArr: [], //退费规则
       currentProductId: "",
       filterColumn: ["classtypeGroupName", "crowdType", "crowdNum"],
       btnLoading: false,
@@ -628,25 +658,29 @@ export default {
         campusVisible: "",
       },
       basicInfo: {
-        sumPrice: "",
-        price1: "",
-        price2: "",
-        price3: "",
-        price4: "",
-        checked1: "",
-        checked2: "",
-        checked3: "",
-        checked4: "",
-        value1: "",
-        value2: "",
-        value3: "",
-        value4: "",
+        courseList: [],
+        courseStageArr: [], //班型阶段
+        courseStageList: [],
+        totalPrice: "",
+        // price1: "",
+        // price2: "",
+        // price3: "",
+        // price4: "",
+        // checked1: "",
+        // checked2: "",
+        // checked3: "",
+        // checked4: "",
+        // value1: "",
+        // value2: "",
+        // value3: "",
+        // value4: "",
         status: "",
         nextTime: "",
         detail: "",
         refundRules: "",
         norefundFee: "",
         passDeductFee: "",
+        // classTypeStage: "",
         tableData: [
           {
             id: 1,
@@ -691,18 +725,18 @@ export default {
         },
       },
       rules: {
-        sumPrice: [
-          { required: true, message: "请输入", trigger: "blur" },
-          { type: "number", message: "学费必须为数字值" },
-        ],
-        refundRules: [{ required: true, message: "请选择", trigger: "change" }],
-        norefundFee: [{ required: true, message: "请输入", trigger: "blur" }],
-        passDeductFee: [{ required: true, message: "请输入", trigger: "blur" }],
+        // sumPrice: [
+        //   { required: true, message: "请输入", trigger: "blur" },
+        //   { type: "number", message: "学费必须为数字值" },
+        // ],
+        // refundRules: [{ required: true, message: "请选择", trigger: "change" }],
+        // norefundFee: [{ required: true, message: "请输入", trigger: "blur" }],
+        // passDeductFee: [{ required: true, message: "请输入", trigger: "blur" }],
       },
       projectArr: [], //项目
       yearArr: [], //班型年份
       classTypeArr: [], //班型类型
-      classtypeGroupArr: [], //班型分组
+      // classtypeGroupArr: [], //班型分组
       serviceYearArr: [], //服务年限
       protocolTypeArr: [], //协议类型
       refundTypeArr: [], //退费类型
@@ -970,12 +1004,54 @@ export default {
       title: "",
     };
   },
+  computed: {
+    totalPrice() {
+      let totalPrice = 0;
+      //     	//遍历productList,拿到单价和数量
+      // for(let i in this.basicInfo.courseList){
 
+      // 	sumPrice+=(this.productList[i].price*this.productList[i].num*100)
+      // }
+      // //最后return出去计算好的值,直接用就好了,不用在data中起总价的变量,不然会报错
+      // return sumPrice
+
+      this.basicInfo.courseList.map((item) => {
+        if (item.checked) {
+          console.log("totalPrice 111144", item.price);
+          totalPrice += item.price - 0;
+        }
+        console.log("totalPrice 1111", totalPrice);
+      });
+      this.basicInfo.totalPrice = totalPrice;
+      return totalPrice;
+    },
+  },
   mounted() {
     this.getSelectList();
     this.getTableData();
   },
   methods: {
+    // geteGroupListFunc(data) {//获取班型分組
+    //   this.courseGroupArr = data;
+    // },
+    handleSwitchChange(val) {
+      console.log("val22", val);
+    },
+    handleCheckedStageChange() {},
+    getStageListFunc(data) {
+      //获取班型阶段
+      this.basicInfo.courseStageArr = data;
+    },
+    getCourseListFunc(data) {
+      //获取课程
+      this.courseList = data;
+      this.basicInfo.courseList = data.map((item) => ({
+        value: "",
+        checked: false,
+        price: "",
+        checked2: false,
+      }));
+    },
     getSelectList() {
       //获取最近前5年的数组
       this.serviceYearArr = this.yearArr = this.formOptions[5].options = this.formOptions[9].options = this.$common
@@ -1042,10 +1118,14 @@ export default {
 
       this.$fetch("courseclasstype_goAddWindows").then((res) => {
         console.log("goAddWindows 111", res.data);
+        this.refundRulesionArr = res.data.refundRulesionList.map((item) => ({
+          label: item.value,
+          value: item.key,
+        }));
       });
     },
     productChange(val) {
-      console.log("val", val, this.formOptions[1].options);
+      console.log("33 val 22 ==?", val, this.formOptions[1].options);
       this.currentProductId = val;
       //  获取科目下拉
       // let productId = this.formOptions[1].options.find((item) => {
@@ -1062,16 +1142,6 @@ export default {
           }));
         }
       );
-      //获取班型分組
-      this.$fetch("courseclasstype_courseClasstypeGroupList", {
-        productId: val,
-      }).then((res) => {
-        console.log('data2222222',res.data)
-        // this.formOptions[2].options = res.data.list.map((item) => ({
-        //   label: item.subjectName,
-        //   value: item.id,
-        // })); 
-      });
     },
     handleSet(row, index) {
       //设置配送图书

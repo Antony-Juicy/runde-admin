@@ -45,6 +45,7 @@
           v-model="basicInfo.subjectName"
           placeholder="请选择"
           size="small"
+          @change="handleSubjectSelect"
         >
           <el-option
             v-for="item in subjecttArr"
@@ -119,8 +120,8 @@
       <el-form-item
         style="align-items: center; display: flex; flex: 1; height: 100%"
         label="班型分组"
-        label-width="160px"
         prop="classTypeGroup"
+        v-if="courseGroupArr.length > 0"
         :rules="{
           required: true,
           message: '不能为空',
@@ -129,7 +130,7 @@
       >
         <el-radio-group v-model="basicInfo.classTypeGroup" @change="partChange">
           <el-radio
-            v-for="item in classtypeGroupArr"
+            v-for="item in courseGroupArr"
             :label="item.label"
             :key="item.value"
             >{{ item.label }}
@@ -231,6 +232,8 @@ export default {
   data() {
     return {
       subjecttArr: [], //科目
+      courseGroupArr: [],
+      currentProductId: "",
       // projectArr: [
       //   {
       //     value: "选项1",
@@ -286,10 +289,10 @@ export default {
       //班型类型
       type: Array,
     },
-    classtypeGroupArr: {
-      //班型分组
-      type: Array,
-    },
+    // classtypeGroupArr: {
+    //   //班型分组
+    //   type: Array,
+    // },
     serviceYearArr: {
       //服务年限
       type: Array,
@@ -311,11 +314,33 @@ export default {
     // this.getData();
   },
   methods: {
+    handleSubjectSelect(val) {
+      // courseclasstype_courseList
+      console.log("sssdad得得得", val);
+      this.$fetch("courseclasstype_courseList", {
+        productId: this.currentProductId,
+        subjectId: val,
+      }).then((res) => {
+        // this.subjecttArr = res.data.list.map((item) => ({
+        //   label: item.subjectName,
+        //   value: item.id,
+        // }));
+        let courseList = res.data.list.map((item) => ({
+          label: item.courseName,
+          value: item.id,
+        }));
+        console.log("课程courseListcourseList", courseList);
+        this.$emit("getCourseListFunc", courseList);
+      });
+    },
     partChange() {},
     handleChange(val) {
       console.log("val==", val);
-
       //  获取科目下拉
+      this.currentProductId = val;
+      console.log(8888)
+      this.$Bus.$emit("currentProductIdConfig",this.currentProductId) 
+       console.log(999)
       this.$fetch("courseclasstype_subjectList", { productId: val }).then(
         (res) => {
           this.subjecttArr = res.data.list.map((item) => ({
@@ -328,8 +353,24 @@ export default {
       this.$fetch("courseclasstype_courseClasstypeGroupList", {
         productId: val,
       }).then((res) => {
-        console.log("data2222222", res.data);
-       
+        this.courseGroupArr = res.data.map((item) => ({
+          label: item.classtypeGroupName,
+          value: item.id,
+        }));
+        // this.$emit("geteGroupListFunc", res.dataJson.list);
+      });
+
+      //获取班型阶段
+      this.$fetch("courseclasstype_courseClasstypeStageGroup", {
+        productId: val,
+      }).then((res) => {
+        let data =
+          res.data &&
+          res.data.map((item) => ({
+            label: item.stageGroupName,
+            value: item.id,
+          }));
+        this.$emit("getStageListFunc", data);
       });
     },
     getData(params = {}) {},
