@@ -314,10 +314,9 @@ export default {
         cancelButtonText: "取消",
         type: "warning",
       })
-        .then(async () => {
-          const res = await this.$fetch("projectType_delete", {
-            typeId: row.typeId,
-            loginUserId,
+        .then(() => {
+          this.$fetch("projectType_delete", {
+            id: row.id
           }).then((res) => {
             if (res) {
               this.$message({

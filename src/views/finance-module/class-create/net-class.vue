@@ -22,6 +22,22 @@
             <el-button @click="handleEdit(scope.row)" type="text" size="medium">
               编辑
             </el-button>
+            <el-divider direction="vertical"></el-divider>
+            <el-button
+              @click="handleDelete(scope.row)"
+              type="text"
+              size="small"
+              style="color: #ec5b56"
+              >删除</el-button
+            >
+            <el-divider direction="vertical"></el-divider>
+            <el-button
+              @click="handleSync(scope.row)"
+              type="text"
+              size="small"
+              style="color: #ffa500"
+              >重新同步</el-button
+            >
           </template>
         </rd-table>
       </div>
@@ -74,7 +90,16 @@ export default {
     RdForm,
     fullDialog,
   },
-  props: {},
+  props: {
+    classTypeId: {
+      type: String | Number,
+      default: 2806
+    },
+    className: {
+      type: String,
+      default: "lwm010802"
+    }
+  },
   data() {
     return {
       detailId: "",
@@ -95,19 +120,22 @@ export default {
       },
       formOptions: [
         {
-          prop: "course",
-          element: "el-input",
-          placeholder: "请输入课程",
+          prop: "courseId",
+          element: "el-select",
+          placeholder: "请选择课程",
+          options: []
         },
         {
           prop: "courseType",
           element: "el-select",
           placeholder: "请选择课程类型",
+          options: []
         },
         {
-          prop: "courseClassify",
+          prop: "courseSort",
           element: "el-select",
           placeholder: "请选择课程分类",
+          options: []
         },
       ],
       tableData: [
@@ -124,39 +152,40 @@ export default {
         },
       ],
       tableKey: [
-        { name: "id", value: "id" },
-        { name: "班型名称", value: "classtName" },
+        { name: "id", value: "id",width: 80 },
+        { name: "班型名称", value: "classTypeName" },
         { name: "课程名称", value: "courseName" },
-        { name: "课程编码", value: "courseCoding" },
+        { name: "课程编码", value: "courseCode" },
         { name: "课程类型", value: "courseType" },
-        { name: "课程分类", value: "courseClassify" },
+        { name: "课程分类", value: "courseSort" },
         { name: "开始时间", value: "startTime" },
         { name: "结束时间", value: "endTime" },
-        { name: "同步状态", value: "status" },
+        { name: "同步状态", value: "synStatus" },
         {
           name: "操作",
           value: "edit",
           operate: true,
-          width: 140,
+          width: 190,
           fixed: "right",
         },
       ],
       addFormOptions: [
         {
-          prop: "classtName",
+          prop: "classTypeName",
           element: "el-input",
           placeholder: "请输入",
           label: "班型",
+          readonly: true
         },
         {
-          prop: "courseName",
+          prop: "courseId",
           element: "el-select",
           placeholder: "请选择",
           label: "课程",
           options: [],
         },
         {
-          prop: "courseCoding",
+          prop: "courseCode",
           element: "el-input",
           placeholder: "请输入课程编码",
           label: "课程编码",
@@ -170,7 +199,7 @@ export default {
           options: [],
         },
         {
-          prop: "courseClassify",
+          prop: "courseSort",
           element: "el-select",
           placeholder: "请选择",
           label: "课程分类",
@@ -178,18 +207,22 @@ export default {
         },
       ],
       addRules: {
-        classtName: [{ required: true, message: "请输入", trigger: "blur" }],
-        courseName: [{ required: true, message: "请选择", trigger: "blur" }],
-        courseCoding: [{ required: true, message: "请输入", trigger: "blur" }],
-        courseType: [{ required: true, message: "请选择", trigger: "blur" }],
-        courseClassify: [
-          { required: true, message: "请选择", trigger: "blur" },
+        classTypeName: [{ required: true, message: "请输入", trigger: "blur" }],
+        courseId: [{ required: true, message: "请选择", trigger: "change" }],
+        courseCode: [{ required: true, message: "请输入", trigger: "blur" }],
+        courseType: [{ required: true, message: "请选择", trigger: "change" }],
+        courseSort: [
+          { required: true, message: "请选择", trigger: "change" },
         ],
       },
+      classTypeArr: [],
+      courseListArr: [],
+      courseSortListArr: []
     };
   },
   mounted() {
     this.getTableData();
+    this.getSelectList();
   },
   methods: {
     refresh() {},
@@ -197,17 +230,18 @@ export default {
       this.$refs[formName].validate((valid, formData) => {
         if (valid) {
           console.log(formData, "保存");
+          const { courseId } = formData;
+          let courseName = this.classTypeArr.find(item => (item.value == courseId)).label;
           //TODO
           this.$fetch(
             this.addStatus
-              ? "secretexamsubject_add"
-              : "secretexamsubject_editJsp",
+              ? "courseclasstypemiddle_save"
+              : "courseclasstypemiddle_editJsp",
             {
               ...formData,
-              time: "",
-              startTime: formData.time ? formData.time[0] : "",
-              endTime: formData.time ? formData.time[1] : "",
               id: this.addStatus ? "" : this.editId,
+              classTypeId: this.classTypeId,
+              courseName
             }
           ).then((res) => {
             this.$message.success("操作成功");
@@ -225,39 +259,74 @@ export default {
     },
     getTableData(params = {}) {
       //TODO  secretexamsubject_list
-      this.$fetch("posterinfo_listJson", {
+      this.$fetch("courseclasstypemiddle_listJsp", {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
+        classTypeId: this.classTypeId
       }).then((res) => {
-        this.tableData = res.data.data.map((item) => {
-          item.creatTime = this.$common._formatDates(item.createAt);
+        this.tableData = res.data.varList.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.startTime = this.$common._formatDates(item.startTime);
+          item.endTime = this.$common._formatDates(item.endTime);
           return item;
         });
-        this.pageConfig.totalCount = res.data.count;
+        this.pageConfig.totalCount = res.data.page.totalResult;
       });
     },
     handleEnter() {},
+    getSelectList(){
+      this.$fetch("courseclasstypemiddle_goAddWindows",{
+        classTypeId: this.classTypeId
+      }).then(res => {
+        
+        const { classType , courseList, courseSortList}  = res.data;
+        this.classTypeArr = classType.map(item => ({
+          label: item.courseName,
+          value: item.courseId
+        }));
+        this.addFormOptions[1].options = this.classTypeArr;
+        this.formOptions[0].options = this.classTypeArr;
+        this.courseListArr = courseList.map(item => ({
+          label: item.value,
+          value: item.key
+        }));
+        this.addFormOptions[3].options =  this.courseListArr;
+        this.formOptions[1].options =  this.courseListArr;
+        this.courseSortListArr = courseSortList.map(item => ({
+          label: item.value,
+          value: item.key
+        }));
+        this.addFormOptions[4].options =  this.courseSortListArr;
+        this.formOptions[2].options =  this.courseSortListArr;
+      })
+    },
     handleAdd() {
       this.distributeVisible = true;
       this.addStatus = true;
+      this.addFormOptions.forEach((item) => {
+        item.initValue = "";
+        if(item.prop == "classTypeName"){
+          item.initValue =this.className;
+        }
+      });
+      setTimeout(() => {
+        this.$refs.dataForm3.resetFields();
+        this.$refs.dataForm3.addInitValue();
+      }, 0);
     },
     handleEdit(data) {
       this.addStatus = false;
       this.distributeVisible = true;
       this.editId = data.id;
       //TODO
-      this.$fetch("secretexamsubject_goEdit", {
+      this.$fetch("courseclasstypemiddle_goEdit", {
         id: data.id,
       }).then((res) => {
         this.addFormOptions.forEach((item) => {
-          if (item.prop != "describe") {
-            item.initValue = data[item.prop];
-          }
-          // item.initValue = res.data.pd[item.prop];
+          item.initValue = res.data.classType[0].pd[item.prop];
         });
         this.$refs.dataForm3.addInitValue();
-        console.log(this.addFormOptions, "this.addFormOptions---");
       });
     },
     pageChange(val) {
@@ -266,7 +335,57 @@ export default {
       this.pageConfig.showCount = val.limit;
       this.getTableData();
     },
+    handleDelete(row) {
+      let info = '';
+      this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.$fetch("courseclasstypemiddle_deleteJsp", {
+            id: row.id
+          }).then((res) => {
+            if (res) {
+              this.$message({
+                message: "删除成功",
+                type: "success",
+              });
+              setTimeout(() => {
+                this.getTableData();
+              }, 50);
+            }
+          });
+        })
+        .catch(() => {});
+    },
+    handleSync(row) {
+      let info = '';
+      this.$confirm(`确认重新同步编码？`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.$fetch("courseclasstypemiddle_synCourseLiveCode", {
+            key: row.id,
+            synType: "Course"
+          }).then((res) => {
+            if (res) {
+              this.$message({
+                message: "操作成功",
+                type: "success",
+              });
+              setTimeout(() => {
+                this.getTableData();
+              }, 50);
+            }
+          });
+        })
+        .catch(() => {});
+    }
   },
+
 };
 </script>
 
