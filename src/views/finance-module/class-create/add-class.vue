@@ -7,6 +7,7 @@
           placeholder="项目"
           filterable
           size="small"
+          @change="handleChangeProduct"
         >
           <el-option
             :label="item.label"
@@ -64,11 +65,25 @@
       highlight-current-row
       :multiple="true"
       @pageChange="pageChange"
+      @select="handleSelect"
     >
       <template slot="staffPhone" slot-scope="scope">
         {{ $common.hidePhone(scope.row.staffPhone) }}
       </template>
     </rd-table>
+    <div class="btn-wrapper" style="text-align: right; margin-top: 20px">
+      <el-button size="small" @click="distributeVisible = false"
+        >取消</el-button
+      >
+      <el-button
+        type="primary"
+        size="small"
+        :loading="btnLoading"
+        @click="handleAddClass"
+        v-prevent-re-click="2000"
+        >添加</el-button
+      >
+    </div>
   </div>
 </template>
 
@@ -77,7 +92,8 @@ export default {
   name: "add-class",
   data() {
     return {
-      currentProductId: "",
+      productId:this.selectProductId,
+      btnLoading: false,
       nameArr: [],
       campusArr: [],
       formInline: {},
@@ -131,13 +147,16 @@ export default {
       //班型类型
       type: Array,
     },
+    selectProductId: {
+      type: [Number, String],
+    },
     // currentProductId: {
     //   type: String || Number,
     // },
   },
   async created() {
     console.log("classTypeArr", this.classTypeArr);
-    await this.currentProductIdConfig();
+    console.log("projectArr", this.projectArr);
     // this.$fetch("courseProductContent_listJsp").then((res) => {
     //   console.log("哈哈哈", res);
     //   let staffOptions = JSON.parse(res.msg).map((item) => ({
@@ -156,18 +175,29 @@ export default {
 
     this.getTableData();
   },
+  computed:{
+  //  productId: {
+  //     set(val) {
+  //       this.$emit("sendVal", val); // 表示将子组件改变的值传递给父组件
+  //     },
+  //     get() {
+  //       return this.selectProductId; // 表示获取父组件的值
+  //     },
+  //   },
+  },
   methods: {
-    currentProductIdConfig() {
-      return new Promise((resolve) => {
-        this.$Bus.$on("currentProductIdConfig", (data) => {
-          this.currentProductId = data;
-          console.log(
-            "currentProductIdcurrentProductId---",
-            this.currentProductId
-          );
-          resolve();
-        });
-      });
+    handleSelect(rows) {
+      console.log(rows, "rows---");
+      this.selectTableData = rows;
+    },
+    handleChangeProduct(val){
+           console.log(val, "rows val---");
+           this.productId = val;
+    },
+    handleAddClass() {
+      //添加
+      console.log(77);
+      this.$emit("addTableData", this.selectTableData);
     },
     onSubmit() {
       console.log("submit!");
@@ -184,11 +214,11 @@ export default {
       this.$fetch("courseProductContent_listJsp", {
         ...this.pageConfig,
         ...this.formInline,
-        productId: this.currentProductId,
+        productId: this.productId,
       }).then((res) => {
         console.log(
           "打印有意义",
-          this.currentProductId,
+          this.productId,
           "打印有意义1",
           res.data
         );

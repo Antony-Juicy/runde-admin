@@ -338,9 +338,7 @@ export default {
       console.log("val==", val);
       //  获取科目下拉
       this.currentProductId = val;
-      console.log(8888)
-      this.$Bus.$emit("currentProductIdConfig",this.currentProductId) 
-       console.log(999)
+      this.$emit('message',val)
       this.$fetch("courseclasstype_subjectList", { productId: val }).then(
         (res) => {
           this.subjecttArr = res.data.list.map((item) => ({

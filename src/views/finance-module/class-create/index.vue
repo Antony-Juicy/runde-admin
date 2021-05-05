@@ -80,6 +80,7 @@
           :serviceYearArr="serviceYearArr"
           :statusArr="statusArr"
           :projectArr="projectArr"
+          @message="initProductIdFn"
           ref="dataForm1"
           @getStageListFunc="getStageListFunc"
           @getCourseListFunc="getCourseListFunc"
@@ -311,7 +312,11 @@
                 :emptyText="basicInfo.emptyText"
               >
                 <template slot="edit" slot-scope="scope">
-                  <el-button @click="handleDelete()" type="text" size="medium">
+                  <el-button
+                    @click="handleDelete(scope.row)"
+                    type="text"
+                    size="medium"
+                  >
                     删除
                   </el-button>
                 </template>
@@ -376,27 +381,16 @@
       @handleClose="distributeVisible = false"
     >
       <addClass
+        :selectProductId="selectProductId"
         :classTypeArr="classTypeArr"
-        :projectArr="projectArr" 
+        :projectArr="projectArr"
         :opportunityIds="opportunityIds"
         @refresh="getTableData"
+        @addTableData="addTableDataFn"
         @close="distributeVisible = false"
         v-if="distributeVisible"
         :currentProductId="currentProductId"
       />
-      <div class="btn-wrapper" style="text-align: right; margin-top: 20px">
-        <el-button size="small" @click="distributeVisible = false"
-          >取消</el-button
-        >
-        <el-button
-          type="primary"
-          size="small"
-          :loading="btnLoading"
-          @click="handleAddClass"
-          v-prevent-re-click="2000"
-          >添加</el-button
-        >
-      </div>
     </rd-dialog>
     <!-- 添加查看详情弹窗 -->
     <fullDialog
@@ -493,6 +487,7 @@ export default {
   },
   data() {
     return {
+      selectProductId: "",
       courseGroupArr: [], //班型分组
       // courseStageArr: [], //班型阶段
       // courseStageList: [],
@@ -500,7 +495,6 @@ export default {
       refundRulesionArr: [], //退费规则
       currentProductId: "",
       filterColumn: ["classtypeGroupName", "crowdType", "crowdNum"],
-      btnLoading: false,
       detailVisible: false,
       setVisible1: false,
       setVisible2: false,
@@ -681,33 +675,15 @@ export default {
         norefundFee: "",
         passDeductFee: "",
         // classTypeStage: "",
-        tableData: [
-          {
-            id: 1,
-            value2: "啊哈哈11",
-            value3: 1995,
-            value4: 1995,
-            value5: 1995,
-            value6: 1995,
-            value7: 1995,
-            value8: 1995,
-            value9: 1995,
-            value10: 1995,
-            value11: 1995,
-            value12: 1995,
-            value13: 1995,
-            value14: 1995,
-            value15: 1995,
-          },
-        ],
+        tableData: [],
         tableKey: [
           { name: "id", value: "id" },
-          { name: "所属项目", value: "value2" },
-          { name: "内容名称", value: "value3" },
-          { name: "类型", value: "value4" },
+          { name: "所属项目", value: "productName" },
+          { name: "内容名称", value: "contentName" },
+          { name: "类型", value: "contentType" },
           { name: "核算规则", value: "value5" },
-          { name: "学费/元", value: "value6" },
-          { name: "录播情况", value: "value7" },
+          { name: "学费/元", value: "contentPrice" },
+          { name: "录播情况", value: "playback" },
 
           {
             name: "操作",
@@ -733,6 +709,9 @@ export default {
         // norefundFee: [{ required: true, message: "请输入", trigger: "blur" }],
         // passDeductFee: [{ required: true, message: "请输入", trigger: "blur" }],
       },
+      weekPermissionListArr: [], //考药师周测权限
+      statusListArr: [], //考药狮自习室权限
+      simulationListArr: [], //考药狮模拟测试权限
       projectArr: [], //项目
       yearArr: [], //班型年份
       classTypeArr: [], //班型类型
@@ -767,14 +746,14 @@ export default {
           options: [
             {
               label: "是",
-              value: "Open",
+              value: "true",
             },
             {
               label: "否",
-              value: "Close",
+              value: "false",
             },
           ],
-          initValue: "Open",
+          initValue: "",
         },
         {
           prop: "testAuthority",
@@ -1034,6 +1013,35 @@ export default {
     // geteGroupListFunc(data) {//获取班型分組
     //   this.courseGroupArr = data;
     // },
+    addTableDataFn(data) {
+      this.distributeVisible = false;
+      if (data && data.length > 0) {
+        if (this.basicInfo.tableData && this.basicInfo.tableData.length > 0) {
+          let idArr = this.basicInfo.tableData.map((item) => {
+            return item.id;
+          });
+          // let newArr =  idArr.map(itm=>{
+          //   console.log('itm',itm)
+          //    return  data.map(im=>{
+          //       if(itm != im.id){
+          //         console.log('im',im)
+          //         return im
+          //       }
+          //      })
+          //    })
+          //    console.log('newArr1111',newArr)
+
+          let arr = data.filter((el) => idArr.indexOf(el.id) == -1);
+          this.basicInfo.tableData = this.basicInfo.tableData.concat(arr);
+        } else {
+          this.basicInfo.tableData = this.basicInfo.tableData.concat(data);
+        }
+      }
+    },
+    initProductIdFn(data) {
+      console.log("打印id", data);
+      this.selectProductId = data;
+    },
     handleSwitchChange(val) {
       console.log("val22", val);
     },
@@ -1122,6 +1130,69 @@ export default {
           label: item.value,
           value: item.key,
         }));
+        //考药师周测权限
+        this.step3FormOptions[0].options = res.data.weekPermissionList.map(
+          (item) => ({
+            label: item.value,
+            value: item.key,
+          })
+        );
+        //考药狮模拟测试权限
+        this.step3FormOptions[2].options = res.data.simulationTestPermissionList.map(
+          (item) => ({
+            label: item.value,
+            value: item.key,
+          })
+        );
+        //考药狮自习室权限
+        this.step3FormOptions[3].options = res.data.statusList.map((item) => ({
+          label: item.value,
+          value: item.key,
+        }));
+        //班型服务 crowdTypeList
+        this.step3FormOptions[4].options = res.data.crowdTypeList.map(
+          (item) => ({
+            label: item.value,
+            value: item.key,
+          })
+        );
+        //校区可见 parentCampusName
+        this.step3FormOptions[6].options = res.data.campusList.map((item) => ({
+          label: item.parentCampusName
+            ? item.campusName + "(" + item.parentCampusName + ")"
+            : item.campusName,
+          value: item.id,
+          parentId: item.parentId,
+        }));
+
+        //一级类目
+        this.step3FormOptions[7].options = res.data.financeCode1List.map(
+          (item) => ({
+            label: item.value,
+            value: item.key,
+          })
+        );
+        //二级类目
+        this.step3FormOptions[8].options = res.data.financeCode2List.map(
+          (item) => ({
+            label: item.value,
+            value: item.key,
+          })
+        );
+        //三级类目
+        this.step3FormOptions[9].options = res.data.financeCode3List.map(
+          (item) => ({
+            label: item.value,
+            value: item.key,
+          })
+        );
+        // 班型
+        this.step3FormOptions[10].options = res.data.financeCode4List.map(
+          (item) => ({
+            label: item.value,
+            value: item.key,
+          })
+        );
       });
     },
     productChange(val) {
@@ -1191,9 +1262,6 @@ export default {
     //   this.pageConfig.totalCount = res.data.count;
     // });
     // },
-    handleAddClass() {
-      console.log(77);
-    },
     handleAddContent() {
       console.log("handleAddContent--");
       this.distributeVisible = true;
@@ -1234,7 +1302,7 @@ export default {
       this.addVisible = true;
       // TODO 编辑
     },
-    handleDelete() {
+    handleDelete(row) {
       let info = "";
       this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
         confirmButtonText: "确定",
@@ -1242,6 +1310,15 @@ export default {
         type: "warning",
       })
         .then(async () => {
+          console.log(
+            "scope.row",
+            row,
+            "ss",
+            this.basicInfo.tableData.filter((el) => row.id != el.id)
+          );
+          this.basicInfo.tableData = this.basicInfo.tableData.filter(
+            (el) => row.id != el.id
+          );
           //   const res = await this.$fetch("projectType_delete", {
           //     typeId: row.typeId,
           //     loginUserId,
@@ -1282,7 +1359,8 @@ export default {
                 type: "success",
               }).then(async () => {
                 //TODO
-                this.$fetch("wechatstaffqrcode_sendMessageInfo", {
+                console.log('打印是否提交---')
+                this.$fetch("courseclasstype_save", {
                   ...formData,
                 })
                   .then((res) => {
@@ -1291,7 +1369,9 @@ export default {
                     this.active = 0;
                     this.loadSalaryCfg();
                   })
-                  .catch(() => {});
+                  .catch((error) => {
+    console.log('打印是否提交---error',error)
+                  });
               });
             }
           });
@@ -1305,7 +1385,8 @@ export default {
                 type: "success",
               }).then(async () => {
                 //TODO
-                this.$fetch("wechatstaffqrcode_sendMessageInfo", {
+                  console.log('打印是否提交---添加')
+                this.$fetch("courseclasstype_save", {
                   ...formData,
                 })
                   .then((res) => {
@@ -1314,7 +1395,9 @@ export default {
                     this.active = 0;
                     this.loadSalaryCfg();
                   })
-                  .catch(() => {});
+                             .catch((error) => {
+    console.log('打印是否提交---error 添加',error)
+                  });
               });
             }
           });
