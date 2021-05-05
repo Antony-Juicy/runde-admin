@@ -99,7 +99,7 @@
             <el-row :gutter="20" v-if="basicInfo.courseStageArr.length > 0">
               <el-form-item
                 label="班型阶段："
-                prop="courseStageList"
+                prop="classTypeStage"
                 :rules="{
                   required: basicInfo.courseStageArr.length > 0 ? true : false,
                   message: '不能为空',
@@ -107,7 +107,7 @@
                 }"
               >
                 <el-checkbox-group
-                  v-model="basicInfo.courseStageList"
+                  v-model="basicInfo.classTypeStage"
                   @change="handleCheckedStageChange"
                 >
                   <el-checkbox
@@ -140,7 +140,7 @@
                   <el-form-item
                     label="总学费"
                     label-width="80px"
-                    prop="totalPrice"
+                    prop="totalFee"
                     :rules="{
                       required: false,
                       message: '不能为空',
@@ -163,10 +163,10 @@
                     :key="item.value"
                   >
                     <el-form-item
-                      :prop="'courseList.' + index + '.price'"
+                      :prop="'course.' + index + '.coursePrice'"
                       label-width="0"
                       :rules="{
-                        required: basicInfo.courseList[index].checked
+                        required: basicInfo.course[index].checked
                           ? true
                           : false,
                         message: '请输入价格',
@@ -174,12 +174,12 @@
                       }"
                     >
                       <el-checkbox
-                        v-model="basicInfo.courseList[index].checked"
+                        v-model="basicInfo.course[index].checked"
                         :label="item.label"
                       ></el-checkbox>
 
                       <el-input
-                        v-model="basicInfo.courseList[index].price"
+                        v-model="basicInfo.course[index].coursePrice"
                         size="small"
                         placeholder="请输入价格"
                         style="width: 200px; margin-left: 20px"
@@ -191,12 +191,12 @@
                       <el-switch
                         active-text="计算业绩"
                         style="margin-left: 20px"
-                        v-model="basicInfo.courseList[index].checked2"
+                        v-model="basicInfo.course[index].isperformance"
                         active-color="#13ce66"
                         inactive-color="#dcdfe6"
                         @change="
                           handleSwitchChange(
-                            basicInfo.courseList[index].checked2
+                            basicInfo.course[index].isperformance
                           )
                         "
                       >
@@ -309,7 +309,7 @@
                 :tbodyHeight="600"
                 fixedTwoRow
                 @pageChange="handlePageChange"
-                :emptyText="basicInfo.emptyText"
+                emptyText="暂无数据"
               >
                 <template slot="edit" slot-scope="scope">
                   <el-button
@@ -485,6 +485,11 @@ export default {
     distribeClass,
     firstStep,
   },
+  provide() {
+    return {
+      template: this
+    }
+  },
   data() {
     return {
       selectProductId: "",
@@ -652,10 +657,12 @@ export default {
         campusVisible: "",
       },
       basicInfo: {
-        courseList: [],
+        courseContentId:[],//班型内容
+        course: [],
         courseStageArr: [], //班型阶段
-        courseStageList: [],
-        totalPrice: "",
+        classTypeStage: [],//班型阶段名称 
+        stageGroupName:[],//stageGroupName，班型阶段名称
+        stageGroupId:[],//班型阶段id
         // price1: "",
         // price2: "",
         // price3: "",
@@ -668,12 +675,13 @@ export default {
         // value2: "",
         // value3: "",
         // value4: "",
+        totalFee:"",//总学费
         status: "",
         nextTime: "",
         detail: "",
-        refundRules: "",
-        norefundFee: "",
-        passDeductFee: "",
+        refundRules: "",//退费规则
+        norefundFee: "",//不退费金额
+        passDeductFee: "",//通过扣除费用
         // classTypeStage: "",
         tableData: [],
         tableKey: [
@@ -693,7 +701,6 @@ export default {
             fixed: "right",
           },
         ],
-        emptyText: "暂无数据",
         pageConfig: {
           totalCount: 0,
           pageNum: 1,
@@ -722,7 +729,7 @@ export default {
       statusArr: [], //状态
       step3FormOptions: [
         {
-          prop: "WeeklyPermissions",
+          prop: "weekPermission",
           element: "el-radio",
           placeholder: "请选择考药狮周测权限",
           label: "考药狮周测权限：",
@@ -739,7 +746,7 @@ export default {
           initValue: "Open",
         },
         {
-          prop: "exchange",
+          prop: "exchangeable",
           element: "el-radio",
           placeholder: "请选择电商是否可兑换",
           label: "电商是否可兑换",
@@ -756,7 +763,7 @@ export default {
           initValue: "",
         },
         {
-          prop: "testAuthority",
+          prop: "simulationTestPermission",
           element: "el-radio",
           placeholder: "请选择考药狮模拟测试权限",
           label: "考药狮模拟测试权限：",
@@ -773,7 +780,7 @@ export default {
           initValue: "Open",
         },
         {
-          prop: "studyAuthority",
+          prop: "studyPower",
           element: "el-radio",
           placeholder: "请选择考药狮自习室权限",
           label: "考药狮自习室权限：",
@@ -872,7 +879,7 @@ export default {
           ],
         },
         {
-          prop: "RevenueCategory1",
+          prop: "financeCodeName1",
           element: "el-select",
           placeholder: "营收一级类目",
           label: "营收一级类目：",
@@ -884,7 +891,7 @@ export default {
           ],
         },
         {
-          prop: "secondaryCategory",
+          prop: "financeCodeName2",
           element: "el-select",
           placeholder: "二级类目",
           label: "二级类目：",
@@ -896,7 +903,7 @@ export default {
           ],
         },
         {
-          prop: "ThirdCategory",
+          prop: "financeCodeName3",
           element: "el-select",
           placeholder: "三级类目",
           label: "三级类目",
@@ -921,14 +928,14 @@ export default {
         },
       ],
       step3Rules: {
-        WeeklyPermissions: [
+        weekPermission: [
           { required: true, message: "请选择", trigger: "change" },
         ],
-        exchange: [{ required: true, message: "请选择", trigger: "change" }],
-        testAuthority: [
+        exchangeable: [{ required: true, message: "请选择", trigger: "change" }],
+        simulationTestPermission: [
           { required: true, message: "请选择", trigger: "change" },
         ],
-        studyAuthority: [
+        studyPower: [
           { required: true, message: "请选择", trigger: "change" },
         ],
         crowdType: [{ required: true, message: "请选择", trigger: "change" }],
@@ -936,13 +943,13 @@ export default {
         campusVisible: [
           { required: true, message: "请选择", trigger: "change" },
         ],
-        RevenueCategory1: [
+        financeCodeName1: [
           { required: true, message: "请选择", trigger: "change" },
         ],
-        secondaryCategory: [
+        financeCodeName2: [
           { required: true, message: "请选择", trigger: "change" },
         ],
-        ThirdCategory: [
+        financeCodeName3: [
           { required: true, message: "请选择", trigger: "change" },
         ],
         ClassType: [{ required: true, message: "请选择", trigger: "change" }],
@@ -986,22 +993,12 @@ export default {
   computed: {
     totalPrice() {
       let totalPrice = 0;
-      //     	//遍历productList,拿到单价和数量
-      // for(let i in this.basicInfo.courseList){
-
-      // 	sumPrice+=(this.productList[i].price*this.productList[i].num*100)
-      // }
-      // //最后return出去计算好的值,直接用就好了,不用在data中起总价的变量,不然会报错
-      // return sumPrice
-
-      this.basicInfo.courseList.map((item) => {
+      this.basicInfo.course.map((item) => {
         if (item.checked) {
-          console.log("totalPrice 111144", item.price);
-          totalPrice += item.price - 0;
+          totalPrice += item.coursePrice - 0;
         }
-        console.log("totalPrice 1111", totalPrice);
       });
-      this.basicInfo.totalPrice = totalPrice;
+      this.basicInfo.totalFee = totalPrice;
       return totalPrice;
     },
   },
@@ -1020,21 +1017,14 @@ export default {
           let idArr = this.basicInfo.tableData.map((item) => {
             return item.id;
           });
-          // let newArr =  idArr.map(itm=>{
-          //   console.log('itm',itm)
-          //    return  data.map(im=>{
-          //       if(itm != im.id){
-          //         console.log('im',im)
-          //         return im
-          //       }
-          //      })
-          //    })
-          //    console.log('newArr1111',newArr)
-
+  
           let arr = data.filter((el) => idArr.indexOf(el.id) == -1);
           this.basicInfo.tableData = this.basicInfo.tableData.concat(arr);
+          console.log("courseContentId1111",this.basicInfo.tableData)
+          // this.basicInfo.courseContentId = 
         } else {
           this.basicInfo.tableData = this.basicInfo.tableData.concat(data);
+           console.log("courseContentId222",this.basicInfo.tableData)
         }
       }
     },
@@ -1045,7 +1035,17 @@ export default {
     handleSwitchChange(val) {
       console.log("val22", val);
     },
-    handleCheckedStageChange() {},
+    handleCheckedStageChange(val) {
+      console.log('大啊啊啊',val,this.basicInfo.courseStageArr)
+    //  this.basicInfo.courseStageArr.map(item=>{
+         
+    //  })
+      this.basicInfo.stageGroupName = val;
+      let arr = this.basicInfo.courseStageArr.filter((el) => val.indexOf(el.label) != -1);
+      this.basicInfo.stageGroupId = arr.map(item =>{
+        return item.value
+      })
+    },
     getStageListFunc(data) {
       //获取班型阶段
       this.basicInfo.courseStageArr = data;
@@ -1053,11 +1053,12 @@ export default {
     getCourseListFunc(data) {
       //获取课程
       this.courseList = data;
-      this.basicInfo.courseList = data.map((item) => ({
-        value: "",
+      this.basicInfo.course = data.map((item) => ({
+        courseName: item.label,
         checked: false,
-        price: "",
-        checked2: false,
+        coursePrice: "",
+        isperformance: false,
+        courseId:item.value
       }));
     },
     getSelectList() {
@@ -1211,6 +1212,7 @@ export default {
             label: item.subjectName,
             value: item.id,
           }));
+      
         }
       );
     },
@@ -1272,7 +1274,6 @@ export default {
     onSearch(val) {
       this.searchForm = { ...val };
       this.pageConfig.pageNum = 1;
-      this.getTableData();
       console.log(val, this.searchForm, "val---");
       this.getTableData();
     },
@@ -1359,7 +1360,6 @@ export default {
                 type: "success",
               }).then(async () => {
                 //TODO
-                console.log('打印是否提交---')
                 this.$fetch("courseclasstype_save", {
                   ...formData,
                 })
@@ -1369,9 +1369,7 @@ export default {
                     this.active = 0;
                     this.loadSalaryCfg();
                   })
-                  .catch((error) => {
-    console.log('打印是否提交---error',error)
-                  });
+                  .catch((error) => {});
               });
             }
           });
@@ -1379,15 +1377,43 @@ export default {
           //添加
           this.$refs[formName].validate((valid, formData) => {
             if (valid) {
+              console.log('打印的数据有什么？？',{...formData},'****', this.step3FormOptions[7].options)
+              
+          let financeCode1, financeCode2, financeCode3, financeCode4;
+          let obj1 = this.step3FormOptions[7].options.find(
+            (item) => item.value == formData.financeCodeName1
+          );
+          financeCode1 = obj1 && obj1.financeCode1;
+
+          let obj2 = this.step3FormOptions[8].options.find(
+            (item) => item.value == formData.financeCodeName2
+          );
+          financeCode2 = obj2 && obj2.financeCode1;
+
+           let obj3 = this.step3FormOptions[9].options.find(
+            (item) => item.value == formData.financeCodeName3
+          );
+          financeCode3 = obj3 && obj3.financeCode1;
+
+          let obj4 = this.step3FormOptions[10].options.find(
+            (item) => item.value == formData.financeCodeName4
+          );
+          financeCode4 = obj4 && obj4.financeCode1;
+
               this.$confirm(`确认提交吗？`, "提示", {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
                 type: "success",
               }).then(async () => {
                 //TODO
-                  console.log('打印是否提交---添加')
                 this.$fetch("courseclasstype_save", {
                   ...formData,
+                  financeCode1,
+                  financeCode2,
+                  financeCode3,
+                  financeCode4,
+                  ...this.$refs.dataForm1.basicInfo,
+                  ...this.basicInfo
                 })
                   .then((res) => {
                     this.$message.success("操作成功");
@@ -1395,15 +1421,17 @@ export default {
                     this.active = 0;
                     this.loadSalaryCfg();
                   })
-                             .catch((error) => {
-    console.log('打印是否提交---error 添加',error)
-                  });
+                  .catch((error) => {});
               });
             }
           });
         }
-      } else {
-        console.log("formName====", formName);
+      } else { 
+        this.basicInfo.courseContentId = this.basicInfo.tableData.map(item=>({
+          name:item.contentName,
+          val:item.id
+        }))
+        console.log("formName====", formName,'this.$refs.dataForm2',this.basicInfo);
         let dataForm;
         if (formName == "dataForm1") {
           dataForm = this.$refs.dataForm1.$refs.dataForm;
@@ -1411,7 +1439,6 @@ export default {
           dataForm = this.$refs[formName];
         }
         dataForm.validate((valid, formData) => {
-          console.log("formData + formData", valid, formData);
           if (valid) {
             this.active++;
             //TODO
