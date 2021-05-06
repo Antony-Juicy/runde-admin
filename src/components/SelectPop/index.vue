@@ -4,7 +4,15 @@
 		<slot name="header"></slot>
 		<search-form v-if="searchObj.formOptions.length > 0" :formOptions="searchObj.formOptions" :showNum="searchObj.showNum" @onSearch="onSearch" ref="searchForm"></search-form>
 		<div class="scroll-box" ref="scrollBox" v-infinite-scroll="getTableData">
-			<el-table :data="tableData">
+			<div v-if="tableObj.waterfall && !tableLoad" class="lane-wrapper">
+				<div class="lane" v-for="(item,index) in tableObj.lane" :key="index">
+					<!-- <slot :name="`lane`" :data="waterFallData[index]"></slot> -->
+					<div class='lane-item' v-for="(item,index) in waterFallData[index]" :key="index" @click="show = false">
+						<slot name="lane" :data="item"></slot>
+					</div>
+				</div>
+			</div>
+			<el-table :data="tableData" v-else>
 				<el-table-column width="55" v-if="tableObj.multiple">
 					<template slot-scope="scope">
 						<el-checkbox v-model="scope.row.select" @change="handleMultiple(scope.row)"></el-checkbox>
@@ -97,7 +105,11 @@ tableObj: {
 	transItem: (item) => {
 		item.labelTypeZH = item.labelType == '0' ? '系统标签' : '自定义标签'
 		return item
-	}
+	},
+	// 启用瀑布流模式，数据加载不已表格形式呈现，每个数据单元都必须通过插槽渲染
+	waterfall:true,
+	// 瀑布流专用属性: 泳道数
+	lane:2,
 }
 
 */
@@ -127,7 +139,8 @@ export default {
 				pageSize: 10,
 				hasNext: true
 			},
-			show: false
+			show: false,
+			waterFallData: []
 		}
 	},
 	methods: {
@@ -156,6 +169,14 @@ export default {
 			if (!this.pageConfig.hasNext) {
 				return
 			}
+			let markScollHeight
+			// 记录下新增数据前的滚动区是滚到了哪里
+			if (!this.tableObj.waterfall) {
+				markScollHeight = this.tableData.length == 0 ? 0 : this.$refs.scrollBox.scrollHeight
+			} else {
+				markScollHeight = this.waterFallData[0].length == 0 ? 0 : this.$refs.scrollBox.scrollHeight
+			}
+
 			this.tableLoad = true
 			// 深拷贝
 			let searchForm = JSON.parse(JSON.stringify(this.searchForm))
@@ -174,6 +195,7 @@ export default {
 			if (!res || this.$common.isEmpty(res.data)) {
 				return
 			}
+
 			let data = []
 			// 暂时的话 只有这个获取公众号素材接口是需要特殊处理的，它返回的结构并不是和其他通用的分页请求格式保持风格统一。
 			if (this.searchObj.api == 'graphic_message_get_material') {
@@ -185,7 +207,12 @@ export default {
 					data = res.data.item
 				}
 				this.pageConfig.hasNext = res.data.item.length > 0
-			} else {
+			}
+			else if (this.searchObj.api == 'custom_menu_get_material') {
+				data = res.data.item
+				this.pageConfig.hasNext = res.data.item.length > 0
+			}
+			else {
 				data = res.data.records
 				this.pageConfig.hasNext = res.data.hasNext
 			}
@@ -200,24 +227,54 @@ export default {
 				}
 				return item
 			})
-			// 记录下新增数据前的滚动区是滚到了哪里
-			let markScollHeight = this.tableData.length == 0 ? 0 : this.$refs.scrollBox.scrollHeight
-			// 记录一下表单的每一栏是多高，这个一般都是固定的，可以随便选一个
-			let trHeight = this.$refs.scrollBox.querySelector('tr').offsetHeight || 0
-			this.tableData = this.tableData.concat(data)
+			let trHeight
+			if (!this.tableObj.waterfall) {
+
+				// 记录一下表单的每一栏是多高，这个一般都是固定的，可以随便选一个
+				trHeight = this.$refs.scrollBox.querySelector('tr').offsetHeight || 0
+				this.tableData = this.tableData.concat(data)
+			}
+			else {
+				// 数据切割
+				data.forEach((v, i) => {
+					let position = i % this.tableObj.lane
+					if (!this.waterFallData[position]) {
+						this.waterFallData[position] = []
+					}
+					this.waterFallData[position].push(v)
+				})
+			}
+
 			this.pageConfig.pageNum++
+
 			this.$nextTick(() => {
 				// 数据更新之后，把滚动条滚动到上一个滚动的地方，且再往上一个tr，这样用户大概会感知到继续往下滚的内容是新加载出来的。
 				// 做这个操作的最根本原因是，这个表单新加数据之后，其实并不会触发滚动区文档流往下新增，导致的问题就是用户滚动到底部之后，每次数据新增之后又触发了一个新的
 				// 页面滚动到底部的事件，这就导致了请求会无休止的加载直至再无更多数据。这个问题比较严重，所以要做个特殊处理。
-				this.$refs.scrollBox.scrollTo(0, markScollHeight - trHeight)
+				if (!this.tableObj.waterfall) {
+					this.$refs.scrollBox.scrollTo(0, markScollHeight - trHeight)
+				}
 				this.tableLoad = false
+				// 瀑布流就很神奇，tableLoad == true 会触发页面元素的隐藏，加载完成之后再显示元素这样插槽就会再次渲染，不然的话新增的插槽是不会显示的。
+				this.$nextTick(() => {
+					if (this.tableObj.waterfall) {
+						// 然后再来定这个滚动高度，不然的话会一直回到上一个滚动位置
+						this.$refs.scrollBox.scrollTo(0, markScollHeight)
+					}
+				})
 			})
 		},
 		load() {
-			if (this.tableData.length == 0) {
-				this.getTableData()
+			if (!this.tableObj.waterfall) {
+				if (this.tableData.length == 0) {
+					this.getTableData()
+				}
+			} else {
+				if (this.waterFallData[0].length == 0) {
+					this.getTableData()
+				}
 			}
+
 		},
 		handleMultiple(data) {
 			// console.log(data)
@@ -239,6 +296,16 @@ export default {
 			}
 			this.searchObj.formOptions.push(typeId_select);
 			this.$refs.searchForm.addInitValue()
+		}
+
+		if (this.tableObj.waterfall) {
+			// this.tableObj.lane.forEach((v, i) => {
+			// 	this.waterFallData[i] = []
+			// })
+			for (let index = 0; index < this.tableObj.lane; index++) {
+				this.waterFallData[index] = []
+			}
+
 		}
 	}
 }
@@ -281,5 +348,16 @@ function debounce(fn, wait) {
 .scroll-box {
 	height: 300px;
 	overflow: auto;
+}
+.lane-wrapper {
+	display: flex;
+	justify-content: space-between;
+	.lane {
+		width: 100%;
+		margin-right: 20px;
+		&:last-child {
+			margin-right: 0px;
+		}
+	}
 }
 </style>

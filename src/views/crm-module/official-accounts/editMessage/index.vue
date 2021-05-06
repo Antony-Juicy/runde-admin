@@ -80,7 +80,8 @@ export default {
 						this.$message.error("请输入推送的链接内容");
 						acceptFlag = false
 					}
-					data.content = this.cardData.text.content
+					data.content = this.cardData.text.content.replace(/<span contenteditable="false" class="likeBtn">用户昵称<\/span>/g, '%s')
+					data.content = data.content.replace(/<span> <\/span>/g, '')
 					data.description = this.cardData.text.description
 					data.url = this.cardData.text.url
 					data.msgType = 'text'
@@ -105,10 +106,12 @@ export default {
 						acceptFlag = false
 					}
 					data.url = this.cardData.mpnews.url
-					data.title = this.cardData.mpnews.title
+					data.title = this.cardData.mpnews.title.replace(/<span contenteditable="false" class="likeBtn">用户昵称<\/span>/g, '%s')
+					data.title = data.title.replace(/<span> <\/span>/g, '')
 					data.picurl = this.cardData.mpnews.picurl_t
 					data.description = this.cardData.mpnews.description
 					data.msgType = 'news'
+					console.log(data)
 					break;
 				}
 				case 'miniprogrampage': {

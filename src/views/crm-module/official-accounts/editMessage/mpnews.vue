@@ -106,7 +106,7 @@ export default {
 					],
 					transItem: (item) => {
 						return {
-							thumb_url: `${process.env.VUE_APP_BASE_API}/wechat/console/wechat_material/handle_img?src=${encodeURIComponent(item.thumb_url)}`, // 投机一把 看看情况
+							thumb_url: `${process.env.VUE_APP_BASE_API}/wechat/console/wechat_material/handle_img?src=${encodeURIComponent(item.thumb_url)}`,
 							// thumb_url: `https://mcdn.yiban.io/img_proxy?src=${encodeURIComponent(item.thumb_url)}`,
 							thumb_url_t: item.thumb_url,
 							title: item.title,
@@ -154,10 +154,17 @@ export default {
 			this.msgForm.title = this.$refs.likeInput.innerHTML
 			this.emitForm()
 		},
-		handle_focus() {
+		async handle_focus() {
 			if (this.$refs.likeInput.innerHTML == '请输入') {
 				this.$refs.likeInput.innerHTML = ""
 			}
+			try {
+				let c = await navigator.clipboard.readText()
+				navigator.clipboard.writeText(c)
+			} catch (error) {
+
+			}
+
 		},
 		handle_blur() {
 			if (this.$refs.likeInput.innerHTML == '') {
@@ -252,6 +259,8 @@ export default {
 		border-radius: 4px;
 		transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
 		line-height: 26px;
+		max-height: 150px;
+		overflow: auto;
 		&:focus {
 			border-color: #409eff;
 		}

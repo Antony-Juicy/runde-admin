@@ -41,7 +41,7 @@ export default {
 			msgForm: {
 				content: "",
 				url: "",
-				needUrl:false
+				needUrl: false
 			},
 
 		}
@@ -81,10 +81,17 @@ export default {
 			}
 
 		},
-		handle_focus() {
+		async handle_focus() {
 			if (this.$refs.likeInput.innerHTML == '请输入') {
 				this.$refs.likeInput.innerHTML = ""
 			}
+			try {
+				let c = await navigator.clipboard.readText()
+				navigator.clipboard.writeText(c)
+			} catch (error) {
+
+			}
+
 		},
 		handle_blur() {
 			if (this.$refs.likeInput.innerHTML == '') {
@@ -104,7 +111,6 @@ export default {
 
 <style lang="scss" scoped>
 .textmsg {
-    
 	.likeInput {
 		width: 100%;
 		padding: 10px;
@@ -112,6 +118,8 @@ export default {
 		border-radius: 4px;
 		transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
 		line-height: 26px;
+		max-height: 150px;
+		overflow: auto;
 		&:focus {
 			border-color: #409eff;
 		}
@@ -121,8 +129,8 @@ export default {
 		align-items: center;
 		margin-top: 10px;
 	}
-    /deep/{
-        .likeBtn {
+	/deep/ {
+		.likeBtn {
 			display: inline-block;
 			color: #409eff;
 			padding: 2px 4px;
@@ -131,6 +139,6 @@ export default {
 			border-radius: 4px;
 			margin-bottom: 5px;
 		}
-    }
+	}
 }
 </style>

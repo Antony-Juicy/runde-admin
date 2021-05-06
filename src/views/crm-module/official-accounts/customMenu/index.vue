@@ -17,10 +17,21 @@
 		</el-dropdown>
 		<div class="wrapper">
 			<div class="left">
-				<div></div>
+				<!-- <div></div> -->
+				<div v-if="sortStatus" class="sort-tips">
+					请在右侧预览区拖动菜单以调整顺序
+				</div>
+				<div v-else>
+					<addEditForm :menuConfig="menuConfig" :choseMenuStatus="choseMenuStatus" :account="account" mode="" ref="editForm"></addEditForm>
+				</div>
 			</div>
 			<div class="right">
-				<likePhone mode='menu' :cardData="menuConfig" :accountName="account.appName" @changeMenu='handle_changeMenu'></likePhone>
+				<likePhone mode='menu' ref="likePhone" :cardData="menuConfig" :accountName="account.appName"></likePhone>
+				<div class="btns">
+					<el-button class="sort-change" size="small" @click="handle_changeSortStatus">{{ sortStatus?'完成' : '菜单排序'}} </el-button>
+					<el-button class="preview" size="small" v-if="!sortStatus">菜单预览</el-button>
+				</div>
+
 			</div>
 		</div>
 	</div>
@@ -28,28 +39,80 @@
 
 <script>
 import likePhone from '@/components/likePhone'
+import addEditForm from './addEditForm'
 export default {
 	name: "customMenu",
-	components: { likePhone },
+	components: { likePhone, addEditForm },
 	data() {
 		return {
 			officialAccounts: [],
 			account: {},
 			menuConfig: [
-				{name:'菜单1'},
-				{name:'菜单2'},
-				{name:'菜单3'}
-			]
+				{
+					"name": "菜单1",
+					"sub_button": [
+						{
+							"type": "view",
+							"name": "搜索",
+							"url": "http://www.soso.com/",
+							"sub_button": []
+						},
+						{
+							"type": "view",
+							"name": "搜索",
+							"url": "http://www.soso.com/",
+							"sub_button": []
+						},
+					]
+				},
+				{
+					"name": "菜单2",
+					"sub_button": [
+						{
+							"type": "view",
+							"name": "搜索",
+							"url": "http://www.soso.com/",
+							"sub_button": []
+						},
+					]
+				},
+			],
+			sortStatus: false,
+			choseMenuStatus: [0, -1],
 		}
 
 	},
-
+	provide: function () {
+		return {
+			changeMenu: this.handle_changeMenu,
+			choseMenu: this.handle_choseMenu,
+			sortStatus: () => {
+				return this.sortStatus
+			},
+			choseMenuStatus: () => {
+				return this.choseMenuStatus
+			},
+			account: () => {
+				return this.account
+			}
+		}
+	},
 	methods: {
 		handle_select_account(data) {
 			this.account = data
 		},
-		handle_changeMenu(data){
-			this.menuConfig = data
+		handle_changeMenu(data) {
+			this.menuConfig = []
+			this.$nextTick(() => {
+				this.menuConfig = JSON.parse(JSON.stringify(data))
+				this.choseMenuStatus = [0, -1]
+			})
+		},
+		handle_changeSortStatus() {
+			this.sortStatus = !this.sortStatus
+		},
+		handle_choseMenu(data) {
+			this.choseMenuStatus = data
 		}
 	},
 	async mounted() {
@@ -65,18 +128,38 @@ export default {
 <style lang="scss" >
 .customMenu-container {
 	.wrapper {
-		height: calc(100vh - 200px);
+		min-height: calc(100vh - 200px);
 		background: #fff;
 		margin-top: 20px;
 		overflow: hidden;
 		display: flex;
 		.left {
 			width: 100%;
+			height: 100%;
 		}
 		.right {
 			flex-shrink: 0;
 			margin: 20px 20px;
+			.btns {
+				margin: 20px auto 0 auto;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
 		}
+	}
+	.sort-change {
+		
+		display: block;
+	}
+	.sort-tips {
+		height: 100%;
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #999;
+		font-size: 14px;
 	}
 }
 .select-accoumt {
