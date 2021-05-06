@@ -21,6 +21,12 @@
         :pageConfig.sync="pageConfig"
         @pageChange="pageChange"
       >
+
+         <template slot="courses" slot-scope="scope">
+           <span v-for="item in scope.row.courses"  :key="item.courseId">
+             {{item.courseName}}
+           </span>
+        </template>
         <template slot="contentName" slot-scope="scope">
           {{ scope.row.contentName }}<br />
           <el-button
@@ -80,6 +86,7 @@
           :serviceYearArr="serviceYearArr"
           :statusArr="statusArr"
           :projectArr="projectArr"
+          @changeSubArr="changeSubArr"
           @message="initProductIdFn"
           ref="dataForm1"
           @getStageListFunc="getStageListFunc"
@@ -163,10 +170,10 @@
                     :key="item.value"
                   >
                     <el-form-item
-                      :prop="'course.' + index + '.coursePrice'"
+                      :prop="'courses.' + index + '.coursePrice'"
                       label-width="0"
                       :rules="{
-                        required: basicInfo.course[index].checked
+                        required: basicInfo.courses[index].checked
                           ? true
                           : false,
                         message: '请输入价格',
@@ -174,12 +181,12 @@
                       }"
                     >
                       <el-checkbox
-                        v-model="basicInfo.course[index].checked"
+                        v-model="basicInfo.courses[index].checked"
                         :label="item.label"
                       ></el-checkbox>
 
                       <el-input
-                        v-model="basicInfo.course[index].coursePrice"
+                        v-model="basicInfo.courses[index].coursePrice"
                         size="small"
                         placeholder="请输入价格"
                         style="width: 200px; margin-left: 20px"
@@ -191,12 +198,12 @@
                       <el-switch
                         active-text="计算业绩"
                         style="margin-left: 20px"
-                        v-model="basicInfo.course[index].isperformance"
+                        v-model="basicInfo.courses[index].isperformance"
                         active-color="#13ce66"
                         inactive-color="#dcdfe6"
                         @change="
                           handleSwitchChange(
-                            basicInfo.course[index].isperformance
+                            basicInfo.courses[index].isperformance
                           )
                         "
                       >
@@ -332,8 +339,9 @@
           :rules="step3Rules"
           ref="dataForm3"
           formLabelWidth="180px"
+          :multiple="true"
         >
-          <template slot="campusVisible" slot-scope="scope">
+          <!-- <template slot="campusVisible" slot-scope="scope">
             <el-form-item label="校区可见" prop="campusVisible">
               <el-select
                 v-model="basicInfo2.campusVisible"
@@ -349,7 +357,7 @@
                 </el-option>
               </el-select>
             </el-form-item>
-          </template>
+          </template> -->
         </RdForm>
       </div>
 
@@ -487,12 +495,13 @@ export default {
   },
   provide() {
     return {
-      template: this
-    }
+      template: this,
+    };
   },
   data() {
     return {
       selectProductId: "",
+      subjecttArr: [], //科目
       courseGroupArr: [], //班型分组
       // courseStageArr: [], //班型阶段
       // courseStageList: [],
@@ -584,12 +593,7 @@ export default {
           options: [],
         },
       ],
-      tableData: [
-        {
-          id: 1,
-          className: "啊哈哈",
-        },
-      ],
+      tableData: [],
       tableKey: [
         { name: "ID", value: "id" },
         { name: "班型名称", value: "className" },
@@ -598,13 +602,13 @@ export default {
         { name: "科目", value: "subjectName" },
         { name: "班型类型", value: "classType" },
         { name: "协议类型", value: "protocolType" },
-        { name: "退费类型", value: "refundTypeId" },
+        { name: "退费类型", value: "refundType" },
         { name: "退费规则", value: "refundRules" },
-        { name: "课程", value: "course" },
+        { name: "课程", value: "courses" , operate: true },
         { name: "班型内容", value: "contentName", operate: true },
-        { name: "学费/元", value: " tuitionFees" },
+        { name: "学费/元", value: "totalFee" },
         { name: "服务年限", value: "serviceYear" },
-        { name: "不可退金额/元", value: " norefundFee" },
+        { name: "不可退金额/元", value: "norefundFee" },
         { name: "通过扣除费用", value: "passDeductFee" },
         { name: "班型分组", value: "classtypeGroupName" },
         { name: "班型阶段", value: "classTypeStage" },
@@ -653,44 +657,28 @@ export default {
         // ],
         // status: [{ required: true, message: "请选择", trigger: "change" }],
       },
-      basicInfo2: {
-        campusVisible: "",
-      },
+      // basicInfo2: {
+      //   campusVisible: "",
+      // },
       basicInfo: {
-        courseContentId:[],//班型内容
-        course: [],
+        courseContentId: [], //班型内容
+        courses: [], //课程json数据
         courseStageArr: [], //班型阶段
-        classTypeStage: [],//班型阶段名称 
-        stageGroupName:[],//stageGroupName，班型阶段名称
-        stageGroupId:[],//班型阶段id
-        // price1: "",
-        // price2: "",
-        // price3: "",
-        // price4: "",
-        // checked1: "",
-        // checked2: "",
-        // checked3: "",
-        // checked4: "",
-        // value1: "",
-        // value2: "",
-        // value3: "",
-        // value4: "",
-        totalFee:"",//总学费
-        status: "",
-        nextTime: "",
-        detail: "",
-        refundRules: "",//退费规则
-        norefundFee: "",//不退费金额
-        passDeductFee: "",//通过扣除费用
-        // classTypeStage: "",
+        classTypeStage: [], //班型阶段名称
+        stageGroupName: [], //stageGroupName，班型阶段名称
+        stageGroupId: [], //班型阶段id
+        totalFee: "", //总学费
+        refundRules: "", //退费规则
+        norefundFee: "", //不退费金额
+        passDeductFee: "", //通过扣除费用
         tableData: [],
         tableKey: [
           { name: "id", value: "id" },
           { name: "所属项目", value: "productName" },
           { name: "内容名称", value: "contentName" },
           { name: "类型", value: "contentType" },
-          { name: "核算规则", value: "value5" },
-          { name: "学费/元", value: "contentPrice" },
+          { name: "核算规则", value: "refundRules" },
+          { name: "学费/元", value: "totalFee" },
           { name: "录播情况", value: "playback" },
 
           {
@@ -753,11 +741,11 @@ export default {
           options: [
             {
               label: "是",
-              value: "true",
+              value: true,
             },
             {
               label: "否",
-              value: "false",
+              value: false,
             },
           ],
           initValue: "",
@@ -819,64 +807,10 @@ export default {
           element: "el-cascader",
           placeholder: "校区可见",
           initWidth: true,
+          multiple: true,
           label: "校区可见：",
-          options: [
-            {
-              value: 1,
-              label: "东南",
-              children: [
-                {
-                  value: 2,
-                  label: "上海",
-                  children: [
-                    { value: 3, label: "普陀" },
-                    { value: 4, label: "黄埔" },
-                    { value: 5, label: "徐汇" },
-                  ],
-                },
-                {
-                  value: 7,
-                  label: "江苏",
-                  children: [
-                    { value: 8, label: "南京" },
-                    { value: 9, label: "苏州" },
-                    { value: 10, label: "无锡" },
-                  ],
-                },
-                {
-                  value: 12,
-                  label: "浙江",
-                  children: [
-                    { value: 13, label: "杭州" },
-                    { value: 14, label: "宁波" },
-                    { value: 15, label: "嘉兴" },
-                  ],
-                },
-              ],
-            },
-            {
-              value: 17,
-              label: "西北",
-              children: [
-                {
-                  value: 18,
-                  label: "陕西",
-                  children: [
-                    { value: 19, label: "西安" },
-                    { value: 20, label: "延安" },
-                  ],
-                },
-                {
-                  value: 21,
-                  label: "新疆维吾尔族自治区",
-                  children: [
-                    { value: 22, label: "乌鲁木齐" },
-                    { value: 23, label: "克拉玛依" },
-                  ],
-                },
-              ],
-            },
-          ],
+          options: [],
+          events: {},
         },
         {
           prop: "financeCodeName1",
@@ -915,7 +849,7 @@ export default {
           ],
         },
         {
-          prop: "ClassType",
+          prop: "financeCodeName4",
           element: "el-select",
           placeholder: "班型",
           label: "班型：",
@@ -931,13 +865,13 @@ export default {
         weekPermission: [
           { required: true, message: "请选择", trigger: "change" },
         ],
-        exchangeable: [{ required: true, message: "请选择", trigger: "change" }],
+        exchangeable: [
+          { required: true, message: "请选择", trigger: "change" },
+        ],
         simulationTestPermission: [
           { required: true, message: "请选择", trigger: "change" },
         ],
-        studyPower: [
-          { required: true, message: "请选择", trigger: "change" },
-        ],
+        studyPower: [{ required: true, message: "请选择", trigger: "change" }],
         crowdType: [{ required: true, message: "请选择", trigger: "change" }],
         crowdNum: [{ required: true, message: "请输入", trigger: "blur" }],
         campusVisible: [
@@ -955,24 +889,10 @@ export default {
         ClassType: [{ required: true, message: "请选择", trigger: "change" }],
       },
       campusArr: [],
+      campusIds: [], //校区id [{name:汕头分校(广东校区),val:10}]
       distributeVisible: false,
       opportunityIds: "",
-      detailTableData: [
-        {
-          id: 1,
-          contentYear: "啊哈哈11",
-          productName: 1995,
-          contentName: 1995,
-          contentType: 1995,
-          contentPrice: 1995,
-          stageGroupName: 1995,
-          accountingRules: 1995,
-          playback: 1995,
-          courseStartTime: 1995,
-          createAt: 1995,
-          status: 1995,
-        },
-      ],
+      detailTableData: [],
       detailTableKey: [
         { name: "id", value: "id" },
         { name: "年份", value: "contentYear" },
@@ -993,7 +913,7 @@ export default {
   computed: {
     totalPrice() {
       let totalPrice = 0;
-      this.basicInfo.course.map((item) => {
+      this.basicInfo.courses.map((item) => {
         if (item.checked) {
           totalPrice += item.coursePrice - 0;
         }
@@ -1010,6 +930,26 @@ export default {
     // geteGroupListFunc(data) {//获取班型分組
     //   this.courseGroupArr = data;
     // },
+    changeSubArr(data) {
+      this.subjecttArr = data;
+    },
+    reduceDimension(arr) {
+      //二维数组转为一维数组
+      var reduced = [];
+      for (var i = 0; i < arr.length; i++) {
+        reduced = reduced.concat(arr[i]);
+      }
+      return reduced;
+    },
+    campusChange(val) {
+      let newArr = [];
+      if (val.length > 0) {
+        newArr = this.reduceDimension(val);
+      }
+      this.campusIds = this.campusArr.filter((el) => {
+        return newArr.indexOf(el.val) != -1;
+      });
+    },
     addTableDataFn(data) {
       this.distributeVisible = false;
       if (data && data.length > 0) {
@@ -1017,34 +957,30 @@ export default {
           let idArr = this.basicInfo.tableData.map((item) => {
             return item.id;
           });
-  
+
           let arr = data.filter((el) => idArr.indexOf(el.id) == -1);
           this.basicInfo.tableData = this.basicInfo.tableData.concat(arr);
-          console.log("courseContentId1111",this.basicInfo.tableData)
-          // this.basicInfo.courseContentId = 
+          console.log("courseContentId1111", this.basicInfo.tableData);
+          // this.basicInfo.courseContentId =
         } else {
           this.basicInfo.tableData = this.basicInfo.tableData.concat(data);
-           console.log("courseContentId222",this.basicInfo.tableData)
+          console.log("courseContentId222", this.basicInfo.tableData);
         }
       }
     },
     initProductIdFn(data) {
-      console.log("打印id", data);
       this.selectProductId = data;
     },
     handleSwitchChange(val) {
-      console.log("val22", val);
     },
     handleCheckedStageChange(val) {
-      console.log('大啊啊啊',val,this.basicInfo.courseStageArr)
-    //  this.basicInfo.courseStageArr.map(item=>{
-         
-    //  })
       this.basicInfo.stageGroupName = val;
-      let arr = this.basicInfo.courseStageArr.filter((el) => val.indexOf(el.label) != -1);
-      this.basicInfo.stageGroupId = arr.map(item =>{
-        return item.value
-      })
+      let arr = this.basicInfo.courseStageArr.filter(
+        (el) => val.indexOf(el.label) != -1
+      );
+      this.basicInfo.stageGroupId = arr.map((item) => {
+        return item.value;
+      });
     },
     getStageListFunc(data) {
       //获取班型阶段
@@ -1053,12 +989,12 @@ export default {
     getCourseListFunc(data) {
       //获取课程
       this.courseList = data;
-      this.basicInfo.course = data.map((item) => ({
+      this.basicInfo.courses = data.map((item) => ({
         courseName: item.label,
         checked: false,
         coursePrice: "",
         isperformance: false,
-        courseId:item.value
+        courseId: item.value,
       }));
     },
     getSelectList() {
@@ -1146,10 +1082,12 @@ export default {
           })
         );
         //考药狮自习室权限
-        this.step3FormOptions[3].options = res.data.statusList.map((item) => ({
-          label: item.value,
-          value: item.key,
-        }));
+        this.step3FormOptions[3].options = res.data.studyPowerList.map(
+          (item) => ({
+            label: item.value,
+            value: item.key,
+          })
+        );
         //班型服务 crowdTypeList
         this.step3FormOptions[4].options = res.data.crowdTypeList.map(
           (item) => ({
@@ -1165,7 +1103,16 @@ export default {
           value: item.id,
           parentId: item.parentId,
         }));
-
+        //校区id
+        this.campusArr = res.data.campusList.map((item) => ({
+          name: item.parentCampusName
+            ? item.campusName + "(" + item.parentCampusName + ")"
+            : item.campusName,
+          val: item.id,
+        }));
+        this.step3FormOptions[6].events = {
+          change: this.campusChange,
+        };
         //一级类目
         this.step3FormOptions[7].options = res.data.financeCode1List.map(
           (item) => ({
@@ -1208,11 +1155,12 @@ export default {
       // { productId, id: val }
       this.$fetch("courseclasstype_subjectList", { productId: val }).then(
         (res) => {
-          this.formOptions[2].options = res.data.list.map((item) => ({
-            label: item.subjectName,
-            value: item.id,
-          }));
-      
+          this.subjecttArr = this.formOptions[2].options = res.data.list.map(
+            (item) => ({
+              label: item.subjectName,
+              value: item.id,
+            })
+          );
         }
       );
     },
@@ -1377,43 +1325,105 @@ export default {
           //添加
           this.$refs[formName].validate((valid, formData) => {
             if (valid) {
-              console.log('打印的数据有什么？？',{...formData},'****', this.step3FormOptions[7].options)
-              
-          let financeCode1, financeCode2, financeCode3, financeCode4;
-          let obj1 = this.step3FormOptions[7].options.find(
-            (item) => item.value == formData.financeCodeName1
-          );
-          financeCode1 = obj1 && obj1.financeCode1;
+              let financeCode1, financeCode2, financeCode3, financeCode4;
+              let obj1 = this.step3FormOptions[7].options.find(
+                (item) => item.value == formData.financeCodeName1
+              );
+              financeCode1 = obj1 && obj1.value;
 
-          let obj2 = this.step3FormOptions[8].options.find(
-            (item) => item.value == formData.financeCodeName2
-          );
-          financeCode2 = obj2 && obj2.financeCode1;
+              let obj2 = this.step3FormOptions[8].options.find(
+                (item) => item.value == formData.financeCodeName2
+              );
+              financeCode2 = obj2 && obj2.value;
 
-           let obj3 = this.step3FormOptions[9].options.find(
-            (item) => item.value == formData.financeCodeName3
-          );
-          financeCode3 = obj3 && obj3.financeCode1;
+              let obj3 = this.step3FormOptions[9].options.find(
+                (item) => item.value == formData.financeCodeName3
+              );
+              financeCode3 = obj3 && obj3.value;
 
-          let obj4 = this.step3FormOptions[10].options.find(
-            (item) => item.value == formData.financeCodeName4
-          );
-          financeCode4 = obj4 && obj4.financeCode1;
+              let obj4 = this.step3FormOptions[10].options.find(
+                (item) => item.value == formData.financeCodeName4
+              );
+              financeCode4 = obj4 && obj4.value;
 
               this.$confirm(`确认提交吗？`, "提示", {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
                 type: "success",
               }).then(async () => {
-                //TODO
+                let {
+                  courseContentId,
+                  courses,
+                  stageGroupName,
+                  stageGroupId,
+                  totalFee,
+                  refundRules,
+                  norefundFee,
+                  passDeductFee,
+                } = this.basicInfo;
+                let courses2 = courses.filter((el) => {
+                  if (el.checked) {
+                    return delete el.checked;
+                  }
+                });
+                console.log("courses2", courses2);
+                let {
+                  productName,
+                  subjectName,
+                } = this.$refs.dataForm1.basicInfo;
+                this.projectArr.map((item) => {
+                  if (item.value == productName) {
+                    productName = item.label;
+                  }
+                });
+                this.subjecttArr.map((item) => {
+                  if (item.value == subjectName) {
+                    subjectName = item.label;
+                  }
+                });
+                let paramas = {
+                  ...formData,
+                  financeCode1,
+                  financeCode2,
+                  financeCode3,
+                  financeCode4,
+                  courseContentId: JSON.stringify(courseContentId),
+                  courses: JSON.stringify(courses2),
+                  stageGroupName: JSON.stringify(stageGroupName),
+                  stageGroupId: JSON.stringify(stageGroupId),
+                  totalFee,
+                  refundRules,
+                  norefundFee,
+                  passDeductFee,
+                  ...this.$refs.dataForm1.basicInfo,
+                  productName,
+                  subjectName,
+                };
+                console.log(
+                  "打印的数据有什么？？",
+                  "campusIds",
+                  this.campusIds,
+                  "7777",
+                  paramas,
+                  "****1212",
+                  {
+                    ...formData,
+                    financeCode1,
+                    financeCode2,
+                    financeCode3,
+                    financeCode4,
+                    campusIds: JSON.stringify(this.campusIds),
+                    ...paramas,
+                  }
+                );
                 this.$fetch("courseclasstype_save", {
                   ...formData,
                   financeCode1,
                   financeCode2,
                   financeCode3,
                   financeCode4,
-                  ...this.$refs.dataForm1.basicInfo,
-                  ...this.basicInfo
+                  campusIds: JSON.stringify(this.campusIds),
+                  ...paramas,
                 })
                   .then((res) => {
                     this.$message.success("操作成功");
@@ -1426,12 +1436,19 @@ export default {
             }
           });
         }
-      } else { 
-        this.basicInfo.courseContentId = this.basicInfo.tableData.map(item=>({
-          name:item.contentName,
-          val:item.id
-        }))
-        console.log("formName====", formName,'this.$refs.dataForm2',this.basicInfo);
+      } else {
+        this.basicInfo.courseContentId = this.basicInfo.tableData.map(
+          (item) => ({
+            name: item.contentName,
+            val: item.id,
+          })
+        );
+        console.log(
+          "formName====",
+          formName,
+          "this.$refs.dataForm2",
+          this.basicInfo
+        );
         let dataForm;
         if (formName == "dataForm1") {
           dataForm = this.$refs.dataForm1.$refs.dataForm;

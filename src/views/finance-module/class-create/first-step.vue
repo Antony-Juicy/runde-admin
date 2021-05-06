@@ -8,7 +8,7 @@
     >
       <el-form-item
         label="项目"
-        prop="projectName"
+        prop="productName"
         :rules="{
           required: true,
           message: '不能为空',
@@ -18,7 +18,7 @@
 
         <el-select
           style="width: 280px"
-          v-model="basicInfo.projectName"
+          v-model="basicInfo.productName"
           placeholder="请选择"
           size="small"
           @change="handleChange"
@@ -61,11 +61,11 @@
       <el-form-item
         style="width: 100%"
         label="班型名称"
-        prop="classTypeName"
+        prop="className"
         :rules="nameRulers"
       >
         <el-input
-          v-model="basicInfo.classTypeName"
+          v-model="basicInfo.className"
           size="small"
           style="width: 500px"
         ></el-input>
@@ -108,7 +108,7 @@
         <el-radio-group v-model="basicInfo.classType" >
           <el-radio
             v-for="item in classTypeArr"
-            :label="item.label"
+            :label="item.value"
             :key="item.value"
             >{{ item.label }}
           </el-radio>
@@ -132,7 +132,7 @@
         <el-radio-group v-model="basicInfo.classtypeGroupName" @change="partChange(basicInfo.classtypeGroupName,courseGroupArr)">
           <el-radio
             v-for="item in courseGroupArr"
-            :label="item.label"
+            :label="item.value"
             :key="item.value"
             >{{ item.label }}
           </el-radio>
@@ -153,7 +153,7 @@
         <el-radio-group v-model="basicInfo.serviceYear" >
           <el-radio
             v-for="item in serviceYearArr"
-            :label="item.label"
+            :label="item.value"
             :key="item.value"
             >{{ item.label }}
           </el-radio>
@@ -172,7 +172,7 @@
         <el-radio-group v-model="basicInfo.protocolType" >
           <el-radio
             v-for="item in protocolTypeArr"
-            :label="item.label"
+            :label="item.value"
             :key="item.value"
             >{{ item.label }}
           </el-radio>
@@ -193,7 +193,7 @@
         <el-radio-group v-model="basicInfo.refundType" >
           <el-radio
             v-for="item in refundTypeArr"
-            :label="item.label"
+            :label="item.value"
             :key="item.value"
             >{{ item.label }}
           </el-radio>
@@ -217,7 +217,7 @@
           <el-radio :label="2">暂停</el-radio> -->
           <el-radio
             v-for="item in statusArr"
-            :label="item.label"
+            :label="item.value"
             :key="item.value"
             >{{ item.label }}
           </el-radio>
@@ -258,11 +258,11 @@ export default {
       //   },
       // ],
       basicInfo: {
-        projectName: "",
+        productName: "",
         productId: "",
         subjectName: "",
         subjectId:"",
-        classTypeName: "",
+        className: "",
         classTypeBatch: "",//班型年份
         classType: "",//班型類型
         classtypeGroupName: "",//班型分组名称
@@ -322,6 +322,7 @@ export default {
     handleSubjectSelect(val) {
       // courseclasstype_courseList
       this.basicInfo.subjectId = val;
+      this.$emit('changeSubArr',this.subjecttArr)
       this.$fetch("courseclasstype_courseList", {
         productId: this.currentProductId,
         subjectId: val,

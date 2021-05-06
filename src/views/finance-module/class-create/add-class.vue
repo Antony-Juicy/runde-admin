@@ -196,7 +196,6 @@ export default {
     },
     handleAddClass() {
       //添加
-      console.log(77);
       this.$emit("addTableData", this.selectTableData);
     },
     onSubmit() {
@@ -216,12 +215,6 @@ export default {
         ...this.formInline,
         productId: this.productId,
       }).then((res) => {
-        console.log(
-          "打印有意义",
-          this.productId,
-          "打印有意义1",
-          res.data
-        );
         this.tableData = res.data.list.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
           item.playback = item.playback == true ? "有录播" : "无";
