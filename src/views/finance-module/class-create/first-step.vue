@@ -8,18 +8,20 @@
     >
       <el-form-item
         label="项目"
-        prop="project"
+        prop="projectName"
         :rules="{
           required: true,
           message: '不能为空',
           trigger: 'change',
         }"
       >
+
         <el-select
           style="width: 280px"
-          v-model="basicInfo.project"
+          v-model="basicInfo.projectName"
           placeholder="请选择"
           size="small"
+          @change="handleChange"
         >
           <el-option
             v-for="item in projectArr"
@@ -32,7 +34,7 @@
       </el-form-item>
       <el-form-item
         label="科目"
-        prop="subject"
+        prop="subjectName"
         :rules="{
           required: true,
           message: '不能为空',
@@ -41,12 +43,13 @@
       >
         <el-select
           style="width: 280px"
-          v-model="basicInfo.subject"
+          v-model="basicInfo.subjectName"
           placeholder="请选择"
           size="small"
+          @change="handleSubjectSelect"
         >
           <el-option
-            v-for="item in projectArr"
+            v-for="item in subjecttArr"
             :key="item.value"
             :label="item.label"
             :value="item.value"
@@ -70,7 +73,7 @@
       <el-form-item
         style="width: 100%"
         label="班型年份"
-        prop="classYear"
+        prop="classTypeBatch"
         :rules="{
           required: true,
           message: '不能为空',
@@ -79,7 +82,7 @@
       >
         <el-select
           style="width: 500px"
-          v-model="basicInfo.classYear"
+          v-model="basicInfo.classTypeBatch"
           placeholder="请选择"
           size="small"
         >
@@ -95,35 +98,46 @@
       <el-form-item
         style="align-items: center; display: flex; flex: 1; height: 100%"
         label="班型类型"
-        prop="classTypeId"
+        prop="classType"
         :rules="{
           required: true,
           message: '不能为空',
           trigger: 'change',
         }"
       >
-        <el-radio-group v-model="basicInfo.classTypeId" @change="partChange">
-          <el-radio :label="1">网课</el-radio>
-          <el-radio :label="2">直播</el-radio>
+        <el-radio-group v-model="basicInfo.classType" >
+          <el-radio
+            v-for="item in classTypeArr"
+            :label="item.label"
+            :key="item.value"
+            >{{ item.label }}
+          </el-radio>
+          <!-- <el-radio :label="2">直播</el-radio>
           <el-radio :label="3">面授</el-radio>
           <el-radio :label="4">证书</el-radio>
-          <el-radio :label="5">公开课</el-radio>
+          <el-radio :label="5">公开课</el-radio> -->
         </el-radio-group>
       </el-form-item>
       <el-form-item
         style="align-items: center; display: flex; flex: 1; height: 100%"
         label="班型分组"
-        prop="classTypeGroup"
+        prop="classtypeGroupName"
+        v-if="courseGroupArr.length > 0"
         :rules="{
           required: true,
           message: '不能为空',
           trigger: 'change',
         }"
       >
-        <el-radio-group v-model="basicInfo.classTypeGroup" @change="partChange">
-          <el-radio :label="1">高端班</el-radio>
-          <el-radio :label="2">非高端班</el-radio>
-          <el-radio :label="3">定制班</el-radio>
+        <el-radio-group v-model="basicInfo.classtypeGroupName" @change="partChange(basicInfo.classtypeGroupName,courseGroupArr)">
+          <el-radio
+            v-for="item in courseGroupArr"
+            :label="item.label"
+            :key="item.value"
+            >{{ item.label }}
+          </el-radio>
+          <!-- <el-radio :label="2">非高端班</el-radio>
+          <el-radio :label="3">定制班</el-radio> -->
         </el-radio-group>
       </el-form-item>
       <el-form-item
@@ -136,39 +150,55 @@
           trigger: 'change',
         }"
       >
-        <el-radio-group v-model="basicInfo.serviceYear" @change="partChange">
-          <el-radio :label="1">正常</el-radio>
-          <el-radio :label="2">暂停</el-radio>
+        <el-radio-group v-model="basicInfo.serviceYear" >
+          <el-radio
+            v-for="item in serviceYearArr"
+            :label="item.label"
+            :key="item.value"
+            >{{ item.label }}
+          </el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item
         style="align-items: center; display: flex; flex: 1; height: 100%"
         label="协议类型"
-        prop="protocolTypeId"
+        prop="protocolType"
         :rules="{
           required: true,
           message: '不能为空',
           trigger: 'change',
         }"
       >
-        <el-radio-group v-model="basicInfo.protocolTypeId" @change="partChange">
-          <el-radio :label="1">协议班</el-radio>
-          <el-radio :label="2">非协议班</el-radio>
+        <el-radio-group v-model="basicInfo.protocolType" >
+          <el-radio
+            v-for="item in protocolTypeArr"
+            :label="item.label"
+            :key="item.value"
+            >{{ item.label }}
+          </el-radio>
+          <!-- <el-radio :label="1">协议班</el-radio>
+          <el-radio :label="2">非协议班</el-radio> -->
         </el-radio-group>
       </el-form-item>
       <el-form-item
         style="align-items: center; display: flex; flex: 1; height: 100%"
         label="退费类型"
-        prop="refundTypeId"
+        prop="refundType"
         :rules="{
           required: true,
           message: '不能为空',
           trigger: 'change',
         }"
       >
-        <el-radio-group v-model="basicInfo.refundTypeId" @change="partChange">
-          <el-radio :label="1">退费</el-radio>
-          <el-radio :label="2">不退费</el-radio>
+        <el-radio-group v-model="basicInfo.refundType" >
+          <el-radio
+            v-for="item in refundTypeArr"
+            :label="item.label"
+            :key="item.value"
+            >{{ item.label }}
+          </el-radio>
+          <!-- <el-radio :label="1">退费</el-radio>
+          <el-radio :label="2">不退费</el-radio> -->
         </el-radio-group>
       </el-form-item>
 
@@ -182,9 +212,15 @@
           trigger: 'change',
         }"
       >
-        <el-radio-group v-model="basicInfo.status" @change="partChange">
-          <el-radio :label="1">正常</el-radio>
-          <el-radio :label="2">暂停</el-radio>
+        <el-radio-group v-model="basicInfo.status" >
+          <!-- <el-radio :label="1">正常</el-radio>
+          <el-radio :label="2">暂停</el-radio> -->
+          <el-radio
+            v-for="item in statusArr"
+            :label="item.label"
+            :key="item.value"
+            >{{ item.label }}
+          </el-radio>
         </el-radio-group>
       </el-form-item>
     </el-form>
@@ -196,59 +232,44 @@ export default {
   name: "add-class",
   data() {
     return {
-      yearArr: [
-        {
-          value: "选项1",
-          label: "1",
-        },
-        {
-          value: "选项2",
-          label: "2",
-        },
-        {
-          value: "选项3",
-          label: "3",
-        },
-        {
-          value: "选项4",
-          label: "4",
-        },
-        {
-          value: "选项5",
-          label: "5",
-        },
-      ],
-      projectArr: [
-        {
-          value: "选项1",
-          label: "1",
-        },
-        {
-          value: "选项2",
-          label: "2",
-        },
-        {
-          value: "选项3",
-          label: "3",
-        },
-        {
-          value: "选项4",
-          label: "4",
-        },
-        {
-          value: "选项5",
-          label: "5",
-        },
-      ],
+      subjecttArr: [], //科目
+      courseGroupArr: [],
+      currentProductId: "",
+      // projectArr: [
+      //   {
+      //     value: "选项1",
+      //     label: "1",
+      //   },
+      //   {
+      //     value: "选项2",
+      //     label: "2",
+      //   },
+      //   {
+      //     value: "选项3",
+      //     label: "3",
+      //   },
+      //   {
+      //     value: "选项4",
+      //     label: "4",
+      //   },
+      //   {
+      //     value: "选项5",
+      //     label: "5",
+      //   },
+      // ],
       basicInfo: {
-        project: "",
-        subject: "",
+        projectName: "",
+        productId: "",
+        subjectName: "",
+        subjectId:"",
         classTypeName: "",
-        classYear: "",
-        classTypeId: "",
-        classTypeGroup: "",
-        serviceYear: "",
-        refundTypeId: "",
+        classTypeBatch: "",//班型年份
+        classType: "",//班型類型
+        classtypeGroupName: "",//班型分组名称
+        classtypeGroupId:"",
+        serviceYear: "",//服务年限
+        refundType: "",//退费类型
+        protocolType:""
       },
       nameRulers: [
         { required: true, message: "请输入", trigger: "blur" },
@@ -256,32 +277,117 @@ export default {
       ],
     };
   },
-  props: { 
+  props: {
     opportunityIds: {
       type: String,
-      default: '',
+      default: "",
+    },
+    projectArr: {
+      //项目
+      type: Array,
+    },
+    yearArr: {
+      //班型年份
+      type: Array,
+    },
+    classTypeArr: {
+      //班型类型
+      type: Array,
+    },
+    // classtypeGroupArr: {
+    //   //班型分组
+    //   type: Array,
+    // },
+    serviceYearArr: {
+      //服务年限
+      type: Array,
+    },
+    protocolTypeArr: {
+      //协议类型
+      type: Array,
+    },
+    refundTypeArr: {
+      //退费类型
+      type: Array,
+    },
+    statusArr: {
+      //状态
+      type: Array,
     },
   },
   mounted() {
-    this.getTableData();
+    // this.getData();
   },
   methods: {
-    partChange() {},
-
-    getTableData(params = {}) {
-      // this.$fetch("chance_distrube_list", {
-      //   ...this.pageConfig,
-      //   ...this.formInline,
-      //   ...params,
-      // }).then((res) => {
-      //   this.tableData = res.data.data;
-      //   this.pageConfig.totalCount = res.data.count;
-      // });
+    handleSubjectSelect(val) {
+      // courseclasstype_courseList
+      this.basicInfo.subjectId = val;
+      this.$fetch("courseclasstype_courseList", {
+        productId: this.currentProductId,
+        subjectId: val,
+      }).then((res) => {
+        // this.subjecttArr = res.data.list.map((item) => ({
+        //   label: item.subjectName,
+        //   value: item.id,
+        // }));
+        let courseList = res.data && res.data.list.map((item) => ({
+          label: item.courseName,
+          value: item.id,
+        }));
+        this.$emit("getCourseListFunc", courseList);
+      });
     },
+    partChange(val,arr) {
+        arr.find(item=>{
+          if(item.label == val){
+             this.basicInfo.classtypeGroupId = item.value;
+          }
+        })
+       
+    },
+    handleChange(val) {
+      console.log("val==", val);
+      //  获取科目下拉
+       this.basicInfo.productId = val;
+      this.currentProductId = val;
+      this.$emit('message',val)
+      this.$fetch("courseclasstype_subjectList", { productId: val }).then(
+        (res) => {
+          this.subjecttArr = res.data.list.map((item) => ({
+            label: item.subjectName,
+            value: item.id,
+          }));
+          this.basicInfo.subjectName = ''; 
+        }
+      );
+      //获取班型分組
+      this.$fetch("courseclasstype_courseClasstypeGroupList", {
+        productId: val,
+      }).then((res) => {
+        this.courseGroupArr = res.data.map((item) => ({
+          label: item.classtypeGroupName,
+          value: item.id,
+        }));
+        // this.$emit("geteGroupListFunc", res.dataJson.list);
+      });
+
+      //获取班型阶段
+      this.$fetch("courseclasstype_courseClasstypeStageGroup", {
+        productId: val,
+      }).then((res) => {
+        let data =
+          res.data &&
+          res.data.map((item) => ({
+            label: item.stageGroupName,
+            value: item.id,
+          }));
+        this.$emit("getStageListFunc", data);
+      });
+    },
+    getData(params = {}) {},
   },
 };
 </script>
 
 <style lang="scss" scoped>
-
 </style>

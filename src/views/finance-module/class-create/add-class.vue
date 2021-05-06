@@ -3,21 +3,22 @@
     <el-form :inline="true" :model="formInline" class="demo-form-inline">
       <el-form-item label="">
         <el-select
-          v-model="formInline.campusId"
+          v-model="formInline.productName"
           placeholder="项目"
           filterable
           size="small"
+          @change="handleChangeProduct"
         >
           <el-option
             :label="item.label"
             :key="item.value"
             :value="item.value"
-            v-for="item in campusArr"
+            v-for="item in projectArr"
           ></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="">
-        <el-select
+        <!-- <el-select
           v-model="formInline.id"
           placeholder="请输入内容姓名"
           filterable
@@ -29,11 +30,16 @@
             :value="item.value"
             v-for="item in nameArr"
           ></el-option>
-        </el-select>
+        </el-select> -->
+        <el-input
+          v-model.trim="formInline.contentName"
+          placeholder="请输入内容名称"
+          size="small"
+        />
       </el-form-item>
       <el-form-item label="">
         <el-select
-          v-model="formInline.staffPhone"
+          v-model="formInline.contentType"
           placeholder="类型"
           filterable
           size="small"
@@ -42,7 +48,7 @@
             :label="item.label"
             :key="item.value"
             :value="item.value"
-            v-for="item in campusArr"
+            v-for="item in classTypeArr"
           ></el-option>
         </el-select>
       </el-form-item>
@@ -59,11 +65,25 @@
       highlight-current-row
       :multiple="true"
       @pageChange="pageChange"
+      @select="handleSelect"
     >
       <template slot="staffPhone" slot-scope="scope">
         {{ $common.hidePhone(scope.row.staffPhone) }}
       </template>
     </rd-table>
+    <div class="btn-wrapper" style="text-align: right; margin-top: 20px">
+      <el-button size="small" @click="distributeVisible = false"
+        >取消</el-button
+      >
+      <el-button
+        type="primary"
+        size="small"
+        :loading="btnLoading"
+        @click="handleAddClass"
+        v-prevent-re-click="2000"
+        >添加</el-button
+      >
+    </div>
   </div>
 </template>
 
@@ -72,12 +92,11 @@ export default {
   name: "add-class",
   data() {
     return {
+      productId:this.selectProductId,
+      btnLoading: false,
       nameArr: [],
       campusArr: [],
-      formInline: {
-        campusId: "",
-        id: "",
-      },
+      formInline: {},
       tableData: [],
       tableKey: [
         {
@@ -87,25 +106,24 @@ export default {
         },
         {
           name: "所属项目",
-          value: "staffName",
+          value: "productName",
         },
         {
           name: "内容名称",
-          value: "positionName",
+          value: "contentName",
         },
         {
           name: "类型",
-          value: "staffPhone",
-          operate: true,
+          value: "contentType",
         },
 
         {
           name: "学费/元",
-          value: "opportunityNum",
+          value: "contentPrice",
         },
         {
-          name: "状态",
-          value: "status",
+          name: "录播情况",
+          value: "playback",
         },
       ],
       pageConfig: {
@@ -118,29 +136,69 @@ export default {
   props: {
     opportunityIds: {
       type: String,
-      default: '',
+      default: "",
     },
+    projectArr: {
+      //项目
+      type: Array,
+    },
+
+    classTypeArr: {
+      //班型类型
+      type: Array,
+    },
+    selectProductId: {
+      type: [Number, String],
+    },
+    // currentProductId: {
+    //   type: String || Number,
+    // },
   },
-  mounted() {
-    this.$fetch("chance_staff_list").then((res) => {
-      console.log("哈哈哈", res);
-      let staffOptions = JSON.parse(res.msg).map((item) => ({
-        label: item.staffName,
-        value: item.id,
-      }));
-      this.nameArr = staffOptions;
-    });
-    this.$fetch("chance_config_campusList").then((res) => {
-      let campusOptions = res.data.data.map((item) => ({
-        label: item.campusName,
-        value: item.id,
-      }));
-      this.campusArr = campusOptions;
-    });
+  async created() {
+    console.log("classTypeArr", this.classTypeArr);
+    console.log("projectArr", this.projectArr);
+    // this.$fetch("courseProductContent_listJsp").then((res) => {
+    //   console.log("哈哈哈", res);
+    //   let staffOptions = JSON.parse(res.msg).map((item) => ({
+    //     label: item.staffName,
+    //     value: item.id,
+    //   }));
+    //   this.nameArr = staffOptions;
+    // });
+    // this.$fetch("chance_config_campusList").then((res) => {
+    //   let campusOptions = res.data.data.map((item) => ({
+    //     label: item.campusName,
+    //     value: item.id,
+    //   }));
+    //   this.campusArr = campusOptions;
+    // });
 
     this.getTableData();
   },
+  computed:{
+  //  productId: {
+  //     set(val) {
+  //       this.$emit("sendVal", val); // 表示将子组件改变的值传递给父组件
+  //     },
+  //     get() {
+  //       return this.selectProductId; // 表示获取父组件的值
+  //     },
+  //   },
+  },
   methods: {
+    handleSelect(rows) {
+      console.log(rows, "rows---");
+      this.selectTableData = rows;
+    },
+    handleChangeProduct(val){
+           console.log(val, "rows val---");
+           this.productId = val;
+    },
+    handleAddClass() {
+      //添加
+      console.log(77);
+      this.$emit("addTableData", this.selectTableData);
+    },
     onSubmit() {
       console.log("submit!");
       this.getTableData();
@@ -152,13 +210,24 @@ export default {
       this.getTableData();
     },
     getTableData(params = {}) {
-      this.$fetch("chance_distrube_list", {
+      //获取项目内容
+      this.$fetch("courseProductContent_listJsp", {
         ...this.pageConfig,
         ...this.formInline,
-        ...params,
+        productId: this.productId,
       }).then((res) => {
-        this.tableData = res.data.data;
-        this.pageConfig.totalCount = res.data.count;
+        console.log(
+          "打印有意义",
+          this.productId,
+          "打印有意义1",
+          res.data
+        );
+        this.tableData = res.data.list.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.playback = item.playback == true ? "有录播" : "无";
+          return item;
+        });
+        this.pageConfig.totalCount = res.data.pager.totalRows;
       });
     },
   },

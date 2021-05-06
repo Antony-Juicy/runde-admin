@@ -19,9 +19,12 @@
           :emptyText="emptyText"
         >
           <template slot="productName" slot-scope="scope">
-            <el-button @click="detailVisible = true" type="text" size="small">{{
-              scope.row.productName
-            }}</el-button>
+            <el-button
+              @click="handleOpen(scope.row)"
+              type="text"
+              size="small"
+              >{{ scope.row.productName }}</el-button
+            >
           </template>
           <template slot="edit" slot-scope="scope">
             <el-button @click="handleEdit(scope.row)" type="text" size="medium">
@@ -68,7 +71,7 @@
     <!-- 添加弹窗 -->
     <fullDialog
       v-model="detailVisible"
-      title="医师"
+      :title="title"
       @change="detailVisible = false"
     >
       <subjectRecord
@@ -94,6 +97,7 @@ export default {
   },
   data() {
     return {
+      title: "",
       detailId: "",
       editId: "",
       emptyText: "暂无数据",
@@ -124,11 +128,11 @@ export default {
           options: [
             {
               label: "正常",
-              value: 0,
+              value: false,
             },
             {
               label: "暂停",
-              value: 1,
+              value: true,
             },
           ],
         },
@@ -185,12 +189,12 @@ export default {
           label: "状态：",
           options: [
             {
-              label: "正常111111111111111",
-              value: "0",
+              label: "正常",
+              value: false,
             },
             {
-              label: "暂停11111111111",
-              value: "1",
+              label: "暂停",
+              value: true,
             },
           ],
           initValue: "0",
@@ -236,16 +240,26 @@ export default {
     this.getSelectList();
   },
   methods: {
+    handleOpen(data) {
+      //open科目
+      this.detailId = data.id;
+      this.title = data.productName;
+      this.detailVisible = true;
+    },
     refresh() {},
     handleSubmit(formName) {
       this.$refs[formName].validate((valid, formData) => {
         if (valid) {
-          console.log(formData, "添加", this.addFormOptions[4].options );
-          let financeCode1,financeCode2;
-          let obj1 = this.addFormOptions[4].options.find(item => (item.value == formData.financeCodeName1));
-          financeCode1 =  obj1&&obj1.financeCode1;
-          let obj2 = this.addFormOptions[5].options.find(item => (item.value == formData.financeCodeName2));
-          financeCode2 =  obj2&&obj2.financeCode2;
+          console.log(formData, "添加", this.addFormOptions[4].options);
+          let financeCode1, financeCode2;
+          let obj1 = this.addFormOptions[4].options.find(
+            (item) => item.value == formData.financeCodeName1
+          );
+          financeCode1 = obj1 && obj1.financeCode1;
+          let obj2 = this.addFormOptions[5].options.find(
+            (item) => item.value == formData.financeCodeName2
+          );
+          financeCode2 = obj2 && obj2.financeCode2;
           this.$fetch(
             this.addStatus ? "courseProduct_save" : "courseProduct_editJsp",
             {
@@ -304,7 +318,7 @@ export default {
       }).then((res) => {
         this.tableData = res.data.data.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
-          item.productStatus = item.productStatus == 0 ? "正常" : "暂停";
+          item.productStatus = item.productStatus == false ? "正常" : "暂停";
           return item;
         });
         this.pageConfig.totalCount = res.data.pager.totalRows;
@@ -315,29 +329,28 @@ export default {
       this.addStatus = true;
     },
     handleEdit(data) {
+      this.editId = data.id;
       this.addStatus = false;
       this.distributeVisible = true;
-           this.addFormOptions.forEach(item => {
-             console.log('打印item',item)
-           item.initValue = data[item.prop];
-      })
+      this.addFormOptions.forEach((item) => {
+        console.log("打印item11111111", item);
+        // if (item.prop == "productStatus") {
+        //   console.log("打印item11111111", item);
+        //   item.options.map((itm) => {
+        //             console.log("打印itm ========?12 ", item.initValue , itm.label,item.initValue == itm.value);
+        //     if (item.initValue == itm.value) {
+        //       console.log("打印itm ========?",111233,itm.value);
+        //       item.initValue = itm.value == 0?'0':'1';
+        //     }
+        //   });
+        // } else {
+        //   item.initValue = data[item.prop];
+        // }
+        item.initValue = data[item.prop];
+      });
       setTimeout(() => {
         this.$refs.dataForm3.addInitValue();
       }, 0);
-      this.editId = data.id;
-      //TODO
-      // this.$fetch("courseProduct_goEdit", {
-      //   id: data.id,
-      // }).then((res) => {
-      //   this.addFormOptions.forEach((item) => {
-      //     if (item.prop != "productDetail") {
-      //       item.initValue = data[item.prop];
-      //     }
-      //     // item.initValue = res.data.pd[item.prop];
-      //   });
-      //   this.$refs.dataForm3.addInitValue();
-      //   console.log(this.addFormOptions, "this.addFormOptions---");
-      // });
     },
     pageChange(val) {
       console.log(val, "pagechange");
