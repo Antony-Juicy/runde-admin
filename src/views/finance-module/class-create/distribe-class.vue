@@ -20,7 +20,7 @@
         >
           <template slot="edit" slot-scope="scope">
             <el-button
-              @click="handleEdit(scope.row, 1)"
+              @click="handleEdit(scope.row)"
               type="text"
               size="small"
             >
@@ -28,9 +28,10 @@
             </el-button>
             <el-divider direction="vertical"></el-divider>
             <el-button
-              @click="handleEdit(scope.row, 2)"
+              @click="handleDelete(scope.row)"
               type="text"
               size="small"
+              style="color: #ec5b56"
             >
               删除
             </el-button>
@@ -86,7 +87,16 @@ export default {
     RdForm,
     fullDialog,
   },
-  props: {},
+  props: {
+    classTypeId: {
+      type: String | Number,
+      default: 211
+    },
+    classTypeName: {
+      type: String,
+      default: "终极保过班【网课】"
+    }
+  },
   data() {
     return {
       detailId: "",
@@ -107,7 +117,7 @@ export default {
       },
       formOptions: [
         {
-          prop: "className",
+          prop: "classTypeName",
           element: "el-input",
           placeholder: "请输入班型名称",
         },
@@ -115,10 +125,10 @@ export default {
         {
           prop: "courseName",
           element: "el-input",
-          placeholder: "请输入班型名称",
+          placeholder: "请输入课程名称",
         },
         {
-          prop: "bookCode",
+          prop: "bookSn",
           element: "el-input",
           placeholder: "请输入图书编码",
         },
@@ -129,20 +139,20 @@ export default {
         },
       ],
       tableData: [
-        {
-          id: 1,
-          classtId: "2223",
-          className: "/",
-          bookName: "2230",
-          bookCode: "1122",
-        },
+        // {
+        //   id: 1,
+        //   classtId: "2223",
+        //   className: "/",
+        //   bookName: "2230",
+        //   bookCode: "1122",
+        // },
       ],
       tableKey: [
-        { name: "id", value: "id" },
-        { name: "班型名称", value: "className" },
+        { name: "id", value: "id",width: 80 },
+        { name: "班型名称", value: "classTypeName" },
         { name: "课程名称", value: "courseName" },
         { name: "图书名称", value: "bookName" },
-        { name: "图书编码", value: "bookCode" }, 
+        { name: "图书编码", value: "bookSn" }, 
         {
           name: "操作",
           value: "edit",
@@ -153,59 +163,69 @@ export default {
       ],
       addFormOptions: [
         {
-          prop: "classtName",
+          prop: "classTypeName",
           element: "el-input",
           placeholder: "请输入",
           label: "班型",
+          readonly: true
         },
         {
-          prop: "courseName",
+          prop: "courseId",
           element: "el-select",
           placeholder: "请选择",
           label: "课程",
           options: [],
         },
         {
-          prop: "bookName",
+          prop: "bookId",
           element: "el-select",
           placeholder: "请选择图书名称",
-          label: "课程类型",
+          label: "图书名称",
           options: [],
         },
       ],
       addRules: {
-        classtName: [{ required: true, message: "请输入", trigger: "blur" }],
-        courseName: [{ required: true, message: "请选择", trigger: "blur" }],
-        bookName: [{ required: true, message: "请选择", trigger: "blur" }],
+        classTypeName: [{ required: true, message: "请输入", trigger: "blur" }],
+        courseId: [{ required: true, message: "请选择", trigger: "blur" }],
+        bookId: [{ required: true, message: "请选择", trigger: "blur" }],
       },
+      classTypeArr: [],
+      bookInfoListArr: []
     };
   },
   mounted() {
     this.getTableData();
+    this.getSelectList();
   },
   methods: {
     refresh() {},
     handleSubmit(formName) {
-      this.$refs[formName].validate((valid, formData) => {
+      this.$refs[formName].validate(async (valid, formData) => {
         if (valid) {
           console.log(formData, "保存");
-          //TODO
-          this.$fetch(
-            this.addStatus
-              ? "secretexamsubject_add"
-              : "secretexamsubject_editJsp",
-            {
+          const { courseId, bookId } = formData;
+          let courseName = this.classTypeArr.find(item => (item.value == courseId)).label;
+          let bookName = this.bookInfoListArr.find(item => (item.value == bookId)).label;
+          let param = {
               ...formData,
-              time: "",
-              startTime: formData.time ? formData.time[0] : "",
-              endTime: formData.time ? formData.time[1] : "",
               id: this.addStatus ? "" : this.editId,
+              classTypeName: this.classTypeName,
+              classTypeId: this.classTypeId,
+              courseName,
+              bookName,
+              bookSn: bookName.split("/")[1]
+            };
+          //TODO
+          // 检查是否存在相同记录
+          const result = await this.$fetch("bookclasstypecoursemiddle_checkByClassTypeCourseBookId",param);
+          if(result.code == 200){
+            const res = await this.$fetch(this.addStatus?"bookclasstypecoursemiddle_save":"bookclasstypecoursemiddle_editJsp",param);
+            if(res.code == 200){
+               this.$message.success("操作成功");
+               this.distributeVisible = false;
+               this.getTableData();
             }
-          ).then((res) => {
-            this.$message.success("操作成功");
-            this.distributeVisible = false;
-            this.getTableData();
-          });
+          }
         }
       });
     },
@@ -217,98 +237,95 @@ export default {
     },
     getTableData(params = {}) {
       //TODO  secretexamsubject_list
-      this.$fetch("posterinfo_listJson", {
+      this.$fetch("bookclasstypecoursemiddle_listJsp", {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
+        classTypeId: this.classTypeId
       }).then((res) => {
-        this.tableData = res.data.data.map((item) => {
+        this.tableData = res.data.varList.list.map((item) => {
           item.creatTime = this.$common._formatDates(item.createAt);
           return item;
         });
-        this.pageConfig.totalCount = res.data.count;
+        this.pageConfig.totalCount = res.data.varList.pager.totalRows;
       });
     },
     handleEnter() {},
+    getSelectList(){
+      this.$fetch("bookclasstypecoursemiddle_goAddWindows",{
+        classTypeId: this.classTypeId
+      }).then(res => {
+        
+        const { bookInfoList, classType}  = res.data;
+        this.classTypeArr = classType.map(item => ({
+          label: item.courseName,
+          value: item.courseId
+        }));
+        this.addFormOptions[1].options = this.classTypeArr;
+        this.bookInfoListArr = bookInfoList.map(item => ({
+          label: `${item.bookName}/${item.bookSn}`,
+          value: item.id
+        }));
+        this.addFormOptions[2].options =  this.bookInfoListArr;
+      })
+    },
     handleAdd() {
       this.distributeVisible = true;
       this.addStatus = true;
+      this.addFormOptions.forEach((item) => {
+        item.initValue = "";
+        if(item.prop == "classTypeName"){
+          item.initValue =this.classTypeName;
+        }
+      });
+      setTimeout(() => {
+        this.$refs.dataForm3.resetFields();
+        this.$refs.dataForm3.addInitValue();
+      }, 0);
     },
-    handleEdit(data, index) {
-      if (index == 1) {
-        //编辑
-        this.addStatus = false;
-        this.distributeVisible = true;
-        this.editId = data.id;
-        //TODO
-        this.$fetch("secretexamsubject_goEdit", {
-          id: data.id,
-        }).then((res) => {
-          this.addFormOptions.forEach((item) => {
-            if (item.prop != "describe") {
-              item.initValue = data[item.prop];
-            }
-            // item.initValue = res.data.pd[item.prop];
-          });
-          this.$refs.dataForm3.addInitValue();
-          console.log(this.addFormOptions, "this.addFormOptions---");
+    handleEdit(data) {
+      this.addStatus = false;
+      this.distributeVisible = true;
+      this.editId = data.id;
+      //TODO
+      this.$fetch("bookclasstypecoursemiddle_goEdit", {
+        id: data.id,
+      }).then((res) => {
+        this.addFormOptions.forEach((item) => {
+          item.initValue = res.data.model[item.prop];
         });
-      } else if (index == 2) {
-        let info = "";
-        //删除
-        this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-        })
-          .then(async () => {
-            //   const res = await this.$fetch("projectType_delete", {
-            //     typeId: row.typeId,
-            //     loginUserId,
-            //   }).then((res) => {
-            //     if (res) {
-            //       this.$message({
-            //         message: "删除成功",
-            //         type: "success",
-            //       });
-            //       setTimeout(() => {
-            //         this.getTableData();
-            //       }, 50);
-            //     }
-            //   });
-          })
-          .catch(() => {});
-      } else {
-        //重新同步
-        this.$confirm(`确认重新同步编码?`, "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-        })
-          .then(async () => {
-            //   const res = await this.$fetch("projectType_delete", {
-            //     typeId: row.typeId,
-            //     loginUserId,
-            //   }).then((res) => {
-            //     if (res) {
-            //       this.$message({
-            //         message: "删除成功",
-            //         type: "success",
-            //       });
-            //       setTimeout(() => {
-            //         this.getTableData();
-            //       }, 50);
-            //     }
-            //   });
-          })
-          .catch(() => {});
-      }
+        this.$refs.dataForm3.addInitValue();
+      });
     },
     pageChange(val) {
       console.log(val, "pagechange");
       this.pageConfig.currentPage = val.page;
       this.pageConfig.showCount = val.limit;
       this.getTableData();
+    },
+    handleDelete(row) {
+      let info = '';
+      this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.$fetch("bookclasstypecoursemiddle_deleteJsp", {
+            id: row.id
+          }).then((res) => {
+            if (res) {
+              this.$message({
+                message: "删除成功",
+                type: "success",
+              });
+              setTimeout(() => {
+                this.getTableData();
+              }, 50);
+            }
+          });
+        })
+        .catch(() => {});
     },
   },
 };

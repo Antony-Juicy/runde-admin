@@ -28,4 +28,21 @@ export default {//项目内容管理
     courseclasstypelivecode_deleteJsp: {url: '/admin/courseclasstypelivecode/deleteJsp', method: 'post'},
     courseclasstypelivecode_goAddWindows: {url: '/admin/courseclasstypelivecode/goAddWindows', method: 'get'},
     courseclasstypelivecode_goEdit: {url: '/admin/courseclasstypelivecode/goEdit', method: 'get'},
+
+    // 音频编码
+    courseclasstypefrequencycode_listJsp: {url: '/admin/courseclasstypefrequencycode/listJsp', method: 'get'},
+    courseclasstypefrequencycode_save: {url: '/admin/courseclasstypefrequencycode/save', method: 'post'},
+    courseclasstypefrequencycode_editJsp: {url: '/admin/courseclasstypefrequencycode/editJsp', method: 'post'},
+    courseclasstypefrequencycode_deleteJsp: {url: '/admin/courseclasstypefrequencycode/deleteJsp', method: 'post'},
+    courseclasstypefrequencycode_goAddWindows: {url: '/admin/courseclasstypefrequencycode/goAddWindows', method: 'get'},
+    courseclasstypefrequencycode_goEdit: {url: '/admin/courseclasstypefrequencycode/goEdit', method: 'get'},
+
+    // 配送图书
+    bookclasstypecoursemiddle_listJsp: {url: '/admin/bookclasstypecoursemiddle/lookListJsp', method: 'get'},
+    bookclasstypecoursemiddle_save: {url: '/admin/bookclasstypecoursemiddle/save', method: 'post'},
+    bookclasstypecoursemiddle_editJsp: {url: '/admin/bookclasstypecoursemiddle/editJsp', method: 'post'},
+    bookclasstypecoursemiddle_deleteJsp: {url: '/admin/bookclasstypecoursemiddle/deleteJsp', method: 'post'},
+    bookclasstypecoursemiddle_goAddWindows: {url: '/admin/bookclasstypecoursemiddle/goAddWindows', method: 'get'},
+    bookclasstypecoursemiddle_goEdit: {url: '/admin/bookclasstypecoursemiddle/goEdit', method: 'get'},
+    bookclasstypecoursemiddle_checkByClassTypeCourseBookId: {url: '/admin/bookclasstypecoursemiddle/checkByClassTypeCourseBookId', method: 'post'},
 }
