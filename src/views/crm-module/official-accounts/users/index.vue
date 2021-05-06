@@ -212,7 +212,7 @@ export default {
         searchForm.openId = data.openId;
       }
       this.searchForm = searchForm;
-      this.pageNum = 1;
+      this.pageConfig.pageNum = 1;
       this.getTableData();
     },
 
