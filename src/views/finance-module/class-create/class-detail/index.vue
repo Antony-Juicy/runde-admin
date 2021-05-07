@@ -7,8 +7,20 @@
     ></search-form>
     <div class="w-container">
       <div class="btn-wrapper">
-        <el-button type="primary" size="small" @click="handleAdd"
+        <el-button type="success" size="small" @click="handleAdd" icon="el-icon-plus"
           >添加</el-button
+        >
+        <el-button type="primary" size="small" @click="handleAdd"  icon="el-icon-edit"
+          >批量修改价格</el-button
+        >
+        <el-button type="danger" size="small" @click="handleAdd" icon="el-icon-caret-right"
+          >暂停</el-button
+        >
+        <el-button type="warning" size="small" @click="handleAdd" icon="el-icon-circle-check"
+          >恢复</el-button
+        >
+        <el-button type="info" size="small" @click="handleAdd" icon="el-icon-plus"
+          >批量添加连锁价格</el-button
         >
       </div>
       <rd-table
@@ -39,27 +51,66 @@
     <rd-dialog
         :title="addStatus?'添加':'编辑'"
         :dialogVisible="addVisible"
+        appendToBody
         @handleClose="addVisible = false"
         @submitForm="submitAddForm('dataForm3')"
       >
         <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
-          <template slot="post">
-            <el-button size="small" type="primary">上传</el-button>
+          <template slot="subjectId">
+            <el-form
+                ref="dataForm2"
+                :model="basicInfo"
+                :rules="rules"
+                label-width="120px"
+            >
+                <el-form-item label="" prop="">
+                    <el-select v-model="form.region" placeholder="请选择活动区域">
+                    <el-option label="区域一" value="shanghai"></el-option>
+                    <el-option label="区域二" value="beijing"></el-option>
+                    </el-select>
+                </el-form-item>
+                <div
+                    class="param-item"
+                    v-for="(item, index) in basicInfo.course"
+                    :key="item.value"
+                  >
+                    <el-form-item
+                      :prop="'course.' + index + '.coursePrice'"
+                      label-width="0"
+                      :rules="{
+                        required: item.checked
+                          ? true
+                          : false,
+                        message: '请输入价格',
+                        trigger: 'blur',
+                      }"
+                    >
+                      <el-checkbox
+                        v-model="item.checked"
+                        :label="item.label"
+                      ></el-checkbox>
+
+                      <el-input
+                        v-model="item.coursePrice"
+                        size="small"
+                        placeholder="请输入价格"
+                        style="width: 200px; margin-left: 20px"
+                      ></el-input>
+                      <el-switch
+                        active-text="计算业绩"
+                        style="margin-left: 20px"
+                        v-model="item.isperformance"
+                        active-color="#13ce66"
+                        inactive-color="#dcdfe6"
+                      >
+                      </el-switch>
+                    </el-form-item>
+                  </div>
+            </el-form>
           </template>
         </RdForm>
       </rd-dialog>
 
-      <full-dialog
-        v-model="addVisible"
-        :title="addStatus?'添加':'编辑'"
-        @change="addVisible = false"
-      >
-        <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
-          <template slot="post">
-            <el-button size="small" type="primary">上传</el-button>
-          </template>
-        </RdForm>
-      </full-dialog>
   </div>
 </template>
 
@@ -72,19 +123,17 @@ export default {
       formOptions: [
         {
           prop: "menuName",
-          element: "el-input",
-          placeholder: "商品名称",
+          element: "el-select",
+          placeholder: "状态",
+          options: []
         },
         {
           prop: "menuName",
-          element: "el-input",
-          placeholder: "活动名称",
+          element: "el-select",
+          placeholder: "校区",
+          options: [],
+          multiple: true
         },
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "名称",
-        }
       ],
       searchForm:{},
       emptyText:"暂无数据",
@@ -99,58 +148,42 @@ export default {
       ],
       tableKey: [
         {
-          name: "ID主键",
+          name: "ID",
           value: "id",
           fixed: "left",
           width: 80
         },
         {
-          name: "老师名称",
-          value: "staffName",
+          name: "班次名称",
+          value: "className",
         },
         {
-          name: "商品名称",
-          value: "goodsName",
+          name: "项目名称",
+          value: "productName",
         },
         {
-          name: "活动名称",
-          value: "activityName",
+          name: "科目名称",
+          value: "subjectName",
         },
         {
-          name: "名称",
-          value: "posterName",
+          name: "服务年限",
+          value: "serviceYear",
         },
         {
-          name: "图片",
-          value: "posterPic",
+          name: "省份名称",
+          value: "provinceName",
         },
         {
-          name: "分享文案一",
-          value: "posterCopyFirst",
+          name: "校区名称",
+          value: "campusName",
         },
         {
-          name: "分享文案二",
-          value: "posterCopySecond",
+          name: "详细介绍",
+          value: "classDetail",
         },
         {
-          name: "分享文案三",
-          value: "posterCopyThird",
-        },
-        {
-          name: "分享文案四",
-          value: "posterCopyFourth",
-        },
-        {
-          name: "分享文案五",
-          value: "posterCopyFifth",
-        },
-        {
-          name: "创建时间",
-          value: "createAt",
-        },
-        {
-          name: "修改时间",
-          value: "updateAt",
+          name: "状态",
+          value: "status",
         },
         {
           name: "操作",
@@ -169,90 +202,67 @@ export default {
       addFormOptions: [
           
         {
-          prop: "menuName",
+          prop: "className",
           element: "el-input",
-          placeholder: "请输入名称",
-          label: "名称"
+          placeholder: "请输入",
+          label: "班次名称"
         },
         {
-          prop: "post",
-          element: "el-input",
-          placeholder: "",
-          label: "上传",
-          operate: true,
-          initValue: 0
+          prop: "classType",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "班次类型",
+          options: [
+          ],
+        },
+        {
+          prop: "productId",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "项目",
+          options: [
+          ],
+        },
+        {
+          prop: "subjectId",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "科目",
+          options: [
+          ],
+          operate: true
         },
         {
           prop: "roleName",
           element: "el-select",
           placeholder: "请选择",
-          label: "所属九块九包邮",
+          label: "服务年限",
           options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
           ],
         },
         {
           prop: "roleName",
           element: "el-select",
           placeholder: "请选择",
-          label: "所属活动",
+          label: "校区",
           options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
           ],
         },
         {
-          prop: "menuName3",
+          prop: "roleName",
           element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案一",
-          type:"textarea",
-          rows: 2
+          placeholder: "请选择",
+          label: "详细介绍",
+          type: "textarea",
+          rows: 3
         },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案二",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案三",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案四",
-          type:"textarea",
-          rows: 2
-        },
-           {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案五",
-          type:"textarea",
-          rows: 2
+        {
+          prop: "roleName",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "状态",
+          options: [
+          ],
         }
       ],
       addRules:{
@@ -261,7 +271,11 @@ export default {
         ]
       },
       addStatus: true,
-      editId:""
+      editId:"",
+      basicInfo: {
+          course: [1,2,3]
+      },
+      rules: {}
     }
   },
   components:{

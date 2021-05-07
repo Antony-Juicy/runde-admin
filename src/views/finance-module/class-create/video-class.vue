@@ -22,6 +22,14 @@
             <el-button @click="handleEdit(scope.row)" type="text" size="medium">
               编辑
             </el-button>
+            <el-divider direction="vertical"></el-divider>
+            <el-button
+              @click="handleDelete(scope.row)"
+              type="text"
+              size="small"
+              style="color: #ec5b56"
+              >删除</el-button
+            >
           </template>
         </rd-table>
       </div>
@@ -74,7 +82,16 @@ export default {
     RdForm,
     fullDialog,
   },
-  props: {},
+  props: {
+    classTypeId: {
+      type: String | Number,
+      default: 211
+    },
+    classTypeName: {
+      type: String,
+      default: "终极保过班【网课】"
+    }
+  },
   data() {
     return {
       detailId: "",
@@ -95,7 +112,7 @@ export default {
       },
       formOptions: [
         {
-          prop: "course",
+          prop: "frequencyCode",
           element: "el-input",
           placeholder: "请输入音频编码",
         },
@@ -113,11 +130,11 @@ export default {
       ],
       tableKey: [
         { name: "id", value: "id" },
-        { name: "班型ID", value: "classtId" },
-        { name: "班型名称", value: "classtName" },
+        { name: "班型ID", value: "classTypeId" },
+        { name: "班型名称", value: "classTypeName" },
         { name: "课程ID", value: "courseId" },
         { name: "课程名称", value: "courseName" },
-        { name: "音频编码", value: "videoCode" },
+        { name: "音频编码", value: "frequencyCode" },
         {
           name: "操作",
           value: "edit",
@@ -128,55 +145,65 @@ export default {
       ],
       addFormOptions: [
         {
-          prop: "classtName",
+          prop: "classTypeName",
           element: "el-input",
           placeholder: "请输入",
           label: "班型",
         },
         {
-          prop: "courseName",
+          prop: "courseId",
           element: "el-select",
           placeholder: "请选择",
           label: "课程",
           options: [],
         },
         {
-          prop: "courseCoding",
+          prop: "frequencyCode",
           element: "el-input",
-          placeholder: "请输入课程编码",
-          label: "课程编码",
+          placeholder: "请输入",
+          label: "直播编码",
         },
 
-        {
-          prop: "courseType",
-          element: "el-select",
-          placeholder: "请选择",
-          label: "课程类型",
-          options: [],
-        },
-        {
-          prop: "courseClassify",
-          element: "el-select",
-          placeholder: "请选择",
-          label: "课程分类",
-          options: [],
-        },
+        // {
+        //   prop: "courseType",
+        //   element: "el-select",
+        //   placeholder: "请选择",
+        //   label: "课程类型",
+        //   options: [],
+        // },
+        // {
+        //   prop: "courseClassify",
+        //   element: "el-select",
+        //   placeholder: "请选择",
+        //   label: "课程分类",
+        //   options: [],
+        // },
       ],
       addRules: {
-        classtName: [{ required: true, message: "请输入", trigger: "blur" }],
-        courseName: [{ required: true, message: "请选择", trigger: "blur" }],
-        courseCoding: [{ required: true, message: "请输入", trigger: "blur" }],
-        courseType: [{ required: true, message: "请选择", trigger: "blur" }],
-        courseClassify: [
-          { required: true, message: "请选择", trigger: "blur" },
-        ],
+        classTypeName: [{ required: true, message: "请输入", trigger: "blur" }],
+        courseId: [{ required: true, message: "请选择", trigger: "blur" }],
+        frequencyCode: [{ required: true, message: "请输入", trigger: "blur" }]
       },
+      classTypeArr: []
     };
   },
   mounted() {
     this.getTableData();
+    this.getSelectList();
   },
   methods: {
+    getSelectList(){
+      this.$fetch("courseclasstypefrequencycode_goAddWindows",{
+        classTypeId: this.classTypeId
+      }).then(res => {
+        const { classType }  = res.data;
+        this.classTypeArr = classType.map(item => ({
+          label: item.courseName,
+          value: item.courseId
+        }));
+        this.addFormOptions[1].options = this.classTypeArr;
+      })
+    },
     refresh() {},
     handleSubmit(formName) {
       this.$refs[formName].validate((valid, formData) => {
@@ -185,14 +212,14 @@ export default {
           //TODO
           this.$fetch(
             this.addStatus
-              ? "secretexamsubject_add"
-              : "secretexamsubject_editJsp",
+              ? "courseclasstypefrequencycode_save"
+              : "courseclasstypefrequencycode_editJsp",
             {
               ...formData,
               time: "",
-              startTime: formData.time ? formData.time[0] : "",
-              endTime: formData.time ? formData.time[1] : "",
               id: this.addStatus ? "" : this.editId,
+              classTypeId: this.classTypeId,
+              classTypeName: this.classTypeName
             }
           ).then((res) => {
             this.$message.success("操作成功");
@@ -210,16 +237,17 @@ export default {
     },
     getTableData(params = {}) {
       //TODO  secretexamsubject_list
-      this.$fetch("posterinfo_listJson", {
+      this.$fetch("courseclasstypefrequencycode_listJsp", {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
+        classTypeId: this.classTypeId
       }).then((res) => {
-        this.tableData = res.data.data.map((item) => {
+        this.tableData = res.data.list.map((item) => {
           item.creatTime = this.$common._formatDates(item.createAt);
           return item;
         });
-        this.pageConfig.totalCount = res.data.count;
+        this.pageConfig.totalCount = res.data.pager.totalRows;
       });
     },
     handleEnter() {},
@@ -232,7 +260,7 @@ export default {
       this.distributeVisible = true;
       this.editId = data.id;
       //TODO
-      this.$fetch("secretexamsubject_goEdit", {
+      this.$fetch("courseclasstypefrequencycode_goEdit", {
         id: data.id,
       }).then((res) => {
         this.addFormOptions.forEach((item) => {
@@ -242,7 +270,6 @@ export default {
           // item.initValue = res.data.pd[item.prop];
         });
         this.$refs.dataForm3.addInitValue();
-        console.log(this.addFormOptions, "this.addFormOptions---");
       });
     },
     pageChange(val) {
@@ -250,6 +277,30 @@ export default {
       this.pageConfig.currentPage = val.page;
       this.pageConfig.showCount = val.limit;
       this.getTableData();
+    },
+    handleDelete(row) {
+      let info = '';
+      this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.$fetch("courseclasstypefrequencycode_deleteJsp", {
+            id: row.id
+          }).then((res) => {
+            if (res) {
+              this.$message({
+                message: "删除成功",
+                type: "success",
+              });
+              setTimeout(() => {
+                this.getTableData();
+              }, 50);
+            }
+          });
+        })
+        .catch(() => {});
     },
   },
 };

@@ -16,7 +16,6 @@
         :tableData="tableData"
         :tableKey="tableKey"
         :loading="loading"
-        :tbodyHeight="600"
         :filterColumn="filterColumn"
         :pageConfig.sync="pageConfig"
         @pageChange="pageChange"
@@ -336,7 +335,11 @@
           formLabelWidth="180px"
           :multiple="true"
         >
+<<<<<<< HEAD
           <!-- <template slot="campusVisible" slot-scope="scope">
+=======
+          <template slot="campusVisible">
+>>>>>>> dev
             <el-form-item label="校区可见" prop="campusVisible">
               <el-select
                 v-model="basicInfo2.campusVisible"
@@ -464,6 +467,20 @@
         @refresh="getTableData"
       />
     </fullDialog>
+
+    <!-- 班型名称的弹窗 -->
+    <fullDialog
+      v-model="setVisible5"
+      :title="currentClassName"
+      @change="setVisible5 = false"
+    >
+      <classDetail
+        ref="videoClass"
+        @close="setVisible5 = false"
+        v-if="setVisible5"
+        @refresh="getTableData"
+      />
+    </fullDialog>
   </div>
 </template>
 
@@ -476,6 +493,7 @@ import liveClass from "./live-class";
 import videoClass from "./video-class";
 import distribeClass from "./distribe-class";
 import firstStep from "./first-step";
+import classDetail from "./class-detail";
 export default {
   name: "class-create",
   components: {
@@ -487,6 +505,7 @@ export default {
     videoClass,
     distribeClass,
     firstStep,
+    classDetail
   },
   provide() {
     return {
@@ -495,6 +514,7 @@ export default {
   },
   data() {
     return {
+      currentClassName:"",
       selectProductId: "",
       subjecttArr: [], //科目
       courseGroupArr: [], //班型分组
@@ -509,6 +529,7 @@ export default {
       setVisible2: false,
       setVisible3: false,
       setVisible4: false,
+      setVisible5: false,
       active: 0,
       showNum: 5,
       formOptions: [
@@ -591,7 +612,7 @@ export default {
       tableData: [],
       tableKey: [
         { name: "ID", value: "id" },
-        { name: "班型名称", value: "className" },
+        { name: "班型名称", value: "className", operate: true },
         { name: "年份", value: "classTypeBatch" },
         { name: "项目", value: "productName" },
         { name: "科目", value: "subjectName" },
@@ -1643,6 +1664,10 @@ export default {
         });
       }
     },
+    handleClassName(data){
+      this.setVisible5 = true;
+      this.currentClassName = data.className;
+    }
   },
 };
 </script>

@@ -3,9 +3,14 @@
 	<el-popover v-model="show" class="select-pop" placement="bottom-start" width="700" trigger="click" :append-to-body="false">
 		<search-form v-if="searchObj.formOptions.length > 0" :formOptions="searchObj.formOptions" :showNum="searchObj.showNum" @onSearch="onSearch" ref="searchForm"></search-form>
 		<div class="scroll-box" v-infinite-scroll="getTableData">
-			<el-table :data="tableData" v-loading="tableLoad">
+			<el-table :data="tableData">
 				<template v-for="(item,index) in tableObj.tableKey">
 					<el-table-column v-if="!item.operate" :prop="item.value" :label="item.name" :width="item.width" :key="index"></el-table-column>
+					<el-table-column v-else :key="index" :label="item.name">
+						<template slot-scope="scope">
+							<slot :name="item.value" :row="scope.row"></slot>
+						</template>
+					</el-table-column>
 				</template>
 				<el-table-column fixed="right" label="操作" width="100">
 					<template slot-scope="scope">
@@ -64,8 +69,10 @@ export default {
 			this.getTableData();
 		},
 		// 使用函数防抖，防止内容加长触发滚动等于在同一时间发起了两次请求
-		getTableData: debounce(async function () {
-
+		async getTableData() {
+			if (this.tableLoad) {
+				return
+			}
 			if (!this.pageConfig.hasNext) {
 				return
 			}
@@ -84,19 +91,43 @@ export default {
 					...this.searchObj.params
 				}
 			).catch(() => { this.tableLoad = false })
-
+			if (!res || this.$common.isEmpty(res.data)) {
+				return
+			}
+			let data = []
+			if (res.data.hasOwnProperty('records')) {
+				data = res.data.records
+				this.pageConfig.hasNext = res.data.hasNext
+			} else if (res.data.hasOwnProperty('item')) {
+				// data = res.data.item.map(v=>{
+				// 	return v.news_item
+				// })
+				res.data.item.forEach(v => {
+					data = data.concat(v.content.news_item)
+				})
+				this.pageConfig.hasNext = res.data.item.length > 0
+			}
 			if (typeof this.tableObj.transItem == 'function') {
-				res.data.records.map(v => {
+				data = data.map(v => {
 					return this.tableObj.transItem(v)
 				})
 			}
-			this.pageConfig.hasNext = res.data.hasNext
-			this.tableData = this.tableData.concat(res.data.records)
-			this.tableLoad = false
+
+			let markScollHeight = this.tableData.length == 0 ? 0 : document.querySelector('.scroll-box').scrollHeight
+			let trHeight = document.querySelector('.scroll-box tr').offsetHeight || 0
+			this.tableData = this.tableData.concat(data)
 			this.pageConfig.pageNum++
-		}, 500),
+			this.$nextTick(() => {
+				document.querySelector('.scroll-box').scrollTo(0, markScollHeight - trHeight)
+				this.tableLoad = false
+			})
+
+
+		},
 		load() {
-			this.getTableData()
+			if (this.tableData.length == 0) {
+				this.getTableData()
+			}
 		}
 	},
 	async created() {
@@ -145,10 +176,15 @@ function debounce(fn, wait) {
 		.el-form--inline {
 			width: 100% !important;
 		}
+		// 清除穿透样式内容
+		.scroll-box .el-table {
+			max-height: none !important;
+			overflow: hidden;
+		}
 	}
 }
 .scroll-box {
-	height: 200px;
+	height: 300px;
 	overflow: auto;
 }
 </style>

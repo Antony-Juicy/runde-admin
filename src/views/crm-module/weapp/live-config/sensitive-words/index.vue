@@ -8,9 +8,9 @@
     <search-form :formOptions="formOptions" @onSearch="onSearch"></search-form>
     <div class="w-container">
       <div class="btn-wrapper">
-        <el-button type="primary" size="small">添加敏感词</el-button>
-        <el-button type="primary" size="small">批量导入</el-button>
-        <el-button type="primary" size="small">批量导入删除</el-button>
+        <el-button type="primary" size="small" @click="handleAdd">添加敏感词</el-button>
+        <!-- <el-button type="primary" size="small">批量导入</el-button>
+        <el-button type="primary" size="small">批量导入删除</el-button> -->
       </div>
       <rd-table
         :tableData="tableData"
@@ -26,6 +26,18 @@
           <el-button @click="handleDelete(scope.row)" type="text" size="small" style="color: #ec5b56" >删除</el-button>
         </template>
       </rd-table>
+      <rd-dialog
+        :title="wordsStatus ? '添加敏感词' : '编辑敏感词'"
+        :dialogVisible="wordsVisible"
+        :width="widthNew"
+        @handleClose="closeWords('dataForm')"
+        @submitForm="submitForm('dataForm')">
+        <el-form ref="dataForm" :model="wordsForm" label-width="100px">
+          <el-form-item label="敏感词" prop="blacklistWord">
+            <el-input v-model.trim="wordsForm.blacklistWord" autocomplete="off" placeholder="请输入敏感词" />
+          </el-form-item>
+        </el-form>
+      </rd-dialog>
     </div>
   </div>
 </template>
@@ -38,15 +50,12 @@ export default {
     return {
       searchForm: {},
       formOptions: [
-        { prop: 'sensitiveWord', element: 'el-input', placeholder: '请输入关键词' }
+        { prop: 'blacklistWord', element: 'el-input', placeholder: '请输入关键词' }
       ],
-      tableData: [
-        {
-          sensitiveWord: "傻X",
-        }
-      ],
+      tableData: [],
       tableKey: [
-        { name: '敏感词',value: 'sensitiveWord' },
+        { name: 'id',value: 'blacklistWordId' },
+        { name: '敏感词',value: 'blacklistWord' },
         { name: '操作',value: 'edit',operate: true }
       ],
       sensitiveList: {
@@ -60,24 +69,135 @@ export default {
         pageSize: 10,
       },
       loading: false,
+
+      wordsStatus: true,
+      wordsVisible: false,
+      widthNew: "600px",
+      blacklistWordId: '', // 公用id
+      wordsForm: {
+        blacklistWord: ''
+      }
     }
   },
-   methods: {
+  mounted () {
+    this.getTableData()
+  },
+  methods: {
     onSearch(val) {
       this.searchForm = {...val};
+      this.pageConfig.pageNum = 1;
+      this.getTableData();
       console.log(val,this.searchForm , 'val---')
     },
     handleSelect(rows) {
       console.log(rows, "rows---");
     },
+    getTableData(params={}) {
+      return new Promise((resolve,reject)=>{
+        this.loading = true;
+        this.$fetch(
+          "sensitive_word_list",
+          {
+            ...this.pageConfig,
+            ...this.searchForm,
+            ...params
+          }
+        ).then((res) => {
+          this.loading = false;
+          this.tableData = res.data.records;
+          this.pageConfig.totalCount = res.data.totalCount;
+          resolve();
+        }).catch(err=>{
+          console.log(err)
+          reject();
+        });
+      })
+    },
     pageChange(val) {
-      console.log(val,'pagechange')
+      console.log(val,'pagechange');
+      this.pageConfig.pageNum = val.page;
+      this.pageConfig.pageSize = val.limit;
+      this.getTableData();
     },
-    handleEdit() {
+    handleAdd() {
+      this.wordsVisible = true;
+      this.wordsStatus = true;
+    },
+    handleEdit(row) {
       console.log(666)
+      this.wordsVisible = true;
+      this.wordsStatus = false;
+      this.$fetch(
+        "sensitive_word_getList",
+        {
+          imBlacklistWordId: row.blacklistWordId
+        }
+      ).then((res) => {
+        this.wordsForm = res.data
+      })
+      this.blacklistWordId = row.blacklistWordId
     },
-    handleDelete() {
+    handleDelete(row) {
       console.log(777)
+      let info = row.blacklistWord;
+      this.$confirm(`此操作将删除${info}这条敏感词, 是否继续?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(async () => {
+          const res = await this.$fetch("sensitive_word_delete", {
+            imBlacklistWordId: row.blacklistWordId,
+          }).then((res) => {
+            if (res) {
+              this.$message({
+                message: "删除成功",
+                type: "success",
+              });
+              setTimeout(() => {
+                this.getTableData();
+              }, 50);
+            }
+          });
+        }).catch(() => {
+          
+        });
+    },
+    closeWords(formName) {
+      this.wordsVisible = false;
+      this.$refs[formName].resetFields();
+    },
+    submitForm(formName) {
+      console.log(this.wordsForm, 996)
+      this.$refs[formName].validate((valid) => {
+        if(valid) {
+          if(this.wordsStatus) {
+            // 新增
+            this.$fetch("sensitive_word_add", {
+              ...this.wordsForm
+            }).then((res) => {
+              this.$message({
+                message: "提交成功",
+                type: "success",
+              });
+              this.getTableData();
+              this.closeWords("dataForm");
+            });
+          } else {
+            // 编辑
+            this.$fetch("sensitive_word_update", {
+              ...this.wordsForm,
+              blacklistWordId: this.blacklistWordId
+            }).then((res) => {
+              this.$message({
+                message: "编辑成功",
+                type: "success",
+              });
+              this.getTableData();
+              this.closeWords("dataForm");
+            });
+          }
+        }
+      });
     }
   }
 }

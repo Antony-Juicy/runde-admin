@@ -45,6 +45,8 @@ export default {
     // 回放管理
     live_get_live_playback_list:  {url: '/live/console/live/playback/get_live_playback_list',method: 'post'}, //获取直播回放列表
     live_delete_playback:  {url: '/live/console/live/playback/delete',method: 'post'}, //删除直播回放
+    live_add_playback: {url: '/live/console/live/playback/addLivePlaybackVideo',method: 'post'}, //增加直播回放
+    live_set_playback: {url: '/live/console/live/playback/markLivePlayback',method: 'post'}, //设置为直播回放视频
 
     // 链接
     live_get_url: {url: '/live/console/live/get_url',method: 'post'}, //获取链接

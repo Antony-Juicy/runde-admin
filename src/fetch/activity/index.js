@@ -115,8 +115,8 @@ export default {
 
     // 科目题目
     auditionitem_listJsp:  {url: '/h5/auditionitem/listJsp', method: 'get'}, //列表
-    auditionitem_save:  {url: '/h5/auditionitem/save', method: 'post'}, //删除
-    auditionitem_editJsp:  {url: '/h5/auditionitem/editJsp', method: 'post'}, //删除
+    auditionitem_save:  {url: '/h5/auditionitem/save', method: 'post'}, //新增
+    auditionitem_editJsp:  {url: '/h5/auditionitem/editJsp', method: 'post'}, //编辑
     auditionitem_deleteJsp:  {url: '/h5/auditionitem/deleteJsp', method: 'post'}, //删除
 
     // 推荐班型
@@ -127,15 +127,15 @@ export default {
 
     // 医师活动-站点管理
     practicingexamsite_listJsp:  {url: '/h5/practicingexamsite/listJsp', method: 'get'}, //列表
-    practicingexamsite_save:  {url: '/h5/practicingexamsite/save', method: 'post'}, //列表
-    practicingexamsite_editJsp:  {url: '/h5/practicingexamsite/editJsp', method: 'post'}, //列表
-    practicingexamsite_goAdd:  {url: '/h5/practicingexamsite/goAdd', method: 'get'}, //编辑
-    practicingexamsite_goEdit:  {url: '/h5/practicingexamsite/goEdit', method: 'get'}, //编辑
-    practicingexamsite_deleteJsp:  {url: '/h5/practicingexamsite/deleteJsp', method: 'post'}, //列表
+    practicingexamsite_save:  {url: '/h5/practicingexamsite/save', method: 'post'}, //新增
+    practicingexamsite_editJsp:  {url: '/h5/practicingexamsite/editJsp', method: 'post'}, //编辑
+    practicingexamsite_goAdd:  {url: '/h5/practicingexamsite/goAdd', method: 'get'}, //获取新增的详情
+    practicingexamsite_goEdit:  {url: '/h5/practicingexamsite/goEdit', method: 'get'}, //获取编辑的详情
+    practicingexamsite_deleteJsp:  {url: '/h5/practicingexamsite/deleteJsp', method: 'post'}, //删除
     practicingexamsite_custodyListJsp:  {url: '/h5/practicingExamSiteItem/custodyListJsp', method: 'get'}, //考后对答案列表
-    practicingexamsite_custodySave:  {url: '/h5/practicingExamSiteItem/custodySave', method: 'post'}, //考后对答案列表
-    practicingexamsite_editCustodyJsp:  {url: '/h5/practicingExamSiteItem/editCustodyJsp', method: 'post'}, //考后对答案列表
-    practicingexamsite_importItem:  {url: '/h5/practicingExamSiteItem/importItem', method: 'post'}, //考后对答案列表
+    practicingexamsite_custodySave:  {url: '/h5/practicingExamSiteItem/custodySave', method: 'post'}, //考后对答案新增
+    practicingexamsite_editCustodyJsp:  {url: '/h5/practicingExamSiteItem/editCustodyJsp', method: 'post'}, //考后对答案编辑
+    practicingexamsite_importItem:  {url: '/h5/practicingExamSiteItem/importItem', method: 'post'}, //考后对答案导入题目
 
     // 活动管理
     cmsactivityinfo_listJsp:  {url: '/h5/cmsactivityinfo/listJsp', method: 'get'}, //列表

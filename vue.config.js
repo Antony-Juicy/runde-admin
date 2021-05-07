@@ -35,7 +35,7 @@ module.exports = {
       errors: true
     },
     // proxy: process.env.VUE_APP_BASE_API,
-    proxy: iceConfig.baseUrl,
+    // proxy: iceConfig.baseUrl,
     // proxy: 'http://192.168.0.195:8081',
     
     // proxy: {

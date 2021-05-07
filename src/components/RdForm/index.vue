@@ -105,7 +105,7 @@ export default {
   methods: {
     // 校验单个表单
     validateField(props,callback){
-      this.$refs.formRef.validateField(props,callback())
+      this.$refs.formRef.validateField(props,callback&&callback())
     },
     // 校验
     validate(callback) {
@@ -123,8 +123,15 @@ export default {
     onReset() {
       const obj = {};
       this.formOptions.forEach((v) => {
-          obj[v.prop] = undefined;
-          v.initValue = undefined;
+          // obj[v.prop] = undefined;
+
+          if(v.element == 'el-checkbox'){
+             v.initValue = [];
+             obj[v.prop] = [];
+          }else {
+             v.initValue = undefined;
+             obj[v.prop] = undefined;
+          }
       });
       this.formData = obj;
       this.$emit('onReset')
@@ -142,7 +149,7 @@ export default {
         if (v.initValue !== undefined) {
           obj[v.prop] = v.initValue;
         }
-        if(v.multiple){
+        if(v.multiple && !v.initValue){
            obj[v.prop] = [];
         }
       });
