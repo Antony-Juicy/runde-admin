@@ -65,7 +65,7 @@
       class="full-dialog-wrap"
       v-model="addVisible"
       :title="addStatus ? '添加班型内容' : '编辑班型内容'"
-      @change="handleClose('dataForm1')"
+      @change="handleClose()"
     >
       <div class="steps-box">
         <el-steps :active="active" finish-status="success">
@@ -335,27 +335,6 @@
           formLabelWidth="180px"
           :multiple="true"
         >
-<<<<<<< HEAD
-          <!-- <template slot="campusVisible" slot-scope="scope">
-=======
-          <template slot="campusVisible">
->>>>>>> dev
-            <el-form-item label="校区可见" prop="campusVisible">
-              <el-select
-                v-model="basicInfo2.campusVisible"
-                placeholder="请选择"
-                :multiple="true"
-              >
-                <el-option
-                  :label="item.label"
-                  :value="item.value"
-                  v-for="item in campusArr"
-                  :key="item.value"
-                >
-                </el-option>
-              </el-select>
-            </el-form-item>
-          </template> -->
         </RdForm>
       </div>
 
@@ -505,7 +484,7 @@ export default {
     videoClass,
     distribeClass,
     firstStep,
-    classDetail
+    classDetail,
   },
   provide() {
     return {
@@ -514,7 +493,7 @@ export default {
   },
   data() {
     return {
-      currentClassName:"",
+      currentClassName: "",
       selectProductId: "",
       subjecttArr: [], //科目
       courseGroupArr: [], //班型分组
@@ -819,28 +798,28 @@ export default {
           placeholder: "班级群人数",
           label: "班级群人数：",
         },
-        // {
-        //   prop: "campusVisible",
-        //   element: "el-cascader",
-        //   placeholder: "校区可见",
-        //   initWidth: true,
-        //   multiple: true,
-        //   label: "校区可见：",
-        //   options: [],
-        //   events: {},
-        //   initValue: [[10], [11]],
-        // },
-           {
+        {
           prop: "campusVisible",
-          element: "el-select",
+          element: "el-cascader",
           placeholder: "校区可见",
           initWidth: true,
           multiple: true,
           label: "校区可见：",
           options: [],
           events: {},
-          initValue: [37],
+          initValue: [[10], [11]],
         },
+        // {
+        //   prop: "campusVisible",
+        //   element: "el-select",
+        //   placeholder: "校区可见",
+        //   initWidth: true,
+        //   multiple: true,
+        //   label: "校区可见：",
+        //   options: [],
+        //   events: {},
+        //   initValue: [37],
+        // },
         {
           prop: "financeCodeName1",
           element: "el-select",
@@ -980,7 +959,7 @@ export default {
     },
     campusChange(val) {
       let newArr = [];
-      if (val.length > 0) {
+      if (val && val.length > 0) {
         newArr = this.reduceDimension(val);
       }
       this.campusIds = this.campusArr.filter((el) => {
@@ -997,11 +976,9 @@ export default {
 
           let arr = data.filter((el) => idArr.indexOf(el.id) == -1);
           this.basicInfo.tableData = this.basicInfo.tableData.concat(arr);
-          console.log("courseContentId1111", this.basicInfo.tableData);
           // this.basicInfo.courseContentId =
         } else {
           this.basicInfo.tableData = this.basicInfo.tableData.concat(data);
-          console.log("courseContentId222", this.basicInfo.tableData);
         }
       }
     },
@@ -1181,7 +1158,6 @@ export default {
       });
     },
     productChange(val) {
-      console.log("33 val 22 ==?", val, this.formOptions[1].options);
       this.currentProductId = val;
       //  获取科目下拉
       // let productId = this.formOptions[1].options.find((item) => {
@@ -1358,22 +1334,18 @@ export default {
         }
 
         this.step3FormOptions.forEach((item) => {
-          if (item.prop == "campusVisible") { 
+          if (item.prop == "campusVisible") {
             //校区可见
-            let arr  = [];
-            res.data.data.jsonObject["campusIds"].map(item=>{
-              arr.push(item.val)
-            })
-            // item.initValue = this.turnTwoArr(arr,1) 
-            // item.initValue = arr;
-            console.log('頂頂頂0',item.initValue  ) 
-
+            let arr = [];
+            res.data.data.jsonObject["campusIds"].map((item) => {
+              arr.push(item.val);
+            });
+            item.initValue = this.turnTwoArr(arr,1)
           } else {
             item.initValue = res.data.data.model[item.prop];
           }
         });
         this.$refs.dataForm3.addInitValue();
-        // console.log(res, res.data, "  resolve();  resolve();");
       });
     },
     handleDelete(row) {
@@ -1384,37 +1356,44 @@ export default {
         type: "warning",
       })
         .then(async () => {
-          console.log(
-            "scope.row",
-            row,
-            "ss",
-            this.basicInfo.tableData.filter((el) => row.id != el.id)
-          );
           this.basicInfo.tableData = this.basicInfo.tableData.filter(
             (el) => row.id != el.id
           );
-          //   const res = await this.$fetch("projectType_delete", {
-          //     typeId: row.typeId,
-          //     loginUserId,
-          //   }).then((res) => {
-          //     if (res) {
-          //       this.$message({
-          //         message: "删除成功",
-          //         type: "success",
-          //       });
-          //       setTimeout(() => {
-          //         this.getTableData();
-          //       }, 50);
-          //     }
-          //   });
         })
         .catch(() => {});
     },
     handleClose(formName) {
-      this.active = 0;
-      // this.$refs[formName].onReset();
+      this.active = 0; 
+      this.$refs.dataForm3.onReset();
       this.addVisible = false;
-      //   this.dynamicValidateForm.domains = [];
+      this.basicInfo.courseContentId = [];
+      // this.basicInfo.courses = [];
+      this.basicInfo.courseStageArr = [];
+      this.basicInfo.classTypeStage = [];
+      this.basicInfo.stageGroupName = [];
+      this.basicInfo.stageGroupId = [];
+      this.basicInfo.totalFee = "";
+      this.basicInfo.refundRules = "";
+      this.basicInfo.norefundFee = "";
+      this.basicInfo.passDeductFee = "";
+      this.basicInfo.tableData = []; 
+      this.$refs.dataForm1.basicInfo= {
+          productName: "",
+          productId: "",
+          subjectName: "",
+          subjectId: "",
+          className: "",
+          classTypeBatch: "", //班型年份
+          classType: "", //班型類型
+          classtypeGroupName: "", //班型分组名称
+          classtypeGroupId: "",
+          serviceYear: "", //服务年限
+          refundType: "", //退费类型
+          protocolType: "",
+          status: "",
+        }
+    
+      
     },
     handlePre() {
       this.active--;
@@ -1425,10 +1404,9 @@ export default {
         //step3
         if (this.addStatus == false) {
           //编辑
-          console.log("保存修改啊啊啊啊啊啊")
           this.$refs[formName].validate((valid, formData) => {
             if (valid) {
-                let financeCode1, financeCode2, financeCode3, financeCode4;
+              let financeCode1, financeCode2, financeCode3, financeCode4;
               let obj1 = this.step3FormOptions[7].options.find(
                 (item) => item.value == formData.financeCodeName1
               );
@@ -1453,8 +1431,7 @@ export default {
                 cancelButtonText: "取消",
                 type: "success",
               }).then(async () => {
-                //TODO
-                  let {
+                let {
                   courseContentId,
                   courses,
                   stageGroupName,
@@ -1504,12 +1481,13 @@ export default {
                   productName,
                   subjectName,
                 };
+
                 //保存修改
                 this.$fetch("courseclasstype_edit", {
                   ...formData,
                   financeCode1,
                   financeCode2,
-                  financeCode3,
+                  financeCode3, 
                   financeCode4,
                   campusIds: JSON.stringify(this.campusIds),
                   ...paramas,
@@ -1520,7 +1498,8 @@ export default {
                     this.active = 0;
                     this.loadSalaryCfg();
                   })
-                  .catch((error) => {});
+                  .catch((error) => {
+                  });
               });
             }
           });
@@ -1604,7 +1583,7 @@ export default {
                   productName,
                   subjectName,
                 };
-           
+
                 this.$fetch("courseclasstype_save", {
                   ...formData,
                   financeCode1,
@@ -1632,12 +1611,6 @@ export default {
             val: item.id,
           })
         );
-        console.log(
-          "formName====",
-          formName,
-          "this.$refs.dataForm2",
-          this.basicInfo
-        );
         let dataForm;
         if (formName == "dataForm1") {
           dataForm = this.$refs.dataForm1.$refs.dataForm;
@@ -1647,27 +1620,16 @@ export default {
         dataForm.validate((valid, formData) => {
           if (valid) {
             this.active++;
-            //TODO
-            // this.$fetch("wechatstaffqrcode_sendMessageInfo", {
-            //   ...formData,
-            // })
-            //   .then((res) => {
-            //     this.$message.success("操作成功");
-            //     this.addVisible = false;
-            //     this.active = 0;
-            //     this.loadSalaryCfg();
-            //   })
-            //   .catch(() => {});
           } else {
             console.log("nononno---");
           }
         });
       }
     },
-    handleClassName(data){
+    handleClassName(data) {
       this.setVisible5 = true;
       this.currentClassName = data.className;
-    }
+    },
   },
 };
 </script>

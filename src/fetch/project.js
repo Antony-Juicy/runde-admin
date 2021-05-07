@@ -27,5 +27,6 @@ export default {
     courseclasstype_getclassType: { url: '/admin/courseclasstype/getclassType', method: 'get' }, // 根据班型ID查询班型信息
     courseclasstype_getById: { url: '/admin/courseclasstype/getById', method: 'get' }, // 根据班型ID查询班型信息
     courseProductContent_courseContentByProductId: { url: '/admin/courseProductContent/courseContentByProductId', method: 'get' }, // 根据项目id获取班型内容
+    courseclasstype_edit: { url: '/admin/courseclasstype/edit', method: 'post' }, // 保存修改
     
 }
