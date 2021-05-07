@@ -3,7 +3,7 @@
     <search-form :formOptions = "formOptions" :showNum="showNum" @onSearch = onSearch ref="myserach"></search-form>
     <div class="w-container">
       <div class="btn-wrapper">
-        <el-button type="primary" size="small">导出</el-button>
+        <el-button type="primary" size="small" @click="exportOrders">导出</el-button>
       </div>
       <rd-table
         :tableData="tableData"
@@ -344,6 +344,18 @@ export default {
         this.goodsInfo = res.data.goodsInfo
         this.orderInfo = res.data.orderInfo
       });
+    },
+    exportOrders() {
+      let searchForm = JSON.parse(JSON.stringify(this.searchForm))
+      this.$fetch(
+        "orders_export",
+        {
+          ...searchForm
+        }
+      ).then((res) => {
+        this.$message.success("导出成功");
+        this.$common.downLoadFile(res);
+      })
     }
   },
   filters: {
