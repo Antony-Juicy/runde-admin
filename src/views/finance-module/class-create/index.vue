@@ -20,10 +20,14 @@
         :pageConfig.sync="pageConfig"
         @pageChange="pageChange"
       >
+
         <template slot="courses" slot-scope="scope">
           <span v-for="item in scope.row.courses" :key="item.courseId">
             {{ item.courseName }}
           </span>
+        </template>
+        <template slot="className" slot-scope="scope">
+          <el-button type="text" @click="handleClassName(scope.row)">{{scope.row.className}}</el-button>
         </template>
         <template slot="contentName" slot-scope="scope">
           {{ scope.row.contentName }}<br />
