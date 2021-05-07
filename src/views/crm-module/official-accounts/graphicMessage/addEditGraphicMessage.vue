@@ -20,7 +20,8 @@
 			<div class="label"> </div>
 			<div class="labelIds">
 				<div class="origin-tips">选择标签后，消息将只推送给选中标签组的粉丝</div>
-				<el-tag style="margin-right:10px;margin-bottom:10px" v-for="(item,index) in fansLabels" :key="index" @close="handle_removeLabel(index)" disable-transitions closable>
+				<el-tag style="margin-right:10px;margin-bottom:10px" v-for="(item,index) in fansLabels" :key="index" @close="handle_removeLabel(index)" disable-transitions
+					closable>
 					{{item.name}}
 				</el-tag>
 				<SelectPop style="width:auto;display:inline-block" key="SelectPop1" v-bind="SelectPopOptions_label" @select="handle_selectLabel">
@@ -32,7 +33,8 @@
 			<div class="label"> </div>
 			<div class="labelIds">
 				<div class="origin-tips">选择粉丝后，消息将只推送给选中的粉丝</div>
-				<el-tag style="margin-right:10px;margin-bottom:10px" v-for="(item,index) in fansOpenIds" :key="index" @close="handle_removeUser(index)" disable-transitions closable>
+				<el-tag style="margin-right:10px;margin-bottom:10px" v-for="(item,index) in fansOpenIds" :key="index" @close="handle_removeUser(index)" disable-transitions
+					closable>
 					{{item.name}}
 				</el-tag>
 				<SelectPop style="width:auto;display:inline-block" key="SelectPop2" v-bind="SelectPopOptions_user" @select="handle_selectUser">
@@ -206,7 +208,6 @@ export default {
 			} else {
 				this.handle_removeLabel(this.fansLabels.findIndex(v => v.id == data.id))
 			}
-
 		},
 		handle_removeLabel(index) {
 			this.fansLabels.splice(index, 1)
@@ -241,7 +242,6 @@ export default {
 			this.fansOpenIds.splice(index, 1)
 		},
 		handle_close() {
-			// this.addEditVisible = false
 			this.$emit('close')
 		},
 		handle_commit() {
@@ -274,17 +274,39 @@ export default {
 					formData.fansTags = this.fansTags.map(v => { return v.id }).join(',')
 				}
 
-				let res = await this.$fetch(
-					"graphic_message_send_msg",
-					{
-						...formData
-					}
-				);
-				// this.addEditVisible = false
-				this.$emit('close')
+
+				if (formData.allFans) {
+					this.$prompt('请输入当前公众号秘钥', '提示', {
+						confirmButtonText: '确定',
+						cancelButtonText: '取消',
+						inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,
+						inputErrorMessage: '秘钥为空'
+					}).then(async ({ value }) => {
+						let res = await this.$fetch(
+							"graphic_message_send_msg",
+							{
+								...formData,
+								password: value
+							}
+						);
+						this.$message.success("消息已推送成功");
+						this.$emit('close')
+					}).catch(() => { });
+				} else {
+					let res = await this.$fetch(
+						"graphic_message_send_msg",
+						{
+							...formData
+						}
+					);
+					this.$message.success("消息已推送成功");
+					this.$emit('close')
+				}
+
 			})
 
-		}
+		},
+
 	}
 }
 </script>
