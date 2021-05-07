@@ -82,6 +82,7 @@ export default {
 					}
 					data.content = this.cardData.text.content.replace(/<span contenteditable="false" class="likeBtn">用户昵称<\/span>/g, '%s')
 					data.content = data.content.replace(/<span> <\/span>/g, '')
+					data.content = data.content.replace(/&nbsp;/g, '')
 					data.description = this.cardData.text.description
 					data.url = this.cardData.text.url
 					data.msgType = 'text'
@@ -92,7 +93,7 @@ export default {
 						this.$message.error("请上传图片");
 						acceptFlag = false
 					}
-					data.mediaId = this.cardData.image.picurl
+					data.mediaId = this.cardData.image.media_id
 					data.msgType = 'image'
 					break;
 				}
@@ -108,6 +109,7 @@ export default {
 					data.url = this.cardData.mpnews.url
 					data.title = this.cardData.mpnews.title.replace(/<span contenteditable="false" class="likeBtn">用户昵称<\/span>/g, '%s')
 					data.title = data.title.replace(/<span> <\/span>/g, '')
+					data.title = data.title.replace(/&nbsp;/g, '')
 					data.picurl = this.cardData.mpnews.picurl_t
 					data.description = this.cardData.mpnews.description
 					data.msgType = 'news'

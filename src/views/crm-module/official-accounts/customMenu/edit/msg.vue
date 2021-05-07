@@ -74,7 +74,7 @@
 				<div class="chose-item" @click="handle_upload">
 					<i class="el-icon-picture-outline"></i>
 					上传图片
-					<input type="file" accept="image/*" ref="fileInput_img" class="btn-hidden" @change="handle_uploadFile">
+					<input type="file" accept="image/*" ref="fileInput_img" class="btn-hidden" @change="handle_uploadFileImg">
 				</div>
 			</div>
 			<div class="is-msg" v-if="typeIndex == 3">
@@ -333,8 +333,49 @@ export default {
 		handle_goUrl(data) {
 			window.open(data.url)
 		},
-		handle_uploadFile() {
+		async handle_uploadFileImg() {
+			// 图片上传
+			let formData = new FormData()
+			formData.append('img', this.$refs.fileInput_img.files[0])
+			formData.append('type', 'image')
+			formData.append('appSecret', this.account.appSecret)
+			formData.append('appId', this.account.appId)
+			// 避免出现点击取消也触发change导致文件多次上传
+			this.$refs.fileInput_img.value = ''
 
+			let res = await this.$fetch(
+				"graphic_message_upload_material"
+				, formData);
+			this.$message.success("图片已保存到素材库")
+		},
+		async handle_uploadFileVoice() {
+			// 音频上传
+			let formData = new FormData()
+			formData.append('img', this.$refs.fileInput_voice.files[0])
+			formData.append('type', 'voice')
+			formData.append('appSecret', this.account.appSecret)
+			formData.append('appId', this.account.appId)
+			// 避免出现点击取消也触发change导致文件多次上传
+			this.$refs.fileInput_voice.value = ''
+
+			let res = await this.$fetch(
+				"graphic_message_upload_material"
+				, formData);
+			this.$message.success("音频已保存到素材库")
+		},
+		async handle_uploadFileVideo() {
+			// 音频上传
+			let formData = new FormData()
+			formData.append('img', this.$refs.fileInput_video.files[0])
+			formData.append('type', 'video')
+			formData.append('appSecret', this.account.appSecret)
+			formData.append('appId', this.account.appId)
+			// 避免出现点击取消也触发change导致文件多次上传
+			this.$refs.fileInput_video.value = ''
+			let res = await this.$fetch(
+				"graphic_message_upload_material"
+				, formData);
+			this.$message.success("音频已保存到素材库")
 		},
 		handle_clear() {
 			this.content = {

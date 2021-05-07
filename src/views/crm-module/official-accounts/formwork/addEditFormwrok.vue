@@ -19,10 +19,35 @@
 							<el-radio v-model="linkType" label="h5">跳转链接（支持外链）</el-radio>
 							<el-radio v-model="linkType" label="xcx">跳转小程序</el-radio>
 						</div>
-						<div class="content">
-							<div class="content-item center" v-for="(item,index) in linkContent[linkType]" :key="index">
-								<div class="label">{{item.label}}</div>
-								<el-input :rows="2" :placeholder="item.placeholder" v-model="item.value" resize="none"></el-input>
+						<div class="content" v-if="linkType == 'h5'">
+							<div class="content-item center">
+								<div class="label">* 链接地址：</div>
+								<el-input :rows="2" placeholder="请以http://或https://开头的地址" v-model="link_url" resize="none"></el-input>
+							</div>
+						</div>
+						<div class="content" v-else>
+							<div class="content-item center">
+								<div class="label">* 选择小程序：</div>
+								<el-select v-model="miniprogramIndex" @change="handle_changeAPP">
+									<el-option v-for="(item,index) in miniprogramConfig" :key="index" :label="item.appName" :value="index"></el-option>
+								</el-select>
+							</div>
+							<div class="content-item center" v-if="link_miniprogram.appId">
+								<div class="label">* 小程序路径：</div>
+								<el-select v-model="miniprogramPageIndex" @change="handle_changePath">
+									<el-option v-for="(item,index) in miniprogramConfig[miniprogramIndex].pages" :key="index" :label="item.label" :value="index">
+									</el-option>
+								</el-select>
+							</div>
+							<template v-if="link_miniprogram.paramsKey.length > 0">
+								<div class="content-item center" v-for="(item,index) in link_miniprogram.paramsKey" :key="index">
+									<div class="label">{{item.label}}：</div>
+									<el-input v-model="link_miniprogram.params[index]"></el-input>
+								</div>
+							</template>
+							<div class="content-item center">
+								<div class="label">* 备用链接：</div>
+								<el-input :rows="2" placeholder="请以http://或https://开头的地址" v-model="link_miniprogram.remark" resize="none"></el-input>
 							</div>
 						</div>
 					</template>
@@ -30,7 +55,7 @@
 						<div>
 							<el-radio v-model="fansType" label="allFans">全部粉丝</el-radio>
 							<el-radio v-model="fansType" label="labelIds">粉丝标签</el-radio>
-							<!-- <el-radio v-model="fansType" label="openIds">指定用户</el-radio> -->
+							<el-radio v-model="fansType" label="openIds">指定用户</el-radio>
 						</div>
 						<div v-if="fansType == 'labelIds'" class="labelIds">
 							<div class="origin-tips">选择标签后，消息将只推送给选中标签组的粉丝</div>
@@ -83,6 +108,7 @@
 import RdForm from "@/components/RdForm";
 import SelectPop from '@/components/SelectPop'
 import likePhone from '@/components/likePhone'
+import miniprogramConfig from '../miniprogram'
 export default {
 	props: {
 		formwork: {
@@ -155,6 +181,14 @@ export default {
 			// 链接类型
 			linkType: 'h5',
 			// 链接类型里面要填的东西
+			link_url: "",
+			link_miniprogram: {
+				appId: "",
+				pagepath: "",
+				remark: "",
+				paramsKey: [],
+				params: []
+			},
 			linkContent: {
 				h5: [
 					{
@@ -296,7 +330,10 @@ export default {
 				}
 			},
 			// 用户点击后添加标签
-			fansTags: []
+			fansTags: [],
+			miniprogramConfig: miniprogramConfig,
+			miniprogramIndex: '',
+			miniprogramPageIndex: '',
 		}
 	},
 	computed: {
@@ -388,6 +425,20 @@ export default {
 		handle_removeLabel2(index) {
 			this.fansTags.splice(index, 1)
 		},
+		handle_changeAPP() {
+			this.link_miniprogram.pagepath = ''
+			this.link_miniprogram.appId = this.miniprogramConfig[this.miniprogramIndex].appId
+			this.link_miniprogram.paramsKey = []
+			this.link_miniprogram.params = []
+			this.miniprogramPageIndex = ''
+			this.emitForm()
+		},
+		handle_changePath(index) {
+			// console.log(data)
+			this.link_miniprogram.pagepath = this.miniprogramConfig[this.miniprogramIndex].pages[index].value
+			this.link_miniprogram.paramsKey = this.miniprogramConfig[this.miniprogramIndex].pages[index].params || []
+			this.link_miniprogram.params = this.msgForm.paramsKey.map(() => [])
+		},
 		handle_close() {
 			this.$emit('close')
 		},
@@ -397,11 +448,11 @@ export default {
 				this.$message.error("模板消息内容请在200字以内");
 				return
 			}
-			if (this.linkType == 'h5' && this.linkContent.h5[0].value == '') {
+			if (this.linkType == 'h5' && this.link_url == '') {
 				this.$message.error("请输入连接地址");
 				return
 			}
-			if (this.linkType == 'xcx' && this.$common.hasEmpty([this.linkContent.xcx[0].value, this.linkContent.xcx[1].value])) {
+			if (this.linkType == 'xcx' && this.$common.hasEmpty([this.link_miniprogram.appId, this.link_miniprogram.pagepath])) {
 				this.$message.error("请输入小程序跳转参数");
 				return
 			}
@@ -416,13 +467,27 @@ export default {
 				msgTemplate.data[v.key].color = v.color
 			})
 			if (this.linkType == 'h5') {
-				msgTemplate.url = this.linkContent.h5[0].value
+				msgTemplate.url = this.link_url
 			}
 			else {
 				msgTemplate.miniprogram = {
-					appid: this.linkContent.xcx[0].value,
-					pagepath: this.linkContent.xcx[1].value,
-					remark: this.linkContent.xcx[3].value,
+					appid: this.link_miniprogram.appId,
+					pagepath: this.link_miniprogram.pagepath + (() => {
+						if (this.link_miniprogram.paramsKey.length == 0) {
+							return ''
+						}
+						else {
+							let query = "?"
+							this.link_miniprogram.paramsKey.forEach((v, i) => {
+								query += `${v.key}=${this.link_miniprogram.params[i]}`
+								if (i < this.link_miniprogram.paramsKey.length - 2) {
+									query += '&'
+								}
+							})
+							return query
+						}
+					})(),
+					remark: this.link_miniprogram.value,
 				}
 			}
 

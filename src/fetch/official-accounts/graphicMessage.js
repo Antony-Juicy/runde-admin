@@ -15,6 +15,6 @@ export default {
 
 
     // 获取公众号文章内图片
-    graphic_message_upload_img : { url: '/wechat/console/wechat_material/add_img', method: 'post' }
+    graphic_message_upload_material : { url: '/wechat/console/wechat_material/add_img', method: 'post' }
 
 }

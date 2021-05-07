@@ -106,9 +106,11 @@ export default {
 			this.$refs.fileInput.value = ''
 
 			let res = await this.$fetch(
-				"graphic_message_upload_img"
+				"graphic_message_upload_material"
 				, formData);
-			console.log(res)
+			this.$message.success("图片已保存到素材库")
+			// console.log(res)
+			
 		}
 	},
 	mounted() {
