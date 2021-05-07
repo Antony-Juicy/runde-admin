@@ -149,7 +149,7 @@ export default {
         if (v.initValue !== undefined) {
           obj[v.prop] = v.initValue;
         }
-        if(v.multiple){
+        if(v.multiple && !v.initValue){
            obj[v.prop] = [];
         }
       });
