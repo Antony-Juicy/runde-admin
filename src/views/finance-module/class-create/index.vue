@@ -1365,35 +1365,9 @@ export default {
     handleClose(formName) {
       this.active = 0; 
       this.$refs.dataForm3.onReset();
+      this.$refs.dataForm2.resetFields();
+      this.$refs.dataForm1.$refs.dataForm.resetFields();
       this.addVisible = false;
-      this.basicInfo.courseContentId = [];
-      // this.basicInfo.courses = [];
-      this.basicInfo.courseStageArr = [];
-      this.basicInfo.classTypeStage = [];
-      this.basicInfo.stageGroupName = [];
-      this.basicInfo.stageGroupId = [];
-      this.basicInfo.totalFee = "";
-      this.basicInfo.refundRules = "";
-      this.basicInfo.norefundFee = "";
-      this.basicInfo.passDeductFee = "";
-      this.basicInfo.tableData = []; 
-      this.$refs.dataForm1.basicInfo= {
-          productName: "",
-          productId: "",
-          subjectName: "",
-          subjectId: "",
-          className: "",
-          classTypeBatch: "", //班型年份
-          classType: "", //班型類型
-          classtypeGroupName: "", //班型分组名称
-          classtypeGroupId: "",
-          serviceYear: "", //服务年限
-          refundType: "", //退费类型
-          protocolType: "",
-          status: "",
-        }
-    
-      
     },
     handlePre() {
       this.active--;
