@@ -4,15 +4,14 @@
 		<slot name="header"></slot>
 		<search-form v-if="searchObj.formOptions.length > 0" :formOptions="searchObj.formOptions" :showNum="searchObj.showNum" @onSearch="onSearch" ref="searchForm"></search-form>
 		<div class="scroll-box" ref="scrollBox" v-infinite-scroll="getTableData">
-			<div v-if="tableObj.waterfall && !tableLoad" class="lane-wrapper">
+			<div v-if="tableObj.waterfall && !waterFallLoad" class="lane-wrapper">
 				<div class="lane" v-for="(item,index) in tableObj.lane" :key="index">
-					<!-- <slot :name="`lane`" :data="waterFallData[index]"></slot> -->
 					<div class='lane-item' v-for="(item,index) in waterFallData[index]" :key="index" @click="show = false">
 						<slot name="lane" :data="item"></slot>
 					</div>
 				</div>
 			</div>
-			<el-table :data="tableData" v-else>
+			<el-table v-if="!tableObj.waterfall" :data="tableData">
 				<el-table-column width="55" v-if="tableObj.multiple">
 					<template slot-scope="scope">
 						<el-checkbox v-model="scope.row.select" @change="handleMultiple(scope.row)"></el-checkbox>
@@ -140,7 +139,8 @@ export default {
 				hasNext: true
 			},
 			show: false,
-			waterFallData: []
+			waterFallData: [],
+			waterFallLoad: false
 		}
 	},
 	methods: {
@@ -191,7 +191,7 @@ export default {
 					...searchForm,
 					...this.searchObj.params
 				}
-			).catch(() => { this.tableLoad = false })
+			).catch(() => { })
 			if (!res || this.$common.isEmpty(res.data)) {
 				return
 			}
@@ -235,6 +235,8 @@ export default {
 				this.tableData = this.tableData.concat(data)
 			}
 			else {
+				// 嘿 ！
+				this.waterFallLoad = true
 				// 数据切割
 				data.forEach((v, i) => {
 					let position = i % this.tableObj.lane
@@ -255,7 +257,8 @@ export default {
 					this.$refs.scrollBox.scrollTo(0, markScollHeight - trHeight)
 				}
 				this.tableLoad = false
-				// 瀑布流就很神奇，tableLoad == true 会触发页面元素的隐藏，加载完成之后再显示元素这样插槽就会再次渲染，不然的话新增的插槽是不会显示的。
+				this.waterFallLoad = false
+				// 瀑布流就很神奇，waterFallLoad == true 会触发页面元素的隐藏，加载完成之后再显示元素这样插槽就会再次渲染，不然的话新增的插槽是不会显示的。
 				this.$nextTick(() => {
 					if (this.tableObj.waterfall) {
 						// 然后再来定这个滚动高度，不然的话会一直回到上一个滚动位置
@@ -265,6 +268,8 @@ export default {
 			})
 		},
 		load() {
+			this.tableLoad = false
+			this.waterFallLoad = false
 			if (!this.tableObj.waterfall) {
 				if (this.tableData.length == 0) {
 					this.getTableData()
@@ -277,8 +282,6 @@ export default {
 
 		},
 		handleMultiple(data) {
-			// console.log(data)
-			data.select = !data.select
 			this.$emit('select', data)
 		}
 	},

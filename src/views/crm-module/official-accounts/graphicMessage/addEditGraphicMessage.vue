@@ -20,7 +20,7 @@
 			<div class="label"> </div>
 			<div class="labelIds">
 				<div class="origin-tips">选择标签后，消息将只推送给选中标签组的粉丝</div>
-				<el-tag style="margin-right:10px" v-for="(item,index) in fansLabels" :key="index" @close="handle_removeLabel(index)" disable-transitions closable>
+				<el-tag style="margin-right:10px;margin-bottom:10px" v-for="(item,index) in fansLabels" :key="index" @close="handle_removeLabel(index)" disable-transitions closable>
 					{{item.name}}
 				</el-tag>
 				<SelectPop style="width:auto;display:inline-block" key="SelectPop1" v-bind="SelectPopOptions_label" @select="handle_selectLabel">
@@ -32,7 +32,7 @@
 			<div class="label"> </div>
 			<div class="labelIds">
 				<div class="origin-tips">选择粉丝后，消息将只推送给选中的粉丝</div>
-				<el-tag style="margin-right:10px" v-for="(item,index) in fansOpenIds" :key="index" @close="handle_removeUser(index)" disable-transitions closable>
+				<el-tag style="margin-right:10px;margin-bottom:10px" v-for="(item,index) in fansOpenIds" :key="index" @close="handle_removeUser(index)" disable-transitions closable>
 					{{item.name}}
 				</el-tag>
 				<SelectPop style="width:auto;display:inline-block" key="SelectPop2" v-bind="SelectPopOptions_user" @select="handle_selectUser">
@@ -54,7 +54,7 @@
 			</div>
 			<div class="labelIds">
 				<div class="origin-tips">给点击消息的粉丝打标签</div>
-				<el-tag style="margin-right:10px" v-for="(item,index) in fansTags" :key="index" @close="handle_removeLabel2(index)" disable-transitions closable>
+				<el-tag style="margin-right:10px;margin-bottom:10px" v-for="(item,index) in fansTags" :key="index" @close="handle_removeLabel2(index)" disable-transitions closable>
 					{{item.name}}
 				</el-tag>
 				<SelectPop style="width:auto;display:inline-block" key="SelectPop1" v-bind="SelectPopOptions_label" @select="handle_selectLabel2">
@@ -234,7 +234,7 @@ export default {
 					openId: data.openId
 				})
 			} else {
-				this.handle_removeLabel(this.fansOpenIds.findIndex(v => v.openId == data.openId))
+				this.handle_removeUser(this.fansOpenIds.findIndex(v => v.openId == data.openId))
 			}
 		},
 		handle_removeUser(index) {

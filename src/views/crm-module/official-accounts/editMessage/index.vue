@@ -116,6 +116,24 @@ export default {
 				}
 				case 'miniprogrampage': {
 					// 暂时不知道小程序的结构是怎样的
+
+					// 组合页面和他们的参数
+					data.pagepath = this.cardData.miniprogrampage.pagepath + (() => {
+						if (this.cardData.miniprogrampage.paramsKey.length == 0) {
+							return ''
+						}
+						else {
+							let query = "?"
+							this.cardData.miniprogrampage.paramsKey.forEach((v, i) => {
+								query += `${v.key}=${this.cardData.miniprogrampage.params[i]}`
+								if (i < this.cardData.miniprogrampage.paramsKey.length - 2) {
+									query += '&'
+								}
+							})
+							return query
+						}
+					})()
+					data.msgType = 'miniprogrampage'
 					break;
 				}
 			}

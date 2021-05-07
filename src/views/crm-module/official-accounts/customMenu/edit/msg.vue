@@ -10,7 +10,7 @@
 			<div class="is-msg" v-if="typeIndex == 0">
 				<template v-if="this.content.from == ''">
 					<SelectPop v-bind="SelectPopOptions" style="margin-right:30px">
-						<div class="chose-item"  @click="handle_fromSource">
+						<div class="chose-item">
 							<i class="el-icon-folder"></i>
 							从素材库选择
 						</div>
@@ -58,13 +58,23 @@
 				</div>
 			</div>
 			<div class="is-msg" v-if="typeIndex == 2">
-				<div class="chose-item">
+				<SelectPop v-bind="SelectPopOptions_img" style="margin-right:30px" @select="handle_choseImg">
+					<div class="chose-item">
+						<i class="el-icon-folder"></i>
+						从素材库选择
+					</div>
+					<template slot="thumb_url" slot-scope="scope">
+						<el-image style="width: 100px; height: 100px" :src="scope.row.thumb_url" fit="contain"></el-image>
+					</template>
+				</SelectPop>
+				<!-- <div class="chose-item">
 					<i class="el-icon-folder"></i>
 					从素材库选择
-				</div>
-				<div class="chose-item">
+				</div> -->
+				<div class="chose-item" @click="handle_upload">
 					<i class="el-icon-picture-outline"></i>
 					上传图片
+					<input type="file" accept="image/*" ref="fileInput_img" class="btn-hidden" @change="handle_uploadFile">
 				</div>
 			</div>
 			<div class="is-msg" v-if="typeIndex == 3">
@@ -127,9 +137,9 @@ export default {
 					icon: "el-icon-video-camera"
 				},
 			],
-			typeIndex: 0,
+			typeIndex: 2,
 			text: "",
-			addEditVisible: false,
+			// 图文弹出搜索框
 			SelectPopOptions: {
 				searchObj: {
 					api: "custom_menu_get_material",
@@ -147,6 +157,111 @@ export default {
 					transItem: (item) => {
 						return {
 							news_item: item.content.news_item,
+							media_id: item.media_id
+						}
+					}
+				}
+			},
+			SelectPopOptions_img: {
+				searchObj: {
+					api: "graphic_message_get_material",
+					formOptions: [],
+					needType: false,
+					params: {
+						appId: '',
+						appSecret: '',
+						type: 'image'
+					}
+				},
+				tableObj: {
+					tableKey: [
+						{
+							name: "图片",
+							value: "thumb_url",
+							width: 100,
+							operate: true,
+						},
+						{
+							name: "标题",
+							value: "name",
+						},
+					],
+					transItem: (item) => {
+						return {
+							thumb_url: `${process.env.VUE_APP_BASE_API}/wechat/console/wechat_material/handle_img?src=${encodeURIComponent(item.url)}`, // 投机一把 看看情况
+							// thumb_url: `https://mcdn.yiban.io/img_proxy?src=${encodeURIComponent(item.thumb_url)}`,
+							name: item.name,
+							thumb_url_t: item.url,
+							media_id: item.media_id
+						}
+					}
+				}
+			},
+			SelectPopOptions_voice: {
+				searchObj: {
+					api: "graphic_message_get_material",
+					formOptions: [],
+					needType: false,
+					params: {
+						appId: '',
+						appSecret: '',
+						type: 'voice'
+					}
+				},
+				tableObj: {
+					tableKey: [
+						{
+							name: "图片",
+							value: "thumb_url",
+							width: 100,
+							operate: true,
+						},
+						{
+							name: "标题",
+							value: "name",
+						},
+					],
+					transItem: (item) => {
+						return {
+							thumb_url: `${process.env.VUE_APP_BASE_API}/wechat/console/wechat_material/handle_img?src=${encodeURIComponent(item.url)}`, // 投机一把 看看情况
+							// thumb_url: `https://mcdn.yiban.io/img_proxy?src=${encodeURIComponent(item.thumb_url)}`,
+							name: item.name,
+							thumb_url_t: item.url,
+							media_id: item.media_id
+						}
+					}
+				}
+			},
+			SelectPopOptions_video: {
+				searchObj: {
+					api: "graphic_message_get_material",
+					formOptions: [],
+					needType: false,
+					params: {
+						appId: '',
+						appSecret: '',
+						type: 'video'
+					}
+				},
+				tableObj: {
+					tableKey: [
+						{
+							name: "图片",
+							value: "thumb_url",
+							width: 100,
+							operate: true,
+						},
+						{
+							name: "标题",
+							value: "name",
+						},
+					],
+					transItem: (item) => {
+						return {
+							thumb_url: `${process.env.VUE_APP_BASE_API}/wechat/console/wechat_material/handle_img?src=${encodeURIComponent(item.url)}`, // 投机一把 看看情况
+							// thumb_url: `https://mcdn.yiban.io/img_proxy?src=${encodeURIComponent(item.thumb_url)}`,
+							name: item.name,
+							thumb_url_t: item.url,
 							media_id: item.media_id
 						}
 					}
@@ -171,8 +286,18 @@ export default {
 		},
 		account: {
 			handler: function (n, o) {
+				// 图文
 				this.SelectPopOptions.searchObj.params.appId = n.appId
 				this.SelectPopOptions.searchObj.params.appSecret = n.appSecret
+				// 图片
+				this.SelectPopOptions_img.searchObj.params.appId = n.appId
+				this.SelectPopOptions_img.searchObj.params.appSecret = n.appSecret
+				// 音频
+				this.SelectPopOptions_voice.searchObj.params.appId = n.appId
+				this.SelectPopOptions_voice.searchObj.params.appSecret = n.appSecret
+				// 视频
+				this.SelectPopOptions_video.searchObj.params.appId = n.appId
+				this.SelectPopOptions_video.searchObj.params.appSecret = n.appSecret
 			},
 			deep: true
 		}
@@ -190,26 +315,26 @@ export default {
 
 			}
 		},
-		async handle_fromSource() {
-			// let res = await this.$fetch(
-			// 	"graphic_message_get_material",
-			// 	{
-			// 		appId: this.account().appId,
-			// 		appSecret: this.account().appSecret,
-			// 		type: 'news',
-			// 	}
-			// );
-			// console.log(res)
-			this.addEditVisible = true
-		},
 		handle_choseNews(data) {
 			// console.log(data)
 			this.content.from = 'store'
 			this.content.media_id = data.media_id
 			this.content.data = data.news_item
 		},
+		handle_choseImg(data) {
+			console.log(data)
+		},
+		handle_choseVoice(data) {
+			console.log(data)
+		},
+		handle_choseVideo(data) {
+			console.log(data)
+		},
 		handle_goUrl(data) {
 			window.open(data.url)
+		},
+		handle_uploadFile() {
+
 		},
 		handle_clear() {
 			this.content = {
@@ -270,6 +395,7 @@ export default {
 			cursor: pointer;
 			border: 1px solid #eee;
 			user-select: none;
+			position: relative;
 			i {
 				font-size: 36px;
 				margin-bottom: 15px;
@@ -404,5 +530,12 @@ export default {
 			}
 		}
 	}
+}
+.btn-hidden {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	z-index: 1;
+	opacity: 0;
 }
 </style>
