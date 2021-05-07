@@ -51,6 +51,7 @@ Vue.config.productionTip = false
 
 Vue.prototype.$fetch = Fetch
 Vue.prototype.$common = Common
+Vue.prototype.$Bus = new Vue();
 Object.keys(Filters).forEach(key => {
   Vue.filter(key, Filters[key])
 })

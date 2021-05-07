@@ -5,6 +5,8 @@ import weapp from './weapp/index'
 import activity from './activity/index'
 import order from './order'
 import officialAccounts from './official-accounts'
+import classmanage from './classmanage'
+import project from './project'
 
 export default {
     ...user,
@@ -13,5 +15,7 @@ export default {
     ...chance,
     ...activity,
     ...order,
-    ...officialAccounts
+    ...officialAccounts,
+    ...classmanage,
+    ...project,
 }

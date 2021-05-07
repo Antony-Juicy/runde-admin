@@ -29,7 +29,6 @@
         </el-radio>
         <span class="radio-tips" :key="item.label" v-if="item.tips">({{item.tips}})</span>
       </template>
-      
     </template>
     
     <el-input-number
@@ -62,6 +61,22 @@
         :style="{'min-width': minWidth + 2 + 'px'}">
       </el-option>
     </el-select>
+
+    <el-checkbox-group 
+      v-if="isCheckbox" 
+      v-model="currentVal"
+      v-bind="bindProps"
+      v-on="bindEvents"
+      size="small"
+    >
+        <el-checkbox
+          v-for="(item,index) in itemOptions.options" 
+          :label="item.label"
+          :key="index"
+        >
+        {{item.value}}
+        </el-checkbox>
+    </el-checkbox-group>
 
     <!-- datetimerange/daterange -->
     <el-date-picker
@@ -199,6 +214,9 @@ export default {
     // el-select 下拉框
     isSelect () {
       return this.itemOptions.element === 'el-select'
+    },
+    isCheckbox () {
+      return this.itemOptions.element === 'el-checkbox'
     },
     // el-date-picker (type: datetimerange/daterange)
     isDatePickerDateRange () {
