@@ -21,11 +21,10 @@
         :pageConfig.sync="pageConfig"
         @pageChange="pageChange"
       >
-
-         <template slot="courses" slot-scope="scope">
-           <span v-for="item in scope.row.courses"  :key="item.courseId">
-             {{item.courseName}}
-           </span>
+        <template slot="courses" slot-scope="scope">
+          <span v-for="item in scope.row.courses" :key="item.courseId">
+            {{ item.courseName }}
+          </span>
         </template>
         <template slot="contentName" slot-scope="scope">
           {{ scope.row.contentName }}<br />
@@ -118,8 +117,8 @@
                   @change="handleCheckedStageChange"
                 >
                   <el-checkbox
-                    v-for="item in basicInfo.courseStageArr"
-                    :key="item.value"
+                    v-for="(item, i) in basicInfo.courseStageArr"
+                    :key="i"
                     :label="item.label"
                     :value="item.value"
                   ></el-checkbox>
@@ -191,10 +190,7 @@
                         placeholder="请输入价格"
                         style="width: 200px; margin-left: 20px"
                       ></el-input>
-                      <!-- <span>元</span> -->
-                      <!-- <el-checkbox class="ml10" v-model="basicInfo.checked1"
-                      >计算业绩</el-checkbox
-                    > -->
+
                       <el-switch
                         active-text="计算业绩"
                         style="margin-left: 20px"
@@ -297,7 +293,7 @@
               </el-form-item>
             </el-col>
           </el-row>
-
+          <!-- {{ basicInfo.tableData }} -->
           <el-form-item label="班型内容：" prop="contentName" :inline="true">
             <div>
               <el-button
@@ -332,7 +328,6 @@
           </el-form-item>
         </el-form>
       </div>
-
       <div class="class-step3 class-moudle" v-show="active == 2">
         <RdForm
           :formOptions="step3FormOptions"
@@ -604,7 +599,7 @@ export default {
         { name: "协议类型", value: "protocolType" },
         { name: "退费类型", value: "refundType" },
         { name: "退费规则", value: "refundRules" },
-        { name: "课程", value: "courses" , operate: true },
+        { name: "课程", value: "courses", operate: true },
         { name: "班型内容", value: "contentName", operate: true },
         { name: "学费/元", value: "totalFee" },
         { name: "服务年限", value: "serviceYear" },
@@ -795,6 +790,7 @@ export default {
               value: "1",
             },
           ],
+          initValue: "",
         },
         {
           prop: "crowdNum",
@@ -802,15 +798,27 @@ export default {
           placeholder: "班级群人数",
           label: "班级群人数：",
         },
-        {
+        // {
+        //   prop: "campusVisible",
+        //   element: "el-cascader",
+        //   placeholder: "校区可见",
+        //   initWidth: true,
+        //   multiple: true,
+        //   label: "校区可见：",
+        //   options: [],
+        //   events: {},
+        //   initValue: [[10], [11]],
+        // },
+           {
           prop: "campusVisible",
-          element: "el-cascader",
+          element: "el-select",
           placeholder: "校区可见",
           initWidth: true,
           multiple: true,
           label: "校区可见：",
           options: [],
           events: {},
+          initValue: [37],
         },
         {
           prop: "financeCodeName1",
@@ -895,7 +903,7 @@ export default {
       detailTableData: [],
       detailTableKey: [
         { name: "id", value: "id" },
-        { name: "年份", value: "contentYear" },
+        { name: "年份", value: "classTypeBatch" },
         { name: "所属项目", value: "productName" },
         { name: "内容名称", value: "contentName" },
         { name: "类型", value: "contentType" },
@@ -930,6 +938,14 @@ export default {
     // geteGroupListFunc(data) {//获取班型分組
     //   this.courseGroupArr = data;
     // },
+    turnTwoArr(arr, size) {
+      // arr是一维数组 size是二维数组包含几条数据
+      var arr2 = [];
+      for (var i = 0; i < arr.length; i = i + size) {
+        arr2.push(arr.slice(i, i + size));
+      }
+      return arr2; // 新的二维数组
+    },
     changeSubArr(data) {
       this.subjecttArr = data;
     },
@@ -971,8 +987,7 @@ export default {
     initProductIdFn(data) {
       this.selectProductId = data;
     },
-    handleSwitchChange(val) {
-    },
+    handleSwitchChange(val) {},
     handleCheckedStageChange(val) {
       this.basicInfo.stageGroupName = val;
       let arr = this.basicInfo.courseStageArr.filter(
@@ -1103,6 +1118,7 @@ export default {
           value: item.id,
           parentId: item.parentId,
         }));
+
         //校区id
         this.campusArr = res.data.campusList.map((item) => ({
           name: item.parentCampusName
@@ -1249,7 +1265,95 @@ export default {
     handleEdit(data) {
       this.addStatus = false;
       this.addVisible = true;
-      // TODO 编辑
+
+      this.$fetch("courseclasstype_getclassType", {
+        classTypeId: data.id,
+      }).then((res) => {
+        for (var key in this.$refs.dataForm1.basicInfo) {
+          this.$refs.dataForm1.basicInfo[key] = res.data.data.model[key];
+        }
+
+        //班型分组
+        this.$refs.dataForm1.courseGroupArr = res.data.courseClassTypeGroup.map(
+          (item) => ({
+            label: item.classtypeGroupName,
+            value: item.id,
+          })
+        );
+        // 班型阶段
+        this.basicInfo.courseStageArr = res.data.courseClassTypeStageGroup.map(
+          (item) => ({
+            label: item.stageGroupName,
+            value: item.serialVersionUID,
+          })
+        );
+        this.basicInfo.classTypeStage = res.data.data.model.stageGroupName.split(
+          ","
+        );
+        this.courseList = res.data.courseInfo.map((item) => ({
+          label: item.courseName,
+          value: item.courseId,
+        }));
+        this.campusIds = res.data.data.jsonObject.campusIds;
+        for (var key in this.basicInfo) {
+          if (
+            key != "pageConfig" &&
+            key != "tableKey" &&
+            key != "tableData" &&
+            key != "courseStageArr" &&
+            key != "classTypeStage"
+          ) {
+            if (key == "courses") {
+              let arr = JSON.parse(res.data.data.model["courses"]);
+              arr.map((el) => {
+                el.checked = true;
+              });
+
+              if (arr.length < this.courseList.length) {
+                this.courseList.map((item, i) => {
+                  if (i >= arr.length) {
+                    arr.push({
+                      courseName: item.label,
+                      checked: false,
+                      coursePrice: "",
+                      isperformance: false,
+                      courseId: item.value,
+                    });
+                  }
+                });
+              }
+              this.basicInfo["courses"] = arr;
+            } else if (key == "courseContentId") {
+              //班型内容
+              this.$fetch("courseProductContent_courseContentByProductId", {
+                productId: res.data.data.jsonObject.productId,
+              }).then((res) => {
+                this.basicInfo.tableData = res.dataJson.list;
+              });
+            } else {
+              this.basicInfo[key] = res.data.data.model[key];
+            }
+          }
+        }
+
+        this.step3FormOptions.forEach((item) => {
+          if (item.prop == "campusVisible") { 
+            //校区可见
+            let arr  = [];
+            res.data.data.jsonObject["campusIds"].map(item=>{
+              arr.push(item.val)
+            })
+            // item.initValue = this.turnTwoArr(arr,1) 
+            // item.initValue = arr;
+            console.log('頂頂頂0',item.initValue  ) 
+
+          } else {
+            item.initValue = res.data.data.model[item.prop];
+          }
+        });
+        this.$refs.dataForm3.addInitValue();
+        // console.log(res, res.data, "  resolve();  resolve();");
+      });
     },
     handleDelete(row) {
       let info = "";
@@ -1300,16 +1404,94 @@ export default {
         //step3
         if (this.addStatus == false) {
           //编辑
+          console.log("保存修改啊啊啊啊啊啊")
           this.$refs[formName].validate((valid, formData) => {
             if (valid) {
+                let financeCode1, financeCode2, financeCode3, financeCode4;
+              let obj1 = this.step3FormOptions[7].options.find(
+                (item) => item.value == formData.financeCodeName1
+              );
+              financeCode1 = obj1 && obj1.value;
+
+              let obj2 = this.step3FormOptions[8].options.find(
+                (item) => item.value == formData.financeCodeName2
+              );
+              financeCode2 = obj2 && obj2.value;
+
+              let obj3 = this.step3FormOptions[9].options.find(
+                (item) => item.value == formData.financeCodeName3
+              );
+              financeCode3 = obj3 && obj3.value;
+
+              let obj4 = this.step3FormOptions[10].options.find(
+                (item) => item.value == formData.financeCodeName4
+              );
+              financeCode4 = obj4 && obj4.value;
               this.$confirm(`确认提交吗？`, "提示", {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
                 type: "success",
               }).then(async () => {
                 //TODO
-                this.$fetch("courseclasstype_save", {
+                  let {
+                  courseContentId,
+                  courses,
+                  stageGroupName,
+                  stageGroupId,
+                  totalFee,
+                  refundRules,
+                  norefundFee,
+                  passDeductFee,
+                } = this.basicInfo;
+                let courses2 = courses.filter((el) => {
+                  if (el.checked) {
+                    return delete el.checked;
+                  }
+                });
+                console.log("courses2", courses2);
+                let {
+                  productName,
+                  subjectName,
+                } = this.$refs.dataForm1.basicInfo;
+                this.projectArr.map((item) => {
+                  if (item.value == productName) {
+                    productName = item.label;
+                  }
+                });
+                this.subjecttArr.map((item) => {
+                  if (item.value == subjectName) {
+                    subjectName = item.label;
+                  }
+                });
+                stageGroupName = stageGroupName.toString();
+                stageGroupId = stageGroupId.toString();
+                let paramas = {
                   ...formData,
+                  financeCode1,
+                  financeCode2,
+                  financeCode3,
+                  financeCode4,
+                  courseContentId: JSON.stringify(courseContentId),
+                  courses: JSON.stringify(courses2),
+                  stageGroupName: stageGroupName,
+                  stageGroupId: stageGroupId,
+                  totalFee,
+                  refundRules,
+                  norefundFee,
+                  passDeductFee,
+                  ...this.$refs.dataForm1.basicInfo,
+                  productName,
+                  subjectName,
+                };
+                //保存修改
+                this.$fetch("courseclasstype_edit", {
+                  ...formData,
+                  financeCode1,
+                  financeCode2,
+                  financeCode3,
+                  financeCode4,
+                  campusIds: JSON.stringify(this.campusIds),
+                  ...paramas,
                 })
                   .then((res) => {
                     this.$message.success("操作成功");
@@ -1381,6 +1563,8 @@ export default {
                     subjectName = item.label;
                   }
                 });
+                stageGroupName = stageGroupName.toString();
+                stageGroupId = stageGroupId.toString();
                 let paramas = {
                   ...formData,
                   financeCode1,
@@ -1389,8 +1573,8 @@ export default {
                   financeCode4,
                   courseContentId: JSON.stringify(courseContentId),
                   courses: JSON.stringify(courses2),
-                  stageGroupName: JSON.stringify(stageGroupName),
-                  stageGroupId: JSON.stringify(stageGroupId),
+                  stageGroupName: stageGroupName,
+                  stageGroupId: stageGroupId,
                   totalFee,
                   refundRules,
                   norefundFee,
@@ -1399,23 +1583,7 @@ export default {
                   productName,
                   subjectName,
                 };
-                console.log(
-                  "打印的数据有什么？？",
-                  "campusIds",
-                  this.campusIds,
-                  "7777",
-                  paramas,
-                  "****1212",
-                  {
-                    ...formData,
-                    financeCode1,
-                    financeCode2,
-                    financeCode3,
-                    financeCode4,
-                    campusIds: JSON.stringify(this.campusIds),
-                    ...paramas,
-                  }
-                );
+           
                 this.$fetch("courseclasstype_save", {
                   ...formData,
                   financeCode1,
