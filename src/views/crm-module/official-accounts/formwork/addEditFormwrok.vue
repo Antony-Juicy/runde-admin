@@ -48,7 +48,7 @@
 							<SelectPop style="width:auto;display:inline-block" key="SelectPop2" v-bind="SelectPopOptions_user" @select="handle_selectUser">
 								<el-button size="small">添加粉丝</el-button>
 								<template slot="labels" slot-scope="scope">
-									<el-tag  v-for="(item,index) in scope.row.labels" :key="index">{{item}}</el-tag>
+									<el-tag v-for="(item,index) in scope.row.labels" :key="index">{{item}}</el-tag>
 									<div v-if="scope.row.labels.length == 0">无标签</div>
 								</template>
 							</SelectPop>
@@ -430,7 +430,7 @@ export default {
 				appId: this.appId,
 				appSecret: this.appSecret,
 				msgTemplate: JSON.stringify(msgTemplate),
-				password:undefined, // 全部发送 或者 标签发送时需要填写验证密码
+				password: undefined, // 全部发送 或者 标签发送时需要填写验证密码
 			}
 			if (this.fansType == 'allFans') {
 				formData.allFans = true
@@ -452,14 +452,34 @@ export default {
 				formData.openIds = this.fansOpenIds.map(v => { return v.openId }).join(',')
 			}
 			if (this.fansTags.length > 0) {
-				formData.fansTags = this.fansTags.map(v => { return v.id }).join(',')
+				formData.fansTag = this.fansTags.map(v => { return v.id }).join(',')
 			}
-			let res = await this.$fetch(
-				"send_official_accounts_formwrok",
-				formData
-			);
-			this.$message.success('发送成功')
-			this.$emit('close')
+
+			if (formData.allFans) {
+				this.$prompt('请输入当前公众号秘钥', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,
+					inputErrorMessage: '秘钥为空'
+				}).then(async ({ value }) => {
+					let res = await this.$fetch(
+						"send_official_accounts_formwrok",
+						{
+							...formData,
+							password: value
+						}
+					);
+					this.$message.success("消息已推送成功");
+					this.$emit('close')
+				}).catch(() => { });
+			} else {
+				let res = await this.$fetch(
+					"send_official_accounts_formwrok",
+					formData
+				);
+				this.$message.success('发送成功')
+				this.$emit('close')
+			}
 		},
 	},
 	mounted() {

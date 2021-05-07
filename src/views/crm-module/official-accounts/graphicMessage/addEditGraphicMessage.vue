@@ -271,7 +271,7 @@ export default {
 
 				// 这个是给用户打标签的数据
 				if (this.fansTags.length > 0) {
-					formData.fansTags = this.fansTags.map(v => { return v.id }).join(',')
+					formData.fansTag = this.fansTags.map(v => { return v.id }).join(',')
 				}
 
 
