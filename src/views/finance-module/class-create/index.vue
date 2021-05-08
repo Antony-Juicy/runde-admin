@@ -3,6 +3,7 @@
     <search-form
       :formOptions="formOptions"
       :showNum="showNum"
+      ref="searchForm"
       @onSearch="onSearch"
     ></search-form>
     <div class="w-container mt-15">
@@ -20,14 +21,15 @@
         :pageConfig.sync="pageConfig"
         @pageChange="pageChange"
       >
-
         <template slot="courses" slot-scope="scope">
           <span v-for="item in scope.row.courses" :key="item.courseId">
             {{ item.courseName }}
           </span>
         </template>
         <template slot="className" slot-scope="scope">
-          <el-button type="text" @click="handleClassName(scope.row)">{{scope.row.className}}</el-button>
+          <el-button type="text" @click="handleClassName(scope.row)">{{
+            scope.row.className
+          }}</el-button>
         </template>
         <template slot="contentName" slot-scope="scope">
           {{ scope.row.contentName }}<br />
@@ -93,6 +95,7 @@
           ref="dataForm1"
           @getStageListFunc="getStageListFunc"
           @getCourseListFunc="getCourseListFunc"
+          :IsDisabled="IsDisabled"
         ></firstStep>
       </div>
 
@@ -226,6 +229,7 @@
             >
               <el-select
                 v-model="basicInfo.refundRules"
+                :disabled="IsDisabled"
                 placeholder="请选择退费规则"
                 size="small"
                 style="width: 400px"
@@ -261,6 +265,7 @@
                   <el-col :span="12">
                     <el-input
                       v-model="basicInfo.norefundFee"
+                      :readonly="IsDisabled"
                       placeholder="请输入价格"
                       size="small"
                     >
@@ -287,6 +292,7 @@
                     <el-input
                       v-model="basicInfo.passDeductFee"
                       placeholder="请输入价格"
+                      :readonly="IsDisabled"
                       size="small"
                     >
                     </el-input>
@@ -497,6 +503,8 @@ export default {
   },
   data() {
     return {
+      IsDisabled: false,
+      editId: "",
       currentClassName: "",
       selectProductId: "",
       subjecttArr: [], //科目
@@ -811,7 +819,7 @@ export default {
           label: "校区可见：",
           options: [],
           events: {},
-          initValue: [[10], [11]],
+          // initValue: [[10], [11]],
         },
         // {
         //   prop: "campusVisible",
@@ -1178,6 +1186,10 @@ export default {
               value: item.id,
             })
           );
+          console.log("iiii", this.formOptions[1].initValue, val);
+          this.formOptions[2].initValue = "";
+          this.formOptions[1].initValue = val;
+          this.$refs.searchForm.addInitValue();
         }
       );
     },
@@ -1264,11 +1276,16 @@ export default {
       });
     },
     handleEdit(data) {
+      this.IsDisabled = true;
       this.addStatus = false;
       this.addVisible = true;
-
+      this.editId = data.id;
+      this.step3FormOptions[7].disabled = this.IsDisabled;
+      this.step3FormOptions[8].disabled = this.IsDisabled;
+      this.step3FormOptions[9].disabled = this.IsDisabled;
+      this.step3FormOptions[10].disabled = this.IsDisabled;
       this.$fetch("courseclasstype_getclassType", {
-        classTypeId: data.id,
+        classTypeId: this.editId,
       }).then((res) => {
         for (var key in this.$refs.dataForm1.basicInfo) {
           this.$refs.dataForm1.basicInfo[key] = res.data.data.model[key];
@@ -1344,7 +1361,7 @@ export default {
             res.data.data.jsonObject["campusIds"].map((item) => {
               arr.push(item.val);
             });
-            item.initValue = this.turnTwoArr(arr,1)
+            item.initValue = this.turnTwoArr(arr, 1);
           } else {
             item.initValue = res.data.data.model[item.prop];
           }
@@ -1367,11 +1384,16 @@ export default {
         .catch(() => {});
     },
     handleClose(formName) {
-      this.active = 0; 
+      this.active = 0;
       this.$refs.dataForm3.onReset();
       this.$refs.dataForm2.resetFields();
       this.$refs.dataForm1.$refs.dataForm.resetFields();
       this.addVisible = false;
+      this.IsDisabled = false;
+      this.step3FormOptions[7].disabled = this.IsDisabled;
+      this.step3FormOptions[8].disabled = this.IsDisabled;
+      this.step3FormOptions[9].disabled = this.IsDisabled;
+      this.step3FormOptions[10].disabled = this.IsDisabled;
     },
     handlePre() {
       this.active--;
@@ -1465,19 +1487,24 @@ export default {
                   ...formData,
                   financeCode1,
                   financeCode2,
-                  financeCode3, 
+                  financeCode3,
                   financeCode4,
                   campusIds: JSON.stringify(this.campusIds),
                   ...paramas,
+                  id: this.editId,
                 })
                   .then((res) => {
                     this.$message.success("操作成功");
                     this.addVisible = false;
+                    this.IsDisabled = false;
+                    this.step3FormOptions[7].disabled = this.IsDisabled;
+                    this.step3FormOptions[8].disabled = this.IsDisabled;
+                    this.step3FormOptions[9].disabled = this.IsDisabled;
+                    this.step3FormOptions[10].disabled = this.IsDisabled;
                     this.active = 0;
                     this.loadSalaryCfg();
                   })
-                  .catch((error) => {
-                  });
+                  .catch((error) => {});
               });
             }
           });

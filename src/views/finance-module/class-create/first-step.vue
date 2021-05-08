@@ -20,6 +20,7 @@
           v-model="basicInfo.productName"
           placeholder="请选择"
           size="small"
+          :disabled="IsDisabled"
           @change="handleChange"
         >
           <el-option
@@ -43,6 +44,7 @@
         <el-select
           style="width: 280px"
           v-model="basicInfo.subjectName"
+          :disabled="IsDisabled"
           placeholder="请选择"
           size="small"
           @change="handleSubjectSelect"
@@ -65,6 +67,7 @@
       >
         <el-input
           v-model="basicInfo.className"
+          :readonly="IsDisabled"
           size="small"
           style="width: 500px"
         ></el-input>
@@ -82,6 +85,7 @@
         <el-select
           style="width: 500px"
           v-model="basicInfo.classTypeBatch"
+          :disabled="IsDisabled"
           placeholder="请选择"
           size="small"
         >
@@ -106,6 +110,7 @@
       >
         <el-radio-group v-model="basicInfo.classType">
           <el-radio
+           :disabled="IsDisabled"
             v-for="item in classTypeArr"
             :label="item.value"
             :key="item.value"
@@ -155,6 +160,7 @@
           <el-radio
             v-for="item in serviceYearArr"
             :label="item.value"
+            :disabled="IsDisabled"
             :key="item.value"
             >{{ item.label }}
           </el-radio>
@@ -174,6 +180,7 @@
           <el-radio
             v-for="item in protocolTypeArr"
             :label="item.value"
+            :disabled="IsDisabled"
             :key="item.value"
             >{{ item.label }}
           </el-radio>
@@ -195,6 +202,7 @@
           <el-radio
             v-for="item in refundTypeArr"
             :label="item.value"
+            :disabled="IsDisabled"
             :key="item.value"
             >{{ item.label }}
           </el-radio>
@@ -233,7 +241,7 @@ export default {
   data() {
     return {
       subjecttArr: [], //科目
-      courseGroupArr: [],//班型分组
+      courseGroupArr: [], //班型分组
       currentProductId: "",
       // projectArr: [
       //   {
@@ -314,6 +322,10 @@ export default {
     statusArr: {
       //状态
       type: Array,
+    },
+    IsDisabled: {
+      type: Boolean,
+      default: false,
     },
   },
   mounted() {
