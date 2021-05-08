@@ -33,7 +33,7 @@
       :showFooter="false"
       top="5vh"
       append-to-body
-      @handleClose="editVisible = false"
+      @handleClose="handleClose"
   
     >
       <editSubject
@@ -41,7 +41,8 @@
         :issuseId="issuseId"
         :addStatus="addStatus"
         v-if="editVisible"
-        @close="editVisible = false"
+        ref="dyForm"
+        @close="handleClose"
         @refresh="refresh"
         :tableData="tableData"
       />
@@ -90,11 +91,11 @@ export default {
           options: [
                {
               label: "正常",
-              value: false,
+              value: true,
             },
             {
               label: "暂停",
-              value: true,
+              value: false,
             },
           ],
         },
@@ -142,6 +143,10 @@ export default {
     this.getTableData();
   },
   methods: {
+    handleClose(){
+      this.editVisible = false;
+      // this.$refs.dyForm.dynamicValidateForm.onReset();
+    },
     refresh() {
       this.getTableData();
     },
@@ -175,7 +180,7 @@ export default {
       }).then((res) => {
         this.tableData = res.data.data.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
-          item.subjectStatus = item.subjectStatus == false ? "正常" : "暂停";
+          item.subjectStatus = item.subjectStatus == true ? "正常" : "暂停";
           return item;
         });
      this.pageConfig.totalCount = res.data.pager.totalRows;

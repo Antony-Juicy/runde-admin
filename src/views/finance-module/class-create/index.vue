@@ -1312,7 +1312,7 @@ export default {
           label: item.courseName,
           value: item.courseId,
         }));
-        this.campusIds = res.data.data.jsonObject.campusIds;
+        this.campusIds = res.data.data.model.campusIds;
         for (var key in this.basicInfo) {
           if (
             key != "pageConfig" &&
@@ -1322,6 +1322,7 @@ export default {
             key != "classTypeStage"
           ) {
             if (key == "courses") {
+              console.log(6666,res.data.data.model["courses"])
               let arr = JSON.parse(res.data.data.model["courses"]);
               arr.map((el) => {
                 el.checked = true;
@@ -1343,11 +1344,18 @@ export default {
               this.basicInfo["courses"] = arr;
             } else if (key == "courseContentId") {
               //班型内容
-              this.$fetch("courseProductContent_courseContentByProductId", {
-                productId: res.data.data.jsonObject.productId,
-              }).then((res) => {
-                this.basicInfo.tableData = res.dataJson.list;
-              });
+            let arr = res.data.data.model.courseContentIdList.map(item=>{
+             item.id  = item.contentId;
+             return item
+            });
+            console.log('hhh2222',arr)
+              this.basicInfo.tableData = arr;
+              // this.$fetch("courseProductContent_courseContentByProductId", {
+              //   productId: res.data.data.model.productId,
+              // }).then((res) => {
+              //   // this.basicInfo.tableData = res.dataJson.list;
+              //   console.log('22222222222',res.dataJson.list)
+              // });
             } else {
               this.basicInfo[key] = res.data.data.model[key];
             }
@@ -1358,7 +1366,7 @@ export default {
           if (item.prop == "campusVisible") {
             //校区可见
             let arr = [];
-            res.data.data.jsonObject["campusIds"].map((item) => {
+            res.data.data.model["campusIds"].map((item) => {
               arr.push(item.val);
             });
             item.initValue = this.turnTwoArr(arr, 1);

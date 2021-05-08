@@ -218,8 +218,8 @@
             v-model="dynamicValidateForm.subjectStatus"
             @change="partChange"
           >
-            <el-radio :label="1">正常</el-radio>
-            <el-radio :label="2">暂停</el-radio>
+            <el-radio :label="true">正常</el-radio>
+            <el-radio :label="false">暂停</el-radio>
           </el-radio-group>
         </el-form-item>
       </div>
@@ -233,6 +233,7 @@
             trigger: 'change',
           }"
         >
+        {{dynamicValidateForm.financeCodeName3}}
           <!--<div class="param-label">項目</div>-->
           <!--<span style="margin-right: 5px;font-weight:bold">:</span>-->
           <el-select
@@ -243,7 +244,7 @@
           >
             <el-option
               :label="item.label"
-              :value="item.value"
+              :value="item.label"
               v-for="(item, index) in threeCategoriesArr"
               :key="index"
             ></el-option>
@@ -290,7 +291,7 @@ export default {
         theoryTestClosingTime: "",
         secondtestTime: "",
         subjectStatus: "",
-        theoryTestEnd:"",
+        theoryTestEnd: "",
       },
     };
   },
@@ -300,17 +301,16 @@ export default {
       type: Number || String,
     },
     issuseId: {
-      type: Number || String
+      type: Number || String,
     },
-     addStatus: {
-      type: Boolean
+    addStatus: {
+      type: Boolean,
     },
-    tableData:{
-      type:Array
-    }
+    tableData: {
+      type: Array,
+    },
   },
   created() {
-    console.log('哈哈哈哈试试',this.id)
     // 限制开始日期不能超过当前日期
     this.startDateDisabled.disabledDate = function (time) {
       return time.getTime() + 24 * 3600 * 1000 < Date.now();
@@ -338,11 +338,12 @@ export default {
           label: item.value,
           value: item.key,
         }));
+        console.log(' this.threeCategoriesArr', this.threeCategoriesArr)
       });
       // this.$refs.dataForm3.addInitValue();
     },
     partChange() {},
-    // 添加 
+    // 添加
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
@@ -356,40 +357,41 @@ export default {
             this.dynamicValidateForm.theoryTestClosingTime
           );
           let skillTestStart = this.$common._formatDates(
-            this.dynamicValidateForm.skillTestStart[0] 
+            this.dynamicValidateForm.skillTestStart[0]
           );
           let skillTestEnd = this.$common._formatDates(
             this.dynamicValidateForm.skillTestStart[1]
           );
-            let theoryTestStart = this.$common._formatDates(
-              this.dynamicValidateForm.theoryTestStart[0]
+          let theoryTestStart = this.$common._formatDates(
+            this.dynamicValidateForm.theoryTestStart[0]
           );
-             let theoryTestEnd = this.$common._formatDates(
-              this.dynamicValidateForm.theoryTestStart[1]
+          let theoryTestEnd = this.$common._formatDates(
+            this.dynamicValidateForm.theoryTestStart[1]
           );
           let financeCode3;
           let obj1 = this.threeCategoriesArr.find((item) => {
-            return item.value == this.dynamicValidateForm.financeCodeName3;
+            return item.label == this.dynamicValidateForm.financeCodeName3;
           });
 
           financeCode3 = obj1 && obj1.value;
           let issuseId;
-              let obj2 = this.productArr.find((item) => {
+          let obj2 = this.productArr.find((item) => {
             return item.value == this.dynamicValidateForm.productName;
           });
-           issuseId= obj2 && obj2.value;
+          issuseId = obj2 && obj2.value;
           this.$fetch(
-            this.addStatus?
-            "coursesubject_save" : "coursesubject_editJsp", {
-            ...this.dynamicValidateForm,
-            skillTestStart,
-            skillTestEnd,
-            theoryTestStart,
-            theoryTestEnd,
-            financeCode3,
-            productId: this.issuseId ?this.issuseId:issuseId, 
-            id:this.id,
-          }).then((res) => {
+            this.addStatus ? "coursesubject_save" : "coursesubject_editJsp",
+            {
+              ...this.dynamicValidateForm,
+              skillTestStart,
+              skillTestEnd,
+              theoryTestStart,
+              theoryTestEnd,
+              financeCode3,
+              productId: this.issuseId ? this.issuseId : issuseId,
+              id: this.id,
+            }
+          ).then((res) => {
             this.$message.success("操作成功");
             this.$emit("close");
             this.$emit("refresh");
@@ -404,13 +406,16 @@ export default {
     //   this.$refs[formName].resetFields();
     // },
     getData() {
-      this.$fetch("coursesubject_goEdit",{
+      this.$fetch("coursesubject_goEdit", {
         id: this.issuseId,
-      }).then(res => {
-        let theoryTestStart = [new Date(res.data.theoryTestStart),new Date(res.data.theoryTestEnd)]
-          let obj = {...res.data,theoryTestStart:theoryTestStart}
+      }).then((res) => { 
+        let theoryTestStart = [
+          new Date(res.data.theoryTestStart),
+          new Date(res.data.theoryTestEnd),
+        ];
+        let obj = { ...res.data, theoryTestStart: theoryTestStart };
         this.dynamicValidateForm = obj;
-      })
+      });
     },
   },
 };
