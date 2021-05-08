@@ -116,6 +116,9 @@ export default {
     },
     pageChange(val) {
       console.log(val,'pagechange')
+      this.pageConfig.pageNum = val.page;
+      this.pageConfig.pageSize = val.limit;
+      this.getTableData();
     },
     handleAdd() {
       this.wordsVisible = true;

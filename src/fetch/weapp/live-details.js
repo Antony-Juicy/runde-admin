@@ -11,6 +11,7 @@ export default {
 
   // 商品订单统计
   orders_list: { url:'/live/console/order/page_list', method: 'post' },
-  orders_detail: { url:'/live/console/order/get_order_detail', method: 'post' }
+  orders_detail: { url:'/live/console/order/get_order_detail', method: 'post' },
+  orders_export: { url: '/live/console/order/export', method: 'post'}
 
 }
