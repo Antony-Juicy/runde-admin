@@ -71,8 +71,7 @@ export default {
 			span.innerText = '用户昵称';
 			span.classList.add('likeBtn');
 			var sel = window.getSelection();
-			var text = document.createElement('span')
-			text.innerText = " "
+			var text = document.createTextNode(' ')
 			// debugger
 			if (sel.rangeCount > 0) {
 				var range = sel.getRangeAt(0);
@@ -121,7 +120,7 @@ export default {
 			// console.log(data)
 			this.msgForm.pagepath = this.miniprogramConfig[this.miniprogramIndex].pages[index].value
 			this.msgForm.paramsKey = this.miniprogramConfig[this.miniprogramIndex].pages[index].params || []
-			this.msgForm.params = this.msgForm.paramsKey.map(() => [])
+			this.msgForm.params = this.msgForm.paramsKey.map(() => '')
 		},
 		emitForm() {
 			this.$emit('msgData', this.msgForm)

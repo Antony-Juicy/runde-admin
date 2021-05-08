@@ -105,6 +105,10 @@ tableObj: {
 		item.labelTypeZH = item.labelType == '0' ? '系统标签' : '自定义标签'
 		return item
 	},
+	// 多选模式，外部选中状态与组件内选中状态同步   如果外部改变选中状态，调用 this.$refs.selectPop.updateMutiple 方法实现状态同步
+	selectStatus: (item) => {
+		return this.fansTags.findIndex(v => v.id == item.id) > -1
+	}
 	// 启用瀑布流模式，数据加载不已表格形式呈现，每个数据单元都必须通过插槽渲染
 	waterfall:true,
 	// 瀑布流专用属性: 泳道数
@@ -219,11 +223,17 @@ export default {
 
 			data = data.map(v => {
 				let item = {}
+
 				if (typeof this.tableObj.transItem == 'function') {
 					Object.assign(item, this.tableObj.transItem(v))
 				}
 				if (this.tableObj.multiple) {
-					item.select = false
+					// 可以与外部数据联动
+					if (typeof this.tableObj.selectStatus == 'function') {
+						item.select = this.tableObj.selectStatus(item)
+					} else {
+						item.select = false
+					}
 				}
 				return item
 			})
@@ -274,15 +284,23 @@ export default {
 				if (this.tableData.length == 0) {
 					this.getTableData()
 				}
+				this.updateMutiple()
 			} else {
 				if (this.waterFallData[0].length == 0) {
 					this.getTableData()
 				}
 			}
-
 		},
 		handleMultiple(data) {
 			this.$emit('select', data)
+		},
+		updateMutiple() {
+			// 可以和外部状态联动
+			if (this.tableObj.multiple && typeof this.tableObj.selectStatus == 'function') {
+				this.tableData.forEach(item => {
+					item.select = this.tableObj.selectStatus(item)
+				})
+			}
 		}
 	},
 	async created() {

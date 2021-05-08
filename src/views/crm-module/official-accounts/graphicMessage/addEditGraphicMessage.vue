@@ -24,7 +24,7 @@
 					closable>
 					{{item.name}}
 				</el-tag>
-				<SelectPop style="width:auto;display:inline-block" key="SelectPop1" v-bind="SelectPopOptions_label" @select="handle_selectLabel">
+				<SelectPop style="width:auto;display:inline-block" key="SelectPop1" ref="SelectPop1" v-bind="SelectPopOptions_label" @select="handle_selectLabel">
 					<el-button size="small">添加标签</el-button>
 				</SelectPop>
 			</div>
@@ -37,7 +37,7 @@
 					closable>
 					{{item.name}}
 				</el-tag>
-				<SelectPop style="width:auto;display:inline-block" key="SelectPop2" v-bind="SelectPopOptions_user" @select="handle_selectUser">
+				<SelectPop style="width:auto;display:inline-block" key="SelectPop0" ref="SelectPop0" v-bind="SelectPopOptions_user" @select="handle_selectUser">
 					<el-button size="small">添加粉丝</el-button>
 					<template slot="labels" slot-scope="scope">
 						<el-tag v-for="(item,index) in scope.row.labels" :key="index">{{item}}</el-tag>
@@ -59,7 +59,7 @@
 				<el-tag style="margin-right:10px;margin-bottom:10px" v-for="(item,index) in fansTags" :key="index" @close="handle_removeLabel2(index)" disable-transitions closable>
 					{{item.name}}
 				</el-tag>
-				<SelectPop style="width:auto;display:inline-block" key="SelectPop1" v-bind="SelectPopOptions_label" @select="handle_selectLabel2">
+				<SelectPop style="width:auto;display:inline-block" key="SelectPop2" ref="SelectPop2" v-bind="SelectPopOptions_tags" @select="handle_selectLabel2">
 					<el-button size="small">添加标签</el-button>
 				</SelectPop>
 			</div>
@@ -87,6 +87,63 @@ export default {
 			fansType: 'allFans',
 			// 用户点击后添加标签
 			fansTags: [],
+			SelectPopOptions_tags: {
+				searchObj: {
+					api: "get_official_accounts_label_page",
+					formOptions: [
+						{
+							prop: "labelName",
+							element: "el-input",
+							placeholder: "请输入标签名称",
+						},
+						{
+							prop: "labelType",
+							element: "el-select",
+							placeholder: "请选择标签类型",
+							options: [
+								{
+									label: '系统标签',
+									value: '0'
+								},
+								{
+									label: '自定义标签',
+									value: '1'
+								}
+							]
+						},
+					],
+					showNum: 2,
+					needType: false,
+					params: {
+						appId: this.account.appId,
+					}
+				},
+				tableObj: {
+					tableKey: [
+						{
+							name: "ID主键",
+							value: "id",
+							width: 80
+						},
+						{
+							name: "标签名称",
+							value: "labelName",
+						},
+						{
+							name: "标签类型",
+							value: "labelTypeZH",
+						},
+					],
+					multiple: true,
+					transItem: (item) => {
+						item.labelTypeZH = item.labelType == '0' ? '系统标签' : '自定义标签'
+						return item
+					},
+					selectStatus: (item) => {
+						return this.fansTags.findIndex(v => v.id == item.id) > -1
+					}
+				}
+			},
 			// 选中的标签
 			fansLabels: [],
 			// 选择标签数据组件 
@@ -141,6 +198,9 @@ export default {
 					transItem: (item) => {
 						item.labelTypeZH = item.labelType == '0' ? '系统标签' : '自定义标签'
 						return item
+					},
+					selectStatus: (item) => {
+						return this.fansLabels.findIndex(v => v.id == item.id) > -1
 					}
 				}
 			},
@@ -191,6 +251,9 @@ export default {
 
 						}
 						return item
+					},
+					selectStatus: (item) => {
+						return this.fansOpenIds.findIndex(v => v.openId == item.openId) > -1
 					}
 				}
 			},
@@ -211,6 +274,7 @@ export default {
 		},
 		handle_removeLabel(index) {
 			this.fansLabels.splice(index, 1)
+			this.$refs.SelectPop1.updateMutiple()
 		},
 		handle_selectLabel2(data) {
 			// 是多选情况
@@ -226,6 +290,7 @@ export default {
 		},
 		handle_removeLabel2(index) {
 			this.fansTags.splice(index, 1)
+			this.$refs.SelectPop2.updateMutiple()
 		},
 		handle_selectUser(data) {
 			// 是多选情况
@@ -240,6 +305,7 @@ export default {
 		},
 		handle_removeUser(index) {
 			this.fansOpenIds.splice(index, 1)
+			this.$refs.SelectPop0.updateMutiple()
 		},
 		handle_close() {
 			this.$emit('close')
@@ -276,7 +342,7 @@ export default {
 
 
 				if (formData.allFans) {
-					this.$prompt('请输入当前公众号秘钥', '提示', {
+					this.$prompt('请输入当前公众号密码', '提示', {
 						confirmButtonText: '确定',
 						cancelButtonText: '取消',
 						inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,

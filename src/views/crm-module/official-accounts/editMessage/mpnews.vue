@@ -54,9 +54,9 @@ import SelectPop from '@/components/SelectPop'
 export default {
 	props: {
 		account: {
-			typeof: Object,
-			require: true
-		}
+			type: Object,
+			require: true,
+		},
 	},
 	components: { UploadOss, SelectPop },
 	data() {
@@ -128,9 +128,7 @@ export default {
 			span.innerText = '用户昵称';
 			span.classList.add('likeBtn');
 			var sel = window.getSelection();
-			var text = document.createElement('span')
-			text.innerText = " "
-			// debugger
+			var text = document.createTextNode(' ')
 			if (sel.rangeCount > 0) {
 				var range = sel.getRangeAt(0);
 				//判断光标是否在 id = editor 的元素内
@@ -164,7 +162,6 @@ export default {
 			} catch (error) {
 
 			}
-
 		},
 		handle_blur() {
 			if (this.$refs.likeInput.innerHTML == '') {

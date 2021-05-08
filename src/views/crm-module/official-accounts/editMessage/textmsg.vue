@@ -59,8 +59,7 @@ export default {
 			span.innerText = '用户昵称';
 			span.classList.add('likeBtn');
 			var sel = window.getSelection();
-			var text = document.createElement('span')
-			text.innerText = " "
+			var text = document.createTextNode(' ')
 			// debugger
 			if (sel.rangeCount > 0) {
 				var range = sel.getRangeAt(0);
@@ -99,6 +98,21 @@ export default {
 			}
 		},
 		handle_change(e) {
+			// let likeBtns = this.$refs.likeInput.querySelectorAll('.likeBtn')
+			// likeBtns.forEach((v, i) => {
+			// 	try {
+			// 		var text = document.createTextNode(' ')
+			// 		if (v.previousSibling.className == 'likeBtn') {
+			// 			this.$refs.likeInput.insertBefore(text, v)
+			// 		}
+			// 		if (v.nextSibling.className == 'likeBtn') {
+			// 			this.$refs.likeInput.insertBefore(text, v.nextSibling)
+			// 		}
+			// 	} catch (error) {
+			// 	}
+
+			// })
+			
 			this.msgForm.content = this.$refs.likeInput.innerHTML
 			this.emitForm()
 		},

@@ -22,7 +22,7 @@
 		</template>
 		<div class="form-line">
 			<div class="label">备用链接：</div>
-			<el-input v-model="url" placeholder="请输入https:// 或 http:// 开头的链接"></el-input>
+			<el-input v-model="msgForm.remark" placeholder="请输入https:// 或 http:// 开头的链接"></el-input>
 		</div>
 	</div>
 </template>
@@ -30,12 +30,19 @@
 <script>
 import miniprogramConfig from '../../miniprogram'
 export default {
+	props: {
+		formData: {
+			type: Object,
+			require: true,
+		}
+	},
 	data() {
 		return {
 			miniprogramConfig,
 			msgForm: {
 				appId: "",
 				pagepath: "",
+				remark: "",
 				paramsKey: [],
 				params: []
 			},
@@ -54,8 +61,26 @@ export default {
 		handle_changePath(index) {
 			this.msgForm.pagepath = this.miniprogramConfig[this.miniprogramIndex].pages[index].value
 			this.msgForm.paramsKey = this.miniprogramConfig[this.miniprogramIndex].pages[index].params || []
-			this.msgForm.params = this.msgForm.paramsKey.map(() => [])
+			this.msgForm.params = this.msgForm.paramsKey.map(() => '')
 		},
+	},
+	mounted() {
+
+		this.miniprogramIndex = this.miniprogramConfig.findIndex(v => v.appId == this.formData.appid)
+		this.miniprogramPageIndex = this.miniprogramConfig[this.miniprogramIndex].pages.findIndex(v => v.value == this.formData.pagepath.split('?')[0])
+		// 表单初始化
+		this.msgForm.pagepath = this.miniprogramConfig[this.miniprogramIndex].pages[this.miniprogramPageIndex].value
+		this.msgForm.paramsKey = this.miniprogramConfig[this.miniprogramIndex].pages[this.miniprogramPageIndex].params || []
+		this.msgForm.appId = this.formData.appid
+		this.msgForm.remark = this.formData.url
+		if (this.msgForm.paramsKey.length > 0) {
+			// 表示带了参数
+			let params = this.formData.pagepath.split('?')[1].split('&').map(v => v.split('='))
+			// 提取对应的参数
+			this.msgForm.paramsKey.forEach((v,i)=>{
+				this.msgForm.params[i] = params.find(v2=> v2[0] == v.key)[1]
+			})
+		}
 	}
 }
 </script>

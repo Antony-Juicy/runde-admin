@@ -53,15 +53,16 @@ export default {
 					"sub_button": [
 						{
 							"type": "view",
-							"name": "搜索",
+							"name": "搜索1",
 							"url": "http://www.soso.com/",
 							"sub_button": []
 						},
 						{
-							"type": "view",
-							"name": "搜索",
-							"url": "http://www.soso.com/",
-							"sub_button": []
+							"type": "miniprogram",
+							"name": "小程序",
+							"url": "http://mp.weixin.qq.com",
+							"appid": "wx95dd488825b3da3d",
+							"pagepath": "pages/Book/Book?id2=10&id1=20"
 						},
 					]
 				},
@@ -70,7 +71,7 @@ export default {
 					"sub_button": [
 						{
 							"type": "view",
-							"name": "搜索",
+							"name": "搜索3",
 							"url": "http://www.soso.com/",
 							"sub_button": []
 						},
@@ -112,7 +113,17 @@ export default {
 			this.sortStatus = !this.sortStatus
 		},
 		handle_choseMenu(data) {
-			this.choseMenuStatus = data
+			if (JSON.stringify(data) != JSON.stringify(this.choseMenuStatus)) {
+				this.$confirm('切换菜单会放弃当前更改内容', '确认信息', {
+					distinguishCancelAndClose: true,
+					confirmButtonText: '切换',
+					cancelButtonText: '取消'
+				}).then(() => {
+					this.choseMenuStatus = data
+				}).catch(action => {
+
+				});
+			}
 		}
 	},
 	async mounted() {
@@ -149,7 +160,6 @@ export default {
 		}
 	}
 	.sort-change {
-		
 		display: block;
 	}
 	.sort-tips {

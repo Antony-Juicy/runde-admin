@@ -169,6 +169,7 @@ export default {
 			this.updateMenuSort()
 		},
 		handle_choseMenu(data) {
+			
 			this.choseMenu(data)
 		},
 		updateMenuSort() {
@@ -290,6 +291,7 @@ export default {
 			.sub-add.showing {
 				position: relative;
 				border: 1px solid #448ef7;
+				border-radius: 3px;
 				z-index: 10;
 			}
 			.sub-menu-item {
@@ -306,6 +308,7 @@ export default {
 			}
 			.sub-menu-item.showing {
 				border: 1px solid #448ef7;
+				border-radius: 3px;
 			}
 			.sub-menu-item:last-child {
 				border-bottom: none;

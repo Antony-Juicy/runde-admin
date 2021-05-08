@@ -71,7 +71,7 @@
 					<i class="el-icon-folder"></i>
 					从素材库选择
 				</div> -->
-				<div class="chose-item" @click="handle_upload">
+				<div class="chose-item">
 					<i class="el-icon-picture-outline"></i>
 					上传图片
 					<input type="file" accept="image/*" ref="fileInput_img" class="btn-hidden" @change="handle_uploadFileImg">
@@ -85,6 +85,7 @@
 				<div class="chose-item">
 					<i class="el-icon-mic"></i>
 					上传音频
+					<input type="file" accept="audio/*" ref="fileInput_voice" class="btn-hidden" @change="handle_uploadFileVoice">
 				</div>
 			</div>
 			<div class="is-msg" v-if="typeIndex == 4">
@@ -95,6 +96,7 @@
 				<div class="chose-item">
 					<i class="el-icon-video-camera"></i>
 					上传视频
+					<input type="file" accept="video/*" ref="fileInput_video" class="btn-hidden" @change="handle_uploadFileVideo">
 				</div>
 			</div>
 		</div>
@@ -137,7 +139,7 @@ export default {
 					icon: "el-icon-video-camera"
 				},
 			],
-			typeIndex: 2,
+			typeIndex: 0,
 			text: "",
 			// 图文弹出搜索框
 			SelectPopOptions: {
@@ -286,18 +288,7 @@ export default {
 		},
 		account: {
 			handler: function (n, o) {
-				// 图文
-				this.SelectPopOptions.searchObj.params.appId = n.appId
-				this.SelectPopOptions.searchObj.params.appSecret = n.appSecret
-				// 图片
-				this.SelectPopOptions_img.searchObj.params.appId = n.appId
-				this.SelectPopOptions_img.searchObj.params.appSecret = n.appSecret
-				// 音频
-				this.SelectPopOptions_voice.searchObj.params.appId = n.appId
-				this.SelectPopOptions_voice.searchObj.params.appSecret = n.appSecret
-				// 视频
-				this.SelectPopOptions_video.searchObj.params.appId = n.appId
-				this.SelectPopOptions_video.searchObj.params.appSecret = n.appSecret
+
 			},
 			deep: true
 		}
@@ -383,10 +374,24 @@ export default {
 				media_id: '',// 给到后台转发到微信的关键信息是 media_id
 				data: {},// 为了适应各种模式，使用一个中性的名称存放具体的数据内容，只做预览使用
 			}
+		},
+		updateSelectPopOptions(n) {
+			// 图文
+			this.SelectPopOptions.searchObj.params.appId = n.appId
+			this.SelectPopOptions.searchObj.params.appSecret = n.appSecret
+			// 图片
+			this.SelectPopOptions_img.searchObj.params.appId = n.appId
+			this.SelectPopOptions_img.searchObj.params.appSecret = n.appSecret
+			// 音频
+			this.SelectPopOptions_voice.searchObj.params.appId = n.appId
+			this.SelectPopOptions_voice.searchObj.params.appSecret = n.appSecret
+			// 视频
+			this.SelectPopOptions_video.searchObj.params.appId = n.appId
+			this.SelectPopOptions_video.searchObj.params.appSecret = n.appSecret
 		}
 	},
 	mounted() {
-
+		this.updateSelectPopOptions(this.account)
 	}
 }
 </script>
@@ -478,7 +483,7 @@ export default {
 .news-box {
 	border: 1px solid #eee;
 	padding: 5px;
-	border-radius: 4;
+	border-radius: 4px;
 	margin-bottom: 10px;
 	cursor: pointer;
 	position: relative;

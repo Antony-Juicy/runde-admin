@@ -62,7 +62,7 @@
 							<el-tag style="margin-right:10px" v-for="(item,index) in fansLabels" :key="index" @close="handle_removeLabel(index)" disable-transitions closable>
 								{{item.name}}
 							</el-tag>
-							<SelectPop style="width:auto;display:inline-block" key="SelectPop1" v-bind="SelectPopOptions_label" @select="handle_selectLabel">
+							<SelectPop style="width:auto;display:inline-block" key="SelectPop1" ref="SelectPop1" v-bind="SelectPopOptions_label" @select="handle_selectLabel">
 								<el-button size="small">添加标签</el-button>
 							</SelectPop>
 						</div>
@@ -70,7 +70,7 @@
 							<el-tag style="margin-right:10px" v-for="(item,index) in fansOpenIds" :key="index" @close="handle_removeUser(index)" disable-transitions closable>
 								{{item.name}}
 							</el-tag>
-							<SelectPop style="width:auto;display:inline-block" key="SelectPop2" v-bind="SelectPopOptions_user" @select="handle_selectUser">
+							<SelectPop style="width:auto;display:inline-block" key="SelectPop0" ref="SelectPop0" v-bind="SelectPopOptions_user" @select="handle_selectUser">
 								<el-button size="small">添加粉丝</el-button>
 								<template slot="labels" slot-scope="scope">
 									<el-tag v-for="(item,index) in scope.row.labels" :key="index">{{item}}</el-tag>
@@ -85,7 +85,7 @@
 							<el-tag style="margin-right:10px" v-for="(item,index) in fansTags" :key="index" @close="handle_removeLabel2(index)" disable-transitions closable>
 								{{item.name}}
 							</el-tag>
-							<SelectPop style="width:auto;display:inline-block" key="SelectPop3" v-bind="SelectPopOptions_label" @select="handle_selectLabel2">
+							<SelectPop style="width:auto;display:inline-block" key="SelectPop2" ref="SelectPop2" v-bind="SelectPopOptions_tags" @select="handle_selectLabel2">
 								<el-button size="small">添加标签</el-button>
 							</SelectPop>
 						</div>
@@ -221,9 +221,6 @@ export default {
 			},
 			// 推送粉丝类型
 			fansType: "allFans",
-			// 可选标签
-			tagsOptions: [],
-
 			// 选中的粉丝
 			fansOpenIds: [],
 			// 选择用户组件数据 有点复杂
@@ -261,7 +258,9 @@ export default {
 							operate: true,
 						},
 					],
+					multiple: true,
 					transItem: (item) => {
+
 						try {
 							item.labels = (item.wechatUserTagModel.map(v => {
 								return v.labelName
@@ -270,6 +269,9 @@ export default {
 
 						}
 						return item
+					},
+					selectStatus: (item) => {
+						return this.fansOpenIds.findIndex(v => v.openId == item.openId) > -1
 					}
 				}
 			},
@@ -323,14 +325,78 @@ export default {
 							value: "labelTypeZH",
 						},
 					],
+					multiple: true,
 					transItem: (item) => {
+
 						item.labelTypeZH = item.labelType == '0' ? '系统标签' : '自定义标签'
 						return item
+					},
+					selectStatus: (item) => {
+						return this.fansLabels.findIndex(v => v.id == item.id) > -1
 					}
 				}
 			},
 			// 用户点击后添加标签
 			fansTags: [],
+			// 选择标签数据组件 
+			SelectPopOptions_tags: {
+				searchObj: {
+					api: "get_official_accounts_label_page",
+					formOptions: [
+						{
+							prop: "labelName",
+							element: "el-input",
+							placeholder: "请输入标签名称",
+						},
+						{
+							prop: "labelType",
+							element: "el-select",
+							placeholder: "请选择标签类型",
+							options: [
+								{
+									label: '系统标签',
+									value: '0'
+								},
+								{
+									label: '自定义标签',
+									value: '1'
+								}
+							]
+						},
+					],
+					showNum: 2,
+					needType: false,
+					params: {
+						appId: this.appId,
+					}
+				},
+				tableObj: {
+					tableKey: [
+						{
+							name: "ID主键",
+							value: "id",
+							width: 80
+						},
+						{
+							name: "标签名称",
+							value: "labelName",
+						},
+						{
+							name: "标签类型",
+							value: "labelTypeZH",
+						},
+					],
+					multiple: true,
+					transItem: (item) => {
+
+						item.labelTypeZH = item.labelType == '0' ? '系统标签' : '自定义标签'
+						return item
+					},
+					selectStatus: (item) => {
+						return this.fansTags.findIndex(v => v.id == item.id) > -1
+					}
+				}
+			},
 			miniprogramConfig: miniprogramConfig,
 			miniprogramIndex: '',
 			miniprogramPageIndex: '',
@@ -390,40 +456,49 @@ export default {
 			this.formwork_content = formwork_content
 		},
 		handle_selectUser(data) {
-			if (this.fansOpenIds.findIndex(v => v.openId == data.openId) > -1) {
-				return
+			// 是多选情况
+			if (data.select) {
+				this.fansOpenIds.push({
+					name: data.nickName,
+					openId: data.openId
+				})
+			} else {
+				this.handle_removeUser(this.fansOpenIds.findIndex(v => v.openId == data.openId))
 			}
-			this.fansOpenIds.push({
-				name: data.nickName,
-				openId: data.openId
-			})
 		},
 		handle_removeUser(index) {
 			this.fansOpenIds.splice(index, 1)
+			this.$refs.SelectPop0.updateMutiple()
 		},
 		handle_selectLabel(data) {
-			if (this.fansLabels.findIndex(v => v.id == data.id) > -1) {
-				return
+			// 是多选情况
+			if (data.select) {
+				this.fansLabels.push({
+					name: data.labelName,
+					id: data.id
+				})
+			} else {
+				this.handle_removeLabel(this.fansLabels.findIndex(v => v.id == data.id))
 			}
-			this.fansLabels.push({
-				name: data.labelName,
-				id: data.id
-			})
 		},
 		handle_removeLabel(index) {
 			this.fansLabels.splice(index, 1)
+			this.$refs.SelectPop1.updateMutiple()
 		},
 		handle_selectLabel2(data) {
-			if (this.fansTags.findIndex(v => v.id == data.id) > -1) {
-				return
+			// 是多选情况
+			if (data.select) {
+				this.fansTags.push({
+					name: data.labelName,
+					id: data.id
+				})
+			} else {
+				this.handle_removeLabel2(this.fansTags.findIndex(v => v.id == data.id))
 			}
-			this.fansTags.push({
-				name: data.labelName,
-				id: data.id
-			})
 		},
 		handle_removeLabel2(index) {
 			this.fansTags.splice(index, 1)
+			this.$refs.SelectPop2.updateMutiple()
 		},
 		handle_changeAPP() {
 			this.link_miniprogram.pagepath = ''
@@ -431,13 +506,12 @@ export default {
 			this.link_miniprogram.paramsKey = []
 			this.link_miniprogram.params = []
 			this.miniprogramPageIndex = ''
-			this.emitForm()
 		},
 		handle_changePath(index) {
 			// console.log(data)
 			this.link_miniprogram.pagepath = this.miniprogramConfig[this.miniprogramIndex].pages[index].value
 			this.link_miniprogram.paramsKey = this.miniprogramConfig[this.miniprogramIndex].pages[index].params || []
-			this.link_miniprogram.params = this.msgForm.paramsKey.map(() => [])
+			this.link_miniprogram.params = this.link_miniprogram.paramsKey.map(() => '')
 		},
 		handle_close() {
 			this.$emit('close')
@@ -445,7 +519,7 @@ export default {
 		async handle_commit() {
 			// 实际上 form 里面没有需要提交的数据  坑了
 			if (this.noticeFontCount > 200) {
-				this.$message.error("模板消息内容请在200字以内");
+				this.$message.error("微信接口限制，模板消息内容请在200字以内");
 				return
 			}
 			if (this.linkType == 'h5' && this.link_url == '') {
@@ -480,15 +554,15 @@ export default {
 							let query = "?"
 							this.link_miniprogram.paramsKey.forEach((v, i) => {
 								query += `${v.key}=${this.link_miniprogram.params[i]}`
-								if (i < this.link_miniprogram.paramsKey.length - 2) {
+								if (i < this.link_miniprogram.paramsKey.length - 1) {
 									query += '&'
 								}
 							})
 							return query
 						}
-					})(),
-					remark: this.link_miniprogram.value,
+					})()
 				}
+				msgTemplate.url = this.link_miniprogram.remark
 			}
 
 			let formData = {
@@ -521,7 +595,7 @@ export default {
 			}
 
 			if (formData.allFans) {
-				this.$prompt('请输入当前公众号秘钥', '提示', {
+				this.$prompt('请输入当前公众号密码', '提示', {
 					confirmButtonText: '确定',
 					cancelButtonText: '取消',
 					inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,

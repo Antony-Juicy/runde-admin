@@ -100,8 +100,8 @@ export default {
 			let formData = new FormData()
 			formData.append('img', this.$refs.fileInput.files[0])
 			formData.append('type', 'image')
-			formData.append('appSecret',this.account.appSecret)
-			formData.append('appId',this.account.appId)
+			formData.append('appSecret', this.account.appSecret)
+			formData.append('appId', this.account.appId)
 			// 避免出现点击取消也触发change导致文件多次上传
 			this.$refs.fileInput.value = ''
 
@@ -109,8 +109,8 @@ export default {
 				"graphic_message_upload_material"
 				, formData);
 			this.$message.success("图片已保存到素材库")
-			// console.log(res)
-			
+			// 自动刷新素材列表
+			this.$refs.SelectPop.onSearch({})
 		}
 	},
 	mounted() {

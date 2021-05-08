@@ -65,10 +65,10 @@ export default [
             },
             {
                 label: '图书',
-                value: 'pages/Enter/Enter',
+                value: 'pages/Book/Book',
                 params: [
-                    { label: "图书id", key: "id" },
-                    { label: "订阅id", key: "id" }
+                    { label: "图书id", key: "id1" },
+                    { label: "订阅id", key: "id2" }
                 ]
             }
         ]
