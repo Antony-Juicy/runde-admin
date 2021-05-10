@@ -16,7 +16,6 @@ export default {
     // 班型管理
     courseclasstype_listJson: { url: '/admin/courseclasstype/listJson', method: 'post' }, //分页查询列表
     courseclasstype_subjectList: { url: '/admin/courseclasstype/subjectList', method: 'get' }, //根据项目Id获取科目
-    courseclasstype_getclassType: { url: '/admin/courseclasstype/getclassType', method: 'get' }, //根据班型ID查询班型信息
     courseclasstype_goSearch: { url: '/admin/courseclasstype/goSearch', method: 'get' }, //搜索框条件查询
     courseclasstype_contentDetails: { url: '/admin/courseclasstype/contentDetails', method: 'get' }, //根据班型ID查询班型信息
     courseclasstype_goAddWindows: { url: '/admin/courseclasstype/goAddWindows', method: 'get' }, //新增班型弹窗
@@ -25,7 +24,9 @@ export default {
     courseclasstype_courseList: { url: '/admin/courseclasstype/courseList', method: 'get' }, // 根据条件查找对应课程
     courseProductContent_listJsp: { url: '/admin/courseProductContent/listJsp', method: 'get' }, // 获取项目内容列表
     courseclasstype_save: { url: '/admin/courseclasstype/save', method: 'post' }, // 新增
-
-
-
+    courseclasstype_getclassType: { url: '/admin/courseclasstype/getclassType', method: 'get' }, // 根据班型ID查询班型信息
+    courseclasstype_getById: { url: '/admin/courseclasstype/getById', method: 'get' }, // 根据班型ID查询班型信息
+    courseProductContent_courseContentByProductId: { url: '/admin/courseProductContent/courseContentByProductId', method: 'get' }, // 根据项目id获取班型内容
+    courseclasstype_edit: { url: '/admin/courseclasstype/edit', method: 'post' }, // 保存修改
+    
 }

@@ -40,7 +40,7 @@
       :dialogVisible="distributeVisible"
       :showFooter="false"
       :width="'990px'"
-      @handleClose="distributeVisible = false"
+      @handleClose="closeEdit()"
     >
       <RdForm
         :formOptions="addFormOptions"
@@ -128,13 +128,14 @@ export default {
           options: [
             {
               label: "正常",
-              value: false,
+              value: true,
             },
             {
               label: "暂停",
-              value: true,
+              value: false,
             },
           ],
+          events: {},
         },
       ],
       tableData: [
@@ -197,7 +198,6 @@ export default {
               value: true,
             },
           ],
-          initValue: "0",
         },
         {
           prop: "financeCodeName1",
@@ -240,6 +240,11 @@ export default {
     this.getSelectList();
   },
   methods: {
+    closeEdit() {
+      //
+      this.distributeVisible = false;
+      this.$refs.dataForm3.onReset();
+    },
     handleOpen(data) {
       //open科目
       this.detailId = data.id;
@@ -311,14 +316,20 @@ export default {
     },
     getTableData(params = {}) {
       // TODO  secretexamsubject_list
+      let { productName } = this.searchForm;
+      let productId = productName;
+
+      delete this.searchForm.productName;
+
+      let params1 = { ...this.searchForm, productId: productId };
       this.$fetch("courseProduct_listJspn", {
         ...this.pageConfig,
-        ...this.searchForm,
+        ...params1,
         ...params,
       }).then((res) => {
         this.tableData = res.data.data.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
-          item.productStatus = item.productStatus == false ? "正常" : "暂停";
+          item.productStatus = item.productStatus == true ? "正常" : "暂停";
           return item;
         });
         this.pageConfig.totalCount = res.data.pager.totalRows;
@@ -329,28 +340,34 @@ export default {
       this.addStatus = true;
     },
     handleEdit(data) {
+      console.log("datadatadata", data);
+      //courseProduct_goEdit
       this.editId = data.id;
       this.addStatus = false;
       this.distributeVisible = true;
       this.addFormOptions.forEach((item) => {
-        console.log("打印item11111111", item);
-        // if (item.prop == "productStatus") {
-        //   console.log("打印item11111111", item);
-        //   item.options.map((itm) => {
-        //             console.log("打印itm ========?12 ", item.initValue , itm.label,item.initValue == itm.value);
-        //     if (item.initValue == itm.value) {
-        //       console.log("打印itm ========?",111233,itm.value);
-        //       item.initValue = itm.value == 0?'0':'1';
-        //     }
-        //   });
-        // } else {
-        //   item.initValue = data[item.prop];
-        // }
+        if (item.prop == "productStatus") {
+          data[item.prop] = data[item.prop] == "正常" ? true : false;
+        }
         item.initValue = data[item.prop];
       });
       setTimeout(() => {
         this.$refs.dataForm3.addInitValue();
       }, 0);
+
+      // this.$fetch("courseProduct_goEdit", {
+      //   id: data.id,
+      // }).then((res) => {
+      //   this.addFormOptions.forEach((item) => {
+      //     item.initValue = res.data.pd[item.prop];
+      //   });
+      //   setTimeout(() => {
+      //     this.$refs.dataForm3.addInitValue();
+      //   }, 0);
+      // this.productName = data.productName;
+      // this.productNameChange(this.productName,res.data.oneParentId);
+      // this.parentIdChange(res.data.oneParentId,res.data.twoParentId);
+      // });
     },
     pageChange(val) {
       console.log(val, "pagechange");

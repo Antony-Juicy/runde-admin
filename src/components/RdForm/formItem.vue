@@ -133,7 +133,7 @@
       v-on="bindEvents"
       :disabled="itemOptions.disabled"
       size="small"
-      :props="itemOptions.props"
+      :props="{...itemOptions.props,multiple: itemOptions.multiple}"
       clearable>
     </el-cascader>
   </div>

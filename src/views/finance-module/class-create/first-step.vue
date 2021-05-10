@@ -8,19 +8,19 @@
     >
       <el-form-item
         label="项目"
-        prop="projectName"
+        prop="productName"
         :rules="{
           required: true,
           message: '不能为空',
           trigger: 'change',
         }"
       >
-
         <el-select
           style="width: 280px"
-          v-model="basicInfo.projectName"
+          v-model="basicInfo.productName"
           placeholder="请选择"
           size="small"
+          :disabled="IsDisabled"
           @change="handleChange"
         >
           <el-option
@@ -44,6 +44,7 @@
         <el-select
           style="width: 280px"
           v-model="basicInfo.subjectName"
+          :disabled="IsDisabled"
           placeholder="请选择"
           size="small"
           @change="handleSubjectSelect"
@@ -61,11 +62,12 @@
       <el-form-item
         style="width: 100%"
         label="班型名称"
-        prop="classTypeName"
+        prop="className"
         :rules="nameRulers"
       >
         <el-input
-          v-model="basicInfo.classTypeName"
+          v-model="basicInfo.className"
+          :readonly="IsDisabled"
           size="small"
           style="width: 500px"
         ></el-input>
@@ -83,6 +85,7 @@
         <el-select
           style="width: 500px"
           v-model="basicInfo.classTypeBatch"
+          :disabled="IsDisabled"
           placeholder="请选择"
           size="small"
         >
@@ -105,10 +108,11 @@
           trigger: 'change',
         }"
       >
-        <el-radio-group v-model="basicInfo.classType" >
+        <el-radio-group v-model="basicInfo.classType">
           <el-radio
+           :disabled="IsDisabled"
             v-for="item in classTypeArr"
-            :label="item.label"
+            :label="item.value"
             :key="item.value"
             >{{ item.label }}
           </el-radio>
@@ -122,14 +126,16 @@
         style="align-items: center; display: flex; flex: 1; height: 100%"
         label="班型分组"
         prop="classtypeGroupName"
-        v-if="courseGroupArr.length > 0"
         :rules="{
-          required: true,
+          required: courseGroupArr.length > 0 ? true : false,
           message: '不能为空',
           trigger: 'change',
         }"
       >
-        <el-radio-group v-model="basicInfo.classtypeGroupName" @change="partChange(basicInfo.classtypeGroupName,courseGroupArr)">
+        <el-radio-group
+          v-model="basicInfo.classtypeGroupName"
+          @change="partChange(basicInfo.classtypeGroupName, courseGroupArr)"
+        >
           <el-radio
             v-for="item in courseGroupArr"
             :label="item.label"
@@ -150,10 +156,11 @@
           trigger: 'change',
         }"
       >
-        <el-radio-group v-model="basicInfo.serviceYear" >
+        <el-radio-group v-model="basicInfo.serviceYear">
           <el-radio
             v-for="item in serviceYearArr"
-            :label="item.label"
+            :label="item.value"
+            :disabled="IsDisabled"
             :key="item.value"
             >{{ item.label }}
           </el-radio>
@@ -169,10 +176,11 @@
           trigger: 'change',
         }"
       >
-        <el-radio-group v-model="basicInfo.protocolType" >
+        <el-radio-group v-model="basicInfo.protocolType">
           <el-radio
             v-for="item in protocolTypeArr"
-            :label="item.label"
+            :label="item.value"
+            :disabled="IsDisabled"
             :key="item.value"
             >{{ item.label }}
           </el-radio>
@@ -190,10 +198,11 @@
           trigger: 'change',
         }"
       >
-        <el-radio-group v-model="basicInfo.refundType" >
+        <el-radio-group v-model="basicInfo.refundType">
           <el-radio
             v-for="item in refundTypeArr"
-            :label="item.label"
+            :label="item.value"
+            :disabled="IsDisabled"
             :key="item.value"
             >{{ item.label }}
           </el-radio>
@@ -201,7 +210,6 @@
           <el-radio :label="2">不退费</el-radio> -->
         </el-radio-group>
       </el-form-item>
-
       <el-form-item
         style="align-items: center; display: flex; flex: 1; height: 100%"
         label="状态"
@@ -212,12 +220,12 @@
           trigger: 'change',
         }"
       >
-        <el-radio-group v-model="basicInfo.status" >
+        <el-radio-group v-model="basicInfo.status">
           <!-- <el-radio :label="1">正常</el-radio>
           <el-radio :label="2">暂停</el-radio> -->
           <el-radio
             v-for="item in statusArr"
-            :label="item.label"
+            :label="item.value"
             :key="item.value"
             >{{ item.label }}
           </el-radio>
@@ -233,7 +241,7 @@ export default {
   data() {
     return {
       subjecttArr: [], //科目
-      courseGroupArr: [],
+      courseGroupArr: [], //班型分组
       currentProductId: "",
       // projectArr: [
       //   {
@@ -258,18 +266,19 @@ export default {
       //   },
       // ],
       basicInfo: {
-        projectName: "",
+        productName: "",
         productId: "",
         subjectName: "",
-        subjectId:"",
-        classTypeName: "",
-        classTypeBatch: "",//班型年份
-        classType: "",//班型類型
-        classtypeGroupName: "",//班型分组名称
-        classtypeGroupId:"",
-        serviceYear: "",//服务年限
-        refundType: "",//退费类型
-        protocolType:""
+        subjectId: "",
+        className: "",
+        classTypeBatch: "", //班型年份
+        classType: "", //班型類型
+        classtypeGroupName: "", //班型分组名称
+        classtypeGroupId: "",
+        serviceYear: "", //服务年限
+        refundType: "", //退费类型
+        protocolType: "",
+        status: "",
       },
       nameRulers: [
         { required: true, message: "请输入", trigger: "blur" },
@@ -314,6 +323,10 @@ export default {
       //状态
       type: Array,
     },
+    IsDisabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   mounted() {
     // this.getData();
@@ -322,6 +335,7 @@ export default {
     handleSubjectSelect(val) {
       // courseclasstype_courseList
       this.basicInfo.subjectId = val;
+      this.$emit("changeSubArr", this.subjecttArr);
       this.$fetch("courseclasstype_courseList", {
         productId: this.currentProductId,
         subjectId: val,
@@ -330,34 +344,35 @@ export default {
         //   label: item.subjectName,
         //   value: item.id,
         // }));
-        let courseList = res.data && res.data.list.map((item) => ({
-          label: item.courseName,
-          value: item.id,
-        }));
+        let courseList =
+          res.data &&
+          res.data.list.map((item) => ({
+            label: item.courseName,
+            value: item.id,
+          }));
         this.$emit("getCourseListFunc", courseList);
       });
     },
-    partChange(val,arr) {
-        arr.find(item=>{
-          if(item.label == val){
-             this.basicInfo.classtypeGroupId = item.value;
-          }
-        })
-       
+    partChange(val, arr) {
+      arr.map((item) => {
+        if (item.label == val) {
+          this.basicInfo.classtypeGroupId = item.value;
+        }
+      });
     },
     handleChange(val) {
       console.log("val==", val);
       //  获取科目下拉
-       this.basicInfo.productId = val;
+      this.basicInfo.productId = val;
       this.currentProductId = val;
-      this.$emit('message',val)
+      this.$emit("message", val);
       this.$fetch("courseclasstype_subjectList", { productId: val }).then(
         (res) => {
           this.subjecttArr = res.data.list.map((item) => ({
             label: item.subjectName,
             value: item.id,
           }));
-          this.basicInfo.subjectName = ''; 
+          this.basicInfo.subjectName = "";
         }
       );
       //获取班型分組
