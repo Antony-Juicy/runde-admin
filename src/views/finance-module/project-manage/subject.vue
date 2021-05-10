@@ -145,7 +145,7 @@ export default {
   methods: {
     handleClose(){
       this.editVisible = false;
-      // this.$refs.dyForm.dynamicValidateForm.onReset();
+      this.$refs.dyForm.$refs.dynamicValidateForm.resetFields(); 
     },
     refresh() {
       this.getTableData();

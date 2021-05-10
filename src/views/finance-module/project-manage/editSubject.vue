@@ -233,7 +233,7 @@
             trigger: 'change',
           }"
         >
-        {{dynamicValidateForm.financeCodeName3}}
+          {{ dynamicValidateForm.financeCodeName3 }}
           <!--<div class="param-label">項目</div>-->
           <!--<span style="margin-right: 5px;font-weight:bold">:</span>-->
           <el-select
@@ -298,10 +298,10 @@ export default {
   components: {},
   props: {
     id: {
-      type: Number || String,
+      type: [Number, String],
     },
     issuseId: {
-      type: Number || String,
+      type: [Number, String],
     },
     addStatus: {
       type: Boolean,
@@ -317,7 +317,9 @@ export default {
     };
   },
   mounted() {
-    this.getData();
+    if (this.addStatus == false) {
+      this.getData();
+    }
     this.getSelectList();
   },
   methods: {
@@ -338,7 +340,7 @@ export default {
           label: item.value,
           value: item.key,
         }));
-        console.log(' this.threeCategoriesArr', this.threeCategoriesArr)
+        console.log(" this.threeCategoriesArr", this.threeCategoriesArr);
       });
       // this.$refs.dataForm3.addInitValue();
     },
@@ -408,7 +410,7 @@ export default {
     getData() {
       this.$fetch("coursesubject_goEdit", {
         id: this.issuseId,
-      }).then((res) => { 
+      }).then((res) => {
         let theoryTestStart = [
           new Date(res.data.theoryTestStart),
           new Date(res.data.theoryTestEnd),
