@@ -293,10 +293,10 @@ export default {
   },
   components: {},
   props: {
-    id: {
+    id: {//项目id
       type: [Number, String],
     },
-    issuseId: {
+    issuseId: {//科目id
       type: [Number, String],
     },
     addStatus: {
@@ -394,11 +394,11 @@ export default {
           });
 
           financeCode3 = obj1 && obj1.value;
-          let issuseId;
+          let productId;
           let obj2 = this.productArr.find((item) => {
             return item.value == this.dynamicValidateForm.productName;
           });
-          issuseId = obj2 && obj2.value;
+          productId = obj2 && obj2.value;
           this.$fetch(
             this.addStatus ? "coursesubject_save" : "coursesubject_editJsp",
             {
@@ -410,8 +410,8 @@ export default {
               theoryTest2Start,
               theoryTest2End,
               financeCode3,
-              productId: this.issuseId ? this.issuseId : issuseId,
-              id: this.id,
+              productId: this.id ? this.id : productId,
+              id: this.issuseId,
             }
           ).then((res) => {
             this.$message.success("操作成功");

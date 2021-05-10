@@ -466,8 +466,22 @@
       <classDetail
         ref="videoClass"
         @close="setVisible5 = false"
+        @openDetails='openDetails' 
         v-if="setVisible5"
         @refresh="getTableData"
+      />
+    </fullDialog>
+
+    <!-- 班次详情的弹窗 -->
+    <fullDialog
+      v-model="detailsVisible"
+      :title="titleName"
+      @change="closeFn"
+    >
+      <Details
+        @close="closeFn"
+        v-if="detailsVisible"
+        @refresh="getTableData" 
       />
     </fullDialog>
   </div>
@@ -483,6 +497,7 @@ import videoClass from "./video-class";
 import distribeClass from "./distribe-class";
 import firstStep from "./first-step";
 import classDetail from "./class-detail";
+import Details from "./class-detail/details.vue";
 export default {
   name: "class-create",
   components: {
@@ -495,6 +510,7 @@ export default {
     distribeClass,
     firstStep,
     classDetail,
+    Details
   },
   provide() {
     return {
@@ -503,6 +519,8 @@ export default {
   },
   data() {
     return {
+      detailsVisible: false,
+      titleName:'j88',
       IsDisabled: false,
       editId: "",
       currentClassName: "",
@@ -950,6 +968,15 @@ export default {
     // geteGroupListFunc(data) {//获取班型分組
     //   this.courseGroupArr = data;
     // },
+    closeFn(){
+           this.setVisible5 = true;
+      this.detailsVisible = false;
+    },
+    openDetails(data){
+      this.setVisible5 = false;
+      this.detailsVisible = true;
+       this.titleName = data.campusName;
+    },
     turnTwoArr(arr, size) {
       // arr是一维数组 size是二维数组包含几条数据
       var arr2 = [];
