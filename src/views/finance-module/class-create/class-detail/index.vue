@@ -1,5 +1,5 @@
 <template>
-  <div class="view-detail">
+  <div class="class-detail">
       <search-form
       :formOptions="formOptions"
       :showNum="7"
@@ -7,19 +7,19 @@
     ></search-form>
     <div class="w-container">
       <div class="btn-wrapper">
-        <el-button type="success" size="small" @click="handleAdd" icon="el-icon-plus"
+        <el-button type="success" size="small" @click="handleAdd(1)" icon="el-icon-plus"
           >添加</el-button
         >
-        <el-button type="primary" size="small" @click="handleAdd"  icon="el-icon-edit"
+        <el-button type="primary" size="small" @click="handleAdd(2)"  icon="el-icon-edit"
           >批量修改价格</el-button
         >
-        <el-button type="danger" size="small" @click="handleAdd" icon="el-icon-caret-right"
+        <el-button type="danger" size="small" @click="handleAdd(3)" icon="el-icon-caret-right"
           >暂停</el-button
         >
-        <el-button type="warning" size="small" @click="handleAdd" icon="el-icon-circle-check"
+        <el-button type="warning" size="small" @click="handleAdd(4)" icon="el-icon-circle-check"
           >恢复</el-button
         >
-        <el-button type="info" size="small" @click="handleAdd" icon="el-icon-plus"
+        <el-button type="info" size="small" @click="handleAdd(5)" icon="el-icon-plus"
           >批量添加连锁价格</el-button
         >
       </div>
@@ -55,7 +55,7 @@
         @handleClose="addVisible = false"
         @submitForm="submitAddForm('dataForm3')"
       >
-        <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
+        <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3" >
           <template slot="subjectId">
             <el-form
                 ref="dataForm2"
@@ -63,8 +63,8 @@
                 :rules="rules"
                 label-width="120px"
             >
-                <el-form-item label="" prop="">
-                    <el-select v-model="form.region" placeholder="请选择活动区域">
+                <el-form-item style="margin-left: -120px;margin-bottom: 20px">
+                    <el-select v-model="basicInfo.region" placeholder="请选择活动区域">
                     <el-option label="区域一" value="shanghai"></el-option>
                     <el-option label="区域二" value="beijing"></el-option>
                     </el-select>
@@ -111,13 +111,78 @@
         </RdForm>
       </rd-dialog>
 
+      <!-- 批量添加连锁价格 -->
+      <rd-dialog
+        :title="'批量添加连锁价格'"
+        :dialogVisible="addPriceVisible"
+        appendToBody
+        @handleClose="addPriceVisible = false"
+        @submitForm="submitAddPriceForm('dataForm3')"
+      >
+        <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3" >
+          <template slot="subjectId">
+            <el-form
+                ref="dataForm2"
+                :model="basicInfo"
+                :rules="rules"
+                label-width="120px"
+            >
+                <el-form-item style="margin-left: -120px;margin-bottom: 20px">
+                    <el-select v-model="basicInfo.region" placeholder="请选择活动区域">
+                    <el-option label="区域一" value="shanghai"></el-option>
+                    <el-option label="区域二" value="beijing"></el-option>
+                    </el-select>
+                </el-form-item>
+                <div
+                    class="param-item"
+                    v-for="(item, index) in basicInfo.course"
+                    :key="item.value"
+                  >
+                    <el-form-item
+                      :prop="'course.' + index + '.coursePrice'"
+                      label-width="0"
+                      :rules="{
+                        required: item.checked
+                          ? true
+                          : false,
+                        message: '请输入价格',
+                        trigger: 'blur',
+                      }"
+                    >
+                      <el-checkbox
+                        v-model="item.checked"
+                        :label="item.label"
+                      ></el-checkbox>
+
+                      <el-input
+                        v-model="item.coursePrice"
+                        size="small"
+                        placeholder="请输入价格"
+                        style="width: 200px; margin-left: 20px"
+                      ></el-input>
+                      <el-switch
+                        active-text="计算业绩"
+                        style="margin-left: 20px"
+                        v-model="item.isperformance"
+                        active-color="#13ce66"
+                        inactive-color="#dcdfe6"
+                      >
+                      </el-switch>
+                    </el-form-item>
+                  </div>
+            </el-form>
+          </template>
+        </RdForm>
+      </rd-dialog>
+
+
   </div>
 </template>
 
 <script>
 import RdForm from "@/components/RdForm";
 export default {
-  name:"view-detail",
+  name:"class-detail",
   data(){
     return {
       formOptions: [
@@ -199,6 +264,7 @@ export default {
         pageSize: 10,
       },
       addVisible: false,
+      addPriceVisible: false,
       addFormOptions: [
           
         {
@@ -273,7 +339,8 @@ export default {
       addStatus: true,
       editId:"",
       basicInfo: {
-          course: [1,2,3]
+          course: [1,2,3],
+          region:""
       },
       rules: {}
     }
@@ -298,11 +365,24 @@ export default {
       this.pageConfig.showCount = val.limit;
       this.getTableData();
     },
-    handleAdd(){
-      this.addStatus = true;
-      this.addVisible = true;
+    handleAdd(index){
+      if(index == 1){
+        this.addStatus = true;
+        this.addVisible = true;
+      }else if(index == 5){
+        this.addPriceVisible = true;
+      }
+      
     },
     submitAddForm(formName){
+      this.$refs[formName].validate((valid, formData) => {
+        if(valid){
+          console.log(formData, "提交");
+        }
+          
+      });
+    },
+    submitAddPriceForm(formName){
       this.$refs[formName].validate((valid, formData) => {
         if(valid){
           console.log(formData, "提交");
@@ -349,8 +429,9 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.view-detail {
 
+<style lang="scss" scoped>
+.class-detail {
+ 
 }
 </style>
