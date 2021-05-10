@@ -31,6 +31,9 @@
         @pageChange="pageChange"
         :emptyText="emptyText"
       >
+        <template slot="campusName" slot-scope="scope">
+          <el-button type="text">{{scope.row.campusName}}</el-button>
+        </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
             >编辑</el-button
@@ -209,6 +212,7 @@ export default {
           cutdown: 1608897351706,
           visit: 2,
           phone: "15692026183",
+          campusName:"汕头分校(广东校区)"
         },
       ],
       tableKey: [
@@ -241,6 +245,7 @@ export default {
         {
           name: "校区名称",
           value: "campusName",
+          operate: true
         },
         {
           name: "详细介绍",
