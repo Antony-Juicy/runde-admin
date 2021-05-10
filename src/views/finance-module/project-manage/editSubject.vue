@@ -114,20 +114,19 @@
           </el-date-picker>
           <el-checkbox
             v-show="showCheckbox"
-            v-model="dynamicValidateForm.checked1"
+            @change="handleChange"
+            v-model="checked1"
             >技能考试</el-checkbox
           >
           <el-checkbox
             v-show="showCheckbox"
-            v-model="dynamicValidateForm.checked2"
+            @change="handleChange2"
+            v-model="checked2"
             >理论二考</el-checkbox
           >
         </el-form-item>
       </div>
-      <div
-        class="param-item"
-        v-if="dynamicValidateForm.checked1 && showCheckbox"
-      >
+      <div class="param-item" v-if="checked1 && showCheckbox">
         <el-form-item
           label="技能考试"
           prop="skillTestStart"
@@ -151,13 +150,10 @@
         </el-form-item>
       </div>
       <!--二考-->
-      <div
-        class="param-item"
-        v-if="dynamicValidateForm.checked2 && showCheckbox"
-      >
+      <div class="param-item" v-if="checked2 && showCheckbox">
         <el-form-item
           label="理论二考时间"
-          prop="secondtestTime"
+          prop="theoryTest2Start"
           :rules="{
             required: true,
             message: '不能为空',
@@ -168,7 +164,7 @@
           <!--<span style="margin-right: 5px;font-weight:bold">:</span>-->
           <el-date-picker
             size="small"
-            v-model="dynamicValidateForm.secondtestTime"
+            v-model="dynamicValidateForm.theoryTest2Start"
             type="datetimerange"
             range-separator="至"
             start-placeholder="开始时间"
@@ -178,10 +174,7 @@
         </el-form-item>
       </div>
       <!--二考关闭时间-->
-      <div
-        class="param-item"
-        v-if="dynamicValidateForm.checked2 && showCheckbox"
-      >
+      <div class="param-item" v-if="checked2 && showCheckbox">
         <el-form-item
           label="理论二考关考时间"
           prop="theoryTest2ClosingTime"
@@ -233,7 +226,6 @@
             trigger: 'change',
           }"
         >
-          {{ dynamicValidateForm.financeCodeName3 }}
           <!--<div class="param-label">項目</div>-->
           <!--<span style="margin-right: 5px;font-weight:bold">:</span>-->
           <el-select
@@ -272,6 +264,8 @@ export default {
   data() {
     return {
       showCheckbox: false,
+      checked1: false,
+      checked2: false,
       startDateDisabled: {},
       productArr: [],
       threeCategoriesArr: [],
@@ -287,11 +281,13 @@ export default {
         subjectNumber: "",
         subjectName: "",
         theoryTestStart: "",
+        theoryTestEnd: "",
         skillTestStart: "",
         theoryTestClosingTime: "",
-        secondtestTime: "",
+        theoryTest2ClosingTime: "",
         subjectStatus: "",
-        theoryTestEnd: "",
+        theoryTest2Start: "",
+        theoryTest2End: "",
       },
     };
   },
@@ -323,11 +319,23 @@ export default {
     this.getSelectList();
   },
   methods: {
+    handleChange(val) {
+      if (val == false) {
+        this.dynamicValidateForm.skillTestStart = "";
+      }
+    },
+    handleChange2(val) {
+      if (val == false) {
+        this.dynamicValidateForm.theoryTest2Start = "";
+      }
+    },
     changeSelect(val) {
       if (val == 2) {
         this.showCheckbox = true;
       } else {
         this.showCheckbox = false;
+        this.dynamicValidateForm.skillTestStart = "";
+        this.dynamicValidateForm.theoryTest2Start = "";
       }
     },
     getSelectList() {
@@ -355,6 +363,9 @@ export default {
           this.dynamicValidateForm.theoryTestStart[1] = this.$common._formatDates(
             this.dynamicValidateForm.theoryTestStart[1]
           );
+          this.dynamicValidateForm.theoryTest2ClosingTime = this.$common._formatDates(
+            this.dynamicValidateForm.theoryTest2ClosingTime
+          );
           this.dynamicValidateForm.theoryTestClosingTime = this.$common._formatDates(
             this.dynamicValidateForm.theoryTestClosingTime
           );
@@ -369,6 +380,13 @@ export default {
           );
           let theoryTestEnd = this.$common._formatDates(
             this.dynamicValidateForm.theoryTestStart[1]
+          );
+
+          let theoryTest2Start = this.$common._formatDates(
+            this.dynamicValidateForm.theoryTest2Start[0]
+          );
+          let theoryTest2End = this.$common._formatDates(
+            this.dynamicValidateForm.theoryTest2Start[1]
           );
           let financeCode3;
           let obj1 = this.threeCategoriesArr.find((item) => {
@@ -389,6 +407,8 @@ export default {
               skillTestEnd,
               theoryTestStart,
               theoryTestEnd,
+              theoryTest2Start,
+              theoryTest2End,
               financeCode3,
               productId: this.issuseId ? this.issuseId : issuseId,
               id: this.id,
@@ -411,11 +431,33 @@ export default {
       this.$fetch("coursesubject_goEdit", {
         id: this.issuseId,
       }).then((res) => {
+        let skillTestStart = [
+          new Date(res.data.skillTestStart),
+          new Date(res.data.skillTestEnd),
+        ];
         let theoryTestStart = [
           new Date(res.data.theoryTestStart),
           new Date(res.data.theoryTestEnd),
         ];
-        let obj = { ...res.data, theoryTestStart: theoryTestStart };
+        let theoryTest2Start = [
+          new Date(res.data.theoryTest2Start),
+          new Date(res.data.theoryTest2End),
+        ];
+        let obj = {
+          ...res.data,
+          theoryTestStart: theoryTestStart,
+          theoryTest2Start: theoryTest2Start,
+          skillTestStart: skillTestStart,
+        };
+        if (res.data.productId == 2) {
+          this.showCheckbox = true;
+          this.checked1 = true;
+          this.checked2 = true;
+        } else {
+          this.showCheckbox = false;
+          this.checked1 = false;
+          this.checked2 = false;
+        }
         this.dynamicValidateForm = obj;
       });
     },
