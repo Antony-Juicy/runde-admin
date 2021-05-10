@@ -684,8 +684,8 @@ export default {
           { name: "所属项目", value: "productName" },
           { name: "内容名称", value: "contentName" },
           { name: "类型", value: "contentType" },
-          { name: "核算规则", value: "refundRules" },
-          { name: "学费/元", value: "totalFee" },
+          { name: "核算规则", value: "accountingRules" },
+          { name: "学费/元", value: "contentPrice" },
           { name: "录播情况", value: "playback" },
 
           {
@@ -1322,7 +1322,7 @@ export default {
             key != "classTypeStage"
           ) {
             if (key == "courses") {
-              console.log(6666,res.data.data.model["courses"])
+              console.log(6666, res.data.data.model["courses"]);
               let arr = JSON.parse(res.data.data.model["courses"]);
               arr.map((el) => {
                 el.checked = true;
@@ -1344,18 +1344,25 @@ export default {
               this.basicInfo["courses"] = arr;
             } else if (key == "courseContentId") {
               //班型内容
-            let arr = res.data.data.model.courseContentIdList.map(item=>{
-             item.id  = item.contentId;
-             return item
-            });
-            console.log('hhh2222',arr)
+              let accountingRulesArr = [];
+              let arr = res.data.data.model.courseContentIdList.map((item) => {
+                item.id = item.contentId;
+                item.playback = item.playback == true ? "有录播" : "无录播";
+                console.log("accountingRules", item.accountingRules);
+                res.data.accountingRulesList.map(el=>{
+                  if(el.key == item.accountingRules){
+                     item.accountingRules = el.value
+                  }
+                })
+                  res.data.contentTypeList.map(el=>{
+                  if(el.key == item.contentType){
+                     item.contentType = el.value
+                  }
+                })
+                return item;
+              });
               this.basicInfo.tableData = arr;
-              // this.$fetch("courseProductContent_courseContentByProductId", {
-              //   productId: res.data.data.model.productId,
-              // }).then((res) => {
-              //   // this.basicInfo.tableData = res.dataJson.list;
-              //   console.log('22222222222',res.dataJson.list)
-              // });
+      
             } else {
               this.basicInfo[key] = res.data.data.model[key];
             }
