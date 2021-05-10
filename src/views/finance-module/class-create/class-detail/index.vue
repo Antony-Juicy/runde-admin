@@ -28,6 +28,7 @@
         :tableKey="tableKey"
         :pageConfig.sync="pageConfig"
         fixedTwoRow
+        multiple
         @pageChange="pageChange"
         :emptyText="emptyText"
       >
@@ -116,69 +117,27 @@
 
       <!-- 批量添加连锁价格 -->
       <rd-dialog
-        :title="'批量添加连锁价格'"
+        :title="'批量添加校区班次连锁价格'"
         :dialogVisible="addPriceVisible"
         appendToBody
         @handleClose="addPriceVisible = false"
         @submitForm="submitAddPriceForm('dataForm3')"
       >
-        <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3" >
-          <template slot="subjectId">
-            <el-form
-                ref="dataForm2"
-                :model="basicInfo"
-                :rules="rules"
-                label-width="120px"
-            >
-                <el-form-item style="margin-left: -120px;margin-bottom: 20px">
-                    <el-select v-model="basicInfo.region" placeholder="请选择活动区域">
-                    <el-option label="区域一" value="shanghai"></el-option>
-                    <el-option label="区域二" value="beijing"></el-option>
-                    </el-select>
-                </el-form-item>
-                <div
-                    class="param-item"
-                    v-for="(item, index) in basicInfo.course"
-                    :key="item.value"
-                  >
-                    <el-form-item
-                      :prop="'course.' + index + '.coursePrice'"
-                      label-width="0"
-                      :rules="{
-                        required: item.checked
-                          ? true
-                          : false,
-                        message: '请输入价格',
-                        trigger: 'blur',
-                      }"
-                    >
-                      <el-checkbox
-                        v-model="item.checked"
-                        :label="item.label"
-                      ></el-checkbox>
-
-                      <el-input
-                        v-model="item.coursePrice"
-                        size="small"
-                        placeholder="请输入价格"
-                        style="width: 200px; margin-left: 20px"
-                      ></el-input>
-                      <el-switch
-                        active-text="计算业绩"
-                        style="margin-left: 20px"
-                        v-model="item.isperformance"
-                        active-color="#13ce66"
-                        inactive-color="#dcdfe6"
-                      >
-                      </el-switch>
-                    </el-form-item>
-                  </div>
-            </el-form>
-          </template>
+        <RdForm :formOptions="addPriceFormOptions" formLabelWidth="120px" :rules="addPriceRules" ref="dataForm3" >
         </RdForm>
       </rd-dialog>
 
-
+      <!-- 批量修改价格 -->
+      <rd-dialog
+        :title="'批量修改价格'"
+        :dialogVisible="editPriceVisible"
+        appendToBody
+        @handleClose="editPriceVisible = false"
+        @submitForm="submitEditPriceForm('dataForm3')"
+      >
+        <RdForm :formOptions="editPriceFormOptions" formLabelWidth="120px" :rules="editPriceRules" ref="dataForm3" >
+        </RdForm>
+      </rd-dialog>
   </div>
 </template>
 
@@ -270,6 +229,7 @@ export default {
       },
       addVisible: false,
       addPriceVisible: false,
+      editPriceVisible: false,
       addFormOptions: [
           
         {
@@ -341,6 +301,97 @@ export default {
           { required: true, message: "请输入修改事由", trigger: "blur" },
         ]
       },
+      addPriceFormOptions: [
+        {
+          prop: "className",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "连锁",
+          options: []
+        },
+        {
+          prop: "className",
+          element: "el-input",
+          placeholder: "请输入",
+          label: "连锁区域"
+        },
+        {
+          prop: "className",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "开网课类型",
+          options: []
+        },
+        {
+          prop: "className",
+          element: "el-input",
+          placeholder: "请输入",
+          label: "1科价格"
+        },
+        {
+          prop: "className",
+          element: "el-input",
+          placeholder: "请输入",
+          label: "2科价格"
+        },
+        {
+          prop: "className",
+          element: "el-input",
+          placeholder: "请输入",
+          label: "3科价格"
+        },
+        {
+          prop: "className",
+          element: "el-input",
+          placeholder: "请输入",
+          label: "4科价格"
+        }
+      ],
+      addPriceRules: {
+
+      },
+      editPriceFormOptions: [
+        {
+          prop: "className",
+          element: "el-select",
+          placeholder: "请输入",
+          label: "是否计算业绩",
+          options: [
+            {
+              label: "是",
+              value: true
+            },
+            {
+              label: "否",
+              value: false
+            }
+          ]
+        },
+        {
+          prop: "className",
+          element: "el-input",
+          placeholder: "请输入",
+          label: "1科价格"
+        },
+        {
+          prop: "className",
+          element: "el-input",
+          placeholder: "请输入",
+          label: "2科价格"
+        },
+        {
+          prop: "className",
+          element: "el-input",
+          placeholder: "请输入",
+          label: "3科价格"
+        },
+        {
+          prop: "className",
+          element: "el-input",
+          placeholder: "请输入",
+          label: "4科价格"
+        }],
+      editPriceRules: {},
       addStatus: true,
       editId:"",
       basicInfo: {
@@ -376,6 +427,8 @@ export default {
         this.addVisible = true;
       }else if(index == 5){
         this.addPriceVisible = true;
+      }else if(index == 2){
+        this.editPriceVisible = true;
       }
       
     },
