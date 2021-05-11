@@ -373,7 +373,6 @@ export default {
           this.dynamicValidateForm.theoryTestClosingTime = this.$common._formatDates3(
             this.dynamicValidateForm.theoryTestClosingTime
           );
-          console.log('11~~~', this.dynamicValidateForm.skillTestStart[0])
           let skillTestStart = this.$common._formatDates3(
             this.dynamicValidateForm.skillTestStart[0]
           );
@@ -436,20 +435,20 @@ export default {
       this.$fetch("coursesubject_goEdit", {
         id: this.issuseId,
       }).then((res) => {
-        let skillTestStart = [
+        let skillTestStart = res.data.skillTestStart && res.data.skillTestEnd ?[
           new Date(this.$common._getNowYearDate(res.data.skillTestStart)),
           new Date(this.$common._getNowYearDate(res.data.skillTestEnd)),
-        ];
-        let theoryTestStart = [
+        ] :"";
+        let theoryTestStart = res.data.theoryTestStart && res.data.theoryTestEnd ? [
           new Date(this.$common._getNowYearDate(res.data.theoryTestStart)),
           new Date(this.$common._getNowYearDate(res.data.theoryTestEnd)),
-        ];
-        let theoryTest2Start = [
+        ]:"";
+        let theoryTest2Start = res.data.theoryTest2Start && res.data.theoryTest2End ? [
           new Date(this.$common._getNowYearDate(res.data.theoryTest2Start)),
           new Date(this.$common._getNowYearDate(res.data.theoryTest2End)),
-        ];
-        let theoryTest2ClosingTime = this.$common._getNowYearDate(res.data.theoryTest2ClosingTime);
-        let theoryTestClosingTime = this.$common._getNowYearDate(res.data.theoryTestClosingTime);
+        ]:"";
+        let theoryTest2ClosingTime = res.data.theoryTest2ClosingTime? this.$common._getNowYearDate(res.data.theoryTest2ClosingTime):"";
+        let theoryTestClosingTime = res.data.theoryTestClosingTime ? this.$common._getNowYearDate(res.data.theoryTestClosingTime):"";
         let obj = {
           ...res.data,
           theoryTestStart: theoryTestStart,
