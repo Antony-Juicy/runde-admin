@@ -45,4 +45,8 @@ export default {//项目内容管理
     bookclasstypecoursemiddle_goAddWindows: {url: '/admin/bookclasstypecoursemiddle/goAddWindows', method: 'get'},
     bookclasstypecoursemiddle_goEdit: {url: '/admin/bookclasstypecoursemiddle/goEdit', method: 'get'},
     bookclasstypecoursemiddle_checkByClassTypeCourseBookId: {url: '/admin/bookclasstypecoursemiddle/checkByClassTypeCourseBookId', method: 'post'},
+
+    // 班次管理
+    courseclass_listJsp: {url: '/teach/courseclass/listJsp', method: 'get'},
+    courseclass_goAdd: {url: '/teach/courseclass/goAdd', method: 'get'},
 }
