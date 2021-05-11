@@ -16,7 +16,7 @@
 		</div>
 		<div class="form-line" style="padding-bottom:0">
 			<div class="label">图文标题：</div>
-			<div class="likeInput" ref='likeInput' contenteditable="true" @input="handle_change" @focus="handle_focus" @blur="handle_blur">请输入</div>
+			<div class="likeInput" ref='likeInput' contenteditable="plaintext-only" @input="handle_change" @focus="handle_focus" @blur="handle_blur">请输入</div>
 		</div>
 
 		<div class="form-line">
@@ -32,12 +32,29 @@
 		</div>
 		<div class="form-line">
 			<div class="label">跳转链接：</div>
-			<el-input placeholder="请以http://或https://开头" v-model="msgForm.url" @input="emitForm"></el-input>
+			<el-input placeholder="请以输入http://或https://开头的链接" v-model="msgForm.url" @input="emitForm"></el-input>
 		</div>
 		<div class="form-line" style="align-items:flex-start">
 			<div class="label">封面图：</div>
-			<Upload-oss v-if="uploadOssElem" :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }" :src.sync="msgForm.picurl" :initGetConfig="initGetConfig"
-				@update:src="handle_uploadFinish" />
+			<!-- <Upload-oss v-if="uploadOssElem" :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }" :src.sync="msgForm.picurl" :initGetConfig="initGetConfig"
+				@update:src="handle_uploadFinish" /> -->
+
+			<SelectPop ref="SelectPop" v-bind="SelectPopOptions_img" @select="handle_selectImg" :key="'SelectPop4397'">
+				<img class="img180" :src="msgForm.picurl ?msgForm.picurl : `https://rdimg.rundejy.com/cmsuserInfo/20200624163441upload_oss.png`" alt="" />
+				<template slot="thumb_url" slot-scope="scope">
+					<el-image style="width: 100px; height: 100px" :src="scope.row.thumb_url" fit="contain"></el-image>
+				</template>
+				<template slot="header">
+					<div class="upload-line">
+						<div class="choseFileForm">
+							<input class="btn-hidden" ref="fileInput" type="file" accept="image/*" @change="handle_uploadFile" />
+							<el-button class="btn-over" @click="handle_hackFileInput"><i class="el-icon-upload"></i>本地上传</el-button>
+						</div>
+						<div class="origin-tips">选择本地图片上传到公众号素材库</div>
+					</div>
+
+				</template>
+			</SelectPop>
 		</div>
 		<img src="" />
 		<!-- 编辑公众号 -->
@@ -49,7 +66,7 @@
 </template>
 
 <script>
-import UploadOss from '@/components/UploadOss'
+// import UploadOss from '@/components/UploadOss'
 import SelectPop from '@/components/SelectPop'
 export default {
 	props: {
@@ -58,14 +75,14 @@ export default {
 			require: true,
 		},
 	},
-	components: { UploadOss, SelectPop },
+	components: { SelectPop },
 	data() {
 		return {
 			selection: {},
 			range: {},
 			lock: false,
 			lastEditRange: false,
-			uploadOssElem: true,
+			// uploadOssElem: true,
 			initGetConfig: false,
 			msgForm: {
 				title: "",
@@ -115,10 +132,48 @@ export default {
 						}
 					}
 				}
-			}
+			},
+			SelectPopOptions_img: {
+				searchObj: {
+					api: "graphic_message_get_material",
+					formOptions: [],
+					needType: false,
+					params: {
+						appId: '',
+						appSecret: '',
+						type: 'image'
+					}
+				},
+				tableObj: {
+					tableKey: [
+						{
+							name: "图片",
+							value: "thumb_url",
+							width: 100,
+							operate: true,
+						},
+						{
+							name: "标题",
+							value: "name",
+						},
+					],
+					transItem: (item) => {
+						return {
+							thumb_url: `${process.env.VUE_APP_BASE_API}/wechat/console/wechat_material/handle_img?src=${encodeURIComponent(item.url)}`, // 投机一把 看看情况
+							// thumb_url: `https://mcdn.yiban.io/img_proxy?src=${encodeURIComponent(item.thumb_url)}`,
+							name: item.name,
+							thumb_url_t: item.url,
+							media_id: item.media_id
+						}
+					}
+				}
+			},
 		}
 	},
 	watch: {
+		'msgForm.picurl': function (n, o) {
+			this.emitForm()
+		}
 	},
 	methods: {
 		handle_insertUserName() {
@@ -218,12 +273,36 @@ export default {
 			// 选择素材
 			this.msgForm = {
 				title: data.title,
-				picurl: data.thumb_url,
-				picurl_t: data.thumb_url_t,
+				picurl: data.thumb_url,     // 素材的图片有防盗保护，所以要通过api请求流显示，不能作为上传参数
+				picurl_t: data.thumb_url_t, // 如果是素材的图片，_t 才是原始图片路径
 				description: data.digest,
 				url: data.url
 			}
 			this.$refs.likeInput.innerHTML = this.msgForm.title
+		},
+		handle_selectImg(data) {
+			this.msgForm.media_id = data.media_id
+			this.msgForm.picurl = data.thumb_url // 素材的图片有防盗保护，所以要通过api请求流显示，不能作为上传参数
+			this.msgForm.picurl_t = data.thumb_url_t // 如果是素材的图片，_t 才是原始图片路径
+		},
+		handle_hackFileInput() {
+			this.$refs.fileInput.click()
+		},
+		async handle_uploadFile() {
+			let formData = new FormData()
+			formData.append('img', this.$refs.fileInput.files[0])
+			formData.append('type', 'image')
+			formData.append('appSecret', this.account.appSecret)
+			formData.append('appId', this.account.appId)
+			// 避免出现点击取消也触发change导致文件多次上传
+			this.$refs.fileInput.value = ''
+
+			let res = await this.$fetch(
+				"graphic_message_upload_material"
+				, formData);
+			this.$message.success("图片已保存到素材库")
+			// 自动刷新素材列表
+			this.$refs.SelectPop.onSearch({})
 		},
 		emitForm() {
 			this.$emit('msgData', this.msgForm)
@@ -235,6 +314,9 @@ export default {
 
 		this.SelectPopOptions.searchObj.params.appId = this.account.appId
 		this.SelectPopOptions.searchObj.params.appSecret = this.account.appSecret
+
+		this.SelectPopOptions_img.searchObj.params.appId = this.account.appId
+		this.SelectPopOptions_img.searchObj.params.appSecret = this.account.appSecret
 
 		this.dialogId = `mpnews-dialog-${Date.now()}`
 		document.querySelector('.mpnews .dialog-wrapper').id = this.dialogId
@@ -276,6 +358,30 @@ export default {
 			user-select: none;
 			border-radius: 4px;
 			margin-bottom: 5px;
+		}
+	}
+}
+.upload-line {
+	display: flex;
+	align-items: center;
+	padding-bottom: 10px;
+	.origin-tips {
+		color: #ffaf53;
+		font-size: 12px;
+		padding-left: 10px;
+	}
+	.choseFileForm {
+		position: relative;
+		.btn-hidden {
+			position: absolute;
+			height: 100%;
+			width: 100%;
+			z-index: 1;
+			opacity: 0;
+		}
+		.btn-over {
+			position: relative;
+			z-index: 2;
 		}
 	}
 }

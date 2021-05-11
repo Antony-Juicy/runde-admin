@@ -149,10 +149,12 @@ export default {
 			type: [Object, String, Array],
 			require: true
 		},
+		// accountName 用于显示预览效果里面的公众号名称
 		accountName: {
 			type: String,
 			require: true
 		},
+		// accountLogo 用于显示预览效果里面公众号发出消息的头像
 		accountLogo: {
 			type: String,
 		}
@@ -205,7 +207,7 @@ export default {
 		height: 68px;
 		text-align: center;
 		line-height: 33px;
-		padding-top: 32px;
+		padding-top: 20px;
 		font-size: 16px;
 		color: #000;
 		font-weight: bold;
@@ -229,20 +231,20 @@ export default {
 	}
 	.bg-shouji {
 		position: absolute;
-		width: 320px;
+		width: 250px;
 		z-index: 1;
 	}
 	.over {
-		width: 320px;
-		height: 645px;
+		width: 250px;
+		height: 520px;
 		position: relative;
 		z-index: 2;
-		padding: 80px 26px 80px 23px;
+		padding: 64px 21px 79px 19px;
 	}
 
 	.notice {
 		background: #fff;
-		width: 80%;
+		width: 90%;
 		padding: 20px 10px;
 		margin: 10px;
 		position: relative;
@@ -285,11 +287,12 @@ export default {
 		.just-text {
 			margin-bottom: 10px;
 			color: #000;
-			font-size: 15px;
+			font-size: 12px;
 		}
 		.link-text {
 			color: rgb(0, 0, 238);
 			cursor: pointer;
+			font-size: 12px;
 		}
 	}
 	.mpnews {
@@ -297,7 +300,7 @@ export default {
 		align-items: flex-start;
 		padding: 0 10px;
 		.title {
-			font-size: 16px;
+			font-size: 14px;
 			font-weight: bold;
 			margin-bottom: 5px;
 		}
@@ -305,9 +308,9 @@ export default {
 			display: flex;
 			.description {
 				width: 100%;
-				font-size: 13px;
+				font-size: 12px;
 				color: #ccc;
-				height: 28px;
+				height: 26px;
 			}
 			img {
 				width: 40px;
@@ -331,7 +334,7 @@ export default {
 		.default-img {
 			margin-left: 10px;
 			width: 60%;
-			height: 300px;
+			height: 170px;
 			background: #fff;
 			display: flex;
 			align-items: center;
@@ -342,13 +345,14 @@ export default {
 		display: flex;
 		align-items: flex-start;
 		padding: 0 10px;
+		font-size: 12px;
 		.head {
 			display: flex;
 			align-items: center;
 			margin-bottom: 5px;
 			.logo {
-				width: 20px;
-				height: 20px;
+				width: 10px;
+				height: 10px;
 				margin-right: 5px;
 			}
 			.appName {
@@ -362,13 +366,13 @@ export default {
 		}
 		.imgUrl {
 			width: 100%;
-			height: 152px;
+			height: 100px;
 			margin-bottom: 10px;
 			object-fit: cover;
 		}
 		.default-img {
-			width: 190px;
-			height: 152px;
+			// width: 190px;
+			height: 80px;
 			margin-bottom: 10px;
 			display: flex;
 			align-items: center;
@@ -393,8 +397,8 @@ export default {
 	}
 
 	.avatar {
-		width: 40px;
-		height: 40px;
+		width: 30px;
+		height: 30px;
 		background: #fff;
 		border-radius: 6px;
 
@@ -437,7 +441,6 @@ export default {
 			border-radius: 4px;
 			margin-bottom: 3px;
 			display: inline-block;
-			
 		}
 	}
 }

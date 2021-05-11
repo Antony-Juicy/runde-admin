@@ -77,7 +77,6 @@ export default {
 					}
 				}
 			},
-			fileList: []
 		}
 	},
 	watch: {
@@ -90,7 +89,7 @@ export default {
 			this.$emit('msgData', this.msgForm)
 		},
 		handle_select(data) {
-			this.msgForm.media_id = data.media_id
+			this.msgForm.media_id = data.media_id // 最后上传的其实是media_id 而不是图片的url
 			this.msgForm.picurl = data.thumb_url
 		},
 		handle_hackFileInput() {

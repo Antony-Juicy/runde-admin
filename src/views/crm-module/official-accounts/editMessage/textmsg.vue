@@ -2,7 +2,7 @@
 	<div class="textmsg">
 		<div class="form-line" style="padding-bottom:0">
 			<div class="label">文字消息：</div>
-			<div class="likeInput" ref='likeInput' contenteditable="true" @input="handle_change" @focus="handle_focus" @blur="handle_blur">请输入</div>
+			<div class="likeInput" ref='likeInput' contenteditable="plaintext-only" @input="handle_change" @focus="handle_focus" @blur="handle_blur"><br></div>
 		</div>
 
 		<div class="form-line">
@@ -23,7 +23,7 @@
 		<template v-if="msgForm.needUrl">
 			<div class="form-line">
 				<div class="label">跳转链接：</div>
-				<el-input placeholder="请输入内容" v-model="msgForm.url" @input="emitForm"></el-input>
+				<el-input placeholder="请以输入http://或https://开头的链接" v-model="msgForm.url" @input="emitForm"></el-input>
 			</div>
 			<div class="form-line">
 				<div class="label">链接描述：</div>
@@ -81,9 +81,6 @@ export default {
 
 		},
 		async handle_focus() {
-			if (this.$refs.likeInput.innerHTML == '请输入') {
-				this.$refs.likeInput.innerHTML = ""
-			}
 			try {
 				let c = await navigator.clipboard.readText()
 				navigator.clipboard.writeText(c)
@@ -93,26 +90,8 @@ export default {
 
 		},
 		handle_blur() {
-			if (this.$refs.likeInput.innerHTML == '') {
-				this.$refs.likeInput.innerHTML = "请输入"
-			}
 		},
 		handle_change(e) {
-			// let likeBtns = this.$refs.likeInput.querySelectorAll('.likeBtn')
-			// likeBtns.forEach((v, i) => {
-			// 	try {
-			// 		var text = document.createTextNode(' ')
-			// 		if (v.previousSibling.className == 'likeBtn') {
-			// 			this.$refs.likeInput.insertBefore(text, v)
-			// 		}
-			// 		if (v.nextSibling.className == 'likeBtn') {
-			// 			this.$refs.likeInput.insertBefore(text, v.nextSibling)
-			// 		}
-			// 	} catch (error) {
-			// 	}
-
-			// })
-			
 			this.msgForm.content = this.$refs.likeInput.innerHTML
 			this.emitForm()
 		},

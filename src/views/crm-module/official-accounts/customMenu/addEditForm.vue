@@ -2,14 +2,14 @@
 	<div class="addEditForm">
 		<div class="head-line">
 			<div class="title">{{isNew ? '新增菜单' : formData.name}}</div>
-			<el-button class="delete" size="small" v-if="!isNew && hasChild">删除子菜单</el-button>
+			<el-button class="delete" size="small" v-if="!isNew && hasChild" @click="handle_delete">删除菜单</el-button>
 		</div>
 		<div class="head-line-tips" v-if="hasChild">已添加子菜单，仅可设置菜单名称。</div>
 		<div class="form">
 			<div class="form-line" style="align-items:flex-start">
 				<div class="label" style="margin-top:10px">菜单名称：</div>
 				<div class="content">
-					<el-input placeholder="请输入菜单名称" v-model="formData.name"></el-input>
+					<el-input placeholder="请输入菜单名称" v-model="formData.name" maxlength="7" show-word-limit></el-input>
 					<div class="form-tips">仅支持中英文和数字，字数不超过4个汉字或8个字母</div>
 				</div>
 			</div>
@@ -30,6 +30,7 @@
 			</template>
 
 		</div>
+		<el-button style="margin:auto;display:block;margin-top:20px" type="primary" @click="handle_save">保存</el-button>
 	</div>
 </template>
 
@@ -83,6 +84,7 @@ export default {
 					this.formData = {
 						name: ""
 					}
+					this.type = 'msg'
 				} else {
 					// 选择了底部菜单
 					if (this.menuConfig[this.choseMenuStatus[0]].sub_button.length == 0) {
@@ -103,6 +105,7 @@ export default {
 					this.formData = {
 						name: ""
 					}
+					this.type = 'msg'
 				} else {
 					// 选择了子菜单
 					this.initFormB(this.menuConfig[this.choseMenuStatus[0]].sub_button[this.choseMenuStatus[1]])
@@ -131,6 +134,12 @@ export default {
 				case 'miniprogram': t = 'miniprogram'; break;// 这个是小程序
 			}
 			return t
+		},
+		handle_save(){
+			console.log("保存菜单")
+		},
+		handle_delete(){
+			console.log("删除菜单")
 		}
 	},
 	mounted() {
@@ -155,7 +164,7 @@ export default {
 				margin-right: 20px;
 				// padding-top:8px;
 			}
-			.el-input {
+			.el-input,.el-select,.el-textarea {
 				width: 400px;
 			}
 		}

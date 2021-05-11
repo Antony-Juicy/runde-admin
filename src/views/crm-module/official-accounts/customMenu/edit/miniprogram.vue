@@ -66,20 +66,23 @@ export default {
 	},
 	mounted() {
 
-		this.miniprogramIndex = this.miniprogramConfig.findIndex(v => v.appId == this.formData.appid)
-		this.miniprogramPageIndex = this.miniprogramConfig[this.miniprogramIndex].pages.findIndex(v => v.value == this.formData.pagepath.split('?')[0])
-		// 表单初始化
-		this.msgForm.pagepath = this.miniprogramConfig[this.miniprogramIndex].pages[this.miniprogramPageIndex].value
-		this.msgForm.paramsKey = this.miniprogramConfig[this.miniprogramIndex].pages[this.miniprogramPageIndex].params || []
-		this.msgForm.appId = this.formData.appid
-		this.msgForm.remark = this.formData.url
-		if (this.msgForm.paramsKey.length > 0) {
-			// 表示带了参数
-			let params = this.formData.pagepath.split('?')[1].split('&').map(v => v.split('='))
-			// 提取对应的参数
-			this.msgForm.paramsKey.forEach((v,i)=>{
-				this.msgForm.params[i] = params.find(v2=> v2[0] == v.key)[1]
-			})
+		this.miniprogramIndex = this.miniprogramConfig.findIndex(v => v.appId == this.formData.appid) > -1 ? this.miniprogramConfig.findIndex(v => v.appId == this.formData.appid) : ''
+		if (this.miniprogramIndex != '') {
+			// 菜单是跳小程序的
+			this.miniprogramPageIndex = this.miniprogramConfig[this.miniprogramIndex].pages.findIndex(v => v.value == this.formData.pagepath.split('?')[0])
+			// 表单初始化
+			this.msgForm.pagepath = this.miniprogramConfig[this.miniprogramIndex].pages[this.miniprogramPageIndex].value
+			this.msgForm.paramsKey = this.miniprogramConfig[this.miniprogramIndex].pages[this.miniprogramPageIndex].params || []
+			this.msgForm.appId = this.formData.appid
+			this.msgForm.remark = this.formData.url
+			if (this.msgForm.paramsKey.length > 0) {
+				// 表示带了参数
+				let params = this.formData.pagepath.split('?')[1].split('&').map(v => v.split('='))
+				// 提取对应的参数
+				this.msgForm.paramsKey.forEach((v, i) => {
+					this.msgForm.params[i] = params.find(v2 => v2[0] == v.key)[1]
+				})
+			}
 		}
 	}
 }
@@ -88,7 +91,6 @@ export default {
 <style lang="scss" scoped>
 .miniprogram {
 	padding: 20px;
-	width: 700px;
 }
 .origin-tips {
 	color: #ffaf53;

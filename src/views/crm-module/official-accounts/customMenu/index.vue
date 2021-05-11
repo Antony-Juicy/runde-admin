@@ -110,7 +110,21 @@ export default {
 			})
 		},
 		handle_changeSortStatus() {
-			this.sortStatus = !this.sortStatus
+			if (!this.sortStatus) {
+				this.$confirm('更改菜单排序会放弃当前更改内容', '确认信息', {
+					distinguishCancelAndClose: true,
+					confirmButtonText: '排序',
+					cancelButtonText: '取消'
+				}).then(() => {
+					this.sortStatus = !this.sortStatus
+				}).catch(action => {
+
+				});
+			}
+			else {
+				this.sortStatus = !this.sortStatus
+			}
+
 		},
 		handle_choseMenu(data) {
 			if (JSON.stringify(data) != JSON.stringify(this.choseMenuStatus)) {
@@ -124,7 +138,8 @@ export default {
 
 				});
 			}
-		}
+		},
+		
 	},
 	async mounted() {
 		let res = await this.$fetch(
@@ -150,7 +165,7 @@ export default {
 		}
 		.right {
 			flex-shrink: 0;
-			margin: 20px 20px;
+			margin: 20px 100px;
 			.btns {
 				margin: 20px auto 0 auto;
 				display: flex;
@@ -163,6 +178,7 @@ export default {
 		display: block;
 	}
 	.sort-tips {
+		margin-top: 200px;
 		height: 100%;
 		width: 100%;
 		display: flex;

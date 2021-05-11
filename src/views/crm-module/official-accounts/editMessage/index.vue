@@ -35,6 +35,11 @@ import textmsg from "./textmsg"
 import imgmsg from "./imgmsg"
 import miniprogrampage from "./miniprogrampage"
 import likePhone from '@/components/likePhone'
+/* 
+	account 是微信公众号对象
+
+	showName 是控制是否显示推送名称
+*/
 export default {
 	props: {
 		account: {
@@ -64,8 +69,6 @@ export default {
 		handle_msgData(data) {
 			// step1 接收表单信息，转发到预览组件
 			this.cardData[this.msgtype] = data
-			// step2 重新组合一个满足接口形态的数据 ，向上传递
-			// this.emitForm()
 		},
 		emitForm() {
 			let data = {}
@@ -136,6 +139,11 @@ export default {
 					break;
 				}
 			}
+
+			if ((this.msgtype == 'mpnews' || (this.msgtype == 'text' && this.cardData.text.needUrl)) && !/(http|https):\/\/([\w.]+\/?)\S*/.test(data.url)) {
+				this.$message.error("请输入https://或http://开头的链接");
+				acceptFlag = false
+			}
 			data.msgName = this.msgName
 			data.appId = this.account.appId
 			data.appSecret = this.account.appSecret
@@ -147,6 +155,7 @@ export default {
 			}
 		},
 		val(callback) {
+			// 数据合法性校验
 			let data = this.emitForm()
 			if (!data) {
 				return

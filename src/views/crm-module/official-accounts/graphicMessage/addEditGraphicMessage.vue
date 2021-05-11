@@ -40,7 +40,7 @@
 				<SelectPop style="width:auto;display:inline-block" key="SelectPop0" ref="SelectPop0" v-bind="SelectPopOptions_user" @select="handle_selectUser">
 					<el-button size="small">添加粉丝</el-button>
 					<template slot="labels" slot-scope="scope">
-						<el-tag v-for="(item,index) in scope.row.labels" :key="index">{{item}}</el-tag>
+						<el-tag style="margin-right:10px;margin-bottom:10px" v-for="(item,index) in scope.row.labels" :key="index">{{item}}</el-tag>
 						<div v-if="scope.row.labels.length == 0">无标签</div>
 					</template>
 				</SelectPop>
@@ -371,8 +371,7 @@ export default {
 
 			})
 
-		},
-
+		}
 	}
 }
 </script>

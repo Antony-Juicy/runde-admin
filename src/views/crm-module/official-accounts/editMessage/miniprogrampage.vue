@@ -126,6 +126,11 @@ export default {
 			this.$emit('msgData', this.msgForm)
 		}
 	},
+	watch: {
+		'msgForm.picurl': function (n, o) {
+			this.emitForm()
+		}
+	},
 	mounted() {
 	}
 }

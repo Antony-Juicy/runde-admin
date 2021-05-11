@@ -11,7 +11,7 @@
 						{{item.name}}
 						<div class="sub-list" v-if="choseMenuStatus()[0] == index" @click.stop>
 							<div class="relative">
-								<div class="sub-menu-item" :class="{showing:choseMenuStatus()[1] == index2}" v-for="(item2,index2) in item.sub_button" :key="index2"
+								<div class="sub-menu-item oneline" :class="{showing:choseMenuStatus()[1] == index2}" v-for="(item2,index2) in item.sub_button" :key="index2"
 									@click="handle_choseMenu([index,index2])">
 									{{item2.name}}</div>
 								<div class="sub-add" :class="{showing:choseMenuStatus()[1] == -2}" @click="handle_choseMenu([index,-2])">
@@ -27,7 +27,8 @@
 					</div>
 				</template>
 			</div>
-			<div v-if="menuData.length < 3 && !sortStatus()" class="add-menu" :class="{showing:choseMenuStatus()[0] == -2}" style="cursor:pointer" @click="handle_choseMenu([-2,-1])">
+			<div v-if="menuData.length < 3 && !sortStatus()" class="add-menu" :class="{showing:choseMenuStatus()[0] == -2}" style="cursor:pointer"
+				@click="handle_choseMenu([-2,-1])">
 				<i class="el-icon-plus"></i>
 			</div>
 		</div>
@@ -169,7 +170,7 @@ export default {
 			this.updateMenuSort()
 		},
 		handle_choseMenu(data) {
-			
+
 			this.choseMenu(data)
 		},
 		updateMenuSort() {
@@ -199,7 +200,7 @@ export default {
 	bottom: 0;
 	& > .relative {
 		padding: 5px 0;
-		height: 45px;
+		height: 35px;
 		box-sizing: border-box;
 		position: relative;
 		display: flex;
@@ -214,7 +215,7 @@ export default {
 	}
 	.left-pad {
 		height: 100%;
-		width: 40px;
+		width: 35px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -250,9 +251,9 @@ export default {
 		}
 		.sub-list {
 			position: absolute;
-			bottom: 40px;
+			bottom: 30px;
 			padding-bottom: 10px;
-			width: 100%;
+			width: 100px;
 			z-index: 9999;
 			color: #000;
 			& > .relative {
@@ -280,7 +281,7 @@ export default {
 			}
 
 			.sub-add {
-				padding: 10px 0;
+				padding: 8px 0;
 				width: 100%;
 				text-align: center;
 				cursor: pointer;
@@ -295,7 +296,7 @@ export default {
 				z-index: 10;
 			}
 			.sub-menu-item {
-				padding: 10px 0;
+				padding: 8px 8px;
 				width: 100%;
 				text-align: center;
 				border-bottom: 1px solid #d8d8d8;
@@ -345,5 +346,11 @@ export default {
 		box-sizing: border-box;
 		z-index: 10;
 	}
+}
+/* 单行 */
+.oneline {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 </style>
