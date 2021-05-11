@@ -167,7 +167,7 @@
 <script>
 import RdForm from "@/components/RdForm";
 export default {
-  name: "details",
+  name: "detail",
   components: {
     RdForm,
   },
