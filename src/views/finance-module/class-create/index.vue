@@ -466,8 +466,22 @@
       <classDetail
         ref="videoClass"
         @close="setVisible5 = false"
+        @openDetails='openDetails' 
         v-if="setVisible5"
         @refresh="getTableData"
+      />
+    </fullDialog>
+
+    <!-- 班次详情的弹窗 -->
+    <fullDialog
+      v-model="detailsVisible"
+      :title="titleName"
+      @change="closeFn"
+    >
+      <Details
+        @close="closeFn"
+        v-if="detailsVisible"
+        @refresh="getTableData" 
       />
     </fullDialog>
   </div>
@@ -483,6 +497,7 @@ import videoClass from "./video-class";
 import distribeClass from "./distribe-class";
 import firstStep from "./first-step";
 import classDetail from "./class-detail";
+import Details from "./class-detail/details.vue";
 export default {
   name: "class-create",
   components: {
@@ -495,6 +510,7 @@ export default {
     distribeClass,
     firstStep,
     classDetail,
+    Details
   },
   provide() {
     return {
@@ -503,6 +519,8 @@ export default {
   },
   data() {
     return {
+      detailsVisible: false,
+      titleName:'j88',
       IsDisabled: false,
       editId: "",
       currentClassName: "",
@@ -684,8 +702,8 @@ export default {
           { name: "所属项目", value: "productName" },
           { name: "内容名称", value: "contentName" },
           { name: "类型", value: "contentType" },
-          { name: "核算规则", value: "refundRules" },
-          { name: "学费/元", value: "totalFee" },
+          { name: "核算规则", value: "accountingRules" },
+          { name: "学费/元", value: "contentPrice" },
           { name: "录播情况", value: "playback" },
 
           {
@@ -950,6 +968,15 @@ export default {
     // geteGroupListFunc(data) {//获取班型分組
     //   this.courseGroupArr = data;
     // },
+    closeFn(){
+           this.setVisible5 = true;
+      this.detailsVisible = false;
+    },
+    openDetails(data){
+      this.setVisible5 = false;
+      this.detailsVisible = true;
+       this.titleName = data.campusName;
+    },
     turnTwoArr(arr, size) {
       // arr是一维数组 size是二维数组包含几条数据
       var arr2 = [];
@@ -1322,7 +1349,7 @@ export default {
             key != "classTypeStage"
           ) {
             if (key == "courses") {
-              console.log(6666,res.data.data.model["courses"])
+              console.log(6666, res.data.data.model["courses"]);
               let arr = JSON.parse(res.data.data.model["courses"]);
               arr.map((el) => {
                 el.checked = true;
@@ -1344,18 +1371,25 @@ export default {
               this.basicInfo["courses"] = arr;
             } else if (key == "courseContentId") {
               //班型内容
-            let arr = res.data.data.model.courseContentIdList.map(item=>{
-             item.id  = item.contentId;
-             return item
-            });
-            console.log('hhh2222',arr)
+              let accountingRulesArr = [];
+              let arr = res.data.data.model.courseContentIdList.map((item) => {
+                item.id = item.contentId;
+                item.playback = item.playback == true ? "有录播" : "无录播";
+                console.log("accountingRules", item.accountingRules);
+                res.data.accountingRulesList.map(el=>{
+                  if(el.key == item.accountingRules){
+                     item.accountingRules = el.value
+                  }
+                })
+                  res.data.contentTypeList.map(el=>{
+                  if(el.key == item.contentType){
+                     item.contentType = el.value
+                  }
+                })
+                return item;
+              });
               this.basicInfo.tableData = arr;
-              // this.$fetch("courseProductContent_courseContentByProductId", {
-              //   productId: res.data.data.model.productId,
-              // }).then((res) => {
-              //   // this.basicInfo.tableData = res.dataJson.list;
-              //   console.log('22222222222',res.dataJson.list)
-              // });
+      
             } else {
               this.basicInfo[key] = res.data.data.model[key];
             }

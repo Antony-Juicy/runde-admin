@@ -33,7 +33,7 @@
         :emptyText="emptyText"
       >
         <template slot="campusName" slot-scope="scope">
-          <el-button type="text">{{scope.row.campusName}}</el-button>
+          <el-button type="text" @click="handleOpen(scope.row)">{{scope.row.campusName}}</el-button>
         </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
@@ -405,6 +405,9 @@ export default {
     RdForm
   },
    methods: {
+      handleOpen(data){
+        this.$emit('openDetails',data)
+      },
      onSearch(val){
        this.searchForm = {
         ...val
