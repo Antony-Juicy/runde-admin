@@ -466,23 +466,15 @@
       <classDetail
         ref="videoClass"
         @close="setVisible5 = false"
-        @openDetails='openDetails' 
+        @openDetails="openDetails"
         v-if="setVisible5"
         @refresh="getTableData"
       />
     </fullDialog>
 
     <!-- 班次详情的弹窗 -->
-    <fullDialog
-      v-model="detailsVisible"
-      :title="titleName"
-      @change="closeFn"
-    >
-      <Details
-        @close="closeFn"
-        v-if="detailsVisible"
-        @refresh="getTableData" 
-      />
+    <fullDialog v-model="detailsVisible" :title="titleName" @change="closeFn">
+      <Details @close="closeFn" v-if="detailsVisible" @refresh="getTableData" />
     </fullDialog>
   </div>
 </template>
@@ -510,7 +502,7 @@ export default {
     distribeClass,
     firstStep,
     classDetail,
-    Details
+    Details,
   },
   provide() {
     return {
@@ -520,7 +512,7 @@ export default {
   data() {
     return {
       detailsVisible: false,
-      titleName:'j88',
+      titleName: "",
       IsDisabled: false,
       editId: "",
       currentClassName: "",
@@ -968,14 +960,14 @@ export default {
     // geteGroupListFunc(data) {//获取班型分組
     //   this.courseGroupArr = data;
     // },
-    closeFn(){
-           this.setVisible5 = true;
+    closeFn() {
+      this.setVisible5 = true;
       this.detailsVisible = false;
     },
-    openDetails(data){
+    openDetails(data) {
       this.setVisible5 = false;
       this.detailsVisible = true;
-       this.titleName = data.campusName;
+      this.titleName = data.campusName;
     },
     turnTwoArr(arr, size) {
       // arr是一维数组 size是二维数组包含几条数据
@@ -1376,20 +1368,19 @@ export default {
                 item.id = item.contentId;
                 item.playback = item.playback == true ? "有录播" : "无录播";
                 console.log("accountingRules", item.accountingRules);
-                res.data.accountingRulesList.map(el=>{
-                  if(el.key == item.accountingRules){
-                     item.accountingRules = el.value
+                res.data.accountingRulesList.map((el) => {
+                  if (el.key == item.accountingRules) {
+                    item.accountingRules = el.value;
                   }
-                })
-                  res.data.contentTypeList.map(el=>{
-                  if(el.key == item.contentType){
-                     item.contentType = el.value
+                });
+                res.data.contentTypeList.map((el) => {
+                  if (el.key == item.contentType) {
+                    item.contentType = el.value;
                   }
-                })
+                });
                 return item;
               });
               this.basicInfo.tableData = arr;
-      
             } else {
               this.basicInfo[key] = res.data.data.model[key];
             }

@@ -17,14 +17,14 @@
         <el-button
           type="primary"
           size="small"
-          @click="handleAdd(2)"
+          @click="handleAdd(5)"
           icon="el-icon-edit"
           >批量设置价格</el-button
         >
         <el-button
           type="warning"
           size="small"
-          @click="handleAdd(5)"
+          @click="handleAdd(2)"
           icon="el-icon-plus"
           >批量共享连锁价格</el-button
         >
@@ -74,7 +74,7 @@
     </rd-dialog>
     <!-- 添加 -->
     <rd-dialog
-      title="批量设置价格"
+      title="批量享连锁价格"
       :dialogVisible="setVisible"
       appendToBody
       @handleClose="setVisible = false"
@@ -88,9 +88,9 @@
       >
       </RdForm>
     </rd-dialog>
-    <!-- 批量共享连锁价格 -->
+    <!-- 批量设置价格 -->
     <rd-dialog
-      :title="'批量享连锁价格'"
+      :title="'批量设置价格'"
       :dialogVisible="addPriceVisible"
       appendToBody
       @handleClose="addPriceVisible = false"
