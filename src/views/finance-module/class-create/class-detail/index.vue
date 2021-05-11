@@ -4,8 +4,8 @@
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>班型管理</el-breadcrumb-item>
         <el-breadcrumb-item><a href="javascript:;" @click="goBack(0)">{{title}}</a></el-breadcrumb-item>
-        <el-breadcrumb-item v-if="currentCampus"><a href="javascript:;" @click="goBack(1)">{{currentCampus}}</a></el-breadcrumb-item>
-        <el-breadcrumb-item v-if="currentCompany" @click="goBack(2)"><a href="javascript:;">{{currentCompany}}</a></el-breadcrumb-item>
+        <el-breadcrumb-item v-if="currentCampus && currentIndex == 1"><a href="javascript:;" @click="goBack(1)">{{currentCampus}}</a></el-breadcrumb-item>
+        <el-breadcrumb-item v-if="currentCompany && currentIndex == 2"><a href="javascript:;"  @click="goBack(2)">{{currentCompany}}</a></el-breadcrumb-item>
       </el-breadcrumb>
       <div v-show="currentIndex == 0">
         <search-form
