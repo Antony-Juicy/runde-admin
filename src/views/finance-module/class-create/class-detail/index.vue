@@ -5,7 +5,7 @@
         <el-breadcrumb-item>班型管理</el-breadcrumb-item>
         <el-breadcrumb-item><a href="javascript:;" @click="goBack(0)">{{title}}</a></el-breadcrumb-item>
         <el-breadcrumb-item v-if="currentCampus"><a href="javascript:;" @click="goBack(1)">{{currentCampus}}</a></el-breadcrumb-item>
-        <el-breadcrumb-item v-if="currentCompany"><a href="javascript:;">{{currentCompany}}</a></el-breadcrumb-item>
+        <el-breadcrumb-item v-if="currentCompany" @click="goBack(2)"><a href="javascript:;">{{currentCompany}}</a></el-breadcrumb-item>
       </el-breadcrumb>
       <div v-show="currentIndex == 0">
         <search-form
@@ -150,14 +150,18 @@
 
       <!-- 校区弹窗 -->
       <Details
+      @openChainTable="openChainTable"
         v-show="currentIndex == 1"
       />
+
+      <chainTable  v-show="currentIndex == 2" />
   </div>
 </template>
 
 <script>
 import RdForm from "@/components/RdForm";
 import Details from "./details.vue";
+import chainTable from "./chainTable.vue";
 export default {
   name:"class-detail",
   data(){
@@ -174,7 +178,7 @@ export default {
           options: []
         },
         {
-          prop: "menuName",
+          prop: "menuName1",
           element: "el-select",
           placeholder: "校区",
           options: [],
@@ -421,7 +425,7 @@ export default {
     }
   },
   components:{
-    RdForm,Details
+    RdForm,Details,chainTable
   },
   props: {
     title: {
@@ -430,6 +434,10 @@ export default {
     }
   },
    methods: {
+     openChainTable(data){
+        this.currentIndex = 2;
+       this.currentCompany = data.chainName;
+     },
       handleOpen(data){
 //         this.$emit('openDetails',data)
         // this.detailsVisible = true;

@@ -30,6 +30,7 @@
         >
       </div>
       <rd-table
+        :multiple="true"
         :tableData="tableData"
         :tableKey="tableKey"
         :pageConfig.sync="pageConfig"
@@ -37,8 +38,10 @@
         @pageChange="pageChange"
         :emptyText="emptyText"
       >
-        <template slot="campusName" slot-scope="scope">
-          <el-button type="text">{{ scope.row.campusName }}</el-button>
+        <template slot="chainName" slot-scope="scope">
+          <el-button type="text" @click="handleOpen(scope.row)">{{
+            scope.row.chainName
+          }}</el-button>
         </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
@@ -157,6 +160,7 @@
         </template>
       </RdForm>
     </rd-dialog>
+ 
   </div>
 </template>
 
@@ -164,6 +168,9 @@
 import RdForm from "@/components/RdForm";
 export default {
   name: "details",
+  components: {
+    RdForm,
+  },
   data() {
     return {
       setVisible: false,
@@ -175,7 +182,7 @@ export default {
           options: [],
         },
         {
-          prop: "menuName",
+          prop: "menuName1",
           element: "el-select",
           placeholder: "校区",
           options: [],
@@ -196,6 +203,7 @@ export default {
         {
           name: "校区连锁名",
           value: "chainName",
+          operate: true,
         },
         {
           name: "班次名称",
@@ -268,7 +276,7 @@ export default {
           element: "el-input",
           placeholder: "请输入",
           label: "连锁",
-           options: [],
+          options: [],
         },
         {
           prop: "className",
@@ -291,7 +299,6 @@ export default {
           options: [],
           operate: true,
         },
-     
       ],
       addRules: {
         campusName: [{ required: true, message: "请输入", trigger: "blur" }],
@@ -305,10 +312,12 @@ export default {
       rules: {},
     };
   },
-  components: {
-    RdForm,
-  },
   methods: {
+    handleOpen(data) {
+      // this.detailsVisible = false;
+      // this.chainTableVisible = true;
+      this.$emit("openChainTable",data)
+    },
     onSearch(val) {
       this.searchForm = {
         ...val,
@@ -331,7 +340,6 @@ export default {
       } else if (index == 2) {
         this.setVisible = true;
       } else if (index == 5) {
-        console.log("得得得", index);
         this.addPriceVisible = true;
       }
     },
