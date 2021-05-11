@@ -261,6 +261,12 @@ export default {
           options: [],
           events: {}
         },
+         {
+          prop: "contentYear",
+          element: "el-input",
+          placeholder: "请输入年份",
+          label: "年份:"
+        },
         {
           prop: "contentName",
           element: "el-input",
@@ -381,6 +387,7 @@ export default {
         },
       ],
       addRules: {
+        contentYear: [{ required: true, message: "请输入", trigger: "blur" }],
         productId: [{ required: true, message: "请选择", trigger: "change" }],
         contentName: [{ required: true, message: "请输入", trigger: "blur" }],
         contentType: [{ required: true, message: "请选择", trigger: "change" }],

@@ -465,6 +465,7 @@
     >
       <classDetail
         ref="videoClass"
+        :title="currentClassName"
         @close="setVisible5 = false"
         @openDetails="openDetails"
         v-if="setVisible5"
