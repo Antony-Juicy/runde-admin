@@ -466,6 +466,9 @@
       <classDetail
         ref="videoClass"
         :title="currentClassName"
+        :classTypeId="classTypeId"
+        :classTypeName="classTypeName"
+        :productId="classProductId"
         @close="setVisible5 = false"
         @openDetails="openDetails"
         v-if="setVisible5"
@@ -512,6 +515,9 @@ export default {
   },
   data() {
     return {
+      classTypeName:"",
+      classTypeId:"",
+      classProductId:"",
       detailsVisible: false,
       titleName: "",
       IsDisabled: false,
@@ -1668,6 +1674,9 @@ export default {
     handleClassName(data) {
       this.setVisible5 = true;
       this.currentClassName = data.className;
+      this.classTypeId = data.id;
+      this.classTypeName = data.className;
+      this.classProductId = data.productId;
     },
   },
 };

@@ -18,7 +18,7 @@
             <el-button type="success" size="small" @click="handleAdd(1)" icon="el-icon-plus"
               >添加</el-button
             >
-            <el-button type="primary" size="small" @click="handleAdd(2)"  icon="el-icon-edit"
+            <!-- <el-button type="primary" size="small" @click="handleAdd(2)"  icon="el-icon-edit"
               >批量修改价格</el-button
             >
             <el-button type="danger" size="small" @click="handleAdd(3)" icon="el-icon-caret-right"
@@ -29,7 +29,7 @@
             >
             <el-button type="info" size="small" @click="handleAdd(5)" icon="el-icon-plus"
               >批量添加连锁价格</el-button
-            >
+            > -->
           </div>
           <rd-table
             :tableData="tableData"
@@ -47,14 +47,14 @@
               <el-button @click="handleEdit(scope.row)" type="text" size="small"
                 >编辑</el-button
               >
-              <el-divider direction="vertical"></el-divider>
+              <!-- <el-divider direction="vertical"></el-divider>
               <el-button
                 @click="handleDelete(scope.row)"
                 type="text"
                 size="small"
                 style="color: #ec5b56"
                 >删除</el-button
-              >
+              > -->
             </template>
           </rd-table>
         </div>
@@ -68,7 +68,7 @@
             @submitForm="submitAddForm('dataForm3')"
           >
             <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3" >
-              <template slot="subjectId">
+              <template slot="subjectName">
                 <el-form
                     ref="dataForm2"
                     :model="basicInfo"
@@ -76,12 +76,14 @@
                     label-width="120px"
                 >
                     <el-form-item style="margin-left: -120px;margin-bottom: 20px">
-                        <el-select v-model="basicInfo.region" placeholder="请选择活动区域">
+                        <!-- <el-select v-model="basicInfo.region" placeholder="请选择活动区域">
                         <el-option label="区域一" value="shanghai"></el-option>
                         <el-option label="区域二" value="beijing"></el-option>
-                        </el-select>
+                        </el-select> -->
+                        <el-input v-model="basicInfo.subjectName" readonly size="small"></el-input>
                     </el-form-item>
-                    <div
+                    <template v-if="currentData.chargePattern_text == 'Pricesum'">
+                      <div
                         class="param-item"
                         v-for="(item, index) in basicInfo.course"
                         :key="item.value"
@@ -99,14 +101,14 @@
                         >
                           <el-checkbox
                             v-model="item.checked"
-                            :label="item.label"
+                            :label="item.courseName"
                           ></el-checkbox>
 
                           <el-input
                             v-model="item.coursePrice"
                             size="small"
                             placeholder="请输入价格"
-                            style="width: 200px; margin-left: 20px"
+                            style="width: 140px; margin-left: 20px"
                           ></el-input>
                           <el-switch
                             active-text="计算业绩"
@@ -118,6 +120,8 @@
                           </el-switch>
                         </el-form-item>
                       </div>
+                    </template>
+                    
                 </el-form>
               </template>
             </RdForm>
@@ -129,9 +133,9 @@
             :dialogVisible="addPriceVisible"
             appendToBody
             @handleClose="addPriceVisible = false"
-            @submitForm="submitAddPriceForm('dataForm3')"
+            @submitForm="submitAddPriceForm('dataForm4')"
           >
-            <RdForm :formOptions="addPriceFormOptions" formLabelWidth="120px" :rules="addPriceRules" ref="dataForm3" >
+            <RdForm :formOptions="addPriceFormOptions" formLabelWidth="120px" :rules="addPriceRules" ref="dataForm4" >
             </RdForm>
           </rd-dialog>
 
@@ -141,9 +145,9 @@
             :dialogVisible="editPriceVisible"
             appendToBody
             @handleClose="editPriceVisible = false"
-            @submitForm="submitEditPriceForm('dataForm3')"
+            @submitForm="submitEditPriceForm('dataForm5')"
           >
-            <RdForm :formOptions="editPriceFormOptions" formLabelWidth="120px" :rules="editPriceRules" ref="dataForm3" >
+            <RdForm :formOptions="editPriceFormOptions" formLabelWidth="120px" :rules="editPriceRules" ref="dataForm5" >
             </RdForm>
           </rd-dialog>
       </div>
@@ -170,19 +174,30 @@ export default {
       currentIndex: 0,
       currentCampus: "",
       currentCompany:"",
+      currentData: {},
       formOptions: [
         {
-          prop: "menuName",
+          prop: "status",
           element: "el-select",
           placeholder: "状态",
-          options: []
+          options: [
+            {
+              label: "正常",
+              value: "Normal"
+            },
+            {
+              label: "暂停",
+              value: "Stop"
+            },
+          ]
         },
         {
-          prop: "menuName1",
+          prop: "campusId",
           element: "el-select",
           placeholder: "校区",
           options: [],
-          multiple: true
+          multiple: true,
+          filterable: true
         },
       ],
       searchForm:{},
@@ -259,26 +274,29 @@ export default {
           prop: "className",
           element: "el-input",
           placeholder: "请输入",
-          label: "班次名称"
+          label: "班次名称",
+          readonly: true
         },
         {
           prop: "classType",
-          element: "el-select",
-          placeholder: "请选择",
+          element: "el-input",
+          placeholder: "请输入",
           label: "班次类型",
-          options: [
-          ],
+          // options: [
+          // ],
+          readonly: true
         },
         {
-          prop: "productId",
-          element: "el-select",
-          placeholder: "请选择",
+          prop: "productName",
+          element: "el-input",
+          placeholder: "请输入",
           label: "项目",
-          options: [
-          ],
+          // options: [
+          // ],
+          readonly: true
         },
         {
-          prop: "subjectId",
+          prop: "subjectName",
           element: "el-select",
           placeholder: "请选择",
           label: "科目",
@@ -292,31 +310,63 @@ export default {
           placeholder: "请选择",
           label: "服务年限",
           options: [
+            {
+              label: 1,
+              value: 1
+            },
+            {
+              label: 2,
+              value: 2
+            },
+            {
+              label: 3,
+              value: 3
+            },
+            {
+              label: 4,
+              value: 4
+            },
+            {
+              label: 5,
+              value: 5
+            },
           ],
+          initValue: 1
         },
         {
-          prop: "roleName",
+          prop: "campusId",
           element: "el-select",
           placeholder: "请选择",
           label: "校区",
           options: [
           ],
+          filterable: true,
+          multiple: true
         },
         {
-          prop: "roleName",
+          prop: "classDetail",
           element: "el-input",
-          placeholder: "请选择",
+          placeholder: "请输入",
           label: "详细介绍",
           type: "textarea",
           rows: 3
         },
         {
-          prop: "roleName",
+          prop: "status",
           element: "el-select",
           placeholder: "请选择",
           label: "状态",
           options: [
+             {
+              label: "正常",
+              value: "Normal"
+            },
+            {
+              label: "暂停",
+              value: "Stop"
+            }
           ],
+          initValue: "Normal"
         }
       ],
       addRules:{
@@ -418,10 +468,18 @@ export default {
       addStatus: true,
       editId:"",
       basicInfo: {
-          course: [1,2,3],
-          region:""
+          course: [
+            //   {
+            //   checked: true,
+            //   coursePrice: 10,
+            //   isperformance: true,
+            //   courseName: "test1"
+            // }
+          ],
+          subjectName:""
       },
-      rules: {}
+      rules: {},
+      campusArr: []
     }
   },
   components:{
@@ -431,7 +489,22 @@ export default {
     title: {
       type: String,
       default: ""
+    },
+    classTypeId: {
+      type: String | Number,
+      default: 418590
+    },
+    classTypeName: {
+      type: String,
+      default: "2021金牌通关班【网课】"
+    },
+    productId: {
+      type: String | Number,
+      default: 0
     }
+  },
+  mounted(){
+    this.getTableData();
   },
    methods: {
      openChainTable(data){
@@ -445,14 +518,44 @@ export default {
         this.currentCampus = data.campusName;
       },
      onSearch(val){
-       this.searchForm = {
-        ...val
-      };
+       const { campusId } = val;
+       if(campusId&&campusId.length){
+         this.searchForm = {
+            ...val,
+            campusId: campusId.join(",")
+          };
+       }else {
+         this.searchForm = {
+            ...val,
+            classTypeId: this.classTypeId,
+            classTypeName: this.classTypeName
+          };
+       }
+       
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
      },
-     getTableData(){
-
+     getTableData(params = {}){
+       this.$fetch("courseclass_listJsp", { 
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+        classTypeId: this.classTypeId,
+        classTypeName: this.classTypeName,
+        productId: this.productId
+      }).then((res) => {
+        this.tableData = res.data.varList.map(item => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          return item;
+        });
+        this.pageConfig.totalCount = res.data.page.totalResult;
+        this.campusArr = res.data.campusList.map(item => ({
+          label: `${item.campusName}-${item.parentCampusName || ''}`,
+          value: item.id
+        }));
+        this.formOptions[1].options = this.campusArr;
+        this.addFormOptions[5].options = this.campusArr;
+      });
      },
      pageChange(val) {
       console.log(val,'pagechange')
@@ -464,6 +567,22 @@ export default {
       if(index == 1){
         this.addStatus = true;
         this.addVisible = true;
+        this.$fetch("courseclass_goAdd",{
+          classTypeId: this.classTypeId,
+          productId: this.productId
+        }).then(res => {
+          const { pd } = res.data;
+          const { className, classType, productName, subjectName,courses  } = res.data.pd;
+          this.$refs.dataForm3.setValue({
+            className,
+            classType,
+            productName,
+            subjectName
+          })
+          this.basicInfo.subjectName = subjectName;
+          this.basicInfo.course = courses;
+          this.currentData = pd;
+        })
       }else if(index == 5){
         this.addPriceVisible = true;
       }else if(index == 2){
@@ -474,7 +593,13 @@ export default {
     submitAddForm(formName){
       this.$refs[formName].validate((valid, formData) => {
         if(valid){
-          console.log(formData, "提交");
+          console.log(formData, this.basicInfo.course,"提交");
+          // this.$fetch("courseclass_save",{
+          //   ...formData,
+          //   map: {
+
+          //   }
+          // })
         }
           
       });
