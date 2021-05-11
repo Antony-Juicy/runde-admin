@@ -21,8 +21,9 @@
           <!--<span style="margin-right: 5px;font-weight:bold">:</span>-->
           <el-select
             v-model="dynamicValidateForm.productName"
+            :disabled="IsEditDisabled"
             size="small"
-            placeholder="请选择"
+            placeholder="请选择" 
             style="width: 300px"
             @change="changeSelect"
           >
@@ -305,6 +306,9 @@ export default {
     tableData: {
       type: Array,
     },
+    IsEditDisabled:{
+      type: Boolean,
+    },
   },
   created() {
     // 限制开始日期不能超过当前日期
@@ -357,35 +361,36 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.dynamicValidateForm.theoryTestStart[0] = this.$common._formatDates(
+          this.dynamicValidateForm.theoryTestStart[0] = this.$common._formatDates3(
             this.dynamicValidateForm.theoryTestStart[0]
           );
-          this.dynamicValidateForm.theoryTestStart[1] = this.$common._formatDates(
+          this.dynamicValidateForm.theoryTestStart[1] = this.$common._formatDates3(
             this.dynamicValidateForm.theoryTestStart[1]
           );
-          this.dynamicValidateForm.theoryTest2ClosingTime = this.$common._formatDates(
+          this.dynamicValidateForm.theoryTest2ClosingTime = this.$common._formatDates3(
             this.dynamicValidateForm.theoryTest2ClosingTime
           );
-          this.dynamicValidateForm.theoryTestClosingTime = this.$common._formatDates(
+          this.dynamicValidateForm.theoryTestClosingTime = this.$common._formatDates3(
             this.dynamicValidateForm.theoryTestClosingTime
           );
-          let skillTestStart = this.$common._formatDates(
+          console.log('11~~~', this.dynamicValidateForm.skillTestStart[0])
+          let skillTestStart = this.$common._formatDates3(
             this.dynamicValidateForm.skillTestStart[0]
           );
-          let skillTestEnd = this.$common._formatDates(
+          let skillTestEnd = this.$common._formatDates3(
             this.dynamicValidateForm.skillTestStart[1]
           );
-          let theoryTestStart = this.$common._formatDates(
+          let theoryTestStart = this.$common._formatDates3(
             this.dynamicValidateForm.theoryTestStart[0]
           );
-          let theoryTestEnd = this.$common._formatDates(
+          let theoryTestEnd = this.$common._formatDates3(
             this.dynamicValidateForm.theoryTestStart[1]
           );
 
-          let theoryTest2Start = this.$common._formatDates(
+          let theoryTest2Start = this.$common._formatDates3(
             this.dynamicValidateForm.theoryTest2Start[0]
           );
-          let theoryTest2End = this.$common._formatDates(
+          let theoryTest2End = this.$common._formatDates3(
             this.dynamicValidateForm.theoryTest2Start[1]
           );
           let financeCode3;
@@ -432,22 +437,26 @@ export default {
         id: this.issuseId,
       }).then((res) => {
         let skillTestStart = [
-          new Date(res.data.skillTestStart),
-          new Date(res.data.skillTestEnd),
+          new Date(this.$common._getNowYearDate(res.data.skillTestStart)),
+          new Date(this.$common._getNowYearDate(res.data.skillTestEnd)),
         ];
         let theoryTestStart = [
-          new Date(res.data.theoryTestStart),
-          new Date(res.data.theoryTestEnd),
+          new Date(this.$common._getNowYearDate(res.data.theoryTestStart)),
+          new Date(this.$common._getNowYearDate(res.data.theoryTestEnd)),
         ];
         let theoryTest2Start = [
-          new Date(res.data.theoryTest2Start),
-          new Date(res.data.theoryTest2End),
+          new Date(this.$common._getNowYearDate(res.data.theoryTest2Start)),
+          new Date(this.$common._getNowYearDate(res.data.theoryTest2End)),
         ];
+        let theoryTest2ClosingTime = this.$common._getNowYearDate(res.data.theoryTest2ClosingTime);
+        let theoryTestClosingTime = this.$common._getNowYearDate(res.data.theoryTestClosingTime);
         let obj = {
           ...res.data,
           theoryTestStart: theoryTestStart,
           theoryTest2Start: theoryTest2Start,
           skillTestStart: skillTestStart,
+          theoryTest2ClosingTime:theoryTest2ClosingTime,
+          theoryTestClosingTime:theoryTestClosingTime,
         };
         if (res.data.productId == 2) {
           this.showCheckbox = true;

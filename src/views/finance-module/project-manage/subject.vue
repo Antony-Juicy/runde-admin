@@ -34,7 +34,6 @@
       top="5vh"
       append-to-body
       @handleClose="handleClose"
-  
     >
       <editSubject
         :id="id"
@@ -42,6 +41,7 @@
         :addStatus="addStatus"
         v-if="editVisible"
         ref="dyForm"
+        :IsEditDisabled="IsEditDisabled"
         @close="handleClose"
         @refresh="refresh"
         :tableData="tableData"
@@ -61,11 +61,12 @@ export default {
   },
   props: {
     id: {
-      type: Number || String,
+      type: [Number , String],
     },
   },
   data() {
     return {
+      IsEditDisabled:false,
       startDateDisabled: {},
       editVisible: false,
       issuseId: "",
@@ -82,14 +83,14 @@ export default {
         {
           prop: "subjectName",
           element: "el-input",
-          placeholder: "请输入科目"
+          placeholder: "请输入科目",
         },
         {
           prop: "subjectStatus",
           element: "el-select",
           placeholder: "请选择状态",
           options: [
-               {
+            {
               label: "正常",
               value: true,
             },
@@ -106,7 +107,7 @@ export default {
           subjectName: "医师",
           skillTestStart: "/",
           theoryTestStart: "10-30",
-            theoryTestClosingTime: "11-30",
+          theoryTestClosingTime: "11-30",
           subjectStatus: "正常",
           createAt: "2021-2.-1 09：32",
         },
@@ -143,14 +144,16 @@ export default {
     this.getTableData();
   },
   methods: {
-    handleClose(){
+    handleClose() {
       this.editVisible = false;
-      this.$refs.dyForm.$refs.dynamicValidateForm.resetFields(); 
+      this.IsEditDisabled = false;
+      this.$refs.dyForm.$refs.dynamicValidateForm.resetFields();
     },
     refresh() {
       this.getTableData();
     },
     handleEdit(data) {
+      this.IsEditDisabled = true;
       this.issuseId = data.id;
       this.addStatus = false;
       this.editVisible = true;
@@ -175,7 +178,7 @@ export default {
       this.$fetch("coursesubject_listJspn", {
         ...this.pageConfig,
         ...this.searchForm,
-        productId:this.id,
+        productId: this.id,
         ...params,
       }).then((res) => {
         this.tableData = res.data.data.map((item) => {
@@ -183,7 +186,7 @@ export default {
           item.subjectStatus = item.subjectStatus == true ? "正常" : "暂停";
           return item;
         });
-     this.pageConfig.totalCount = res.data.pager.totalRows;
+        this.pageConfig.totalCount = res.data.pager.totalRows;
       });
     },
     pageChange(val) {

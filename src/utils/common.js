@@ -324,7 +324,7 @@ const $common = {
     addYearArr(startYear, endYear) {
         var yearArr = [];
         var myDate = new Date();
-      let  nowYear = myDate.getFullYear();//当前年
+        let nowYear = myDate.getFullYear();//当前年
         if (endYear) {
         } else {//为空为当前年
             endYear = nowYear;
@@ -336,10 +336,45 @@ const $common = {
         for (var int = startYear; int <= endYear; int++) {
             yearArr.push(int);
         }
-        return yearArr; 
-    }
+        return yearArr;
+    },
 
+    _getNowYearDate(str) {//返回当前年月日数据格式
+        var strArr = str.split('-');
+        if (strArr.length > 2) {//str 2001-08-20 00:00
+            var arr = strArr[2].split(' ');
+            var day = arr[0];
+            var month = strArr[1];
+        } else {//str 08-20 
+            var month = strArr[0];
+            var day = strArr[1];
+            console.log("arr22", 'day', day, month)
+        }
+        var year = new Date().getFullYear();
 
+        str = (year + '-' + month + '-' + day).toString();
+        return str;
+    },
+    _formatDates3(date) {//只返回年月的日期格式
+        if (!date) {
+            return ''
+        }
+        let time = new Date(date)
+        let year = time.getFullYear();
+        let month = time.getMonth() + 1;
+        let day = time.getDate();
+        let hours = time.getHours();
+        let minutes = time.getMinutes();
+        let seconds = time.getSeconds();
+
+        if (month < 10) month = `0${month}`;
+        if (day < 10) day = `0${day}`
+        if (hours < 10) hours = `0${hours}`
+        if (minutes < 10) minutes = `0${minutes}`
+        if (seconds < 10) seconds = `0${seconds}`
+
+        return `${month}-${day}`;
+    },
 
 }
 
