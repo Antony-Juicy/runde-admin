@@ -76,10 +76,6 @@
                     label-width="120px"
                 >
                     <el-form-item style="margin-left: -120px;margin-bottom: 20px">
-                        <!-- <el-select v-model="basicInfo.region" placeholder="请选择活动区域">
-                        <el-option label="区域一" value="shanghai"></el-option>
-                        <el-option label="区域二" value="beijing"></el-option>
-                        </el-select> -->
                         <el-input v-model="basicInfo.subjectName" readonly size="small"></el-input>
                     </el-form-item>
                     <template v-if="currentData.chargePattern_text == 'Pricesum'">
@@ -92,17 +88,15 @@
                           :prop="'course.' + index + '.coursePrice'"
                           label-width="0"
                           :rules="{
-                            required: item.checked
-                              ? true
-                              : false,
+                            required: true,
                             message: '请输入价格',
                             trigger: 'blur',
                           }"
                         >
                           <el-checkbox
                             v-model="item.checked"
-                            :label="item.courseName"
-                          ></el-checkbox>
+                            :label="item.courseId"
+                          >{{item.courseName}}</el-checkbox>
 
                           <el-input
                             v-model="item.coursePrice"
@@ -305,7 +299,7 @@ export default {
           operate: true
         },
         {
-          prop: "roleName",
+          prop: "serviceYear",
           element: "el-select",
           placeholder: "请选择",
           label: "服务年限",
@@ -370,9 +364,27 @@ export default {
         }
       ],
       addRules:{
-        updateReason: [
-          { required: true, message: "请输入修改事由", trigger: "blur" },
-        ]
+        className: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+        classType: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+        productName: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+        subjectName: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+        serviceYear: [
+          { required: true, message: "请选择", trigger: "change" },
+        ],
+        campusId: [
+          { required: true, message: "请选择", trigger: "change" },
+        ],
+        status: [
+          { required: true, message: "请选择", trigger: "change" },
+        ],
       },
       addPriceFormOptions: [
         {
@@ -550,7 +562,7 @@ export default {
         });
         this.pageConfig.totalCount = res.data.page.totalResult;
         this.campusArr = res.data.campusList.map(item => ({
-          label: `${item.campusName}-${item.parentCampusName || ''}`,
+          label: `${item.campusName}(${item.parentCampusName || ''})`,
           value: item.id
         }));
         this.formOptions[1].options = this.campusArr;
@@ -580,7 +592,13 @@ export default {
             subjectName
           })
           this.basicInfo.subjectName = subjectName;
-          this.basicInfo.course = courses;
+          this.basicInfo.course = courses.map(item => ({
+            checked: false,
+              coursePrice: "",
+              isperformance: true,
+              courseName: item.courseName,
+              courseId: item.courseId
+          }));
           this.currentData = pd;
         })
       }else if(index == 5){
@@ -591,15 +609,48 @@ export default {
       
     },
     submitAddForm(formName){
+      let valid2;
+      this.$refs.dataForm2.validate((valid) =>{
+        valid2 = valid;
+      })
       this.$refs[formName].validate((valid, formData) => {
-        if(valid){
+        if(valid && valid2){
           console.log(formData, this.basicInfo.course,"提交");
-          // this.$fetch("courseclass_save",{
-          //   ...formData,
-          //   map: {
-
-          //   }
-          // })
+          let obj = {};
+          this.basicInfo.course.forEach(item => {
+            obj['coursePrice'+item.courseId] = item.coursePrice;
+            if(item.isperformance){
+              obj['isperformance'+item.courseId] = "on";
+            }
+          })
+           console.log(formData, obj,"提交2");
+           let campusIds = [];
+           formData.campusId.forEach(item => {
+             let target = this.campusArr.find(ele => (ele.value == item));
+             if(target){
+               campusIds.push({
+                 name: target.label,
+                 val: target.value
+               })
+             }
+             
+           })
+          this.$fetch("courseclass_save",{
+            ...formData,
+            classTypeId: this.classTypeId,
+            chargePattern: this.currentData.chargePattern_text,
+            campusIds: JSON.stringify(campusIds),
+            classBatch: this.currentData.classTypeBatch,
+            classType: this.currentData.classType_text,
+            productId: this.currentData.productId,
+            subjectId: this.currentData.subjectId,
+            map: JSON.stringify(obj),
+            campusId: formData.campusId.join(","),
+            course: JSON.stringify(this.basicInfo.course.map(item=>(item.courseId)))
+          }).then(res => {
+            this.addVisible = false;
+            this.getTableData();
+          })
         }
           
       });
