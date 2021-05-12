@@ -1307,10 +1307,9 @@ export default {
         }).then((res) => {
     
           this.tableData = res.data.list;
-          // this.basicInfo.classTypeStage =  res.data.list.map(item=>{
-          //  return  item.stageGroupName
-          // })
-          // console.log('data~~~~~~~~~~~~~~~~~~', this.basicInfo.classTypeStage)
+          res.data.list.map((item,i)=>{
+            this.tableData[i].classTypeStage =   item.stageGroupName;
+          })
           this.pageConfig.totalCount = res.data.pager.totalRows;
           resolve();
         });
