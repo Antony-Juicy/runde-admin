@@ -76,10 +76,19 @@
                     :model="basicInfo"
                     label-width="120px"
                 >
-                    <!-- <el-form-item style="margin-left: -120px;margin-bottom: 20px">
-                        <el-input v-model="basicInfo.subjectName" readonly size="small" placeholder="请输入"></el-input>
-                    </el-form-item> -->
-                    <template >
+                    <template v-if="currentData.productId == 19">
+                        <el-form-item label="报考省份" prop="provinceId" :rules="{
+                            required: true,
+                            message: '请选择',
+                            trigger: 'change',
+                          }"
+                          style="margin: 20px 0 20px -120px;"> 
+                          <el-select v-model="basicInfo.provinceId" placeholder="请选择" multiple size="small" filterable :disabled="checkDisabled">
+                            <el-option :label="item.label" :value="item.value" v-for="item in provinceArr" :key="item.value"></el-option>
+                          </el-select>
+                        </el-form-item>
+                    </template>
+                    <template>
                       <div
                         class="param-item"
                         v-for="(item, index) in basicInfo.course"
@@ -497,10 +506,12 @@ export default {
           ],
           subjectName:"",
           isperformance: true,
+          provinceId: []
       },
       rules: {
       },
-      campusArr: []
+      campusArr: [],
+      provinceArr: []
     }
   },
   components:{
@@ -596,8 +607,8 @@ export default {
           classTypeId: this.classTypeId,
           productId: this.productId
         }).then(res => {
-          const { pd } = res.data;
-          const { className, classType, productName, subjectName,courses  } = res.data.pd;
+          const { pd,provinceList } = res.data;
+          const { className, classType, productName, subjectName,courses,productId  } = res.data.pd;
           this.$refs.dataForm3.setValue({
             className,
             classType,
@@ -607,6 +618,7 @@ export default {
           this.currentData = pd;
           this.basicInfo.subjectName = subjectName;
           this.basicInfo.isperformance = true;
+          this.basicInfo.provinceId = [];
           this.basicInfo.course = courses.map(item => ({
               checked: false,
               coursePrice: "",
@@ -614,7 +626,13 @@ export default {
               courseName: item.courseName,
               courseId: item.courseId
           }));
-          
+          if(productId == 19){
+            this.provinceArr = provinceList.map(item => ({
+              label: item.provinceName,
+              value: item.provinceId
+            }))
+            console.log(provinceList,this.provinceArr,'---')
+          }
         })
       }else if(index == 5){
         this.addPriceVisible = true;
@@ -646,8 +664,18 @@ export default {
                })
              }
            })
-          let obj,course = [],performers = {} ;
-
+          // 省份的处理
+           let provinceIds = [];
+           this.basicInfo.provinceId.forEach(item => {
+             let target = this.provinceArr.find(ele => (ele.value == item));
+             if(target){
+               provinceIds.push({
+                 name: target.label,
+                 val: target.value
+               })
+             }
+           })
+          let obj,course = [];
             obj = {};
             this.basicInfo.course.forEach(item => {
               obj['coursePrice'+item.courseId] = item.coursePrice;
@@ -660,10 +688,11 @@ export default {
            
           this.$fetch(this.addStatus?"courseclass_save":"courseclass_editJsp",{
             ...formData,
-            ...performers,
             classTypeId: this.classTypeId,
             chargePattern: this.currentData.chargePattern_text,
             campusIds: JSON.stringify(campusIds),
+            provinceIds: JSON.stringify(provinceIds),
+            provinceId: this.basicInfo.provinceId.join(','),
             classBatch: this.currentData.classTypeBatch,
             classType: this.currentData.classType_text,
             productId: this.currentData.productId,
@@ -698,8 +727,8 @@ export default {
       this.$fetch("courseclass_goEdit",{
           id: data.id
       }).then(res => {
-        const { className, classType, productName, subjectName,campusId} = res.data.pd;
-        const { pd,courseList  } = res.data;
+        const { className, classType, productName, subjectName,campusId ,provinceId,productId } = res.data.pd;
+        const { pd,courseList,provinceList  } = res.data;
          this.$refs.dataForm3.setValue({
             className,
             classType,
@@ -709,13 +738,20 @@ export default {
           })
           this.basicInfo.subjectName = subjectName;
           this.currentData.chargePattern_text = pd.chargePattern;
+          this.currentData.productId = pd.productId;
+          this.basicInfo.provinceId = [provinceId];
           this.basicInfo.course = courseList.map(item => ({
             ...item,
             coursePrice: item.price,
             checked: true,
             isperformance: !item.isperformance
           }));
-           
+           if(productId == 19){
+            this.provinceArr = provinceList.map(item => ({
+              label: item.provinceName,
+              value: item.provinceId
+            }))
+          }
       })
     },
     handleDelete(row) {
