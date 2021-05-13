@@ -49,5 +49,7 @@ export default {//项目内容管理
     // 班次管理
     courseclass_listJsp: {url: '/teach/courseclass/listJsp', method: 'get'},
     courseclass_goAdd: {url: '/teach/courseclass/goAdd', method: 'get'},
+    courseclass_goEdit: {url: '/teach/courseclass/goEdit', method: 'get'},
     courseclass_save: {url: '/teach/courseclass/save', method: 'post'},
+    courseclass_editJsp: {url: '/teach/courseclass/editJsp', method: 'post'},
 }

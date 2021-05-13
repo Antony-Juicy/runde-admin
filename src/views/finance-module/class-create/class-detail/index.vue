@@ -64,21 +64,22 @@
             :title="addStatus?'添加':'编辑'"
             :dialogVisible="addVisible"
             appendToBody
+            :customClass="'class-detail-dialog'"
             @handleClose="addVisible = false"
             @submitForm="submitAddForm('dataForm3')"
           >
             <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3" >
               <template slot="subjectName">
+                <el-input v-model="basicInfo.subjectName" readonly size="small" placeholder="请输入"></el-input>
                 <el-form
                     ref="dataForm2"
                     :model="basicInfo"
-                    :rules="rules"
                     label-width="120px"
                 >
-                    <el-form-item style="margin-left: -120px;margin-bottom: 20px">
-                        <el-input v-model="basicInfo.subjectName" readonly size="small"></el-input>
-                    </el-form-item>
-                    <template v-if="currentData.chargePattern_text == 'Pricesum'">
+                    <!-- <el-form-item style="margin-left: -120px;margin-bottom: 20px">
+                        <el-input v-model="basicInfo.subjectName" readonly size="small" placeholder="请输入"></el-input>
+                    </el-form-item> -->
+                    <template >
                       <div
                         class="param-item"
                         v-for="(item, index) in basicInfo.course"
@@ -88,7 +89,9 @@
                           :prop="'course.' + index + '.coursePrice'"
                           label-width="0"
                           :rules="{
-                            required: true,
+                            required: item.checked
+                          ? true
+                          : false,
                             message: '请输入价格',
                             trigger: 'blur',
                           }"
@@ -96,6 +99,7 @@
                           <el-checkbox
                             v-model="item.checked"
                             :label="item.courseId"
+                            :disabled="checkDisabled"
                           >{{item.courseName}}</el-checkbox>
 
                           <el-input
@@ -115,7 +119,7 @@
                         </el-form-item>
                       </div>
                     </template>
-                    
+
                 </el-form>
               </template>
             </RdForm>
@@ -164,6 +168,7 @@ export default {
   name:"class-detail",
   data(){
     return {
+      checkDisabled : false,
       detailsVisible: false,
       currentIndex: 0,
       currentCampus: "",
@@ -325,7 +330,8 @@ export default {
               value: 5
             },
           ],
-          initValue: 1
+          initValue: 1,
+          disabled: false
         },
         {
           prop: "campusId",
@@ -335,7 +341,8 @@ export default {
           options: [
           ],
           filterable: true,
-          multiple: true
+          multiple: true,
+          disabled: false
         },
         {
           prop: "classDetail",
@@ -488,9 +495,11 @@ export default {
             //   courseName: "test1"
             // }
           ],
-          subjectName:""
+          subjectName:"",
+          isperformance: true,
       },
-      rules: {},
+      rules: {
+      },
       campusArr: []
     }
   },
@@ -555,6 +564,7 @@ export default {
         classTypeId: this.classTypeId,
         classTypeName: this.classTypeName,
         productId: this.productId
+        // productId: 19
       }).then((res) => {
         this.tableData = res.data.varList.map(item => {
           item.createAt = this.$common._formatDates(item.createAt);
@@ -579,6 +589,9 @@ export default {
       if(index == 1){
         this.addStatus = true;
         this.addVisible = true;
+        this.addFormOptions[4].disabled = false;
+        this.addFormOptions[5].disabled = false;
+         this.checkDisabled = false;
         this.$fetch("courseclass_goAdd",{
           classTypeId: this.classTypeId,
           productId: this.productId
@@ -591,15 +604,17 @@ export default {
             productName,
             subjectName
           })
+          this.currentData = pd;
           this.basicInfo.subjectName = subjectName;
+          this.basicInfo.isperformance = true;
           this.basicInfo.course = courses.map(item => ({
-            checked: false,
+              checked: false,
               coursePrice: "",
               isperformance: true,
               courseName: item.courseName,
               courseId: item.courseId
           }));
-          this.currentData = pd;
+          
         })
       }else if(index == 5){
         this.addPriceVisible = true;
@@ -615,16 +630,13 @@ export default {
       })
       this.$refs[formName].validate((valid, formData) => {
         if(valid && valid2){
-          console.log(formData, this.basicInfo.course,"提交");
-          let obj = {};
-          this.basicInfo.course.forEach(item => {
-            obj['coursePrice'+item.courseId] = item.coursePrice;
-            if(item.isperformance){
-              obj['isperformance'+item.courseId] = "on";
-            }
-          })
-           console.log(formData, obj,"提交2");
-           let campusIds = [];
+          if(!this.basicInfo.course.some(item => (item.checked == true))){
+            this.$message.error("请勾选课程")
+            return;
+          }
+          console.log(formData, this.basicInfo,"提交");
+          // 校区的处理
+          let campusIds = [];
            formData.campusId.forEach(item => {
              let target = this.campusArr.find(ele => (ele.value == item));
              if(target){
@@ -633,10 +645,22 @@ export default {
                  val: target.value
                })
              }
-             
            })
-          this.$fetch("courseclass_save",{
+          let obj,course = [],performers = {} ;
+
+            obj = {};
+            this.basicInfo.course.forEach(item => {
+              obj['coursePrice'+item.courseId] = item.coursePrice;
+              if(item.isperformance){
+                obj['isperformance'+item.courseId] = "on";
+              }
+            })
+            course = this.basicInfo.course.filter(item=>(item.checked)).map(item=>(item.courseId));
+          
+           
+          this.$fetch(this.addStatus?"courseclass_save":"courseclass_editJsp",{
             ...formData,
+            ...performers,
             classTypeId: this.classTypeId,
             chargePattern: this.currentData.chargePattern_text,
             campusIds: JSON.stringify(campusIds),
@@ -646,7 +670,8 @@ export default {
             subjectId: this.currentData.subjectId,
             map: JSON.stringify(obj),
             campusId: formData.campusId.join(","),
-            course: JSON.stringify(this.basicInfo.course.map(item=>(item.courseId)))
+            course: course.join(","),
+            id: this.addStatus?"":this.editId
           }).then(res => {
             this.addVisible = false;
             this.getTableData();
@@ -665,14 +690,33 @@ export default {
     },
     handleEdit(data){
       this.addStatus = false;
-      this.addVisible = true;
-      this.addFormOptions.forEach(item => {
-           item.initValue = data[item.prop];
-      })
-      setTimeout(() => {
-        this.$refs.dataForm3.addInitValue();
-      }, 0);
+     this.addVisible = true;
       this.editId = data.id;
+      this.addFormOptions[4].disabled = true;
+      this.addFormOptions[5].disabled = true;
+      this.checkDisabled = true;
+      this.$fetch("courseclass_goEdit",{
+          id: data.id
+      }).then(res => {
+        const { className, classType, productName, subjectName,campusId} = res.data.pd;
+        const { pd,courseList  } = res.data;
+         this.$refs.dataForm3.setValue({
+            className,
+            classType,
+            productName,
+            subjectName,
+            campusId: [campusId]
+          })
+          this.basicInfo.subjectName = subjectName;
+          this.currentData.chargePattern_text = pd.chargePattern;
+          this.basicInfo.course = courseList.map(item => ({
+            ...item,
+            coursePrice: item.price,
+            checked: true,
+            isperformance: !item.isperformance
+          }));
+           
+      })
     },
     handleDelete(row) {
       let info = '';
@@ -705,7 +749,13 @@ export default {
 }
 </script>
 
-
+<style lang="scss">
+.class-detail-dialog {
+  .el-checkbox__input.is-disabled+span.el-checkbox__label {
+    color: #5f6165;
+  }
+}
+</style>
 <style lang="scss" scoped>
 .class-detail {
  

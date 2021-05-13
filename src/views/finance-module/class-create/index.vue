@@ -547,14 +547,14 @@ export default {
           placeholder: "请输入班型名称",
         },
         {
-          prop: "productName",
+          prop: "productId",
           element: "el-select",
           placeholder: "请选择项目",
           options: [],
           events: {},
         },
         {
-          prop: "subjectName",
+          prop: "subjectId",
           element: "el-select",
           placeholder: "请选择科目",
           options: [],

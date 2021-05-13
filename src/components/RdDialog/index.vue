@@ -9,7 +9,7 @@
       :destroy-on-close="true"
       :append-to-body="appendToBody"
       :top="top"
-      :custom-class="customClass || 'append-dialog'"
+      :custom-class="customClass + ' append-dialog' || 'append-dialog'"
     >
       <slot></slot>
       <div slot="footer" class="dialog-footer" v-if="showFooter">

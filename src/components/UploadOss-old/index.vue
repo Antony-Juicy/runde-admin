@@ -6,11 +6,7 @@
 </template>
 
 <script>
-let multipart_params = '';
-let baseKey = ''
-import plupload from "plupload";
-import axios from "axios"
-import { uploadOss } from "@/utils/uploadOss"
+import { uploadOss } from "./uploadOss"
 const iceConfig = require('@/config/config.js')
 
 export default {
