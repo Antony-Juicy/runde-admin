@@ -17,6 +17,7 @@
         :tableData="tableData"
         :tableKey="tableKey"
         :loading="loading"
+        :tbodyHeight="600"
         :filterColumn="filterColumn"
         :pageConfig.sync="pageConfig"
         @pageChange="pageChange"
@@ -1242,6 +1243,16 @@ export default {
           );
           item.playback = item.playback ? "有录播" : "无录播";
           item.status = item.status == "Normal" ? "正常" : "暂停";
+          res.data.accountingRulesList.map((el) => {
+              if (el.key == item.accountingRules) {
+                item.accountingRules = el.value;
+              }
+            });
+            res.data.contentTypeList.map((el) => {
+              if (el.key == item.contentType) {
+                item.contentType = el.value;
+              }
+            });
           console.log("data item", item);
           return item;
         });
@@ -1288,14 +1299,17 @@ export default {
     },
     handlePageChange() {},
     getTableData(params = {}) {
-      // TODO
       return new Promise((resolve, reject) => {
         this.$fetch("courseclasstype_listJson", {
           ...this.pageConfig,
           ...this.searchForm,
-          ...params,
+          ...params, 
         }).then((res) => {
+    
           this.tableData = res.data.list;
+          res.data.list.map((item,i)=>{
+            this.tableData[i].classTypeStage =   item.stageGroupName;
+          })
           this.pageConfig.totalCount = res.data.pager.totalRows;
           resolve();
         });

@@ -102,15 +102,6 @@ export default {
         },
       ],
       tableData: [
-        {
-          id: 1,
-          subjectName: "医师",
-          skillTestStart: "/",
-          theoryTestStart: "10-30",
-          theoryTestClosingTime: "11-30",
-          subjectStatus: "正常",
-          createAt: "2021-2.-1 09：32",
-        },
       ],
       tableKey: [
         { name: "id", value: "id" },
