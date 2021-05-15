@@ -158,6 +158,7 @@ export default {
     handleAdd() {
       this.editVisible = true;
       this.addStatus = true;
+      this.IsEditDisabled = true;
     },
     onSearch(val) {
       this.searchForm = {

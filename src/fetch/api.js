@@ -8,6 +8,7 @@ import officialAccounts from './official-accounts'
 import classmanage from './classmanage'
 import project from './project'
 import teachGoods from './teach/goods'
+import chainmanage from './chainmanage'
 
 export default {
     ...user,
@@ -19,5 +20,6 @@ export default {
     ...officialAccounts,
     ...classmanage,
     ...project,
-    ...teachGoods
+    ...teachGoods,
+    ...chainmanage
 }

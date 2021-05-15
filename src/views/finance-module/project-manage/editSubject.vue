@@ -23,7 +23,7 @@
             v-model="dynamicValidateForm.productName"
             :disabled="IsEditDisabled"
             size="small"
-            placeholder="请选择" 
+            placeholder="请选择"
             style="width: 300px"
             @change="changeSelect"
           >
@@ -294,10 +294,12 @@ export default {
   },
   components: {},
   props: {
-    id: {//项目id
+    id: {
+      //项目id
       type: [Number, String],
     },
-    issuseId: {//科目id
+    issuseId: {
+      //科目id
       type: [Number, String],
     },
     addStatus: {
@@ -306,7 +308,7 @@ export default {
     tableData: {
       type: Array,
     },
-    IsEditDisabled:{
+    IsEditDisabled: {
       type: Boolean,
     },
   },
@@ -334,7 +336,13 @@ export default {
       }
     },
     changeSelect(val) {
-      if (val == 2) {
+      var name;
+      this.productArr.map((item) => {
+        if (item.value == val) {
+          name = item.label;
+        }
+      });
+      if (name == "医师") {
         this.showCheckbox = true;
       } else {
         this.showCheckbox = false;
@@ -348,6 +356,19 @@ export default {
           label: item.productName,
           value: item.id,
         }));
+        //项目
+        res.data.data.map((item) => {
+          if (item.id == this.id) {
+            this.dynamicValidateForm.productName = item.productName;
+            if (this.dynamicValidateForm.productName == "医师") {
+              this.showCheckbox = true;
+            } else {
+              this.showCheckbox = false;
+              this.dynamicValidateForm.skillTestStart = "";
+              this.dynamicValidateForm.theoryTest2Start = "";
+            }
+          }
+        });
         this.threeCategoriesArr = res.data.financeCode3.map((item) => ({
           label: item.value,
           value: item.key,
@@ -435,27 +456,44 @@ export default {
       this.$fetch("coursesubject_goEdit", {
         id: this.issuseId,
       }).then((res) => {
-        let skillTestStart = res.data.skillTestStart && res.data.skillTestEnd ?[
-          new Date(this.$common._getNowYearDate(res.data.skillTestStart)),
-          new Date(this.$common._getNowYearDate(res.data.skillTestEnd)),
-        ] :"";
-        let theoryTestStart = res.data.theoryTestStart && res.data.theoryTestEnd ? [
-          new Date(this.$common._getNowYearDate(res.data.theoryTestStart)),
-          new Date(this.$common._getNowYearDate(res.data.theoryTestEnd)),
-        ]:"";
-        let theoryTest2Start = res.data.theoryTest2Start && res.data.theoryTest2End ? [
-          new Date(this.$common._getNowYearDate(res.data.theoryTest2Start)),
-          new Date(this.$common._getNowYearDate(res.data.theoryTest2End)),
-        ]:"";
-        let theoryTest2ClosingTime = res.data.theoryTest2ClosingTime? this.$common._getNowYearDate(res.data.theoryTest2ClosingTime):"";
-        let theoryTestClosingTime = res.data.theoryTestClosingTime ? this.$common._getNowYearDate(res.data.theoryTestClosingTime):"";
+        let skillTestStart =
+          res.data.skillTestStart && res.data.skillTestEnd
+            ? [
+                new Date(this.$common._getNowYearDate(res.data.skillTestStart)),
+                new Date(this.$common._getNowYearDate(res.data.skillTestEnd)),
+              ]
+            : "";
+        let theoryTestStart =
+          res.data.theoryTestStart && res.data.theoryTestEnd
+            ? [
+                new Date(
+                  this.$common._getNowYearDate(res.data.theoryTestStart)
+                ),
+                new Date(this.$common._getNowYearDate(res.data.theoryTestEnd)),
+              ]
+            : "";
+        let theoryTest2Start =
+          res.data.theoryTest2Start && res.data.theoryTest2End
+            ? [
+                new Date(
+                  this.$common._getNowYearDate(res.data.theoryTest2Start)
+                ),
+                new Date(this.$common._getNowYearDate(res.data.theoryTest2End)),
+              ]
+            : "";
+        let theoryTest2ClosingTime = res.data.theoryTest2ClosingTime
+          ? this.$common._getNowYearDate(res.data.theoryTest2ClosingTime)
+          : "";
+        let theoryTestClosingTime = res.data.theoryTestClosingTime
+          ? this.$common._getNowYearDate(res.data.theoryTestClosingTime)
+          : "";
         let obj = {
           ...res.data,
           theoryTestStart: theoryTestStart,
           theoryTest2Start: theoryTest2Start,
           skillTestStart: skillTestStart,
-          theoryTest2ClosingTime:theoryTest2ClosingTime,
-          theoryTestClosingTime:theoryTestClosingTime,
+          theoryTest2ClosingTime: theoryTest2ClosingTime,
+          theoryTestClosingTime: theoryTestClosingTime,
         };
         if (res.data.productId == 2) {
           this.showCheckbox = true;
