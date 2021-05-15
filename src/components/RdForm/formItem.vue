@@ -17,18 +17,20 @@
 
 
     <template v-if="isRadio">
-      <template  v-for="item in itemOptions.options">
-        <el-radio
-          :key="item.value"
-          :label="item.value"
-          v-model.trim="currentVal"
-            v-bind="bindProps"
-            v-on="bindEvents"
-          :disabled="itemOptions.disabled">
-          {{item.label}}
-        </el-radio>
-        <span class="radio-tips" :key="item.label" v-if="item.tips">({{item.tips}})</span>
-      </template>
+      <el-radio-group v-model="currentVal">
+        <template  v-for="item in itemOptions.options">
+          <el-radio
+            :key="item.value"
+            :label="item.value"
+            v-model.trim="currentVal"
+              v-bind="bindProps"
+              v-on="bindEvents"
+            :disabled="itemOptions.disabled">
+            {{item.label}}
+          </el-radio>
+          <span class="radio-tips" :key="item.label" v-if="item.tips">({{item.tips}})</span>
+        </template>
+      </el-radio-group>
     </template>
     
     <el-input-number
