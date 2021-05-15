@@ -22,7 +22,7 @@
             <el-button
               @click="handleOpen(scope.row)"
               type="text"
-              size="small"
+              size="medium"
               >{{ scope.row.productName }}</el-button
             >
           </template>
@@ -122,7 +122,7 @@ export default {
           options: [],
         },
         {
-          prop: "productStatus",
+          prop: "status",
           element: "el-select",
           placeholder: "请选择状态",
           options: [
@@ -153,7 +153,7 @@ export default {
         { name: "id", value: "id" },
         { name: "项目名", value: "productName", operate: true },
         { name: "备注", value: "productDetail" },
-        { name: "状态", value: "productStatus" },
+        { name: "状态", value: "status" },
         { name: "创建时间", value: "createAt" },
         {
           name: "操作",
@@ -184,18 +184,18 @@ export default {
           label: "项目描述",
         },
         {
-          prop: "productStatus",
+          prop: "status",
           element: "el-radio",
           placeholder: "请选择状态",
           label: "状态：",
           options: [
             {
               label: "正常",
-              value: false,
+              value: true,
             },
             {
               label: "暂停",
-              value: true,
+              value: false,
             },
           ],
         },
@@ -220,9 +220,7 @@ export default {
         //  productDetail: [
         //   { required: true, message: "请输入", trigger: "blur" },
         // ],
-        productStatus: [
-          { required: true, message: "请选择", trigger: "change" },
-        ],
+        status: [{ required: true, message: "请选择1", trigger: "change" }],
         financeCodeName1: [
           { required: true, message: "请选择", trigger: "change" },
         ],
@@ -329,7 +327,7 @@ export default {
       }).then((res) => {
         this.tableData = res.data.data.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
-          item.productStatus = item.productStatus == true ? "正常" : "暂停";
+          item.status = item.productStatus == true ? "正常" : "暂停";
           return item;
         });
         this.pageConfig.totalCount = res.data.pager.totalRows;
@@ -345,11 +343,15 @@ export default {
       this.editId = data.id;
       this.addStatus = false;
       this.distributeVisible = true;
+      let status = data.status == "正常" ? true : false;
       this.addFormOptions.forEach((item) => {
-        if (item.prop == "productStatus") {
-          data[item.prop] = data[item.prop] == "正常" ? true : false;
+        if (item.prop == "status") {
+          item.initValue = status;
+        } else if(item.prop == "productDetail"){
+          this.dataForm.productDetail = data[item.prop];
+        }else{
+          item.initValue = data[item.prop];
         }
-        item.initValue = data[item.prop];
       });
       setTimeout(() => {
         this.$refs.dataForm3.addInitValue();
@@ -380,4 +382,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.project-manage {
+}
 </style>

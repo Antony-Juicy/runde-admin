@@ -351,9 +351,9 @@ const $common = {
             console.log("arr22", 'day', day, month)
         }
         var year = new Date().getFullYear();
-
-        str = (year + '-' + month + '-' + day).toString();
-        return str;
+        return `${year}-${month}-${day} 00:00:00`; 
+        // str = (year + '-' + month + '-' + day).toString();
+        // return str;
     },
     _formatDates3(date) {//只返回年月的日期格式
         if (!date) {

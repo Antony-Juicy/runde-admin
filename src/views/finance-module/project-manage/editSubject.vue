@@ -115,13 +115,11 @@
           </el-date-picker>
           <el-checkbox
             v-show="showCheckbox"
-            @change="handleChange"
             v-model="checked1"
             >技能考试</el-checkbox
           >
           <el-checkbox
             v-show="showCheckbox"
-            @change="handleChange2"
             v-model="checked2"
             >理论二考</el-checkbox
           >
@@ -325,16 +323,6 @@ export default {
     this.getSelectList();
   },
   methods: {
-    handleChange(val) {
-      if (val == false) {
-        this.dynamicValidateForm.skillTestStart = "";
-      }
-    },
-    handleChange2(val) {
-      if (val == false) {
-        this.dynamicValidateForm.theoryTest2Start = "";
-      }
-    },
     changeSelect(val) {
       var name;
       this.productArr.map((item) => {
@@ -428,12 +416,12 @@ export default {
             this.addStatus ? "coursesubject_save" : "coursesubject_editJsp",
             {
               ...this.dynamicValidateForm,
-              skillTestStart,
-              skillTestEnd,
+              skillTestStart:this.checked1?skillTestStart:"",
+              skillTestEnd:this.checked1?skillTestEnd:"",
               theoryTestStart,
               theoryTestEnd,
-              theoryTest2Start,
-              theoryTest2End,
+              theoryTest2Start:this.checked2?theoryTest2Start:"",
+              theoryTest2End:this.checked2?theoryTest2End:"",
               financeCode3,
               productId: this.id ? this.id : productId,
               id: this.issuseId,
@@ -497,8 +485,8 @@ export default {
         };
         if (res.data.productId == 2) {
           this.showCheckbox = true;
-          this.checked1 = true;
-          this.checked2 = true;
+          this.checked1 = res.data.skillTestStart && res.data.skillTestEnd ? true : false;
+          this.checked2 = res.data.theoryTest2Start && res.data.theoryTest2End ? true : false;
         } else {
           this.showCheckbox = false;
           this.checked1 = false;
