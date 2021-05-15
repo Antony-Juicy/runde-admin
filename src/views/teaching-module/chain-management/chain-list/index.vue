@@ -169,9 +169,7 @@ export default {
         },
       ],
       addRules: {
-        menuName3: [
-          { required: true, message: "请输入", trigger: "blur" },
-        ],
+        menuName3: [{ required: true, message: "请输入", trigger: "blur" }],
       },
       addStatus: true,
       editId: "",
@@ -179,6 +177,9 @@ export default {
   },
   components: {
     RdForm,
+  },
+  mounted() {
+    this.getTableData();
   },
   methods: {
     onSearch(val) {
@@ -188,7 +189,25 @@ export default {
       console.log(val, this.searchForm, "val---");
       this.getTableData();
     },
-    getTableData() {},
+    getTableData(params = {}) {
+      this.$fetch("chaininfo_listJsp", { 
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+          console.log(res,'res----1234')
+        // this.tableData = res.data.list.map((item) => {
+        //   item.playbackCn = item.playback ? "有" : "无";
+        //   item.createAt = this.$common._formatDates(item.createAt);
+        //   item.courseStartTime = this.$common._formatDates(
+        //     item.courseStartTime
+        //   );
+        //   item.courseEndTime = this.$common._formatDates(item.courseEndTime);
+        //   return item;
+        // });
+        this.pageConfig.totalCount = res.data.page.totalResult;
+      });
+    },
     pageChange(val) {
       console.log(val, "pagechange");
       this.pageConfig.currentPage = val.page;

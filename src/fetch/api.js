@@ -7,6 +7,7 @@ import order from './order'
 import officialAccounts from './official-accounts'
 import classmanage from './classmanage'
 import project from './project'
+import chainmanage from './chainmanage'
 
 export default {
     ...user,
@@ -18,4 +19,5 @@ export default {
     ...officialAccounts,
     ...classmanage,
     ...project,
+    ...chainmanage
 }
