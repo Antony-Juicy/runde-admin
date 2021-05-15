@@ -5,6 +5,7 @@
       :showNum="showNum"
       ref="searchForm"
       @onSearch="onSearch"
+      @onReset="onReset"
     ></search-form>
     <div class="w-container mt-15">
       <div class="btn-wrapper">
@@ -548,17 +549,18 @@ export default {
           placeholder: "请输入班型名称",
         },
         {
-          prop: "productId",
+          prop: "productName",
           element: "el-select",
           placeholder: "请选择项目",
           options: [],
           events: {},
         },
         {
-          prop: "subjectId",
+          prop: "subjectName",
           element: "el-select",
           placeholder: "请选择科目",
           options: [],
+          disabled:true
         },
         {
           prop: "status",
@@ -1197,14 +1199,14 @@ export default {
       });
     },
     productChange(val) {
+      console.log(val,'val') 
       this.currentProductId = val;
+      this.formOptions[2].disabled=val?false:true;
+       this.formOptions[2].options = [];
+       this.$refs.searchForm.setValue({
+          subjectName: ""
+        })
       //  获取科目下拉
-      // let productId = this.formOptions[1].options.find((item) => {
-      //   if (val == item.value) {
-      //     return item.productId;
-      //   }
-      // });
-      // { productId, id: val }
       this.$fetch("courseclasstype_subjectList", { productId: val }).then(
         (res) => {
           this.subjecttArr = this.formOptions[2].options = res.data.list.map(
@@ -1213,10 +1215,6 @@ export default {
               value: item.id,
             })
           );
-          console.log("iiii", this.formOptions[1].initValue, val);
-          this.formOptions[2].initValue = "";
-          this.formOptions[1].initValue = val;
-          this.$refs.searchForm.addInitValue();
         }
       );
     },
@@ -1290,6 +1288,9 @@ export default {
       this.pageConfig.pageNum = 1;
       console.log(val, this.searchForm, "val---");
       this.getTableData();
+    },
+    onReset(){
+       this.formOptions[2].disabled=true;
     },
     pageChange(val) {
       console.log(val, "pagechange");
