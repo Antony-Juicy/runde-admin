@@ -500,7 +500,7 @@ export default {
         this.basicInfo[key] = "";
       }
       this.basicInfo.status="1"
-        this.basicInfo.menuType= "1"
+        // this.basicInfo.menuType= "1"
       this.dialogVisible = true;
       this.dialogStatus = true;
     },
