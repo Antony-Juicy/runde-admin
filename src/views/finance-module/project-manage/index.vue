@@ -347,7 +347,9 @@ export default {
       this.addFormOptions.forEach((item) => {
         if (item.prop == "status") {
           item.initValue = status;
-        } else {
+        } else if(item.prop == "productDetail"){
+          this.dataForm.productDetail = data[item.prop];
+        }else{
           item.initValue = data[item.prop];
         }
       });
