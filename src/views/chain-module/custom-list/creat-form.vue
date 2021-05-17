@@ -12,6 +12,8 @@
             <div class="tags" data-type="checkBox">多选框</div>
             <div class="tags" data-type="appendix">附件</div>
             <div class="tags" data-type="pic">图片</div>
+            <div class="tags" data-type="datetime">日期+时间</div>
+            <div class="tags" data-type="textarea">文本框</div>
           </div>
         </div>
         <div class="layui-col-md9">
@@ -137,7 +139,7 @@
 
     <!-- 弹窗 -->
     <div class="radio-modal">
-      <div class="modal-title">输入选项值<每行一个></div>
+      <div class="modal-title">输入选项值（每行一个）</div>
       <form class="layui-form" action="" lay-filter="radio-form">
         <textarea name="desc" class="layui-textarea" rows="10"></textarea>
         <div class="layui-btn layui-btn-primary radio-model-cancel">取消</div>
@@ -382,7 +384,7 @@ export default {
         templateName: "",
         templateContent: [
           {
-            standard: "",
+            status: "",
             qualified: "",
             sequence: 1,
             fieldName: "numberfield1",
@@ -395,9 +397,9 @@ export default {
         ],
         templateTypeId: "1",
         // $("#inputselect").val(editData.templateTypeId);
-        // [{id: "1", label: "的", type: "dateField", placeholder: "请选择",required: true, standard: "lt",sequence: 1, qualified:"2020-05-11"},
-        // {id: "2", label: "shijian", type: "timeField", placeholder: "请选择",required: false, standard: "gt",sequence: 2, qualified:"05:00"},
-        // {id: "3", label: "shuzi", type: "numberfield", placeholder: "请选择",required: true, standard: "gt",sequence: 3, qualified:"33"},
+        // [{id: "1", label: "的", type: "dateField", placeholder: "请选择",required: true, status: "lt",sequence: 1, qualified:"2020-05-11"},
+        // {id: "2", label: "shijian", type: "timeField", placeholder: "请选择",required: false, status: "gt",sequence: 2, qualified:"05:00"},
+        // {id: "3", label: "shuzi", type: "numberfield", placeholder: "请选择",required: true, status: "gt",sequence: 3, qualified:"33"},
         // {id: "4", label: "当时", type: "radio", placeholder: "请选择", required: true,sequence: 4, type: "radio",singleOption: [
         //         "选项一","选项二"
         //     ]},
@@ -433,6 +435,7 @@ export default {
         }
       });
 
+      //----这里是回显------------
       templateContent.forEach((item, index) => {
         // 日期
         if (item.type == "dateField") {
@@ -446,23 +449,19 @@ export default {
                   <td>———</td>
                   <td>
                     <div class="layui-form date-range" lay-filter="myDiv">
-                      <select name="dateField-standard-${item.sequence}" lay-filter="mySelect">
-                        <option value="">请选择</option>
-                        <option value="gt">大于</option>
-                        <option value="gt&equal">大于或等于</option>
-                        <option value="lt">小于</option>
-                        <option value="lt&equal">小于或等于</option>
+                      <select name="dateField-status-${item.sequence}" lay-filter="mySelect">
+                        <option value="1" selected>显示</option>
+                       <option value="0">隐藏</option>
                       </select>
-                  </div>
-                    <input type="text" name="dateField-qualified-${item.sequence}" value="${item.qualified}" class="layui-input date-baseline datetime" placeholder="请选择日期">
+                    </div>
                   </td>
                   <td><i class="layui-icon layui-icon-up" style="font-size: 30px;"></i><i class="layui-icon layui-icon-down" style="font-size: 30px;"></i></td>
                   <td><i class="layui-icon layui-icon-close" style="font-size: 30px;" data-index=${item.sequence}></i></td>
                 </tr>
                 `;
           $(".table-wrapper tbody").append(str);
-          $(`select[name="dateField-standard-${item.sequence}"]`).val(
-            item.standard
+          $(`select[name="dateField-status-${item.sequence}"]`).val(
+            item.status
           );
           $(`input[name="dateField-required-${item.sequence}"]`).prop(
             "checked",
@@ -481,15 +480,11 @@ export default {
                   <td>———</td>
                   <td>
                     <div class="layui-form date-range" lay-filter="myDiv">
-                      <select name="timeField-standard-${item.sequence}" lay-filter="mySelect">
-                        <option value="">请选择</option>
-                        <option value="gt">大于</option>
-                        <option value="gt&equal">大于或等于</option>
-                        <option value="lt">小于</option>
-                        <option value="lt&equal">小于或等于</option>
+                      <select name="timeField-status-${item.sequence}" lay-filter="mySelect">
+                        <option value="1" selected>显示</option>
+                       <option value="0">隐藏</option>
                       </select>
-                  </div>
-                    <input type="text" name="timeField-qualified-${item.sequence}" value="${item.qualified}"  class="layui-input date-baseline timePicker" placeholder="请选择时间">
+                    </div>
                   </td>
                   <td><i class="layui-icon layui-icon-up" style="font-size: 30px;"></i><i class="layui-icon layui-icon-down" style="font-size: 30px;"></i></td>
                   <td><i class="layui-icon layui-icon-close" style="font-size: 30px;" data-index=${item.sequence}></i></td>
@@ -497,8 +492,8 @@ export default {
                 `;
 
           $(".table-wrapper tbody").append(str);
-          $(`select[name="timeField-standard-${item.sequence}"]`).val(
-            item.standard
+          $(`select[name="timeField-status-${item.sequence}"]`).val(
+            item.status
           );
           $(`input[name="timeField-required-${item.sequence}"]`).prop(
             "checked",
@@ -515,17 +510,13 @@ export default {
                   <td><input type="text" name="numberfield-placeholder-${item.sequence}" maxlength="15" placeholder="${item.placeholder}" autocomplete="off" class="layui-input"></td>
                   <td><input type="checkbox" name="numberfield-required-${item.sequence}"></td>
                   <td>———</td>
-                  <td>
+                 <td>
                     <div class="layui-form date-range" lay-filter="myDiv">
-                      <select name="numberfield-standard-${item.sequence}" lay-filter="mySelect">
-                        <option value="">请选择</option>
-                        <option value="gt">大于</option>
-                        <option value="gt&equal">大于或等于</option>
-                        <option value="lt">小于</option>
-                        <option value="lt&equal">小于或等于</option>
+                      <select name="numberfield-status-${item.sequence}" lay-filter="mySelect">
+                        <option value="1" selected>显示</option>
+                       <option value="0">隐藏</option>
                       </select>
-                  </div>
-                    <input type="text" name="numberfield-qualified-${item.sequence}" value="${item.qualified}" class="layui-input date-baseline layui-input-number" placeholder="请输入">
+                    </div>
                   </td>
                   <td><i class="layui-icon layui-icon-up" style="font-size: 30px;"></i><i class="layui-icon layui-icon-down" style="font-size: 30px;"></i></td>
                   <td><i class="layui-icon layui-icon-close" style="font-size: 30px;" data-index=${item.sequence}></i></td>
@@ -533,8 +524,8 @@ export default {
                 `;
 
           $(".table-wrapper tbody").append(str);
-          $(`select[name="numberfield-standard-${item.sequence}"]`).val(
-            item.standard
+          $(`select[name="numberfield-status-${item.sequence}"]`).val(
+            item.status
           );
           $(`input[name="numberfield-required-${item.sequence}"]`).prop(
             "checked",
@@ -552,7 +543,12 @@ export default {
                   <td><input type="checkbox" name="radio-required-${item.sequence}"></td>
                   <td><div class="layui-btn layui-btn-primary radio-edit" data-index=${item.sequence} data-category="radio" lay-filter="edit">双击编辑选项内容</button></td>
                   <td>
-                    ———
+                    <div class="layui-form date-range" lay-filter="myDiv">
+                      <select name="radio-status-${item.sequence}" lay-filter="mySelect">
+                        <option value="1" selected>显示</option>
+                       <option value="0">隐藏</option>
+                      </select>
+                    </div>
                   </td>
                   <td><i class="layui-icon layui-icon-up" style="font-size: 30px;"></i><i class="layui-icon layui-icon-down" style="font-size: 30px;"></i></td>
                   <td><i class="layui-icon layui-icon-close" style="font-size: 30px;" data-index=${item.sequence}></i></td>
@@ -577,7 +573,12 @@ export default {
                   <td><input type="checkbox" name="checkBox-required-${item.sequence}"></td>
                   <td><div class="layui-btn layui-btn-primary radio-edit" data-index=${item.sequence} data-category="checkBox" lay-filter="edit">双击编辑选项内容</button></td>
                   <td>
-                    ———
+                    <div class="layui-form date-range" lay-filter="myDiv">
+                      <select name="checkBox-status-${item.sequence}" lay-filter="mySelect">
+                        <option value="1" selected>显示</option>
+                       <option value="0">隐藏</option>
+                      </select>
+                    </div>
                   </td>
                   <td><i class="layui-icon layui-icon-up" style="font-size: 30px;"></i><i class="layui-icon layui-icon-down" style="font-size: 30px;"></i></td>
                   <td><i class="layui-icon layui-icon-close" style="font-size: 30px;" data-index=${item.sequence}></i></td>
@@ -599,7 +600,14 @@ export default {
                   <td><input type="text" name="textfield-placeholder-${item.sequence}" maxlength="15" placeholder="${item.placeholder}" autocomplete="off" class="layui-input"></td>
                   <td><input type="checkbox" name="textfield-required-${item.sequence}"></td>
                   <td>———</td>
-                  <td>———</td>
+                  <td>
+                    <div class="layui-form date-range" lay-filter="myDiv">
+                      <select name="textfield-status-${item.sequence}" lay-filter="mySelect">
+                        <option value="1" selected>显示</option>
+                       <option value="0">隐藏</option>
+                      </select>
+                    </div>
+                  </td>
                   <td><i class="layui-icon layui-icon-up" style="font-size: 30px;"></i><i class="layui-icon layui-icon-down" style="font-size: 30px;"></i></td>
                   <td><i class="layui-icon layui-icon-close" style="font-size: 30px;" data-index=${item.sequence}></i></td>
                 </tr>
@@ -620,7 +628,14 @@ export default {
                   <td><input type="text" name="accessoryField-placeholder-${item.sequence}" maxlength="15" placeholder="${item.placeholder}" autocomplete="off" class="layui-input"></td>
                   <td><input type="checkbox" name="accessoryField-required-${item.sequence}"></td>
                   <td>———</td>
-                  <td>———</td>
+                  <td>
+                    <div class="layui-form date-range" lay-filter="myDiv">
+                      <select name="accessoryField-status-${item.sequence}" lay-filter="mySelect">
+                        <option value="1" selected>显示</option>
+                       <option value="0">隐藏</option>
+                      </select>
+                    </div>
+                  </td>
                   <td><i class="layui-icon layui-icon-up" style="font-size: 30px;"></i><i class="layui-icon layui-icon-down" style="font-size: 30px;"></i></td>
                   <td><i class="layui-icon layui-icon-close" style="font-size: 30px;" data-index=${item.sequence}></i></td>
                 </tr>
@@ -641,7 +656,14 @@ export default {
                   <td><input type="text" name="uploadPicField-placeholder-${item.sequence}" maxlength="15" placeholder="${item.placeholder}" autocomplete="off" class="layui-input"></td>
                   <td><input type="checkbox" name="uploadPicField-required-${item.sequence}"></td>
                   <td>———</td>
-                  <td>———</td>
+                  <td>
+                    <div class="layui-form date-range" lay-filter="myDiv">
+                      <select name="uploadPicField-status-${item.sequence}" lay-filter="mySelect">
+                        <option value="1" selected>显示</option>
+                       <option value="0">隐藏</option>
+                      </select>
+                    </div>
+                  </td>
                   <td><i class="layui-icon layui-icon-up" style="font-size: 30px;"></i><i class="layui-icon layui-icon-down" style="font-size: 30px;"></i></td>
                   <td><i class="layui-icon layui-icon-close" style="font-size: 30px;" data-index=${item.sequence}></i></td>
                 </tr>
@@ -736,15 +758,11 @@ export default {
                 <td>———</td>
                 <td>
                   <div class="layui-form date-range" lay-filter="myDiv">
-                    <select name="dateField-standard-${index}" lay-filter="mySelect">
-                       <option value="">请选择</option>
-                       <option value="gt">大于</option>
-                       <option value="gt&equal">大于或等于</option>
-                       <option value="lt">小于</option>
-                       <option value="lt&equal">小于或等于</option>
+                    <select name="dateField-status-${index}" lay-filter="mySelect">
+                       <option value="1" selected>显示</option>
+                       <option value="0">隐藏</option>
                     </select>
                  </div>
-                  <input type="text" name="dateField-qualified-${index}" class="layui-input date-baseline datetime" placeholder="请选择日期">
                 </td>
                 <td><i class="layui-icon layui-icon-up" style="font-size: 30px;"></i><i class="layui-icon layui-icon-down" style="font-size: 30px;"></i></td>
                 <td><i class="layui-icon layui-icon-close" style="font-size: 30px;" data-index=${index}></i></td>
@@ -759,7 +777,14 @@ export default {
                 <td><input type="text" name="textfield-placeholder-${index}" maxlength="15" placeholder="请输入" autocomplete="off" class="layui-input"></td>
                 <td><input type="checkbox" name="textfield-required-${index}"></td>
                 <td>———</td>
-                <td>———</td>
+                <td>
+                  <div class="layui-form date-range" lay-filter="myDiv">
+                    <select name="textfield-status-${index}" lay-filter="mySelect">
+                       <option value="1" selected>显示</option>
+                       <option value="0">隐藏</option>
+                    </select>
+                 </div>
+                </td>
                 <td><i class="layui-icon layui-icon-up" style="font-size: 30px;"></i><i class="layui-icon layui-icon-down" style="font-size: 30px;"></i></td>
                 <td><i class="layui-icon layui-icon-close" style="font-size: 30px;" data-index=${index}></i></td>
               </tr>
@@ -775,7 +800,12 @@ export default {
                 <td><input type="checkbox" name="radio-required-${index}"></td>
                 <td><div class="layui-btn layui-btn-primary radio-edit" data-index=${index} data-category="radio" lay-filter="edit">双击编辑选项内容</button></td>
                 <td>
-                  ———
+                  <div class="layui-form date-range" lay-filter="myDiv">
+                    <select name="radio-status-${index}" lay-filter="mySelect">
+                       <option value="1" selected>显示</option>
+                       <option value="0">隐藏</option>
+                    </select>
+                 </div>
                 </td>
                 <td><i class="layui-icon layui-icon-up" style="font-size: 30px;"></i><i class="layui-icon layui-icon-down" style="font-size: 30px;"></i></td>
                 <td><i class="layui-icon layui-icon-close" style="font-size: 30px;" data-index=${index}></i></td>
@@ -792,7 +822,12 @@ export default {
                 <td><input type="checkbox" name="checkBox-required-${index}"></td>
                 <td><div class="layui-btn layui-btn-primary radio-edit" data-index=${index} data-category="checkBox" lay-filter="edit">双击编辑选项内容</button></td>
                 <td>
-                  ———
+                  <div class="layui-form date-range" lay-filter="myDiv">
+                    <select name="checkBox-status-${index}" lay-filter="mySelect">
+                       <option value="1" selected>显示</option>
+                       <option value="0">隐藏</option>
+                    </select>
+                 </div>
                 </td>
                 <td><i class="layui-icon layui-icon-up" style="font-size: 30px;"></i><i class="layui-icon layui-icon-down" style="font-size: 30px;"></i></td>
                 <td><i class="layui-icon layui-icon-close" style="font-size: 30px;" data-index=${index}></i></td>
@@ -808,7 +843,14 @@ export default {
                 <td><input type="text" name="accessoryField-placeholder-${index}" maxlength="15" placeholder="请上传附件" autocomplete="off" class="layui-input"></td>
                 <td><input type="checkbox" name="accessoryField-required-${index}"></td>
                 <td>———</td>
-                <td>———</td>
+                <td>
+                  <div class="layui-form date-range" lay-filter="myDiv">
+                    <select name="accessoryField-status-${index}" lay-filter="mySelect">
+                       <option value="1" selected>显示</option>
+                       <option value="0">隐藏</option>
+                    </select>
+                 </div>
+                </td>
                 <td><i class="layui-icon layui-icon-up" style="font-size: 30px;"></i><i class="layui-icon layui-icon-down" style="font-size: 30px;"></i></td>
                 <td><i class="layui-icon layui-icon-close" style="font-size: 30px;" data-index=${index}></i></td>
               </tr>
@@ -823,7 +865,14 @@ export default {
                 <td><input type="text" name="uploadPicField-placeholder-${index}" maxlength="15" placeholder="请上传图片" autocomplete="off" class="layui-input"></td>
                 <td><input type="checkbox" name="uploadPicField-required-${index}"></td>
                 <td>———</td>
-                <td>———</td>
+                <td>
+                  <div class="layui-form date-range" lay-filter="myDiv">
+                    <select name="uploadPicField-status-${index}" lay-filter="mySelect">
+                       <option value="1" selected>显示</option>
+                       <option value="0">隐藏</option>
+                    </select>
+                 </div>
+                </td>
                 <td><i class="layui-icon layui-icon-up" style="font-size: 30px;"></i><i class="layui-icon layui-icon-down" style="font-size: 30px;"></i></td>
                 <td><i class="layui-icon layui-icon-close" style="font-size: 30px;" data-index=${index}></i></td>
               </tr>
@@ -840,15 +889,11 @@ export default {
                 <td>———</td>
                 <td>
                   <div class="layui-form date-range" lay-filter="myDiv">
-                    <select name="timeField-standard-${index}" lay-filter="mySelect">
-                      <option value="">请选择</option>
-                       <option value="gt">大于</option>
-                       <option value="gt&equal">大于或等于</option>
-                       <option value="lt">小于</option>
-                       <option value="lt&equal">小于或等于</option>
+                    <select name="timeField-status-${index}" lay-filter="mySelect">
+                       <option value="1" selected>显示</option>
+                       <option value="0">隐藏</option>
                     </select>
                  </div>
-                  <input type="text" name="timeField-qualified-${index}" class="layui-input date-baseline timePicker" placeholder="请选择时间">
                 </td>
                 <td><i class="layui-icon layui-icon-up" style="font-size: 30px;"></i><i class="layui-icon layui-icon-down" style="font-size: 30px;"></i></td>
                 <td><i class="layui-icon layui-icon-close" style="font-size: 30px;" data-index=${index}></i></td>
@@ -866,15 +911,55 @@ export default {
                 <td>———</td>
                 <td>
                   <div class="layui-form date-range" lay-filter="myDiv">
-                    <select name="numberfield-standard-${index}" lay-filter="mySelect">
-                      <option value="">请选择</option>
-                       <option value="gt">大于</option>
-                       <option value="gt&equal">大于或等于</option>
-                       <option value="lt">小于</option>
-                       <option value="lt&equal">小于或等于</option>
+                    <select name="numberfield-status-${index}" lay-filter="mySelect">
+                       <option value="1" selected>显示</option>
+                       <option value="0">隐藏</option>
                     </select>
                  </div>
-                  <input type="text" name="numberfield-qualified-${index}" class="layui-input date-baseline layui-input-number" placeholder="请输入">
+                </td>
+                <td><i class="layui-icon layui-icon-up" style="font-size: 30px;"></i><i class="layui-icon layui-icon-down" style="font-size: 30px;"></i></td>
+                <td><i class="layui-icon layui-icon-close" style="font-size: 30px;" data-index=${index}></i></td>
+              </tr>
+              `;
+
+          //日期+时间
+          var dateTimeStr = `
+              <tr data-index=${index}>
+                <td><span class="line_num">${index}</span></td>
+                <td>日期+时间</td>
+                <td><input type="text" name="datetimeField-label-${index}" placeholder="长度不超过15个字" maxlength="15" required lay-verify="required" autocomplete="off" class="layui-input"></td>
+                <td><input type="text" name="datetimeField-placeholder-${index}" maxlength="15" placeholder="请选择" autocomplete="off" class="layui-input"></td>
+                <td><input type="checkbox" name="datetimeField-required-${index}"></td>
+                <td>———</td>
+                <td>
+                  <div class="layui-form date-range" lay-filter="myDiv">
+                    <select name="datetimeField-status-${index}" lay-filter="mySelect">
+                       <option value="1" selected>显示</option>
+                       <option value="0">隐藏</option>
+                    </select>
+                 </div>
+                </td>
+                <td><i class="layui-icon layui-icon-up" style="font-size: 30px;"></i><i class="layui-icon layui-icon-down" style="font-size: 30px;"></i></td>
+                <td><i class="layui-icon layui-icon-close" style="font-size: 30px;" data-index=${index}></i></td>
+              </tr>
+              `;
+
+          //文本框
+          var textareaStr = `
+              <tr data-index=${index}>
+                <td><span class="line_num">${index}</span></td>
+                <td>文本框</td>
+                <td><input type="text" name="textareaField-label-${index}" placeholder="长度不超过15个字" maxlength="15" required lay-verify="required" autocomplete="off" class="layui-input"></td>
+                <td><input type="text" name="textareaField-placeholder-${index}" maxlength="15" placeholder="请输入" autocomplete="off" class="layui-input"></td>
+                <td><input type="checkbox" name="textareaField-required-${index}"></td>
+                <td>———</td>
+                <td>
+                  <div class="layui-form date-range" lay-filter="myDiv">
+                    <select name="textareaField-status-${index}" lay-filter="mySelect">
+                       <option value="1" selected>显示</option>
+                       <option value="0">隐藏</option>
+                    </select>
+                 </div>
                 </td>
                 <td><i class="layui-icon layui-icon-up" style="font-size: 30px;"></i><i class="layui-icon layui-icon-down" style="font-size: 30px;"></i></td>
                 <td><i class="layui-icon layui-icon-close" style="font-size: 30px;" data-index=${index}></i></td>
@@ -898,6 +983,10 @@ export default {
             $(".table-wrapper tbody").append(timeStr);
           } else if (type == "number") {
             $(".table-wrapper tbody").append(numberStr);
+          } else if (type == "datetime") {
+            $(".table-wrapper tbody").append(dateTimeStr);
+          } else if (type == "textarea") {
+            $(".table-wrapper tbody").append(textareaStr);
           }
 
           showArrows();
@@ -995,6 +1084,7 @@ export default {
             });
           }
 
+
           // 把form表单数据转成需要提交的格式
           indexArr.forEach((item) => {
             for (var key in datas) {
@@ -1044,74 +1134,11 @@ export default {
             }
           });
 
-          // 判断所有选项是否有写内容，判断时间/日期/数字输入框的合格标准是否同时填写\
+          // 判断所有选项是否有写内容，
           try {
+            // 第1项的合格标准必须两项都填写
             indexArr.forEach((item) => {
-              if (item.type == "radio") {
-                if (item.singleOption) {
-                  if (
-                    !item.singleOption[0].OptionName ||
-                    item.singleOption[0].OptionName == "undefined"
-                  ) {
-                    layer.msg("请编辑第" + item.sequence + "项选项内容", {
-                      icon: 5,
-                    });
-                    throw new error();
-                  }
-                } else {
-                  layer.msg("请编辑第" + item.sequence + "项选项内容", {
-                    icon: 5,
-                  });
-                  throw new error();
-                }
-              } else if (item.type == "checkBox") {
-                if (item.checkOption) {
-                  if (
-                    !item.checkOption[0].OptionName ||
-                    item.checkOption[0].OptionName == "undefined"
-                  ) {
-                    layer.msg("请编辑第" + item.sequence + "项选项内容", {
-                      icon: 5,
-                    });
-                    throw new error();
-                  }
-                } else {
-                  layer.msg("请编辑第" + item.sequence + "项选项内容", {
-                    icon: 5,
-                  });
-                  throw new error();
-                }
-              } else if (
-                item.type == "timeField" ||
-                item.type == "dateField" ||
-                item.type == "numberfield"
-              ) {
-                // standard qualified 必须同时填写
-                if (
-                  (item.standard && !item.qualified) ||
-                  (!item.standard && item.qualified)
-                ) {
-                  layer.msg(
-                    "第" + item.sequence + "项的合格标准必须两项都填写",
-                    { icon: 5 }
-                  );
-                  throw new error();
-                }
-                if (
-                  item.type == "numberfield" &&
-                  item.standard &&
-                  item.qualified
-                ) {
-                  if (isNaN(item.qualified)) {
-                    layer.msg(
-                      "第" + item.sequence + "项的合格标准输入框必须为数字",
-                      { icon: 5 }
-                    );
-                    throw new error();
-                  }
-                }
-              }
-
+            
               // placeholder判断 如果是空值，就传默认的，有值就传值
               // 文字输入框/数字输入框：请输入  日期/单选框/多选框/时间：请选择  附件：请上传附件 图片：请上传图片
               if (!item.placeholder) {
@@ -1170,6 +1197,8 @@ export default {
               }
             });
           }
+          console.log(submitData,'submitData---')
+          return false;
           var anyData = 1;
           if (anyData == "1") {
             // 更新
@@ -1397,12 +1426,13 @@ export default {
 
 <style lang="scss" scoped>
 .dailyForm-container {
-  padding: 16px 25px;
+  padding: 16px 0;
 }
 .tags-wrapper {
   border: 1px solid #e6e6e6;
   min-height: 600px;
   padding: 30px;
+  background-color: #fff;
 }
 .tags-wrapper .tags {
   width: 45%;
@@ -1423,6 +1453,7 @@ export default {
   min-height: 600px;
   padding: 30px;
   padding-top: 24px;
+  background-color: #fff;
 }
 
 .date-range {
@@ -1437,6 +1468,9 @@ export default {
 
 /deep/ .layui-form-checkbox i {
   border-left: 1px solid #d2d2d2;
+}
+/deep/ .layui-layer {
+  width: 234px;
 }
 
 .clearfloat:after {
