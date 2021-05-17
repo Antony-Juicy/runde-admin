@@ -47,27 +47,26 @@
       >
         <template slot="campusInfo" slot-scope="scope">
           省校：{{ scope.row.provincialSchool }}<br />
-          分校：{{ scope.row.branchSchool }}<br />
+          分校：{{ scope.row.campusName }}<br />
         </template>
         <template slot="chainInformation" slot-scope="scope">
-          连锁全称：{{ scope.row.provincialSchool }}<br />
-          连锁联系人：{{ scope.row.branchSchool }}<br />
-          联系电话：{{ scope.row.branchSchool }}<br />
-          地址：{{ scope.row.branchSchool }}<br />
-          连锁谈判人：{{ scope.row.branchSchool }}<br />
-          创建人：{{ scope.row.branchSchool }}<br />
-          备注：{{ scope.row.branchSchool }}<br />
+          连锁全称：{{ scope.row.chainName }}<br />
+          连锁联系人：{{ scope.row.createStaffName }}<br />
+          联系电话：{{ scope.row.phone }}<br />
+          地址：{{ scope.row.address }}<br />
+          连锁谈判人：{{ scope.row.createStaffName }}<br />
+          创建人：{{ scope.row.createStaffName }}<br />
+          备注：{{ scope.row.remark }}<br />
         </template>
         <template slot="termCooperation" slot-scope="scope">
-          合作开始：{{ scope.row.provincialSchool }}<br />
-          合作结束：{{ scope.row.branchSchool }}<br />
+          合作开始：{{ scope.row.startTime }}<br />
+          合作结束：{{ scope.row.endTime }}<br />
         </template>
         <template slot="otherInformation" slot-scope="scope">
-          是否有设置优惠价：{{ scope.row.provincialSchool }}<br />
-          是否有定制班：{{ scope.row.branchSchool }}<br />
-          合作结束：{{ scope.row.branchSchool }}<br />
-          状态：{{ scope.row.branchSchool }}<br />
-          付款方式：{{ scope.row.branchSchool }}<br />
+          是否有设置优惠价：{{ scope.row.chainCampusType }}<br />
+          是否有定制班：{{ scope.row.customizationStatus }}<br />
+          状态：{{ scope.row.status }}<br />
+          付款方式：{{ scope.row.payType }}<br />
         </template>
         <template slot="uploadContract" slot-scope="scope">
           <el-upload
@@ -84,7 +83,7 @@
               >上传</el-button
             >
           </el-upload>
- <el-divider direction="vertical"></el-divider>
+          <el-divider direction="vertical"></el-divider>
           <el-button
             type="text"
             size="small"
@@ -92,7 +91,7 @@
             @click="handleAdd(2)"
             >查看图片</el-button
           >
-           <el-divider direction="vertical"></el-divider>
+          <el-divider direction="vertical"></el-divider>
           <el-button
             @click="handleEdit(scope.row)"
             size="small"
@@ -103,10 +102,7 @@
         </template>
 
         <template slot="edit" slot-scope="scope">
-          <el-button
-            @click="handleEdit(scope.row)"
-            size="small"
-            type="primary"
+          <el-button @click="handleEdit(scope.row)" size="small" type="primary"
             >编辑</el-button
           >
         </template>
@@ -361,6 +357,10 @@ export default {
   components: {
     RdForm,
   },
+  mounted() {
+    this.getformList();
+    this.getTableData();
+  },
   methods: {
     // upload img
     async beforeUpload(file) {
@@ -405,7 +405,37 @@ export default {
       console.log(val, this.searchForm, "val---");
       this.getTableData();
     },
-    getTableData() {},
+    getformList() {
+      this.$fetch("chaincampus_goAdd", {}).then((res) => {
+        // this.formOptions[1].options = res.data.statusList.map((item) => ({
+        //   label: item.value,
+        //   value: item.key,
+        // }));
+      });
+    },
+    getTableData(params = {}) {
+      this.$fetch("chaincampus_listJsp", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.varList.map((item) => {
+          item.createAt = this.$common
+            ._formatDates(item.createAt)
+            .split(" ")[0];
+          item.updateAt = this.$common
+            ._formatDates(item.updateAt)
+            .split(" ")[0];
+          item.startTime = this.$common
+            ._formatDates(item.startTime)
+            .split(" ")[0];
+          item.endTime = this.$common._formatDates(item.endTime).split(" ")[0];
+          item.status = item.status == "Normal" ? "正常" : "暂停";
+          return item;
+        });
+        this.pageConfig.totalCount = res.data.page.totalResult;
+      });
+    },
     pageChange(val) {
       console.log(val, "pagechange");
       this.pageConfig.currentPage = val.page;

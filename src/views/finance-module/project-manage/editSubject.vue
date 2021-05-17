@@ -40,11 +40,19 @@
         <el-form-item
           label="科目"
           prop="subjectName"
-          :rules="{
-            required: true,
-            message: '不能为空',
-            trigger: 'blur',
-          }"
+          :rules="[
+            {
+              required: true,
+              message: '不能为空',
+              trigger: 'blur',
+            },
+            {
+              min: 1,
+              max: 20,
+              message: '长度在 1 到 20 个字符',
+              trigger: 'blur',
+            },
+          ]"
         >
           <el-input
             v-model="dynamicValidateForm.subjectName"

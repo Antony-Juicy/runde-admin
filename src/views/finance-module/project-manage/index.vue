@@ -215,12 +215,15 @@ export default {
         },
       ],
       addRules: {
-        productName: [{ required: true, message: "请输入", trigger: "blur" }],
-        productNumber: [{ required: true, message: "请输入", trigger: "blur" },{ validator: this.checkData, trigger: 'blur' }],
+        productName: [{ required: true, message: "请输入", trigger: "blur" }, { min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' }],
+        productNumber: [
+          { required: true, message: "请输入", trigger: "blur" },
+          { validator: this.checkData, trigger: "blur" },
+        ],
         //  productDetail: [
         //   { required: true, message: "请输入", trigger: "blur" },
         // ],
-        status: [{ required: true, message: "请选择1", trigger: "change" }],
+        status: [{ required: true, message: "请选择", trigger: "change" }],
         financeCodeName1: [
           { required: true, message: "请选择", trigger: "change" },
         ],
@@ -239,19 +242,20 @@ export default {
   },
   methods: {
     checkData(rule, value, callback) {
-        if (value) {
-            if (/[\u4E00-\u9FA5]/g.test(value)) {
-                callback(new Error('不能为中文!'))
-            } else {
-                callback()
-            }
+      if (value) {
+        if (/[\u4E00-\u9FA5]/g.test(value)) {
+          callback(new Error("不能为中文!"));
+        } else {
+          callback();
         }
-        callback()
+      }
+      callback();
     },
     closeEdit() {
       //
       this.distributeVisible = false;
       this.$refs.dataForm3.onReset();
+      this.dataForm.productDetail = "";
     },
     handleOpen(data) {
       //open科目
@@ -284,6 +288,8 @@ export default {
           ).then((res) => {
             this.$message.success("操作成功");
             this.distributeVisible = false;
+            this.$refs.dataForm3.onReset();
+            this.dataForm.productDetail = "";
             this.getTableData();
           });
         }
@@ -299,7 +305,6 @@ export default {
     getSelectList() {
       //项目
       this.$fetch("courseProduct_listJsp").then((res) => {
-        console.log("hhhhh999", res);
         this.formOptions[0].options = res.data.productList.map((item) => ({
           label: item.productName,
           value: item.id,
@@ -357,9 +362,9 @@ export default {
       this.addFormOptions.forEach((item) => {
         if (item.prop == "status") {
           item.initValue = status;
-        } else if(item.prop == "productDetail"){
+        } else if (item.prop == "productDetail") {
           this.dataForm.productDetail = data[item.prop];
-        }else{
+        } else {
           item.initValue = data[item.prop];
         }
       });
