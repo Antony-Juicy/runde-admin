@@ -161,13 +161,12 @@
                       trigger: 'blur',
                     }"
                   >
-                       <!-- @input="totalPrice = String(totalPrice).replace(/[^\d]/g,'')" -->
                     <el-input
                       readonly
                       v-model="totalPrice"
                       size="small"
                       style="width: 300px"
-                        @keyup.native="totalPrice = checkInput(totalPrice)"
+                      @keyup.native="totalPrice = checkInput(totalPrice)"
                     ></el-input>
                     <span style="margin-left: 10px">元</span>
                   </el-form-item>
@@ -187,19 +186,22 @@
                           : false,
                         message: '请输入价格',
                         trigger: 'blur',
-                      }" 
+                      }"
                     >
                       <el-checkbox
                         v-model="basicInfo.courses[index].checked"
                         :label="item.label"
                       ></el-checkbox>
-                         <!-- @input="basicInfo.courses[index].coursePrice = String(basicInfo.courses[index].coursePrice).replace(/[^\d]/g,'')" -->
                       <el-input
                         v-model="basicInfo.courses[index].coursePrice"
-                        size="small" 
-                         @keyup.native="basicInfo.courses[index].coursePrice = checkInput(basicInfo.courses[index].coursePrice)"
+                        size="small"
+                        @keyup.native="
+                          basicInfo.courses[index].coursePrice = checkInput(
+                            basicInfo.courses[index].coursePrice
+                          )
+                        "
                         placeholder="请输入价格"
-                        style="width: 200px; margin-left: 20px" 
+                        style="width: 200px; margin-left: 20px"
                       ></el-input>
 
                       <el-switch
@@ -520,9 +522,9 @@ export default {
   },
   data() {
     return {
-      classTypeName:"",
-      classTypeId:"",
-      classProductId:"",
+      classTypeName: "",
+      classTypeId: "",
+      classProductId: "",
       detailsVisible: false,
       titleName: "",
       IsDisabled: false,
@@ -563,7 +565,7 @@ export default {
           element: "el-select",
           placeholder: "请选择科目",
           options: [],
-          disabled:true
+          disabled: true,
         },
         {
           prop: "status",
@@ -741,7 +743,24 @@ export default {
       yearArr: [], //班型年份
       classTypeArr: [], //班型类型
       // classtypeGroupArr: [], //班型分组
-      serviceYearArr: [], //服务年限
+      serviceYearArr: [
+        {
+          label: '1年',
+          value: 1,
+        },
+        {
+          label: '2年',
+          value: 2,
+        },
+        {
+          label: '3年',
+          value: 3,
+        },
+        {
+          label: '4年',
+          value: 4,
+        }
+      ], //服务年限
       protocolTypeArr: [], //协议类型
       refundTypeArr: [], //退费类型
       statusArr: [], //状态
@@ -974,7 +993,7 @@ export default {
     //   this.courseGroupArr = data;
     // },
 
-checkInput(num) {
+    checkInput(num) {
       var str = num;
       var len1 = str.substr(0, 1);
       var len2 = str.substr(1, 1);
@@ -1084,7 +1103,7 @@ checkInput(num) {
     },
     getSelectList() {
       //获取最近前5年的数组
-      this.serviceYearArr = this.yearArr = this.formOptions[5].options = this.formOptions[9].options = this.$common
+      this.yearArr = this.formOptions[5].options = this.formOptions[9].options = this.$common
         .addYearArr()
         .map((item) => ({
           label: item,
@@ -1230,13 +1249,13 @@ checkInput(num) {
       });
     },
     productChange(val) {
-      console.log(val,'val') 
+      console.log(val, "val");
       this.currentProductId = val;
-      this.formOptions[2].disabled=val?false:true;
-       this.formOptions[2].options = [];
-       this.$refs.searchForm.setValue({
-          subjectName: ""
-        })
+      this.formOptions[2].disabled = val ? false : true;
+      this.formOptions[2].options = [];
+      this.$refs.searchForm.setValue({
+        subjectName: "",
+      });
       //  获取科目下拉
       this.$fetch("courseclasstype_subjectList", { productId: val }).then(
         (res) => {
@@ -1273,15 +1292,15 @@ checkInput(num) {
           item.playback = item.playback ? "有录播" : "无录播";
           item.status = item.status == "Normal" ? "正常" : "暂停";
           res.data.accountingRulesList.map((el) => {
-              if (el.key == item.accountingRules) {
-                item.accountingRules = el.value;
-              }
-            });
-            res.data.contentTypeList.map((el) => {
-              if (el.key == item.contentType) {
-                item.contentType = el.value;
-              }
-            });
+            if (el.key == item.accountingRules) {
+              item.accountingRules = el.value;
+            }
+          });
+          res.data.contentTypeList.map((el) => {
+            if (el.key == item.contentType) {
+              item.contentType = el.value;
+            }
+          });
           console.log("data item", item);
           return item;
         });
@@ -1320,8 +1339,8 @@ checkInput(num) {
       console.log(val, this.searchForm, "val---");
       this.getTableData();
     },
-    onReset(){
-       this.formOptions[2].disabled=true;
+    onReset() {
+      this.formOptions[2].disabled = true;
     },
     pageChange(val) {
       console.log(val, "pagechange");
@@ -1335,13 +1354,12 @@ checkInput(num) {
         this.$fetch("courseclasstype_listJson", {
           ...this.pageConfig,
           ...this.searchForm,
-          ...params, 
+          ...params,
         }).then((res) => {
-    
           this.tableData = res.data.list;
-          res.data.list.map((item,i)=>{
-            this.tableData[i].classTypeStage =   item.stageGroupName;
-          })
+          res.data.list.map((item, i) => {
+            this.tableData[i].classTypeStage = item.stageGroupName;
+          });
           this.pageConfig.totalCount = res.data.pager.totalRows;
           resolve();
         });
