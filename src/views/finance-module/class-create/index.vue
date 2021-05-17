@@ -418,6 +418,8 @@
       <netClass
         ref="netClass"
         @close="setVisible1 = false"
+        :classTypeId="classTypeId"
+        :classTypeName="classTypeName"
         v-if="setVisible1"
         @refresh="getTableData"
       />
@@ -432,6 +434,8 @@
       <liveClass
         ref="liveClass"
         @close="setVisible2 = false"
+        :classTypeId="classTypeId"
+        :classTypeName="classTypeName"
         v-if="setVisible2"
         @refresh="getTableData"
       />
@@ -445,6 +449,8 @@
       <videoClass
         ref="videoClass"
         @close="setVisible3 = false"
+        :classTypeId="classTypeId"
+        :classTypeName="classTypeName"
         v-if="setVisible3"
         @refresh="getTableData"
       />
@@ -459,6 +465,8 @@
       <distribeClass
         ref="videoClass"
         @close="setVisible4 = false"
+        :classTypeId="classTypeId"
+        :classTypeName="classTypeName"
         v-if="setVisible4"
         @refresh="getTableData"
       />
@@ -1271,6 +1279,8 @@ export default {
     handleSet(row, index) {
       //设置配送图书
       this[`setVisible${index}`] = true;
+      this.classTypeId = row.id;
+      this.classTypeName = row.className;
     },
     loadSalaryCfg() {},
     goDetails(data) {

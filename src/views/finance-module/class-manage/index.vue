@@ -263,9 +263,10 @@ export default {
         },
          {
           prop: "contentYear",
-          element: "el-input",
-          placeholder: "请输入年份",
-          label: "年份:"
+          element: "el-select",
+          placeholder: "请选择年份",
+          label: "年份:",
+          options: []
         },
         {
           prop: "contentName",
@@ -458,7 +459,7 @@ export default {
             label: item.id,
             value: item.stageGroupName
           })):[];
-          this.addFormOptions[7].options = this.stageArr;
+          this.addFormOptions[8].options = this.stageArr;
           this.$refs.dataForm3.setValue({
             stageGroupId: []
           })
@@ -470,11 +471,16 @@ export default {
     getRulesList(){
       return new Promise(resolve => {
         this.$fetch("courseProductContent_goAccountingRulesSelects").then(res => {
-          this.rulesArr = res.data.protocolTypeList?res.data.protocolTypeList.map(item => ({
+          const { protocolTypeList,recentlyYear } = res.data;
+          this.rulesArr = protocolTypeList?protocolTypeList.map(item => ({
             label: item.value,
             value: item.key
           })):[];
-          this.addFormOptions[4].options = this.rulesArr;
+          this.addFormOptions[5].options = this.rulesArr;
+          this.addFormOptions[1].options = recentlyYear.map(item => ({
+            label: item,
+            value: item
+          }));
           this.formOptions[3].options = this.rulesArr;
           resolve();
         })
