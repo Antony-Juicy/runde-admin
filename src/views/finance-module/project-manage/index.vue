@@ -216,7 +216,7 @@ export default {
       ],
       addRules: {
         productName: [{ required: true, message: "请输入", trigger: "blur" }],
-        productNumber: [{ required: true, message: "请输入", trigger: "blur" }],
+        productNumber: [{ required: true, message: "请输入", trigger: "blur" },{ validator: this.checkData, trigger: 'blur' }],
         //  productDetail: [
         //   { required: true, message: "请输入", trigger: "blur" },
         // ],
@@ -238,6 +238,16 @@ export default {
     this.getSelectList();
   },
   methods: {
+    checkData(rule, value, callback) {
+        if (value) {
+            if (/[\u4E00-\u9FA5]/g.test(value)) {
+                callback(new Error('不能为中文!'))
+            } else {
+                callback()
+            }
+        }
+        callback()
+    },
     closeEdit() {
       //
       this.distributeVisible = false;

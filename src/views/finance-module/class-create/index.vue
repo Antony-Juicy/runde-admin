@@ -166,6 +166,7 @@
                       v-model="totalPrice"
                       size="small"
                       style="width: 300px"
+                      @keyup.native="totalPrice = checkInput(totalPrice)"
                     ></el-input>
                     <span style="margin-left: 10px">元</span>
                   </el-form-item>
@@ -191,10 +192,14 @@
                         v-model="basicInfo.courses[index].checked"
                         :label="item.label"
                       ></el-checkbox>
-
                       <el-input
                         v-model="basicInfo.courses[index].coursePrice"
                         size="small"
+                        @keyup.native="
+                          basicInfo.courses[index].coursePrice = checkInput(
+                            basicInfo.courses[index].coursePrice
+                          )
+                        "
                         placeholder="请输入价格"
                         style="width: 200px; margin-left: 20px"
                       ></el-input>
@@ -517,9 +522,9 @@ export default {
   },
   data() {
     return {
-      classTypeName:"",
-      classTypeId:"",
-      classProductId:"",
+      classTypeName: "",
+      classTypeId: "",
+      classProductId: "",
       detailsVisible: false,
       titleName: "",
       IsDisabled: false,
@@ -560,7 +565,7 @@ export default {
           element: "el-select",
           placeholder: "请选择科目",
           options: [],
-          disabled:true
+          disabled: true,
         },
         {
           prop: "status",
@@ -738,7 +743,24 @@ export default {
       yearArr: [], //班型年份
       classTypeArr: [], //班型类型
       // classtypeGroupArr: [], //班型分组
-      serviceYearArr: [], //服务年限
+      serviceYearArr: [
+        {
+          label: '1年',
+          value: 1,
+        },
+        {
+          label: '2年',
+          value: 2,
+        },
+        {
+          label: '3年',
+          value: 3,
+        },
+        {
+          label: '4年',
+          value: 4,
+        }
+      ], //服务年限
       protocolTypeArr: [], //协议类型
       refundTypeArr: [], //退费类型
       statusArr: [], //状态
@@ -970,6 +992,34 @@ export default {
     // geteGroupListFunc(data) {//获取班型分組
     //   this.courseGroupArr = data;
     // },
+
+    checkInput(num) {
+      var str = num;
+      var len1 = str.substr(0, 1);
+      var len2 = str.substr(1, 1);
+      //如果第一位是0，第二位不是点，就用数字把点替换掉
+      if (str.length > 1 && len1 == 0 && len2 != ".") {
+        str = str.substr(1, 1);
+      }
+      //第一位不能是.
+      if (len1 == ".") {
+        str = "";
+      }
+      //限制只能输入一个小数点
+      if (str.indexOf(".") != -1) {
+        var str_ = str.substr(str.indexOf(".") + 1);
+        if (str_.indexOf(".") != -1) {
+          str = str.substr(0, str.indexOf(".") + str_.indexOf(".") + 1);
+        }
+        if (str_.length > 2) {
+          this.$message.warning(`金额小数点后只能输入两位，请正确输入！`);
+          return (str = "");
+        }
+      }
+      //正则替换
+      str = str.replace(/[^\d^\.]+/g, ""); // 保留数字和小数点
+      return str;
+    },
     closeFn() {
       this.setVisible5 = true;
       this.detailsVisible = false;
@@ -1053,7 +1103,7 @@ export default {
     },
     getSelectList() {
       //获取最近前5年的数组
-      this.serviceYearArr = this.yearArr = this.formOptions[5].options = this.formOptions[9].options = this.$common
+      this.yearArr = this.formOptions[5].options = this.formOptions[9].options = this.$common
         .addYearArr()
         .map((item) => ({
           label: item,
@@ -1199,13 +1249,13 @@ export default {
       });
     },
     productChange(val) {
-      console.log(val,'val') 
+      console.log(val, "val");
       this.currentProductId = val;
-      this.formOptions[2].disabled=val?false:true;
-       this.formOptions[2].options = [];
-       this.$refs.searchForm.setValue({
-          subjectName: ""
-        })
+      this.formOptions[2].disabled = val ? false : true;
+      this.formOptions[2].options = [];
+      this.$refs.searchForm.setValue({
+        subjectName: "",
+      });
       //  获取科目下拉
       this.$fetch("courseclasstype_subjectList", { productId: val }).then(
         (res) => {
@@ -1242,15 +1292,15 @@ export default {
           item.playback = item.playback ? "有录播" : "无录播";
           item.status = item.status == "Normal" ? "正常" : "暂停";
           res.data.accountingRulesList.map((el) => {
-              if (el.key == item.accountingRules) {
-                item.accountingRules = el.value;
-              }
-            });
-            res.data.contentTypeList.map((el) => {
-              if (el.key == item.contentType) {
-                item.contentType = el.value;
-              }
-            });
+            if (el.key == item.accountingRules) {
+              item.accountingRules = el.value;
+            }
+          });
+          res.data.contentTypeList.map((el) => {
+            if (el.key == item.contentType) {
+              item.contentType = el.value;
+            }
+          });
           console.log("data item", item);
           return item;
         });
@@ -1289,8 +1339,8 @@ export default {
       console.log(val, this.searchForm, "val---");
       this.getTableData();
     },
-    onReset(){
-       this.formOptions[2].disabled=true;
+    onReset() {
+      this.formOptions[2].disabled = true;
     },
     pageChange(val) {
       console.log(val, "pagechange");
@@ -1304,13 +1354,12 @@ export default {
         this.$fetch("courseclasstype_listJson", {
           ...this.pageConfig,
           ...this.searchForm,
-          ...params, 
+          ...params,
         }).then((res) => {
-    
           this.tableData = res.data.list;
-          res.data.list.map((item,i)=>{
-            this.tableData[i].classTypeStage =   item.stageGroupName;
-          })
+          res.data.list.map((item, i) => {
+            this.tableData[i].classTypeStage = item.stageGroupName;
+          });
           this.pageConfig.totalCount = res.data.pager.totalRows;
           resolve();
         });
