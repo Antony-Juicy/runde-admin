@@ -161,11 +161,13 @@
                       trigger: 'blur',
                     }"
                   >
+                       <!-- @input="totalPrice = String(totalPrice).replace(/[^\d]/g,'')" -->
                     <el-input
                       readonly
                       v-model="totalPrice"
                       size="small"
                       style="width: 300px"
+                        @keyup.native="totalPrice = checkInput(totalPrice)"
                     ></el-input>
                     <span style="margin-left: 10px">元</span>
                   </el-form-item>
@@ -185,18 +187,19 @@
                           : false,
                         message: '请输入价格',
                         trigger: 'blur',
-                      }"
+                      }" 
                     >
                       <el-checkbox
                         v-model="basicInfo.courses[index].checked"
                         :label="item.label"
                       ></el-checkbox>
-
+                         <!-- @input="basicInfo.courses[index].coursePrice = String(basicInfo.courses[index].coursePrice).replace(/[^\d]/g,'')" -->
                       <el-input
                         v-model="basicInfo.courses[index].coursePrice"
-                        size="small"
+                        size="small" 
+                         @keyup.native="basicInfo.courses[index].coursePrice = checkInput(basicInfo.courses[index].coursePrice)"
                         placeholder="请输入价格"
-                        style="width: 200px; margin-left: 20px"
+                        style="width: 200px; margin-left: 20px" 
                       ></el-input>
 
                       <el-switch
@@ -970,6 +973,34 @@ export default {
     // geteGroupListFunc(data) {//获取班型分組
     //   this.courseGroupArr = data;
     // },
+
+checkInput(num) {
+      var str = num;
+      var len1 = str.substr(0, 1);
+      var len2 = str.substr(1, 1);
+      //如果第一位是0，第二位不是点，就用数字把点替换掉
+      if (str.length > 1 && len1 == 0 && len2 != ".") {
+        str = str.substr(1, 1);
+      }
+      //第一位不能是.
+      if (len1 == ".") {
+        str = "";
+      }
+      //限制只能输入一个小数点
+      if (str.indexOf(".") != -1) {
+        var str_ = str.substr(str.indexOf(".") + 1);
+        if (str_.indexOf(".") != -1) {
+          str = str.substr(0, str.indexOf(".") + str_.indexOf(".") + 1);
+        }
+        if (str_.length > 2) {
+          this.$message.warning(`金额小数点后只能输入两位，请正确输入！`);
+          return (str = "");
+        }
+      }
+      //正则替换
+      str = str.replace(/[^\d^\.]+/g, ""); // 保留数字和小数点
+      return str;
+    },
     closeFn() {
       this.setVisible5 = true;
       this.detailsVisible = false;
