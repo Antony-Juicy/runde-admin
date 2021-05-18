@@ -121,7 +121,7 @@ export default {
         {
           prop: "liveCode",
           element: "el-input",
-          placeholder: "请输入直播编号",
+          placeholder: "请输入直播编码",
         },
         {
           prop: "admissionsBatch",
@@ -344,10 +344,11 @@ export default {
         this.$fetch("courseclasstypelivecode_goEdit", {
           id: data.id,
         }).then((res) => {
+          let campusJSON = res.data.pd.campusJson;
           this.addFormOptions.forEach((item) => {
             item.initValue = res.data.pd[item.prop];
             if(item.prop == "campusJson"){
-              item.initValue = res.data.pd.campusJson.split(",")
+              item.initValue = JSON.parse(campusJSON).map(item => Number(item.val));
             }
           });
           this.$refs.dataForm3.addInitValue();

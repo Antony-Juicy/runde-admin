@@ -15,7 +15,6 @@
         :tableData="tableData"
         :tableKey="tableKey"
         :pageConfig.sync="pageConfig"
-        :tbodyHeight="600"
         fixedTwoRow
         @pageChange="pageChange"
         :emptyText="emptyText"
@@ -259,14 +258,16 @@ export default {
           placeholder: "所属项目",
           label: "所属项目:",
           options: [],
-          events: {}
+          events: {},
+          disabled: false
         },
          {
           prop: "contentYear",
           element: "el-select",
           placeholder: "请选择年份",
           label: "年份:",
-          options: []
+          options: [],
+          disabled: false
         },
         {
           prop: "contentName",
@@ -315,6 +316,7 @@ export default {
           label: "核算规则：",
           options: [
           ],
+          disabled: false
         },
         {
           prop: "time",
@@ -323,6 +325,7 @@ export default {
           endPlaceholder: "结束日期",
           initWidth: true,
           label: "授课起止时间：",
+          disabled: false
           //   clearable: false
         },
         {
@@ -563,6 +566,8 @@ export default {
     handleAdd() {
       this.addStatus = true;
       this.addVisible = true;
+      // 可编辑状态
+      this.changeDisableStats(false);
     },
     getTableData(params = {}) {
       // posterinfo_listJson
@@ -603,8 +608,16 @@ export default {
           accountingRules_text: data.accountingRules,
         })
       }, 0);
+      //某些不可编辑
+      this.changeDisableStats(true);
       this.editId = data.id;
       //TODO 编辑
+    },
+    changeDisableStats(bol){
+      this.addFormOptions[0].disabled = bol;
+      this.addFormOptions[1].disabled = bol;
+      this.addFormOptions[5].disabled = bol;
+      this.addFormOptions[6].disabled = bol;
     },
     changeTable(data) {
       this.$fetch("courseProductContent_udpateStatus",{

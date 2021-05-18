@@ -60,6 +60,7 @@
         :key="item.value + '-' +index"
         :label="item.label"
         :value="item.value"
+        :disabled="item.disabled"
         :style="{'min-width': minWidth + 2 + 'px'}">
       </el-option>
     </el-select>

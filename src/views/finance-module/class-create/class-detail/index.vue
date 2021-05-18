@@ -63,6 +63,7 @@
         <rd-dialog
             :title="addStatus?'添加':'编辑'"
             :dialogVisible="addVisible"
+            :width="'940px'"
             appendToBody
             :customClass="'class-detail-dialog'"
             @handleClose="addVisible = false"
@@ -75,6 +76,7 @@
                     ref="dataForm2"
                     :model="basicInfo"
                     label-width="120px"
+                    inline
                 >
                     <template v-if="currentData.productId == 19">
                         <el-form-item label="报考省份" prop="provinceId" :rules="{
@@ -93,7 +95,18 @@
                         class="param-item"
                         v-for="(item, index) in basicInfo.course"
                         :key="item.value"
+                        style="margin-bottom: 13px;"
                       >
+                        <el-form-item
+                          :prop="'course.' + index + '.checked'"
+                          label-width="0"
+                        >
+                          <el-checkbox
+                            v-model="item.checked"
+                            :label="item.courseId"
+                            :disabled="checkDisabled"
+                          >{{item.courseName}}</el-checkbox>
+                        </el-form-item>
                         <el-form-item
                           :prop="'course.' + index + '.coursePrice'"
                           label-width="0"
@@ -101,31 +114,33 @@
                             required: item.checked
                           ? true
                           : false,
-                            message: '请输入价格',
+                          message: '请输入价格',
                             trigger: 'blur',
                           }"
                         >
-                          <el-checkbox
-                            v-model="item.checked"
-                            :label="item.courseId"
-                            :disabled="checkDisabled"
-                          >{{item.courseName}}</el-checkbox>
-
-                          <el-input
+                          <el-input-number
                             v-model="item.coursePrice"
                             size="small"
                             placeholder="请输入价格"
                             style="width: 140px; margin-left: 20px"
-                          ></el-input>
-                          <el-switch
-                            active-text="计算业绩"
-                            style="margin-left: 20px"
-                            v-model="item.isperformance"
-                            active-color="#13ce66"
-                            inactive-color="#dcdfe6"
-                          >
-                          </el-switch>
+                            controls-position="right"
+                            :min="0"
+                          ></el-input-number>
+
                         </el-form-item>
+                        <el-form-item
+                            :prop="'course.' + index + '.isperformance'"
+                            label-width="0"
+                          >
+                            <el-switch
+                              active-text="计算业绩"
+                              style="margin-left: 20px"
+                              v-model="item.isperformance"
+                              active-color="#13ce66"
+                              inactive-color="#dcdfe6"
+                            >
+                            </el-switch>
+                          </el-form-item>
                       </div>
                     </template>
 
@@ -607,7 +622,7 @@ export default {
           classTypeId: this.classTypeId,
           productId: this.productId
         }).then(res => {
-          const { pd,provinceList } = res.data;
+          const { pd,provinceList,campusList } = res.data;
           const { className, classType, productName, subjectName,courses,productId  } = res.data.pd;
           this.$refs.dataForm3.setValue({
             className,
@@ -621,11 +636,17 @@ export default {
           this.basicInfo.provinceId = [];
           this.basicInfo.course = courses.map(item => ({
               checked: false,
-              coursePrice: "",
+              coursePrice: undefined,
               isperformance: true,
               courseName: item.courseName,
               courseId: item.courseId
           }));
+          this.addFormOptions[5].options = campusList.map(item => ({
+            label: `${item.campusName}(${item.parentCampusName})`,
+            value: item.id,
+            disabled: item.cid?true: false
+          }))
+          console.log( this.addFormOptions[5].options,'--')
           if(productId == 19){
             this.provinceArr = provinceList.map(item => ({
               label: item.provinceName,
@@ -789,6 +810,17 @@ export default {
 .class-detail-dialog {
   .el-checkbox__input.is-disabled+span.el-checkbox__label {
     color: #5f6165;
+  }
+  .el-dialog__body .el-form--inline .el-form-item{
+    width: 160px;
+    .el-form-item__content {
+    width: 160px;
+  }
+  }
+  .el-input-number .el-form-item__error {
+    top: 99%;
+    left: 22px;
+
   }
 }
 </style>
