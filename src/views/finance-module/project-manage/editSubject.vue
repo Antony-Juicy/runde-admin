@@ -503,7 +503,7 @@ export default {
           theoryTest2ClosingTime: theoryTest2ClosingTime,
           theoryTestClosingTime: theoryTestClosingTime,
         };
-        if (res.data.productId == 2) {
+        if (res.data.productName == "医师") { 
           this.showCheckbox = true;
           this.checked1 =
             res.data.skillTestStart && res.data.skillTestEnd ? true : false;
