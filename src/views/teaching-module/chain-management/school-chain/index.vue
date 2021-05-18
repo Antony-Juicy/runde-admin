@@ -138,34 +138,34 @@ export default {
     return {
       formOptions: [
         {
-          prop: "menuName",
+          prop: "chainName",
           element: "el-select",
           placeholder: "连锁",
           options: [],
         },
         {
-          prop: "menuName",
+          prop: "campus",
           element: "el-select",
           placeholder: "校区",
           options: [],
         },
         {
-          prop: "menuName",
+          prop: "chainContact",
           element: "el-input",
           placeholder: "连锁联系人",
         },
         {
-          prop: "menuName",
+          prop: "phone",
           element: "el-input",
           placeholder: "手机",
         },
         {
-          prop: "menuName",
+          prop: "negotiatorName",
           element: "el-input",
           placeholder: "谈判人名",
         },
         {
-          prop: "menuName",
+          prop: "status",
           element: "el-select",
           placeholder: "状态",
           options: [],
@@ -230,33 +230,33 @@ export default {
       addVisible: false,
       addFormOptions: [
         {
-          prop: "menuName",
+          prop: "campus",
           element: "el-select",
           placeholder: "请输入名称",
           label: "校区",
           options: [],
         },
         {
-          prop: "post",
+          prop: "chainName",
           element: "el-select",
           placeholder: "",
           label: "连锁",
           options: [],
         },
         {
-          prop: "className",
+          prop: "chainContact",
           element: "el-input",
           placeholder: "请输入",
           label: "连锁联系人",
         },
         {
-          prop: "className",
+          prop: "phone",
           element: "el-input",
           placeholder: "请输入",
           label: "手机",
         },
         {
-          prop: "className",
+          prop: "negotiatorName",
           element: "el-input",
           placeholder: "请输入",
           label: "连锁谈判人",
@@ -272,7 +272,7 @@ export default {
           //   clearable: false
         },
         {
-          prop: "menuName3",
+          prop: "remark",
           element: "el-input",
           placeholder: "请输入",
           label: "备注",
@@ -281,7 +281,7 @@ export default {
         },
 
         {
-          prop: "roleName",
+          prop: "coursesType",
           element: "el-select",
           placeholder: "请选择",
           label: "开课网课类型",
@@ -297,7 +297,7 @@ export default {
           ],
         },
         {
-          prop: "roleName",
+          prop: "status",
           element: "el-select",
           placeholder: "请选择",
           label: "状态",
@@ -313,7 +313,7 @@ export default {
           ],
         },
         {
-          prop: "roleName",
+          prop: "payType",
           element: "el-select",
           placeholder: "请选择",
           label: "付款方式",
@@ -329,7 +329,7 @@ export default {
           ],
         },
         {
-          prop: "roleName",
+          prop: "customizationStatus",
           element: "el-select",
           placeholder: "请选择",
           label: "是否有定制班",
@@ -407,10 +407,20 @@ export default {
     },
     getformList() {
       this.$fetch("chaincampus_goAdd", {}).then((res) => {
-        // this.formOptions[1].options = res.data.statusList.map((item) => ({
-        //   label: item.value,
-        //   value: item.key,
-        // }));
+        //连锁
+        this.addFormOptions[1].options = this.formOptions[0].options = res.data.chainInfoList.map(
+          (item) => ({
+            label: item.chainName,
+            value: item.id,
+          })
+        );
+        //校区
+        this.addFormOptions[0].options = this.formOptions[1].options = res.data.campusList.map(
+          (item) => ({
+            label: item.campusName,
+            value: item.id,
+          })
+        );
       });
     },
     getTableData(params = {}) {
