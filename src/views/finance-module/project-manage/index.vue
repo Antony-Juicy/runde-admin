@@ -281,6 +281,7 @@ export default {
             this.addStatus ? "courseProduct_save" : "courseProduct_editJsp",
             {
               ...formData,
+              ...this.dataForm,
               financeCode1,
               financeCode2,
               id: this.addStatus ? "" : this.editId,

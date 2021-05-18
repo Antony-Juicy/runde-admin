@@ -601,7 +601,7 @@ export default {
           options: [],
         },
         {
-          prop: "refundTypeId",
+          prop: "refundType",
           element: "el-select",
           placeholder: "请选择退费类型",
           options: [],
@@ -616,10 +616,27 @@ export default {
           prop: "serviceYear",
           element: "el-select",
           placeholder: "请选择服务年限",
-          options: [],
+          options: [
+            {
+              label: "1年",
+              value: 1,
+            },
+            {
+              label: "2年",
+              value: 2,
+            },
+            {
+              label: "3年",
+              value: 3,
+            },
+            {
+              label: "4年",
+              value: 4,
+            },
+          ],
         },
         {
-          prop: "classtypeGroupName",
+          prop: "classtypeGroupId",
           element: "el-select",
           placeholder: "请选择班型分组",
           options: [],
@@ -745,21 +762,21 @@ export default {
       // classtypeGroupArr: [], //班型分组
       serviceYearArr: [
         {
-          label: '1年',
+          label: "1年",
           value: 1,
         },
         {
-          label: '2年',
+          label: "2年",
           value: 2,
         },
         {
-          label: '3年',
+          label: "3年",
           value: 3,
         },
         {
-          label: '4年',
+          label: "4年",
           value: 4,
-        }
+        },
       ], //服务年限
       protocolTypeArr: [], //协议类型
       refundTypeArr: [], //退费类型
@@ -773,20 +790,20 @@ export default {
           options: [
             {
               label: "有权限",
-              value: "Open",
+              value: true,
             },
             {
               label: "无权限",
-              value: "Close",
+              value: false,
             },
           ],
-          initValue: "Open",
+          initValue: "",
         },
         {
           prop: "exchangeable",
           element: "el-radio",
           placeholder: "请选择电商是否可兑换",
-          label: "电商是否可兑换",
+          label: "电商是否可兑换：",
           options: [
             {
               label: "是",
@@ -934,8 +951,8 @@ export default {
           { required: true, message: "请选择", trigger: "change" },
         ],
         studyPower: [{ required: true, message: "请选择", trigger: "change" }],
-        crowdType: [{ required: true, message: "请选择", trigger: "change" }],
-        crowdNum: [{ required: true, message: "请输入", trigger: "blur" }],
+        // crowdType: [{ required: true, message: "请选择", trigger: "change" }],
+        // crowdNum: [{ required: true, message: "请输入", trigger: "blur" }],
         campusVisible: [
           { required: true, message: "请选择", trigger: "change" },
         ],
@@ -1097,18 +1114,11 @@ export default {
         courseName: item.label,
         checked: false,
         coursePrice: "",
-        isperformance: false,
+        isperformance: true,
         courseId: item.value,
       }));
     },
     getSelectList() {
-      //获取最近前5年的数组
-      this.yearArr = this.formOptions[5].options = this.formOptions[9].options = this.$common
-        .addYearArr()
-        .map((item) => ({
-          label: item,
-          value: item,
-        }));
 
       this.$fetch("courseclasstype_goSearch").then((res) => {
         this.projectArr = this.formOptions[1].options = res.data.productList.map(
@@ -1167,6 +1177,11 @@ export default {
 
       this.$fetch("courseclasstype_goAddWindows").then((res) => {
         console.log("goAddWindows 111", res.data);
+        //获取年份的数组
+        this.yearArr = this.formOptions[5].options = res.data.recentlyYear.map((item) => ({
+          label: item,
+          value: item,
+        }));
         this.refundRulesionArr = res.data.refundRulesionList.map((item) => ({
           label: item.value,
           value: item.key,
@@ -1332,6 +1347,7 @@ export default {
     },
     handleAdd() {
       this.addVisible = true;
+      this.addStatus = true;
     },
     onSearch(val) {
       this.searchForm = { ...val };
@@ -1425,7 +1441,7 @@ export default {
                       courseName: item.label,
                       checked: false,
                       coursePrice: "",
-                      isperformance: false,
+                      isperformance: true,
                       courseId: item.value,
                     });
                   }
@@ -1488,11 +1504,14 @@ export default {
         .catch(() => {});
     },
     handleClose(formName) {
+      this.addVisible = false;
+      this.resetData();
+    },
+    resetData() {
       this.active = 0;
       this.$refs.dataForm3.onReset();
       this.$refs.dataForm2.resetFields();
       this.$refs.dataForm1.$refs.dataForm.resetFields();
-      this.addVisible = false;
       this.IsDisabled = false;
       this.step3FormOptions[7].disabled = this.IsDisabled;
       this.step3FormOptions[8].disabled = this.IsDisabled;
@@ -1503,7 +1522,7 @@ export default {
       this.active--;
     },
     handleNext(formName) {
-      console.log("active", this.active, "formName", formName);
+      console.log("active", this.addStatus, this.active, "formName", formName);
       if (this.active == 2) {
         //step3
         if (this.addStatus == false) {
@@ -1600,12 +1619,13 @@ export default {
                   .then((res) => {
                     this.$message.success("操作成功");
                     this.addVisible = false;
-                    this.IsDisabled = false;
-                    this.step3FormOptions[7].disabled = this.IsDisabled;
-                    this.step3FormOptions[8].disabled = this.IsDisabled;
-                    this.step3FormOptions[9].disabled = this.IsDisabled;
-                    this.step3FormOptions[10].disabled = this.IsDisabled;
-                    this.active = 0;
+                    // this.IsDisabled = false;
+                    // this.step3FormOptions[7].disabled = this.IsDisabled;
+                    // this.step3FormOptions[8].disabled = this.IsDisabled;
+                    // this.step3FormOptions[9].disabled = this.IsDisabled;
+                    // this.step3FormOptions[10].disabled = this.IsDisabled;
+                    // this.active = 0;
+                    this.resetData();
                     this.loadSalaryCfg();
                   })
                   .catch((error) => {});
@@ -1705,7 +1725,8 @@ export default {
                   .then((res) => {
                     this.$message.success("操作成功");
                     this.addVisible = false;
-                    this.active = 0;
+                    this.resetData();
+                    // this.active = 0;
                     this.loadSalaryCfg();
                   })
                   .catch((error) => {});

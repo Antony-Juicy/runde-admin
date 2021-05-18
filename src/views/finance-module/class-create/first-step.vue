@@ -8,6 +8,7 @@
     >
       <el-form-item
         label="项目"
+        label-width="78px"
         prop="productName"
         :rules="{
           required: true,
@@ -16,7 +17,7 @@
         }"
       >
         <el-select
-          style="width: 280px"
+          style="width: 280px;"
           v-model="basicInfo.productName"
           placeholder="请选择"
           size="small"
@@ -34,6 +35,7 @@
       </el-form-item>
       <el-form-item
         label="科目"
+         label-width="78px"
         prop="subjectName"
         :rules="{
           required: true,
@@ -211,8 +213,9 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item
-        style="align-items: center; display: flex; flex: 1; height: 100%"
-        label="状态"
+        style="align-items: center; display: flex; flex: 1; height: 100%;"
+        label="状态" 
+         label-width="78px"
         prop="status"
         :rules="{
           required: true,
