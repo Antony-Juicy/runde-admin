@@ -982,7 +982,7 @@ export default {
       detailTableData: [],
       detailTableKey: [
         { name: "id", value: "id" },
-        { name: "年份", value: "classTypeBatch" },
+        { name: "年份", value: "contentYear" },
         { name: "所属项目", value: "productName" },
         { name: "内容名称", value: "contentName" },
         { name: "类型", value: "contentType" },
@@ -1017,7 +1017,9 @@ export default {
     // geteGroupListFunc(data) {//获取班型分組
     //   this.courseGroupArr = data;
     // },
-
+    any(arr, fn = Boolean) {
+        return arr.some(fn);
+    },
     checkInput(num) {
       var str = num;
       var len1 = str.substr(0, 1);
@@ -1771,6 +1773,13 @@ export default {
               );
               return
             }
+            if(this.active == 1 && this.any(this.basicInfo.courses, x => x.checked == true) == false){
+                 this.$message.warning(
+                "至少勾选一个课程"
+              );
+              return
+            }
+            // if(basicInfo.courses)
             this.active++;
           } else {
             console.log("nononno---");
