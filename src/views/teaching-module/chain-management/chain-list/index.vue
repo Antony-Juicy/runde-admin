@@ -189,7 +189,7 @@ export default {
     },
     getformList() {
       this.$fetch("chaininfo_goAdd", {}).then((res) => {
-        this.formOptions[1].options = res.data.statusList.map((item) => ({
+      this.addFormOptions[3].options = this.formOptions[1].options = res.data.statusList.map((item) => ({
           label: item.value,
           value: item.key,
         }));

@@ -171,7 +171,9 @@
                     <span style="margin-left: 10px">元</span>
                   </el-form-item>
                 </div>
-                <template v-if="courseList.length > 0 && basicInfo.courses.length >0 ">
+                <template
+                  v-if="courseList.length > 0 && basicInfo.courses.length > 0"
+                >
                   <div
                     class="param-item"
                     v-for="(item, index) in courseList"
@@ -554,7 +556,7 @@ export default {
       setVisible4: false,
       setVisible5: false,
       active: 0,
-      showNum: 5, 
+      showNum: 5,
       formOptions: [
         {
           prop: "className",
@@ -1018,7 +1020,7 @@ export default {
     //   this.courseGroupArr = data;
     // },
     any(arr, fn = Boolean) {
-        return arr.some(fn);
+      return arr.some(fn);
     },
     checkInput(num) {
       var str = num;
@@ -1129,7 +1131,6 @@ export default {
       }));
     },
     getSelectList() {
-
       this.$fetch("courseclasstype_goSearch").then((res) => {
         this.projectArr = this.formOptions[1].options = res.data.productList.map(
           (item) => ({
@@ -1188,10 +1189,12 @@ export default {
       this.$fetch("courseclasstype_goAddWindows").then((res) => {
         console.log("goAddWindows 111", res.data);
         //获取年份的数组
-        this.yearArr = this.formOptions[5].options = res.data.recentlyYear.map((item) => ({
-          label: item,
-          value: item,
-        }));
+        this.yearArr = this.formOptions[5].options = res.data.recentlyYear.map(
+          (item) => ({
+            label: item,
+            value: item,
+          })
+        );
         this.refundRulesionArr = res.data.refundRulesionList.map((item) => ({
           label: item.value,
           value: item.key,
@@ -1397,7 +1400,7 @@ export default {
       this.addStatus = false;
       this.addVisible = true;
       this.editId = data.id;
-  
+
       this.step3FormOptions[7].disabled = this.IsDisabled;
       this.step3FormOptions[8].disabled = this.IsDisabled;
       this.step3FormOptions[9].disabled = this.IsDisabled;
@@ -1516,19 +1519,19 @@ export default {
         .catch(() => {});
     },
     handleClose(formName) {
-      this.addVisible = false; 
-      this.resetData(); 
+      this.addVisible = false;
+      this.resetData();
     },
     resetData() {
       this.active = 0;
       this.$refs.dataForm3.onReset();
       this.$refs.dataForm2.resetFields();
-      for(var key in  this.basicInfo){
-         if(Array.isArray(this.basicInfo[key]) == true){
-           this.basicInfo[key] = []
-         } 
+      for (var key in this.basicInfo) {
+        if (Array.isArray(this.basicInfo[key]) == true) {
+          this.basicInfo[key] = [];
+        }
       }
-      this.basicInfo.passDeductFee = '';
+      this.basicInfo.passDeductFee = "";
       this.$refs.dataForm1.$refs.dataForm.resetFields();
       this.IsDisabled = false;
       this.step3FormOptions[7].disabled = this.IsDisabled;
@@ -1645,7 +1648,7 @@ export default {
                     // this.active = 0;
                     this.resetData();
                     this.getTableData();
-                  }) 
+                  })
                   .catch((error) => {});
               });
             }
@@ -1745,7 +1748,7 @@ export default {
                     this.addVisible = false;
                     this.resetData();
                     // this.active = 0;
-                     this.getTableData();
+                    this.getTableData();
                   })
                   .catch((error) => {});
               });
@@ -1767,17 +1770,18 @@ export default {
         }
         dataForm.validate((valid, formData) => {
           if (valid) {
-            if(this.active == 1 && this.basicInfo.tableData.length ==0){
-              this.$message.warning(
-                "请添加班型内容"
-              );
-              return
+            if (this.active == 1 && this.basicInfo.tableData.length == 0) {
+              this.$message.warning("请添加班型内容");
+              return;
             }
-            if(this.active == 1 && this.any(this.basicInfo.courses, x => x.checked == true) == false){
-                 this.$message.warning(
-                "至少勾选一个课程"
-              );
-              return
+            if (
+              this.active == 1 &&
+              this.basicInfo.courses.length > 0 &&
+              this.any(this.basicInfo.courses, (x) => x.checked == true) ==
+                false
+            ) {
+              this.$message.warning("至少勾选一个课程");
+              return;
             }
             // if(basicInfo.courses)
             this.active++;

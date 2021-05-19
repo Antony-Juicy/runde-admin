@@ -46,15 +46,15 @@
         :emptyText="emptyText"
       >
         <template slot="campusInfo" slot-scope="scope">
-          省校：{{ scope.row.provincialSchool }}<br />
+          省校：{{ scope.row.provinceCampusName }}<br />
           分校：{{ scope.row.campusName }}<br />
         </template>
         <template slot="chainInformation" slot-scope="scope">
           连锁全称：{{ scope.row.chainName }}<br />
-          连锁联系人：{{ scope.row.createStaffName }}<br />
+          连锁联系人：{{ scope.row.contact }}<br />
           联系电话：{{ scope.row.phone }}<br />
           地址：{{ scope.row.address }}<br />
-          连锁谈判人：{{ scope.row.createStaffName }}<br />
+          连锁谈判人：{{ scope.row.negotiator }}<br />
           创建人：{{ scope.row.createStaffName }}<br />
           备注：{{ scope.row.remark }}<br />
         </template>
