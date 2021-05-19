@@ -213,13 +213,13 @@ export default {
         },
       ],
       addRules: {
-        classtName: [{ required: true, message: "请输入", trigger: "blur" }],
-        courseName: [{ required: true, message: "请选择", trigger: "blur" }],
-        courseClassify: [
-          { required: true, message: "请输入", trigger: "blur" },
+        classTypeName: [{ required: true, message: "请输入", trigger: "blur" }],
+        courseId: [{ required: true, message: "请选择", trigger: "change" }],
+        courseType: [
+          { required: true, message: "请选择", trigger: "change" },
         ],
-        courseType: [{ required: true, message: "请选择", trigger: "blur" }],
-        campusName: [{ required: true, message: "请选择", trigger: "blur" }],
+        liveCode: [{ required: true, message: "请输入", trigger: "blur" }],
+        campusJson: [{ required: true, message: "请选择", trigger: "change" }],
       },
        classTypeArr: [],
       courseListArr: [],

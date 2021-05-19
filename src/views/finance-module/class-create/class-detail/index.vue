@@ -36,7 +36,6 @@
             :tableKey="tableKey"
             :pageConfig.sync="pageConfig"
             fixedTwoRow
-            multiple
             @pageChange="pageChange"
             :emptyText="emptyText"
           >
@@ -623,7 +622,7 @@ export default {
           productId: this.productId
         }).then(res => {
           const { pd,provinceList,campusList } = res.data;
-          const { className, classType, productName, subjectName,courses,productId  } = res.data.pd;
+          const { className, classType, productName, subjectName,courses,productId,chargePattern_text  } = res.data.pd;
           this.$refs.dataForm3.setValue({
             className,
             classType,
@@ -634,6 +633,7 @@ export default {
           this.basicInfo.subjectName = subjectName;
           this.basicInfo.isperformance = true;
           this.basicInfo.provinceId = [];
+          this.currentData.chargePattern = chargePattern_text;
           this.basicInfo.course = courses.map(item => ({
               checked: false,
               coursePrice: undefined,
@@ -710,7 +710,7 @@ export default {
           this.$fetch(this.addStatus?"courseclass_save":"courseclass_editJsp",{
             ...formData,
             classTypeId: this.classTypeId,
-            chargePattern: this.currentData.chargePattern_text,
+            chargePattern: this.currentData.chargePattern,
             campusIds: JSON.stringify(campusIds),
             provinceIds: JSON.stringify(provinceIds),
             provinceId: this.basicInfo.provinceId.join(','),
@@ -759,6 +759,7 @@ export default {
           })
           this.basicInfo.subjectName = subjectName;
           this.currentData.chargePattern_text = pd.chargePattern;
+          this.currentData.chargePattern = pd.chargePattern_text;
           this.currentData.productId = pd.productId;
           this.basicInfo.provinceId = [provinceId];
           this.basicInfo.course = courseList.map(item => ({
