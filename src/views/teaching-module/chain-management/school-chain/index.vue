@@ -113,7 +113,7 @@
     <rd-dialog
       :title="addStatus ? '添加' : '编辑'"
       :dialogVisible="addVisible"
-      @handleClose="addVisible = false"
+      @handleClose="handleClose('dataForm3')"
       @submitForm="submitAddForm('dataForm3')"
     >
       <RdForm
@@ -150,7 +150,7 @@ export default {
           options: [],
         },
         {
-          prop: "chainContact",
+          prop: "contact",
           element: "el-input",
           placeholder: "连锁联系人",
         },
@@ -160,7 +160,7 @@ export default {
           placeholder: "手机",
         },
         {
-          prop: "negotiatorName",
+          prop: "negotiator",
           element: "el-input",
           placeholder: "谈判人名",
         },
@@ -173,15 +173,7 @@ export default {
       ],
       searchForm: {},
       emptyText: "暂无数据",
-      tableData: [
-        {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-        },
-      ],
+      tableData: [],
       tableKey: [
         {
           name: "ID",
@@ -230,21 +222,21 @@ export default {
       addVisible: false,
       addFormOptions: [
         {
-          prop: "campus",
+          prop: "campusId",
           element: "el-select",
-          placeholder: "请输入名称",
+          placeholder: "请选择",
           label: "校区",
           options: [],
         },
         {
-          prop: "chainName",
+          prop: "chainId",
           element: "el-select",
-          placeholder: "",
+          placeholder: "请选择",
           label: "连锁",
           options: [],
         },
         {
-          prop: "chainContact",
+          prop: "contact",
           element: "el-input",
           placeholder: "请输入",
           label: "连锁联系人",
@@ -256,12 +248,17 @@ export default {
           label: "手机",
         },
         {
-          prop: "negotiatorName",
+          prop: "negotiator",
           element: "el-input",
           placeholder: "请输入",
           label: "连锁谈判人",
         },
-
+        {
+          prop: "region",
+          element: "el-input",
+          placeholder: "请输入",
+          label: "区域",
+        },
         {
           prop: "time",
           element: "el-date-picker",
@@ -270,6 +267,12 @@ export default {
           initWidth: true,
           label: "合作时间",
           //   clearable: false
+        },
+        {
+          prop: "address",
+          element: "el-input",
+          placeholder: "请输入",
+          label: "地址",
         },
         {
           prop: "remark",
@@ -281,73 +284,49 @@ export default {
         },
 
         {
-          prop: "coursesType",
+          prop: "openNetcourseType",
           element: "el-select",
           placeholder: "请选择",
           label: "开课网课类型",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
+          options: [],
         },
         {
           prop: "status",
           element: "el-select",
           placeholder: "请选择",
           label: "状态",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
+          options: [],
         },
         {
           prop: "payType",
           element: "el-select",
           placeholder: "请选择",
           label: "付款方式",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
+          options: [],
         },
         {
           prop: "customizationStatus",
           element: "el-select",
           placeholder: "请选择",
           label: "是否有定制班",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
+          options: [],
         },
       ],
       addRules: {
-        updateReason: [
-          { required: true, message: "请输入修改事由", trigger: "blur" },
+        campusId: [{ required: true, message: "请选择", trigger: "change" }],
+        chainId: [{ required: true, message: "请选择", trigger: "change" }],
+        contact: [{ required: true, message: "请输入", trigger: "blur" }],
+        phone: [{ required: true, message: "请输入", trigger: "blur" }],
+        negotiator: [{ required: true, message: "请输入", trigger: "blur" }],
+        region: [{ required: true, message: "请输入", trigger: "blur" }],
+        address: [{ required: true, message: "请输入", trigger: "blur" }],
+        remark: [{ required: true, message: "请输入", trigger: "blur" }],
+        coursesType: [{ required: true, message: "请选择", trigger: "change" }],
+        time: [{ required: true, message: "请选择", trigger: "change" }],
+        status: [{ required: true, message: "请选择", trigger: "change" }],
+        payType: [{ required: true, message: "请选择", trigger: "change" }],
+        customizationStatus: [
+          { required: true, message: "请选择", trigger: "change" },
         ],
       },
       addStatus: true,
@@ -421,6 +400,34 @@ export default {
             value: item.id,
           })
         );
+        console.log("this.addFormOptions[8]", this.addFormOptions[8].prop);
+        //状态
+        this.addFormOptions[10].options = this.formOptions[5].options = res.data.statusList.map(
+          (item) => ({
+            label: item.value,
+            value: item.key,
+          })
+        );
+        //开课网课类型
+        this.addFormOptions[9].options = res.data.openNetCourseTypeList.map(
+          (item) => ({
+            label: item.value,
+            value: item.key,
+          })
+        );
+
+        //付款方式
+        this.addFormOptions[11].options = res.data.payTypeList.map((item) => ({
+          label: item.value,
+          value: item.key,
+        }));
+        //是否有定制班
+        this.addFormOptions[12].options = res.data.customizationStatusList.map(
+          (item) => ({
+            label: item.value,
+            value: item.key,
+          })
+        );
       });
     },
     getTableData(params = {}) {
@@ -453,26 +460,63 @@ export default {
       this.getTableData();
     },
     handleAdd() {
-      this.addStatus = true;
+      this.addStatus = true; 
       this.addVisible = true;
+    },
+      handleClose(formName) {
+      this.$refs[formName].onReset();
+      this.addVisible = false;
     },
     submitAddForm(formName) {
       this.$refs[formName].validate((valid, formData) => {
         if (valid) {
           console.log(formData, "提交");
+          let { chainId, campusId, region } = formData;
+          this.$fetch("chaincampus_checkSame", {
+            chainId,
+            campusId,
+            region,
+            id: this.addStatus ? "" : this.editId,
+          }).then((res) => {
+            this.$fetch(
+              this.addStatus ? "chaincampus_save" : "chaincampus_editJsp",
+              {
+                ...formData,
+                time: "",
+                startTime: formData.time ? formData.time[0] : "",
+                endTime: formData.time ? formData.time[1] : "",
+                id: this.addStatus ? "" : this.editId,
+              }
+            ).then((res) => {
+              this.$message.success("操作成功");
+              this.addVisible = false;
+              this.$refs.dataForm3.onReset();
+              this.getTableData();
+            });
+          });
         }
       });
     },
     handleEdit(data) {
       this.addStatus = false;
       this.addVisible = true;
-      this.addFormOptions.forEach((item) => {
-        item.initValue = data[item.prop];
-      });
-      setTimeout(() => {
-        this.$refs.dataForm3.addInitValue();
-      }, 0);
       this.editId = data.id;
+      this.$fetch("chaincampus_goEdit", {
+        id: data.id,
+      }).then(async (res) => {
+        console.log("res.data--------------", res.data);
+        let { pd } = res.data;
+        pd.time = [new Date(pd.startTime), new Date(pd.endTime)];
+        this.addFormOptions.forEach((item) => {
+          item.initValue = pd[item.prop];
+        });
+        setTimeout(() => {
+          this.$refs.dataForm3.addInitValue();
+        }, 0);
+        // this.appName = res.data.pd.appName;
+        // await this.appNameChange(this.appName,res.data.pd.productId);
+        // this.productIdChange(res.data.pd.productId,res.data.pd.subjectTypeId);
+      });
     },
   },
 };

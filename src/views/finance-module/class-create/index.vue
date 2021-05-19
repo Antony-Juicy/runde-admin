@@ -875,7 +875,7 @@ export default {
         },
         {
           prop: "crowdNum",
-          element: "el-input",
+          element: "el-input-number",
           placeholder: "班级群人数",
           label: "班级群人数：",
         },
@@ -959,10 +959,10 @@ export default {
         ],
         simulationTestPermission: [
           { required: true, message: "请选择", trigger: "change" },
-        ],
+        ], 
         studyPower: [{ required: true, message: "请选择", trigger: "change" }],
-        // crowdType: [{ required: true, message: "请选择", trigger: "change" }],
-        // crowdNum: [{ required: true, message: "请输入", trigger: "blur" }],
+        crowdType: [{ required: true, message: "请选择", trigger: "change" }],
+        crowdNum: [{ required: true, message: "请输入", trigger: "blur" }], 
         campusVisible: [
           { required: true, message: "请选择", trigger: "change" },
         ],
