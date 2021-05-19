@@ -1765,6 +1765,12 @@ export default {
         }
         dataForm.validate((valid, formData) => {
           if (valid) {
+            if(this.active == 1 && this.basicInfo.tableData.length ==0){
+              this.$message.warning(
+                "请添加班型内容"
+              );
+              return
+            }
             this.active++;
           } else {
             console.log("nononno---");
