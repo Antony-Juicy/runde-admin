@@ -95,7 +95,7 @@ export default {
       type: String | Number,
       default: 2806
     },
-    className: {
+    classTypeName: {
       type: String,
       default: "lwm010802"
     }
@@ -307,7 +307,7 @@ export default {
       this.addFormOptions.forEach((item) => {
         item.initValue = "";
         if(item.prop == "classTypeName"){
-          item.initValue =this.className;
+          item.initValue =this.classTypeName;
         }
       });
       setTimeout(() => {

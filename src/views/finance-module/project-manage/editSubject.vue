@@ -21,6 +21,7 @@
           <!--<span style="margin-right: 5px;font-weight:bold">:</span>-->
           <el-select
             v-model="dynamicValidateForm.productName"
+            :disabled="IsEditDisabled"
             size="small"
             placeholder="请选择"
             style="width: 300px"
@@ -39,11 +40,19 @@
         <el-form-item
           label="科目"
           prop="subjectName"
-          :rules="{
-            required: true,
-            message: '不能为空',
-            trigger: 'blur',
-          }"
+          :rules="[
+            {
+              required: true,
+              message: '不能为空',
+              trigger: 'blur',
+            },
+            {
+              min: 1,
+              max: 20,
+              message: '长度在 1 到 20 个字符',
+              trigger: 'blur',
+            },
+          ]"
         >
           <el-input
             v-model="dynamicValidateForm.subjectName"
@@ -56,11 +65,17 @@
         <el-form-item
           label="科目编号"
           prop="subjectNumber"
-          :rules="{
-            required: true,
-            message: '不能为空',
-            trigger: 'blur',
-          }"
+          :rules="[
+            {
+              required: true,
+              message: '不能为空',
+              trigger: 'blur',
+            },
+            {
+              validator: this.checkData,
+              trigger: 'blur',
+            },
+          ]"
         >
           <!--<div class="param-label">科目</div>-->
           <!--<span style="margin-right: 5px;font-weight:bold">:</span>-->
@@ -112,22 +127,15 @@
             :picker-options="startDateDisabled"
           >
           </el-date-picker>
-          <el-checkbox
-            v-show="showCheckbox"
-            v-model="dynamicValidateForm.checked1"
+          <el-checkbox v-show="showCheckbox" v-model="checked1"
             >技能考试</el-checkbox
           >
-          <el-checkbox
-            v-show="showCheckbox"
-            v-model="dynamicValidateForm.checked2"
+          <el-checkbox v-show="showCheckbox" v-model="checked2"
             >理论二考</el-checkbox
           >
         </el-form-item>
       </div>
-      <div
-        class="param-item"
-        v-if="dynamicValidateForm.checked1 && showCheckbox"
-      >
+      <div class="param-item" v-if="checked1 && showCheckbox">
         <el-form-item
           label="技能考试"
           prop="skillTestStart"
@@ -151,13 +159,10 @@
         </el-form-item>
       </div>
       <!--二考-->
-      <div
-        class="param-item"
-        v-if="dynamicValidateForm.checked2 && showCheckbox"
-      >
+      <div class="param-item" v-if="checked2 && showCheckbox">
         <el-form-item
           label="理论二考时间"
-          prop="secondtestTime"
+          prop="theoryTest2Start"
           :rules="{
             required: true,
             message: '不能为空',
@@ -168,7 +173,7 @@
           <!--<span style="margin-right: 5px;font-weight:bold">:</span>-->
           <el-date-picker
             size="small"
-            v-model="dynamicValidateForm.secondtestTime"
+            v-model="dynamicValidateForm.theoryTest2Start"
             type="datetimerange"
             range-separator="至"
             start-placeholder="开始时间"
@@ -178,10 +183,7 @@
         </el-form-item>
       </div>
       <!--二考关闭时间-->
-      <div
-        class="param-item"
-        v-if="dynamicValidateForm.checked2 && showCheckbox"
-      >
+      <div class="param-item" v-if="checked2 && showCheckbox">
         <el-form-item
           label="理论二考关考时间"
           prop="theoryTest2ClosingTime"
@@ -218,8 +220,8 @@
             v-model="dynamicValidateForm.subjectStatus"
             @change="partChange"
           >
-            <el-radio :label="1">正常</el-radio>
-            <el-radio :label="2">暂停</el-radio>
+            <el-radio :label="true">正常</el-radio>
+            <el-radio :label="false">暂停</el-radio>
           </el-radio-group>
         </el-form-item>
       </div>
@@ -243,7 +245,7 @@
           >
             <el-option
               :label="item.label"
-              :value="item.value"
+              :value="item.label"
               v-for="(item, index) in threeCategoriesArr"
               :key="index"
             ></el-option>
@@ -271,6 +273,8 @@ export default {
   data() {
     return {
       showCheckbox: false,
+      checked1: false,
+      checked2: false,
       startDateDisabled: {},
       productArr: [],
       threeCategoriesArr: [],
@@ -286,46 +290,72 @@ export default {
         subjectNumber: "",
         subjectName: "",
         theoryTestStart: "",
+        theoryTestEnd: "",
         skillTestStart: "",
         theoryTestClosingTime: "",
-        secondtestTime: "",
+        theoryTest2ClosingTime: "",
         subjectStatus: "",
-        theoryTestEnd:"",
+        theoryTest2Start: "",
+        theoryTest2End: "",
       },
     };
   },
   components: {},
   props: {
     id: {
-      type: Number || String,
+      //项目id
+      type: [Number, String],
     },
     issuseId: {
-      type: Number || String
+      //科目id
+      type: [Number, String],
     },
-     addStatus: {
-      type: Boolean
+    addStatus: {
+      type: Boolean,
     },
-    tableData:{
-      type:Array
-    }
+    tableData: {
+      type: Array,
+    },
+    IsEditDisabled: {
+      type: Boolean,
+    },
   },
   created() {
-    console.log('哈哈哈哈试试',this.id)
     // 限制开始日期不能超过当前日期
     this.startDateDisabled.disabledDate = function (time) {
       return time.getTime() + 24 * 3600 * 1000 < Date.now();
     };
   },
   mounted() {
-    this.getData();
+    if (this.addStatus == false) {
+      this.getData();
+    }
     this.getSelectList();
   },
   methods: {
+    checkData(rule, value, callback) {
+      if (value) {
+        if (/[\u4E00-\u9FA5]/g.test(value)) {
+          callback(new Error("不能为中文!"));
+        } else {
+          callback();
+        }
+      }
+      callback();
+    },
     changeSelect(val) {
-      if (val == 2) {
+      var name;
+      this.productArr.map((item) => {
+        if (item.value == val) {
+          name = item.label;
+        }
+      });
+      if (name == "医师") {
         this.showCheckbox = true;
       } else {
         this.showCheckbox = false;
+        this.dynamicValidateForm.skillTestStart = "";
+        this.dynamicValidateForm.theoryTest2Start = "";
       }
     },
     getSelectList() {
@@ -334,62 +364,89 @@ export default {
           label: item.productName,
           value: item.id,
         }));
+        //项目
+        res.data.data.map((item) => {
+          if (item.id == this.id) {
+            this.dynamicValidateForm.productName = item.productName;
+            if (this.dynamicValidateForm.productName == "医师") {
+              this.showCheckbox = true;
+            } else {
+              this.showCheckbox = false;
+              this.dynamicValidateForm.skillTestStart = "";
+              this.dynamicValidateForm.theoryTest2Start = "";
+            }
+          }
+        });
         this.threeCategoriesArr = res.data.financeCode3.map((item) => ({
           label: item.value,
           value: item.key,
         }));
+        console.log(" this.threeCategoriesArr", this.threeCategoriesArr);
       });
       // this.$refs.dataForm3.addInitValue();
     },
     partChange() {},
-    // 添加 
+    // 添加
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.dynamicValidateForm.theoryTestStart[0] = this.$common._formatDates(
+          this.dynamicValidateForm.theoryTestStart[0] = this.$common._formatDates3(
             this.dynamicValidateForm.theoryTestStart[0]
           );
-          this.dynamicValidateForm.theoryTestStart[1] = this.$common._formatDates(
+          this.dynamicValidateForm.theoryTestStart[1] = this.$common._formatDates3(
             this.dynamicValidateForm.theoryTestStart[1]
           );
-          this.dynamicValidateForm.theoryTestClosingTime = this.$common._formatDates(
+          this.dynamicValidateForm.theoryTest2ClosingTime = this.$common._formatDates3(
+            this.dynamicValidateForm.theoryTest2ClosingTime
+          );
+          this.dynamicValidateForm.theoryTestClosingTime = this.$common._formatDates3(
             this.dynamicValidateForm.theoryTestClosingTime
           );
-          let skillTestStart = this.$common._formatDates(
-            this.dynamicValidateForm.skillTestStart[0] 
+          let skillTestStart = this.$common._formatDates3(
+            this.dynamicValidateForm.skillTestStart[0]
           );
-          let skillTestEnd = this.$common._formatDates(
+          let skillTestEnd = this.$common._formatDates3(
             this.dynamicValidateForm.skillTestStart[1]
           );
-            let theoryTestStart = this.$common._formatDates(
-              this.dynamicValidateForm.theoryTestStart[0]
+          let theoryTestStart = this.$common._formatDates3(
+            this.dynamicValidateForm.theoryTestStart[0]
           );
-             let theoryTestEnd = this.$common._formatDates(
-              this.dynamicValidateForm.theoryTestStart[1]
+          let theoryTestEnd = this.$common._formatDates3(
+            this.dynamicValidateForm.theoryTestStart[1]
+          );
+
+          let theoryTest2Start = this.$common._formatDates3(
+            this.dynamicValidateForm.theoryTest2Start[0]
+          );
+          let theoryTest2End = this.$common._formatDates3(
+            this.dynamicValidateForm.theoryTest2Start[1]
           );
           let financeCode3;
           let obj1 = this.threeCategoriesArr.find((item) => {
-            return item.value == this.dynamicValidateForm.financeCodeName3;
+            return item.label == this.dynamicValidateForm.financeCodeName3;
           });
 
           financeCode3 = obj1 && obj1.value;
-          let issuseId;
-              let obj2 = this.productArr.find((item) => {
+          let productId;
+          let obj2 = this.productArr.find((item) => {
             return item.value == this.dynamicValidateForm.productName;
           });
-           issuseId= obj2 && obj2.value;
+          productId = obj2 && obj2.value;
           this.$fetch(
-            this.addStatus?
-            "coursesubject_save" : "coursesubject_editJsp", {
-            ...this.dynamicValidateForm,
-            skillTestStart,
-            skillTestEnd,
-            theoryTestStart,
-            theoryTestEnd,
-            financeCode3,
-            productId: this.issuseId ?this.issuseId:issuseId, 
-            id:this.id,
-          }).then((res) => {
+            this.addStatus ? "coursesubject_save" : "coursesubject_editJsp",
+            {
+              ...this.dynamicValidateForm,
+              skillTestStart: this.checked1 ? skillTestStart : "",
+              skillTestEnd: this.checked1 ? skillTestEnd : "",
+              theoryTestStart,
+              theoryTestEnd,
+              theoryTest2Start: this.checked2 ? theoryTest2Start : "",
+              theoryTest2End: this.checked2 ? theoryTest2End : "",
+              financeCode3,
+              productId: this.id ? this.id : productId,
+              id: this.issuseId,
+            }
+          ).then((res) => {
             this.$message.success("操作成功");
             this.$emit("close");
             this.$emit("refresh");
@@ -404,13 +461,61 @@ export default {
     //   this.$refs[formName].resetFields();
     // },
     getData() {
-      this.$fetch("coursesubject_goEdit",{
+      this.$fetch("coursesubject_goEdit", {
         id: this.issuseId,
-      }).then(res => {
-        let theoryTestStart = [new Date(res.data.theoryTestStart),new Date(res.data.theoryTestEnd)]
-          let obj = {...res.data,theoryTestStart:theoryTestStart}
+      }).then((res) => {
+        let skillTestStart =
+          res.data.skillTestStart && res.data.skillTestEnd
+            ? [
+                new Date(this.$common._getNowYearDate(res.data.skillTestStart)),
+                new Date(this.$common._getNowYearDate(res.data.skillTestEnd)),
+              ]
+            : "";
+        let theoryTestStart =
+          res.data.theoryTestStart && res.data.theoryTestEnd
+            ? [
+                new Date(
+                  this.$common._getNowYearDate(res.data.theoryTestStart)
+                ),
+                new Date(this.$common._getNowYearDate(res.data.theoryTestEnd)),
+              ]
+            : "";
+        let theoryTest2Start =
+          res.data.theoryTest2Start && res.data.theoryTest2End
+            ? [
+                new Date(
+                  this.$common._getNowYearDate(res.data.theoryTest2Start)
+                ),
+                new Date(this.$common._getNowYearDate(res.data.theoryTest2End)),
+              ]
+            : "";
+        let theoryTest2ClosingTime = res.data.theoryTest2ClosingTime
+          ? this.$common._getNowYearDate(res.data.theoryTest2ClosingTime)
+          : "";
+        let theoryTestClosingTime = res.data.theoryTestClosingTime
+          ? this.$common._getNowYearDate(res.data.theoryTestClosingTime)
+          : "";
+        let obj = {
+          ...res.data,
+          theoryTestStart: theoryTestStart,
+          theoryTest2Start: theoryTest2Start,
+          skillTestStart: skillTestStart,
+          theoryTest2ClosingTime: theoryTest2ClosingTime,
+          theoryTestClosingTime: theoryTestClosingTime,
+        };
+        if (res.data.productName == "医师") { 
+          this.showCheckbox = true;
+          this.checked1 =
+            res.data.skillTestStart && res.data.skillTestEnd ? true : false;
+          this.checked2 =
+            res.data.theoryTest2Start && res.data.theoryTest2End ? true : false;
+        } else {
+          this.showCheckbox = false;
+          this.checked1 = false;
+          this.checked2 = false;
+        }
         this.dynamicValidateForm = obj;
-      })
+      });
     },
   },
 };

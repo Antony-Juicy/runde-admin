@@ -9,6 +9,7 @@
       :destroy-on-close="true"
       :append-to-body="appendToBody"
       :top="top"
+      :custom-class="customClass + ' append-dialog' || 'append-dialog'"
     >
       <slot></slot>
       <div slot="footer" class="dialog-footer" v-if="showFooter">
@@ -56,6 +57,10 @@ export default {
     top: {
       type: String,
       default: "15vh"
+    },
+    customClass: {
+      typ: String,
+      default: ""
     }
   },
   data() {
@@ -82,6 +87,14 @@ export default {
 };
 </script>
 
+<style lang="scss">
+  .append-dialog {
+      .el-dialog__body {
+        max-height: 600px;
+        overflow: auto;
+      }
+    }
+</style>
 <style lang="scss" scoped>
 .dialog-wrapper {
   /deep/ {

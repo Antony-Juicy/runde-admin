@@ -15,7 +15,6 @@
         :tableData="tableData"
         :tableKey="tableKey"
         :pageConfig.sync="pageConfig"
-        :tbodyHeight="600"
         fixedTwoRow
         @pageChange="pageChange"
         :emptyText="emptyText"
@@ -259,7 +258,16 @@ export default {
           placeholder: "所属项目",
           label: "所属项目:",
           options: [],
-          events: {}
+          events: {},
+          disabled: false
+        },
+         {
+          prop: "contentYear",
+          element: "el-select",
+          placeholder: "请选择年份",
+          label: "年份:",
+          options: [],
+          disabled: false
         },
         {
           prop: "contentName",
@@ -308,6 +316,7 @@ export default {
           label: "核算规则：",
           options: [
           ],
+          disabled: false
         },
         {
           prop: "time",
@@ -316,6 +325,7 @@ export default {
           endPlaceholder: "结束日期",
           initWidth: true,
           label: "授课起止时间：",
+          disabled: false
           //   clearable: false
         },
         {
@@ -381,6 +391,7 @@ export default {
         },
       ],
       addRules: {
+        contentYear: [{ required: true, message: "请输入", trigger: "blur" }],
         productId: [{ required: true, message: "请选择", trigger: "change" }],
         contentName: [{ required: true, message: "请输入", trigger: "blur" }],
         contentType: [{ required: true, message: "请选择", trigger: "change" }],
@@ -451,7 +462,7 @@ export default {
             label: item.id,
             value: item.stageGroupName
           })):[];
-          this.addFormOptions[7].options = this.stageArr;
+          this.addFormOptions[8].options = this.stageArr;
           this.$refs.dataForm3.setValue({
             stageGroupId: []
           })
@@ -463,11 +474,16 @@ export default {
     getRulesList(){
       return new Promise(resolve => {
         this.$fetch("courseProductContent_goAccountingRulesSelects").then(res => {
-          this.rulesArr = res.data.protocolTypeList?res.data.protocolTypeList.map(item => ({
+          const { protocolTypeList,recentlyYear } = res.data;
+          this.rulesArr = protocolTypeList?protocolTypeList.map(item => ({
             label: item.value,
             value: item.key
           })):[];
-          this.addFormOptions[4].options = this.rulesArr;
+          this.addFormOptions[5].options = this.rulesArr;
+          this.addFormOptions[1].options = recentlyYear.map(item => ({
+            label: item,
+            value: item
+          }));
           this.formOptions[3].options = this.rulesArr;
           resolve();
         })
@@ -550,6 +566,8 @@ export default {
     handleAdd() {
       this.addStatus = true;
       this.addVisible = true;
+      // 可编辑状态
+      this.changeDisableStats(false);
     },
     getTableData(params = {}) {
       // posterinfo_listJson
@@ -590,8 +608,16 @@ export default {
           accountingRules_text: data.accountingRules,
         })
       }, 0);
+      //某些不可编辑
+      this.changeDisableStats(true);
       this.editId = data.id;
       //TODO 编辑
+    },
+    changeDisableStats(bol){
+      this.addFormOptions[0].disabled = bol;
+      this.addFormOptions[1].disabled = bol;
+      this.addFormOptions[5].disabled = bol;
+      this.addFormOptions[6].disabled = bol;
     },
     changeTable(data) {
       this.$fetch("courseProductContent_udpateStatus",{

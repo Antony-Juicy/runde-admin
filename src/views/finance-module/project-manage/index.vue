@@ -22,7 +22,7 @@
             <el-button
               @click="handleOpen(scope.row)"
               type="text"
-              size="small"
+              size="medium"
               >{{ scope.row.productName }}</el-button
             >
           </template>
@@ -40,7 +40,7 @@
       :dialogVisible="distributeVisible"
       :showFooter="false"
       :width="'990px'"
-      @handleClose="distributeVisible = false"
+      @handleClose="closeEdit()"
     >
       <RdForm
         :formOptions="addFormOptions"
@@ -122,19 +122,20 @@ export default {
           options: [],
         },
         {
-          prop: "productStatus",
+          prop: "status",
           element: "el-select",
           placeholder: "请选择状态",
           options: [
             {
               label: "正常",
-              value: false,
+              value: true,
             },
             {
               label: "暂停",
-              value: true,
+              value: false,
             },
           ],
+          events: {},
         },
       ],
       tableData: [
@@ -152,7 +153,7 @@ export default {
         { name: "id", value: "id" },
         { name: "项目名", value: "productName", operate: true },
         { name: "备注", value: "productDetail" },
-        { name: "状态", value: "productStatus" },
+        { name: "状态", value: "status" },
         { name: "创建时间", value: "createAt" },
         {
           name: "操作",
@@ -183,21 +184,20 @@ export default {
           label: "项目描述",
         },
         {
-          prop: "productStatus",
+          prop: "status",
           element: "el-radio",
           placeholder: "请选择状态",
           label: "状态：",
           options: [
             {
               label: "正常",
-              value: false,
+              value: true,
             },
             {
               label: "暂停",
-              value: true,
+              value: false,
             },
           ],
-          initValue: "0",
         },
         {
           prop: "financeCodeName1",
@@ -215,14 +215,15 @@ export default {
         },
       ],
       addRules: {
-        productName: [{ required: true, message: "请输入", trigger: "blur" }],
-        productNumber: [{ required: true, message: "请输入", trigger: "blur" }],
+        productName: [{ required: true, message: "请输入", trigger: "blur" }, { min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' }],
+        productNumber: [
+          { required: true, message: "请输入", trigger: "blur" },
+          { validator: this.checkData, trigger: "blur" },
+        ],
         //  productDetail: [
         //   { required: true, message: "请输入", trigger: "blur" },
         // ],
-        productStatus: [
-          { required: true, message: "请选择", trigger: "change" },
-        ],
+        status: [{ required: true, message: "请选择", trigger: "change" }],
         financeCodeName1: [
           { required: true, message: "请选择", trigger: "change" },
         ],
@@ -240,6 +241,22 @@ export default {
     this.getSelectList();
   },
   methods: {
+    checkData(rule, value, callback) {
+      if (value) {
+        if (/[\u4E00-\u9FA5]/g.test(value)) {
+          callback(new Error("不能为中文!"));
+        } else {
+          callback();
+        }
+      }
+      callback();
+    },
+    closeEdit() {
+      //
+      this.distributeVisible = false;
+      this.$refs.dataForm3.onReset();
+      this.dataForm.productDetail = "";
+    },
     handleOpen(data) {
       //open科目
       this.detailId = data.id;
@@ -264,6 +281,7 @@ export default {
             this.addStatus ? "courseProduct_save" : "courseProduct_editJsp",
             {
               ...formData,
+              ...this.dataForm,
               financeCode1,
               financeCode2,
               id: this.addStatus ? "" : this.editId,
@@ -271,6 +289,8 @@ export default {
           ).then((res) => {
             this.$message.success("操作成功");
             this.distributeVisible = false;
+            this.$refs.dataForm3.onReset();
+            this.dataForm.productDetail = "";
             this.getTableData();
           });
         }
@@ -286,7 +306,6 @@ export default {
     getSelectList() {
       //项目
       this.$fetch("courseProduct_listJsp").then((res) => {
-        console.log("hhhhh999", res);
         this.formOptions[0].options = res.data.productList.map((item) => ({
           label: item.productName,
           value: item.id,
@@ -311,14 +330,20 @@ export default {
     },
     getTableData(params = {}) {
       // TODO  secretexamsubject_list
+      let { productName } = this.searchForm;
+      let productId = productName;
+
+      delete this.searchForm.productName;
+
+      let params1 = { ...this.searchForm, productId: productId };
       this.$fetch("courseProduct_listJspn", {
         ...this.pageConfig,
-        ...this.searchForm,
+        ...params1,
         ...params,
       }).then((res) => {
         this.tableData = res.data.data.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
-          item.productStatus = item.productStatus == false ? "正常" : "暂停";
+          item.status = item.productStatus == true ? "正常" : "暂停";
           return item;
         });
         this.pageConfig.totalCount = res.data.pager.totalRows;
@@ -329,28 +354,38 @@ export default {
       this.addStatus = true;
     },
     handleEdit(data) {
+      console.log("datadatadata", data);
+      //courseProduct_goEdit
       this.editId = data.id;
       this.addStatus = false;
       this.distributeVisible = true;
+      let status = data.status == "正常" ? true : false;
       this.addFormOptions.forEach((item) => {
-        console.log("打印item11111111", item);
-        // if (item.prop == "productStatus") {
-        //   console.log("打印item11111111", item);
-        //   item.options.map((itm) => {
-        //             console.log("打印itm ========?12 ", item.initValue , itm.label,item.initValue == itm.value);
-        //     if (item.initValue == itm.value) {
-        //       console.log("打印itm ========?",111233,itm.value);
-        //       item.initValue = itm.value == 0?'0':'1';
-        //     }
-        //   });
-        // } else {
-        //   item.initValue = data[item.prop];
-        // }
-        item.initValue = data[item.prop];
+        if (item.prop == "status") {
+          item.initValue = status;
+        } else if (item.prop == "productDetail") {
+          this.dataForm.productDetail = data[item.prop];
+        } else {
+          item.initValue = data[item.prop];
+        }
       });
       setTimeout(() => {
         this.$refs.dataForm3.addInitValue();
       }, 0);
+
+      // this.$fetch("courseProduct_goEdit", {
+      //   id: data.id,
+      // }).then((res) => {
+      //   this.addFormOptions.forEach((item) => {
+      //     item.initValue = res.data.pd[item.prop];
+      //   });
+      //   setTimeout(() => {
+      //     this.$refs.dataForm3.addInitValue();
+      //   }, 0);
+      // this.productName = data.productName;
+      // this.productNameChange(this.productName,res.data.oneParentId);
+      // this.parentIdChange(res.data.oneParentId,res.data.twoParentId);
+      // });
     },
     pageChange(val) {
       console.log(val, "pagechange");
@@ -363,4 +398,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.project-manage {
+}
 </style>

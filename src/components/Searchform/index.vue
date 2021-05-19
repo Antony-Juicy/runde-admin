@@ -223,6 +223,13 @@ export default {
         }, 0);
       }
     },
+     // 给表单的任意一个赋值
+    setValue(obj){
+      this.formData = {
+        ...this.formData,
+        ...obj
+      }
+    }
   },
 
   computed: {

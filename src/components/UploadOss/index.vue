@@ -14,11 +14,6 @@
 </template>
 
 <script>
-let multipart_params = "";
-let baseKey = "";
-import plupload from "plupload";
-import axios from "axios";
-import { uploadOss,promise1 } from "@/utils/uploadOss";
 import { mixinUpload } from "./UploadOss";
 export default {
   mixins: [mixinUpload],

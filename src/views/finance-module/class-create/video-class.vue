@@ -149,6 +149,7 @@ export default {
           element: "el-input",
           placeholder: "请输入",
           label: "班型",
+          readonly: true
         },
         {
           prop: "courseId",
@@ -254,6 +255,16 @@ export default {
     handleAdd() {
       this.distributeVisible = true;
       this.addStatus = true;
+      this.addFormOptions.forEach((item) => {
+        item.initValue = "";
+        if(item.prop == "classTypeName"){
+          item.initValue =this.classTypeName;
+        }
+      });
+      setTimeout(() => {
+        this.$refs.dataForm3.resetFields();
+        this.$refs.dataForm3.addInitValue();
+      }, 0);
     },
     handleEdit(data) {
       this.addStatus = false;
