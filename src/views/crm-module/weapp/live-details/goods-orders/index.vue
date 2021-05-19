@@ -347,6 +347,9 @@ export default {
     },
     exportOrders() {
       let searchForm = JSON.parse(JSON.stringify(this.searchForm))
+      if(this.searchForm.typeId) {
+        searchForm.typeId = searchForm.typeId.pop()
+      }
       this.$fetch(
         "orders_export",
         {

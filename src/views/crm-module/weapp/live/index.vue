@@ -110,7 +110,7 @@
         :title="'直播间名称：' + liveName"
         :dialogVisible="shareVisible"
         :showFooter="false"
-        :width="'480px'"
+        :width="'650px'"
         @handleClose="shareVisible = false"
       >
         <manageShare :liveId="liveId" v-if="shareVisible" />

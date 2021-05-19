@@ -52,4 +52,6 @@ export default {
     live_get_url: {url: '/live/console/live/get_url',method: 'post'}, //获取链接
     // 小程序码
     live_get_qr_code: {url: '/live/console/live/get_qr_code',method: 'post'},
+    // 分享链接
+    live_get_shareUrl: {url: '/live/console/live/getShareUrl',method: 'post'}
   } 

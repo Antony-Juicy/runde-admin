@@ -2,6 +2,9 @@
   <div class="invitecount-container">
     <search-form :formOptions = "formOptions" :showNum="showNum" @onSearch = onSearch ref="searchForm" ></search-form>
     <div class="w-container">
+      <div class="btn-wrapper">
+        <el-button type="primary" size="small" @click="exportInvite">导出</el-button>
+      </div>
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
@@ -110,6 +113,18 @@ export default {
       this.pageConfig.pageNum = val.page;
       this.pageConfig.pageSize = val.limit;
       this.getTableData();
+    },
+    exportInvite() {
+      let searchForm = JSON.parse(JSON.stringify(this.searchForm))
+      this.$fetch(
+        "invite_export",
+        {
+          ...searchForm
+        }
+      ).then((res) => {
+        this.$message.success("导出成功");
+        this.$common.downLoadFile(res);
+      })
     }
   }
 }

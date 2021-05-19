@@ -171,7 +171,7 @@
                     <span style="margin-left: 10px">元</span>
                   </el-form-item>
                 </div>
-                <template v-if="courseList.length > 0">
+                <template v-if="courseList.length > 0 && basicInfo.courses.length >0 ">
                   <div
                     class="param-item"
                     v-for="(item, index) in courseList"
@@ -272,7 +272,7 @@
                   <el-col :span="12">
                     <el-input
                       v-model="basicInfo.norefundFee"
-                      :readonly="IsDisabled"
+                      :disabled="IsDisabled"
                       placeholder="请输入价格"
                       size="small"
                     >
@@ -288,7 +288,7 @@
                 :rules="{
                   required: true,
                   message: '不能为空',
-                  trigger: 'change',
+                  trigger: 'blur',
                 }"
                 label="通过扣除费用："
                 prop="passDeductFee"
@@ -554,7 +554,7 @@ export default {
       setVisible4: false,
       setVisible5: false,
       active: 0,
-      showNum: 5,
+      showNum: 5, 
       formOptions: [
         {
           prop: "className",
@@ -1297,7 +1297,6 @@ export default {
       this.classTypeId = row.id;
       this.classTypeName = row.className;
     },
-    loadSalaryCfg() {},
     goDetails(data) {
       //查看班型详情内容
       this.title = data.className;
@@ -1396,6 +1395,7 @@ export default {
       this.addStatus = false;
       this.addVisible = true;
       this.editId = data.id;
+  
       this.step3FormOptions[7].disabled = this.IsDisabled;
       this.step3FormOptions[8].disabled = this.IsDisabled;
       this.step3FormOptions[9].disabled = this.IsDisabled;
@@ -1514,13 +1514,19 @@ export default {
         .catch(() => {});
     },
     handleClose(formName) {
-      this.addVisible = false;
-      this.resetData();
+      this.addVisible = false; 
+      this.resetData(); 
     },
     resetData() {
       this.active = 0;
       this.$refs.dataForm3.onReset();
       this.$refs.dataForm2.resetFields();
+      for(var key in  this.basicInfo){
+         if(Array.isArray(this.basicInfo[key]) == true){
+           this.basicInfo[key] = []
+         } 
+      }
+      this.basicInfo.passDeductFee = '';
       this.$refs.dataForm1.$refs.dataForm.resetFields();
       this.IsDisabled = false;
       this.step3FormOptions[7].disabled = this.IsDisabled;
@@ -1636,8 +1642,8 @@ export default {
                     // this.step3FormOptions[10].disabled = this.IsDisabled;
                     // this.active = 0;
                     this.resetData();
-                    this.loadSalaryCfg();
-                  })
+                    this.getTableData();
+                  }) 
                   .catch((error) => {});
               });
             }
@@ -1737,7 +1743,7 @@ export default {
                     this.addVisible = false;
                     this.resetData();
                     // this.active = 0;
-                    this.loadSalaryCfg();
+                     this.getTableData();
                   })
                   .catch((error) => {});
               });

@@ -8,10 +8,11 @@ export default {
   
   // 邀请统计
   invite_count_list: { url:'/live/console/live_invite/page_live_invite_data', method: 'post' },
+  invite_export: { url:'/live/console/live_invite/export', method: 'post', responseType: "arraybuffer"},
 
   // 商品订单统计
   orders_list: { url:'/live/console/order/page_list', method: 'post' },
   orders_detail: { url:'/live/console/order/get_order_detail', method: 'post' },
-  orders_export: { url: '/live/console/order/export', method: 'post'}
+  orders_export: { url: '/live/console/order/export', method: 'post', responseType: "arraybuffer"}
 
 }

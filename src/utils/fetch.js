@@ -69,7 +69,17 @@ service.interceptors.response.use(
     const res = response.data
     // 文件流直接返回
     if (res.code == undefined) {
-      return res
+      if(response.headers.msg == "SUCCESS") {
+        return res
+      } else {
+        let errorMsg = decodeURI(response.headers.msg)
+        Message({
+          message: errorMsg || 'Error',
+          type: 'error',
+          duration: 3 * 1000
+        })
+        return Promise.reject(new Error(errorMsg || 'Error'))
+      }
     }
     // if the custom code is not 1, it is judged as an error.
     if (res.code !== 200 && res.code !== 1 && res.code !== "Success") {

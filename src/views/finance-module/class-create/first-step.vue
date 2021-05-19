@@ -69,7 +69,7 @@
       >
         <el-input
           v-model="basicInfo.className"
-          :readonly="IsDisabled"
+          :disabled="IsDisabled"
           size="small"
           style="width: 500px"
         ></el-input>
@@ -130,7 +130,7 @@
         prop="classtypeGroupName"
         :rules="{
           required: courseGroupArr.length > 0 ? true : false,
-          message: '不能为空',
+          message: courseGroupArr.length > 0 ? '不能为空' : '',
           trigger: 'change',
         }"
       >
