@@ -6,6 +6,7 @@
           v-model="formInline.productName"
           placeholder="项目"
           filterable
+          clearable
           size="small"
           @change="handleChangeProduct"
         >
@@ -40,6 +41,7 @@
       <el-form-item label="">
         <el-select
           v-model="formInline.contentType"
+          clearable
           placeholder="类型"
           filterable
           size="small"
@@ -50,6 +52,18 @@
             :value="item.value"
             v-for="item in classTypeArr"
           ></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="">
+        <el-select
+          v-model="formInline.status"
+          clearable
+          placeholder="状态"
+          filterable
+          size="small"
+        >
+          <el-option label="正常" value="Normal"></el-option>
+          <el-option label="暂停" value="Stop"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -73,9 +87,7 @@
       </template>
     </rd-table>
     <div class="btn-wrapper" style="text-align: right; margin-top: 20px">
-      <el-button size="small" @click="handleClose"
-        >取消</el-button
-      >
+      <el-button size="small" @click="handleClose">取消</el-button>
       <el-button
         type="primary"
         size="small"
@@ -93,7 +105,7 @@ export default {
   name: "add-class",
   data() {
     return {
-      productId:this.selectProductId,
+      productId: this.selectProductId,
       btnLoading: false,
       nameArr: [],
       campusArr: [],
@@ -121,6 +133,10 @@ export default {
         {
           name: "学费/元",
           value: "contentPrice",
+        },
+        {
+          name: "状态",
+          value: "status",
         },
         {
           name: "录播情况",
@@ -176,27 +192,27 @@ export default {
 
     this.getTableData();
   },
-  computed:{
-  //  productId: {
-  //     set(val) {
-  //       this.$emit("sendVal", val); // 表示将子组件改变的值传递给父组件
-  //     },
-  //     get() {
-  //       return this.selectProductId; // 表示获取父组件的值
-  //     },
-  //   },
+  computed: {
+    //  productId: {
+    //     set(val) {
+    //       this.$emit("sendVal", val); // 表示将子组件改变的值传递给父组件
+    //     },
+    //     get() {
+    //       return this.selectProductId; // 表示获取父组件的值
+    //     },
+    //   },
   },
   methods: {
-    handleClose(){
-       this.$emit("closeTableData");
+    handleClose() {
+      this.$emit("closeTableData");
     },
     handleSelect(rows) {
       console.log(rows, "rows---");
       this.selectTableData = rows;
     },
-    handleChangeProduct(val){
-           console.log(val, "rows val---");
-           this.productId = val;
+    handleChangeProduct(val) {
+      console.log(val, "rows val---");
+      this.productId = val;
     },
     handleAddClass() {
       //添加

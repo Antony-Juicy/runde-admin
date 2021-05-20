@@ -54,6 +54,7 @@
 
 <script>
 import RdForm from "@/components/RdForm";
+import Common from "@/utils/common";
 export default {
   name: "view-detail",
   data() {
@@ -209,7 +210,7 @@ export default {
           { required: true, message: "请选择", trigger: "change" },
         ],
         userName: [{ required: true, message: "请输入", trigger: "blur" }],
-        telephone: [{ required: true, message: "请输入", trigger: "blur" }],
+        telephone: [{ required: true, message: "请输入", trigger: "blur" },  { validator: Common._validatorPhone, trigger: "blur" },],
         password: [{ required: true, message: "请输入", trigger: "blur" }],
         email: [{ required: true, message: "请输入", trigger: "blur" }],
         status: [{ required: true, message: "请选择", trigger: "change" }],
