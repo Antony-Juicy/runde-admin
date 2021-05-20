@@ -106,13 +106,13 @@ export default {
           name: "状态",
           value: "status",
         },
-        {
-          name: "操作",
-          value: "edit",
-          operate: true,
-          width: 140,
-          fixed: "right",
-        },
+        // {
+        //   name: "操作",
+        //   value: "edit",
+        //   operate: true,
+        //   width: 140,
+        //   fixed: "right",
+        // },
       ],
       pageConfig: {
         totalCount: 0,
@@ -189,10 +189,12 @@ export default {
     },
     getformList() {
       this.$fetch("chaininfo_goAdd", {}).then((res) => {
-        this.formOptions[1].options = res.data.statusList.map((item) => ({
-          label: item.value,
-          value: item.key,
-        }));
+        this.addFormOptions[3].options = this.formOptions[1].options = res.data.statusList.map(
+          (item) => ({
+            label: item.value,
+            value: item.key,
+          })
+        );
       });
     },
     getTableData(params = {}) {
@@ -220,18 +222,24 @@ export default {
     submitAddForm(formName) {
       this.$refs[formName].validate((valid, formData) => {
         if (valid) {
+          let {chainName}  = formData
           console.log(formData, "提交");
-          this.$fetch(
-            this.addStatus ? "chaininfo_save" : "chaininfo_checkChainExist",
-            {
-              ...formData,
-              id: this.addStatus ? "" : this.editId,
-            }
-          ).then((res) => {
-            this.$message.success("操作成功");
-            this.addVisible = false;
-            this.$refs.dataForm3.onReset();
-            this.getTableData();
+          this.$fetch("chaininfo_checkChainExist",{
+           chainName
+          }).then((res) => {
+            
+            this.$fetch(
+              this.addStatus ? "chaininfo_save" : "chaininfo_checkChainExist",
+              {
+                ...formData,
+                id: this.addStatus ? "" : this.editId,
+              }
+            ).then((res) => {
+              this.$message.success("操作成功");
+              this.addVisible = false;
+              this.$refs.dataForm3.onReset();
+              this.getTableData();
+            });
           });
         }
       });
