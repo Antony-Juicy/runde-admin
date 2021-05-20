@@ -385,7 +385,7 @@
       :title="'添加班型内容'"
       :dialogVisible="distributeVisible"
       :showFooter="false"
-      :width="'990px'"
+      :width="'1100px'"
       @handleClose="distributeVisible = false"
     >
       <addClass
@@ -884,28 +884,28 @@ export default {
           label: "班级群人数：",
           operate: true,
         },
+        // {
+          // prop: "campusVisible",
+          // element: "el-cascader",
+          // placeholder: "校区可见",
+          // initWidth: true,
+          // multiple: true,
+          // label: "校区可见：",
+          // options: [],
+          // events: {},
+          // initValue: [[10], [11]],
+        // },
         {
           prop: "campusVisible",
-          element: "el-cascader",
+          element: "el-select",
           placeholder: "校区可见",
           initWidth: true,
           multiple: true,
           label: "校区可见：",
           options: [],
           events: {},
-          // initValue: [[10], [11]],
+          initValue: [37],
         },
-        // {
-        //   prop: "campusVisible",
-        //   element: "el-select",
-        //   placeholder: "校区可见",
-        //   initWidth: true,
-        //   multiple: true,
-        //   label: "校区可见：",
-        //   options: [],
-        //   events: {},
-        //   initValue: [37],
-        // },
         {
           prop: "financeCodeName1",
           element: "el-select",
@@ -1401,6 +1401,7 @@ export default {
       });
     },
     handleEdit(data) {
+      this.selectProductId = data.productId;
       this.IsDisabled = true;
       this.addStatus = false;
       this.addVisible = true;
@@ -1501,7 +1502,9 @@ export default {
             res.data.data.model["campusIds"].map((item) => {
               arr.push(item.val);
             });
-            item.initValue = this.turnTwoArr(arr, 1);
+            console.log('arr',arr)
+            // item.initValue = this.turnTwoArr(arr, 1);
+            item.initValue = arr;
           } else {
             item.initValue = res.data.data.model[item.prop];
           }
