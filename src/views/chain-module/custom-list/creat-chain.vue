@@ -4,7 +4,10 @@
           <template slot="address">
             <searchMap/>
           </template>
-        </rd-form>
+      </rd-form>
+      <div style="text-align:right">
+        <el-button type="primary" size="small" @click="submitAddForm('dataForm3')">提交</el-button>
+      </div>
   </div>
 </template>
 
@@ -100,13 +103,21 @@ export default {
       searchMap
   },
    methods: {
+     submitAddForm(formName){
+      this.$refs[formName].validate((valid, formData) => {
+        if(valid){
+          console.log(formData, "提交");
+        }
+          
+      });
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
 .creat-chain {
-    width: 60%;
+    width: 70%;
     margin: 0 auto;
 }
 </style>

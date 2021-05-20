@@ -10,13 +10,21 @@
         <el-button type="primary" size="small" @click="handleAdd"
           >添加</el-button
         >
+        <el-button type="warning" size="small" @click="handleAdd"
+          >导入</el-button
+        >
+        <el-button type="success" size="small" @click="handleAdd"
+          >批量分配</el-button
+        >
       </div>
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
         :pageConfig.sync="pageConfig"
         fixedTwoRow
+        :multiple="true"
         @pageChange="pageChange"
+        @select="handelSelect"
         :emptyText="emptyText"
       >
         <template slot="edit" slot-scope="scope">
@@ -28,8 +36,8 @@
             @click="handleDelete(scope.row)"
             type="text"
             size="small"
-            style="color: #ec5b56"
-            >删除</el-button
+            style="color: #67c23a"
+            >分配</el-button
           >
         </template>
       </rd-table>
@@ -72,19 +80,46 @@ export default {
       formOptions: [
         {
           prop: "menuName",
-          element: "el-input",
-          placeholder: "商品名称",
+          element: "el-select",
+          placeholder: "客户名称",
+          options: []
         },
         {
           prop: "menuName",
-          element: "el-input",
-          placeholder: "活动名称",
+          element: "el-select",
+          placeholder: "是否分配",
+          options: []
         },
         {
           prop: "menuName",
-          element: "el-input",
-          placeholder: "名称",
-        }
+          element: "el-select",
+          placeholder: "合作等级",
+          options: []
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "状态",
+          options: []
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "所属校区",
+          options: []
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "所属分校",
+          options: []
+        },
+        {
+          prop: "menuName",
+          element: "el-select",
+          placeholder: "跟进老师",
+          options: []
+        },
       ],
       searchForm:{},
       emptyText:"暂无数据",
@@ -99,57 +134,51 @@ export default {
       ],
       tableKey: [
         {
-          name: "ID主键",
-          value: "id",
-          fixed: "left",
-          width: 80
-        },
-        {
-          name: "老师名称",
+          name: "连锁名称",
           value: "staffName",
         },
         {
-          name: "商品名称",
+          name: "所属集团",
           value: "goodsName",
         },
         {
-          name: "活动名称",
+          name: "规模排名",
           value: "activityName",
         },
         {
-          name: "名称",
+          name: "门店数量",
           value: "posterName",
         },
         {
-          name: "图片",
+          name: "员工数量",
           value: "posterPic",
         },
         {
-          name: "分享文案一",
+          name: "是否签订协议",
           value: "posterCopyFirst",
         },
         {
-          name: "分享文案二",
+          name: "合作等级",
           value: "posterCopySecond",
         },
         {
-          name: "分享文案三",
+          name: "学员数量",
           value: "posterCopyThird",
         },
         {
-          name: "分享文案四",
+          name: "跟进情况",
           value: "posterCopyFourth",
         },
         {
-          name: "分享文案五",
+          name: "省校",
           value: "posterCopyFifth",
         },
         {
-          name: "创建时间",
+          name: "分校",
           value: "createAt",
         },
         {
-          name: "修改时间",
+          name: "跟进人",
           value: "updateAt",
         },
         {
@@ -167,35 +196,12 @@ export default {
       },
       addVisible: false,
       addFormOptions: [
-          
-        {
-          prop: "menuName",
-          element: "el-input",
-          placeholder: "请输入名称",
-          label: "名称"
-        },
-        {
-          prop: "post",
-          element: "el-input",
-          placeholder: "",
-          label: "上传",
-          operate: true,
-          initValue: 0
-        },
         {
           prop: "roleName",
           element: "el-select",
           placeholder: "请选择",
           label: "所属九块九包邮",
           options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
           ],
         },
         {
@@ -261,7 +267,8 @@ export default {
         ]
       },
       addStatus: true,
-      editId:""
+      editId:"",
+      selectedData:""
     }
   },
   components:{
@@ -330,6 +337,10 @@ export default {
           });
         })
         .catch(() => {});
+    },
+    handelSelect(val) {
+      console.log(val, "valll");
+      this.selectedData = val;
     }
   }
 }
