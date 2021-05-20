@@ -161,7 +161,7 @@ export default {
           label: "负责连锁",
           options: [],
           events: {},
-          initValue: [37],
+          initValue: [],
         },
         {
           prop: "userName",
@@ -176,7 +176,7 @@ export default {
           label: "手机号码",
         },
         {
-          prop: "usedPwd",
+          prop: "password",
           element: "el-input",
           placeholder: "密码",
           label: "密码",
@@ -205,9 +205,14 @@ export default {
         },
       ],
       addRules: {
-        updateReason: [
-          { required: true, message: "请输入修改事由", trigger: "blur" },
+        campusVisible: [
+          { required: true, message: "请选择", trigger: "change" },
         ],
+        userName: [{ required: true, message: "请输入", trigger: "blur" }],
+        telephone: [{ required: true, message: "请输入", trigger: "blur" }],
+        password: [{ required: true, message: "请输入", trigger: "blur" }],
+        email: [{ required: true, message: "请输入", trigger: "blur" }],
+        status: [{ required: true, message: "请选择", trigger: "change" }],
       },
       addStatus: true,
       editId: "",
@@ -230,13 +235,18 @@ export default {
     },
     getformList() {
       this.$fetch("chaincampus_goAddLeader", {}).then((res) => {
-        console.log("res----------", res, res.data);
         //用户类型
         this.formOptions[4].options = res.data.typeList.map((item) => ({
           label: item.value,
           value: item.key,
         }));
-        //状态
+        //负责连锁
+        this.addFormOptions[0].options = res.data.chainCampusList.map(
+          (item) => ({
+            label: `${item.campusName} - ${item.chainName}`,
+            value: item.id,
+          })
+        );
       });
     },
     getTableData(params = {}) {
@@ -252,7 +262,7 @@ export default {
           item.updateAt = this.$common
             ._formatDates(item.updateAt)
             .split(" ")[0];
-          item.status = item.status == 1 ? "正常" : "暂停";
+          item.status = item.status == 1 ? "正常" : "锁定";
           item.chainInfoJson =
             item.chainInfoJson && item.chainInfoJson.length > 0
               ? item.chainInfoJson
@@ -276,19 +286,53 @@ export default {
       this.$refs[formName].validate((valid, formData) => {
         if (valid) {
           console.log(formData, "提交");
+          let { telephone, campusVisible } = formData;
+          let chainId, chainCampusId;
+          chainId = chainCampusId = campusVisible.toString();
+          let chainInfoJson = this.addFormOptions[0].options.filter((el) => {
+            return campusVisible.indexOf(el.value) != -1;
+          });
+
+          this.$fetch("chaincampus_checkPhoneExist", {
+            phone: telephone,
+            id: this.addStatus ? "" : this.editId,
+          }).then((res) => {
+            this.$fetch(
+              this.addStatus ? "chaincampus_saveLeader" : "xxxxxxxxx_editJsp",
+              {
+                ...formData,
+                campusVisible: "",
+                chainId,
+                chainCampusId,
+                chainInfoJson: JSON.stringify(chainInfoJson),
+                id: this.addStatus ? "" : this.editId,
+              }
+            ).then((res) => {
+              this.$message.success("操作成功");
+              this.addVisible = false;
+              this.$refs.dataForm3.onReset();
+              this.getTableData();
+            });
+          });
         }
       });
     },
     handleEdit(data) {
       this.addStatus = false;
       this.addVisible = true;
-      this.addFormOptions.forEach((item) => {
-        item.initValue = data[item.prop];
-      });
-      setTimeout(() => {
-        this.$refs.dataForm3.addInitValue();
-      }, 0);
       this.editId = data.id;
+      // this.$fetch("xxx_goEdit", {
+      //   id: data.id,
+      // }).then(async (res) => {
+      //   let { pd } = res.data;
+      //   pd.time = [new Date(pd.startTime), new Date(pd.endTime)];
+      //   this.addFormOptions.forEach((item) => {
+      //     item.initValue = pd[item.prop];
+      //   });
+      //   setTimeout(() => {
+      //     this.$refs.dataForm3.addInitValue();
+      //   }, 0);
+      // });
     },
     handleDelete(row) {
       let info = "";

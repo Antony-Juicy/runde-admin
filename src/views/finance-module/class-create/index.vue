@@ -273,7 +273,8 @@
                 <el-row :gutter="12">
                   <el-col :span="12">
                     <el-input
-                      v-model="basicInfo.norefundFee"
+                      v-model="basicInfo.norefundFee" 
+                       @keyup.native="basicInfo.norefundFee = checkInput(basicInfo.norefundFee)"
                       :disabled="IsDisabled"
                       placeholder="请输入价格"
                       size="small"
