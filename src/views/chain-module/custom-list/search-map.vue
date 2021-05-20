@@ -40,7 +40,7 @@ export default {
             zoom: 6
           });
           this.initPoiPicker(AMapUI.PoiPicker);
-          this.initPositionPicker(AMapUI.PositionPicker);
+          // this.initPositionPicker(AMapUI.PositionPicker);
       }).catch(e => {
           console.log(e);
       })
