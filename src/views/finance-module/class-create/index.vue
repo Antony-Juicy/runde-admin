@@ -355,7 +355,7 @@
           formLabelWidth="180px"
           :multiple="true"
         >
-        <template slot="crowdNum" slot-scope="scope">
+        <template slot="crowdNum">
             <el-input  v-model="step3FormOptions['crowdNum']" placeholder="班级群人数"   @input="step3FormOptions['crowdNum'] = String(step3FormOptions['crowdNum']).replace(/[^\d]/g,'')"></el-input>
         </template>
         </RdForm>

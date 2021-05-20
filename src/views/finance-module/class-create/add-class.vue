@@ -64,6 +64,7 @@
       :pageConfig.sync="pageConfig"
       highlight-current-row
       :multiple="true"
+      :autoScroll="false"
       @pageChange="pageChange"
       @select="handleSelect"
     >

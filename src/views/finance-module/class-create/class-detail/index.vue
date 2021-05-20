@@ -748,7 +748,7 @@ export default {
       this.$fetch("courseclass_goEdit",{
           id: data.id
       }).then(res => {
-        const { className, classType, productName, subjectName,campusId ,provinceId,productId,classDetail } = res.data.pd;
+        const { className, classType, productName, subjectName,campusId ,provinceId,productId,classDetail,serviceYear,status_text } = res.data.pd;
         const { pd,courseList,provinceList  } = res.data;
          this.$refs.dataForm3.setValue({
             className,
@@ -756,7 +756,9 @@ export default {
             productName,
             subjectName,
             campusId: [campusId],
-            classDetail
+            classDetail,
+            serviceYear,
+            status:status_text
           })
           this.basicInfo.subjectName = subjectName;
           this.currentData.chargePattern_text = pd.chargePattern;

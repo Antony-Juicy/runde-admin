@@ -1,13 +1,23 @@
 <template>
-  <div class="search-map">
+  <div  style="position:relative">
+    <div class="search-map">
+    <!-- {{currentAddress}} -->
+      <!-- < -->
       <div id="outer-box">
         <div id="container" class="map" tabindex="0"></div>
         <div id="panel" class="scrollbar1">
             <div id="searchBar">
-                <input id="searchInput" placeholder="输入关键字搜索" v-model="searchText"/>
+                <input id="searchInput" placeholder="请输入关键字搜索,并选点" v-model="searchText"/>
             </div>
             <div id="searchResults"></div>
         </div>
+      </div>
+    </div>
+    
+    <div class="adress-container">
+      <i class="el-icon-place" v-show="currentAddress"></i>
+      {{currentAddress}}
+      <!-- <el-input size="small" readonly v-model="currentAddress" placeholder="详细地址(仅展示，请先搜索选点)"></el-input> -->
     </div>
   </div>
 </template>
@@ -65,7 +75,13 @@ export default {
             var source = poiResult.source,
                 poi = poiResult.item;
                  console.log(poi,'poi--')
+                 const { pname,cityname,adname,address,name,district } = poi;
                   this.map.setCenter([poi.location.lng, poi.location.lat]);
+                  if(!district){
+                    this.currentAddress = pname + cityname + adname + address + name;
+                  }
+                  
+                  console.log(this.currentAddress)
             if (source !== 'search') {
 
                 //suggest来源的，同样调用搜索
@@ -82,9 +98,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+  .adress-container {
+    position: absolute;
+    top: -50px;
+    left: 280px;
+  }
+
 #outer-box {
         width: 100%;
         height: 350px;
+        margin-top: 50px;
         // padding-right: 300px;
     }
     
@@ -95,10 +119,10 @@ export default {
     
     #panel {
         position: absolute;
-        top: 0;
+        top: -50px;
         left: 0;
         overflow-y: hidden;
-        width: 250px;
+        width: 270px;
         z-index: 2;
         min-height: 290px;
     }

@@ -94,6 +94,7 @@
         :page.sync="currentPage"
         :limit.sync="pageConfig.pageSize"
         :pager-count="pagerCount"
+        :autoScroll="autoScroll"
         @pagination="pageChange"
       />
     </template>
@@ -193,6 +194,11 @@ export default {
      pagerCount:{
       type: Number,
       default: 7
+    },
+    // 翻页是否滚动顶部
+    autoScroll: {
+      type: Boolean,
+      default: true
     }
   },
   components: {
