@@ -72,7 +72,7 @@
       </template>
     </rd-table>
     <div class="btn-wrapper" style="text-align: right; margin-top: 20px">
-      <el-button size="small" @click="distributeVisible = false"
+      <el-button size="small" @click="handleClose"
         >取消</el-button
       >
       <el-button
@@ -186,6 +186,9 @@ export default {
   //   },
   },
   methods: {
+    handleClose(){
+       this.$emit("closeTableData");
+    },
     handleSelect(rows) {
       console.log(rows, "rows---");
       this.selectTableData = rows;
