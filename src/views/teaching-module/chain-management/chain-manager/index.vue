@@ -55,53 +55,50 @@ export default {
     return {
       formOptions: [
         {
-          prop: "menuName",
+          prop: "userName",
           element: "el-input",
           placeholder: "姓名",
         },
         {
-          prop: "menuName",
+          prop: "userAccount",
           element: "el-input",
           placeholder: "账号",
         },
         {
-          prop: "menuName",
+          prop: "telephone",
           element: "el-input",
           placeholder: "联系电话",
         },
         {
-          prop: "menuName",
+          prop: "email",
           element: "el-input",
           placeholder: "邮箱",
         },
         {
-          prop: "menuName",
+          prop: "userType",
           placeholder: "用户类型",
           element: "el-select",
           options: [],
         },
         {
-          prop: "menuName",
+          prop: "status",
           placeholder: "状态",
           element: "el-select",
-          options: [],
+          options: [
+            {
+              label: "正常",
+              value: 1,
+            },
+            {
+              label: "锁定", 
+              value: 0,
+            },
+          ],
         },
       ],
       searchForm: {},
       emptyText: "暂无数据",
-      tableData: [
-        {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          phone: 1608897351706,
-          email: "10726862755@qq.com",
-          phone: "15692026183",
-          usertype: "连锁负责人",
-          chain:
-            "海南分校 - 一心堂总部（云南分校谈判） 海南分校 - 海南一心堂（海南分校谈判）",
-          status: "锁定",
-        },
-      ],
+      tableData: [],
       tableKey: [
         {
           name: "ID",
@@ -111,11 +108,11 @@ export default {
         },
         {
           name: "姓名",
-          value: "name",
+          value: "userName",
         },
         {
           name: "手机",
-          value: "phone",
+          value: "telephone",
         },
         {
           name: "邮箱",
@@ -123,11 +120,11 @@ export default {
         },
         {
           name: "用户类型",
-          value: "usertype",
+          value: "userType",
         },
         {
           name: "负责连锁",
-          value: "chain",
+          value: "userType_text",
           width: 600,
         },
         {
@@ -161,19 +158,19 @@ export default {
           initValue: [37],
         },
         {
-          prop: "name",
+          prop: "userName",
           element: "el-input",
           placeholder: "姓名",
           label: "姓名",
         },
         {
-          prop: "phone",
+          prop: "telephone",
           element: "el-input",
           placeholder: "手机号码",
           label: "手机号码",
         },
         {
-          prop: "password",
+          prop: "usedPwd",
           element: "el-input",
           placeholder: "密码",
           label: "密码",
@@ -191,12 +188,12 @@ export default {
           label: "状态",
           options: [
             {
-              label: "博士",
-              value: "0",
+              label: "正常",
+              value: 1,
             },
             {
-              label: "硕士",
-              value: 1,
+              label: "锁定",
+              value: 0,
             },
           ],
         },
@@ -213,6 +210,10 @@ export default {
   components: {
     RdForm,
   },
+  mounted() {
+    this.getformList();
+    this.getTableData();
+  },
   methods: {
     onSearch(val) {
       this.searchForm = {
@@ -221,7 +222,36 @@ export default {
       console.log(val, this.searchForm, "val---");
       this.getTableData();
     },
-    getTableData() {},
+    getformList() {
+      this.$fetch("chaincampus_goAddLeader", {}).then((res) => {
+        console.log("res----------", res, res.data);
+        //用户类型
+        this.formOptions[4].options = res.data.typeList.map((item) => ({
+          label: item.value,
+          value: item.key,
+        }));
+        //状态
+      });
+    },
+    getTableData(params = {}) {
+           this.$fetch("chaincampus_listChainLeaderJsp", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.varList.map((item) => {
+          item.createAt = this.$common
+            ._formatDates(item.createAt)
+            .split(" ")[0];
+          item.updateAt = this.$common
+            ._formatDates(item.updateAt)
+            .split(" ")[0];
+          item.status = item.status == 1 ? "正常" : "暂停";
+          return item;
+        });
+        this.pageConfig.totalCount = res.data.page.totalResult;
+      });
+    },
     pageChange(val) {
       console.log(val, "pagechange");
       this.pageConfig.currentPage = val.page;
