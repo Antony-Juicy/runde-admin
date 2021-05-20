@@ -961,8 +961,8 @@ export default {
           { required: true, message: "请选择", trigger: "change" },
         ], 
         studyPower: [{ required: true, message: "请选择", trigger: "change" }],
-        crowdType: [{ required: true, message: "请选择", trigger: "change" }],
-        crowdNum: [{ required: true, message: "请输入", trigger: "blur" }], 
+        // crowdType: [{ required: true, message: "请选择", trigger: "change" }],
+        // crowdNum: [{ required: true, message: "请输入", trigger: "blur" }], 
         campusVisible: [
           { required: true, message: "请选择", trigger: "change" },
         ],
