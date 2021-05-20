@@ -1,10 +1,24 @@
 <template>
-  <div class="search-map">
-      <p style="height: 14px;line-height: 14px;" v-show="count != 1">{{currentAddress}}</p>
-      <div class="searchBox">
-          <input type="text" id="search" placeholder="输入关键字选取地点,也可以拖拽地图进行定位" autocomplete="off">
+  <div  style="position:relative">
+    <div class="search-map">
+    <!-- {{currentAddress}} -->
+      <!-- < -->
+      <div id="outer-box">
+        <div id="container" class="map" tabindex="0"></div>
+        <div id="panel" class="scrollbar1">
+            <div id="searchBar">
+                <input id="searchInput" placeholder="请输入关键字搜索,并选点" v-model="searchText"/>
+            </div>
+            <div id="searchResults"></div>
+        </div>
       </div>
-      <div id="container" class="map" tabindex="0"></div>
+    </div>
+    
+    <div class="adress-container">
+      <i class="el-icon-place" v-show="currentAddress"></i>
+      {{currentAddress}}
+      <!-- <el-input size="small" readonly v-model="currentAddress" placeholder="详细地址(仅展示，请先搜索选点)"></el-input> -->
+    </div>
   </div>
 </template>
 
@@ -16,7 +30,7 @@ export default {
     return {
       map: null,
       currentAddress: "",
-      count: 0
+      searchText:""
     }
   },
   mounted(){
@@ -46,89 +60,115 @@ export default {
       })
      },
      initPoiPicker(PoiPicker){
-       const poiPicker = new PoiPicker({
-            map: this.map,
-            input: 'search'
-          })
-        //初始化poiPicker
-        poiPicker.on('poiPicked',  (poiResult)=> {
-            console.log(poiResult);
-            const item = poiResult.item;
-            let mapInfo = {
-                latitude: item.location.lat,
-                longitude: item.location.lng,
-                address: item.district + ' ' + item.name + ' ' + item.address
-            };
-            this.map.setCenter([item.location.lng, item.location.lat]);
-            this.map.setZoom(18);
+       let poiPicker = new PoiPicker({
+            input: 'searchInput',
+            placeSearchOptions: {
+                map: this.map,
+                pageSize: 10
+            },
+            searchResultsContainer: 'searchResults'
         });
-     },
-     initPositionPicker(PositionPicker){
-       let positionPicker = new PositionPicker({
-            mode: 'dragMap',//dragMap：拖拽地图，dragMarker：拖拽点
-            map: this.map
-        });
+        poiPicker.on('poiPicked', (poiResult) => {
+         
+            poiPicker.hideSearchResults();
 
-        positionPicker.on('success',  (positionResult) => {
-          this.count++;
-            console.log(positionResult,'positionResult--');
-           let  mapInfo = {
-                latitude: positionResult.position.lat,
-                longitude: positionResult.position.lng,
-                address: positionResult.regeocode.formattedAddress
-            };
-            this.currentAddress = positionResult.address;
-            document.querySelector("#search").value = "";
-            // document.getElementById('address').innerHTML = positionResult.address;
+            var source = poiResult.source,
+                poi = poiResult.item;
+                 console.log(poi,'poi--')
+                 const { pname,cityname,adname,address,name,district } = poi;
+                  this.map.setCenter([poi.location.lng, poi.location.lat]);
+                  if(!district){
+                    this.currentAddress = pname + cityname + adname + address + name;
+                  }
+                  
+                  console.log(this.currentAddress)
+            if (source !== 'search') {
+
+                //suggest来源的，同样调用搜索
+                poiPicker.searchByKeyword(poi.name);
+               
+            } else {
+
+                //console.log(poi);
+            }
         });
-        positionPicker.on('fail', function (positionResult) {
-            // document.getElementById('address').innerHTML = ' ';
-        });
-        positionPicker.start();
      }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.search-map {
-  position: relative;
-  .searchBox {
-    // position: absolute;
-    // z-index: 99;
-    // top: 0;
-    // left: 10px;
-    // width: 100% ;
-    #search {
-      margin-bottom: 15px;
-      width: 100%;
-      height: 32px;
-      background-color: #FFF;
-      -webkit-appearance: none;
-      background-color: #FFF;
-      background-image: none;
-      border-radius: 4px;
-      border: 1px solid #DCDFE6;
-      -webkit-box-sizing: border-box;
-      box-sizing: border-box;
-      color: #606266;
-      display: inline-block;
-      font-size: inherit;
-      padding-left: 16px;
-      &:focus {
-        border-color: #409EFF;
-        outline: 0;
-      }
-      &::-webkit-input-placeholder { 
-      /* WebKit browsers */ 
-        color: #ccc; 
-      } 
-    }
-  }
-  .map {
-            height: 300px;
-            width: 100%;
-        }
-}
 
+  .adress-container {
+    position: absolute;
+    top: -50px;
+    left: 280px;
+  }
+
+#outer-box {
+        width: 100%;
+        height: 350px;
+        margin-top: 50px;
+        // padding-right: 300px;
+    }
+    
+    #container {
+        height: 100%;
+        width: 100%;
+    }
+    
+    #panel {
+        position: absolute;
+        top: -50px;
+        left: 0;
+        overflow-y: hidden;
+        width: 270px;
+        z-index: 2;
+        min-height: 290px;
+    }
+    
+    #searchBar {
+        // height: 30px;
+        // background: #ccc;
+    }
+    
+    #searchInput {
+        width: 100%;
+        height: 30px;
+        line-height: 30%;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        // border: none;
+        // border-bottom: 1px solid #ccc;
+        padding: 0 5px;
+        border: 1px solid #DCDFE6;
+            border-radius: 4px;
+         &:focus {
+            border-color: #409EFF;
+            outline: 0;
+          }
+          &::-webkit-input-placeholder { 
+          /* WebKit browsers */ 
+            color: #ccc; 
+          } 
+    }
+    
+    #searchResults {
+        overflow: auto;
+        // height: calc(100% - 40px);
+        height: 292px;
+    }
+    
+    .amap_lib_placeSearch,
+    .amap-ui-poi-picker-sugg-container {
+        border: none!important;
+    }
+    
+    .amap_lib_placeSearch .poibox.highlight {
+        background-color: #CAE1FF;
+    }
+    
+    .poi-more {
+        display: none!important;
+    }
 </style>

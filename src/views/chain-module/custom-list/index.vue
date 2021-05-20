@@ -13,7 +13,7 @@
         <el-button type="warning" size="small" @click="handleAdd"
           >导入</el-button
         >
-        <el-button type="success" size="small" @click="handleAdd"
+        <el-button type="success" size="small" @click="handleDistribute"
           >批量分配</el-button
         >
       </div>
@@ -43,14 +43,14 @@
       </rd-table>
     </div>
     
-    <!-- 添加 -->
+    <!-- 分配 -->
     <rd-dialog
-        :title="addStatus?'添加':'编辑'"
-        :dialogVisible="addVisible"
-        @handleClose="addVisible = false"
+        :title="'分配'"
+        :dialogVisible="distributeStatus"
+        @handleClose="distributeStatus = false"
         @submitForm="submitAddForm('dataForm3')"
       >
-        <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
+        <RdForm :formOptions="distributeFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
           <template slot="post">
             <el-button size="small" type="primary">上传</el-button>
           </template>
@@ -195,6 +195,42 @@ export default {
         pageSize: 10,
       },
       addVisible: false,
+      distributeStatus:false,
+      distributeFormOptions:[
+        {
+          prop: "roleName",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "所属组织",
+          options: [
+          ],
+        },
+        {
+          prop: "roleName",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "所属校区",
+          options: [
+          ],
+        },
+        {
+          prop: "roleName",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "所属分校",
+          options: [
+          ],
+        },
+        {
+          prop: "roleName",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "跟进老师",
+          options: [
+          ],
+        },
+
+      ],
       addFormOptions: [
         {
           prop: "roleName",
@@ -341,6 +377,9 @@ export default {
     handelSelect(val) {
       console.log(val, "valll");
       this.selectedData = val;
+    },
+    handleDistribute(){
+      this.distributeStatus = true;
     }
   }
 }

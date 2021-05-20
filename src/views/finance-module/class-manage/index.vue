@@ -391,7 +391,7 @@ export default {
         },
       ],
       addRules: {
-        contentYear: [{ required: true, message: "请输入", trigger: "blur" }],
+        contentYear: [{ required: true, message: "请选择", trigger: "change" }],
         productId: [{ required: true, message: "请选择", trigger: "change" }],
         contentName: [{ required: true, message: "请输入", trigger: "blur" }],
         contentType: [{ required: true, message: "请选择", trigger: "change" }],
@@ -399,7 +399,7 @@ export default {
         accountingRules: [{ required: true, message: "请选择", trigger: "change" }],
         time: [{ required: true, message: "请选择", trigger: "change" }],
         playback: [{ required: true, message: "请选择", trigger: "change" }],
-        stageGroupId: [{ required: true, message: "请选择", trigger: "blur" }],  
+        stageGroupId: [{ required: true, message: "请选择", trigger: "change" }],  
         status: [{ required: true, message: "请选择", trigger: "change" }],
       },
       btnLoading: false,
