@@ -354,6 +354,9 @@
           formLabelWidth="180px"
           :multiple="true"
         >
+        <template slot="crowdNum" slot-scope="scope">
+            <el-input  v-model="step3FormOptions['crowdNum']" placeholder="班级群人数"   @input="step3FormOptions['crowdNum'] = String(step3FormOptions['crowdNum']).replace(/[^\d]/g,'')"></el-input>
+        </template>
         </RdForm>
       </div>
 
@@ -391,7 +394,7 @@
         :opportunityIds="opportunityIds"
         @refresh="getTableData"
         @addTableData="addTableDataFn"
-        @close="distributeVisible = false"
+        @closeTableData='distributeVisible = false' 
         v-if="distributeVisible"
         :currentProductId="currentProductId"
       />
@@ -875,9 +878,10 @@ export default {
         },
         {
           prop: "crowdNum",
-          element: "el-input-number",
+          element: "el-input",
           placeholder: "班级群人数",
           label: "班级群人数：",
+          operate: true,
         },
         {
           prop: "campusVisible",
@@ -1082,7 +1086,7 @@ export default {
       if (val && val.length > 0) {
         newArr = this.reduceDimension(val);
       }
-      this.campusIds = this.campusArr.filter((el) => {
+      this.campusIds = this.campusArr.filter((el) => { 
         return newArr.indexOf(el.val) != -1;
       });
     },

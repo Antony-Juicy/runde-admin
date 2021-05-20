@@ -18,6 +18,11 @@
         @pageChange="pageChange"
         :emptyText="emptyText"
       >
+        <template slot="chainInfoJson" slot-scope="scope">
+          <span v-for="item in scope.row.chainInfoJson" :key="item.val">
+            {{ item.name }}
+          </span>
+        </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
             >编辑</el-button
@@ -90,7 +95,7 @@ export default {
               value: 1,
             },
             {
-              label: "锁定", 
+              label: "锁定",
               value: 0,
             },
           ],
@@ -124,8 +129,9 @@ export default {
         },
         {
           name: "负责连锁",
-          value: "userType_text",
+          value: "chainInfoJson",
           width: 600,
+          operate: true,
         },
         {
           name: "状态",
@@ -234,7 +240,7 @@ export default {
       });
     },
     getTableData(params = {}) {
-           this.$fetch("chaincampus_listChainLeaderJsp", {
+      this.$fetch("chaincampus_listChainLeaderJsp", {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
@@ -247,6 +253,10 @@ export default {
             ._formatDates(item.updateAt)
             .split(" ")[0];
           item.status = item.status == 1 ? "正常" : "暂停";
+          item.chainInfoJson =
+            item.chainInfoJson && item.chainInfoJson.length > 0
+              ? item.chainInfoJson
+              : [];
           return item;
         });
         this.pageConfig.totalCount = res.data.page.totalResult;
