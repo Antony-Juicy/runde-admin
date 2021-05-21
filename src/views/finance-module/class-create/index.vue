@@ -919,7 +919,7 @@ export default {
           label: "校区可见：",
           options: [],
           events: {},
-          initValue: [37],
+          // initValue: [37],
         },
         {
           prop: "financeCodeName1",
