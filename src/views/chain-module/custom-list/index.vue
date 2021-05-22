@@ -10,7 +10,7 @@
         <el-button type="primary" size="small" @click="handleAdd"
           >添加</el-button
         >
-        <el-button type="warning" size="small" @click="handleAdd"
+        <el-button type="warning" size="small" @click="importVisible = true"
           >导入</el-button
         >
         <el-button type="success" size="small" @click="handleDistribute"
@@ -50,33 +50,50 @@
         @handleClose="distributeStatus = false"
         @submitForm="submitAddForm('dataForm3')"
       >
-        <RdForm :formOptions="distributeFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
+        <RdForm :formOptions="distributeFormOptions" formLabelWidth="150px" :rules="addRules" ref="dataForm3">
           <template slot="post">
             <el-button size="small" type="primary">上传</el-button>
           </template>
         </RdForm>
       </rd-dialog>
 
+      <!-- 添加、编辑 -->
       <full-dialog
         v-model="addVisible"
         :title="addStatus?'添加':'编辑'"
         @change="addVisible = false"
       >
-        <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
-          <template slot="post">
-            <el-button size="small" type="primary">上传</el-button>
-          </template>
-        </RdForm>
+        <CreatChain v-if="addVisible" :chainId="editId" :addStatus="addStatus"/>
       </full-dialog>
+
+      <!-- 导入 -->
+      <rd-dialog
+        :title="'导入'"
+        :dialogVisible="importVisible"
+        @handleClose="importVisible = false"
+        @submitForm="submitImportForm('dataForm4')"
+      >
+        <el-form ref="dataForm4" :model="importForm" label-width="80px">
+          <el-form-item label="文件" prop="excel">
+            <uploadFile :file.sync="importForm.excel"/>
+          </el-form-item>
+        </el-form>
+    </rd-dialog>
   </div>
 </template>
 
 <script>
 import RdForm from "@/components/RdForm";
+import CreatChain from "./creat-chain";
+import uploadFile from "@/components/Activity/uploadFile";
 export default {
   name:"view-detail",
   data(){
     return {
+      importForm:{
+        excel:""
+      },
+      importVisible: false,
       formOptions: [
         {
           prop: "menuName",
@@ -135,51 +152,51 @@ export default {
       tableKey: [
         {
           name: "连锁名称",
-          value: "staffName",
+          value: "chainName",
         },
         {
           name: "所属集团",
-          value: "goodsName",
+          value: "group",
         },
         {
           name: "规模排名",
-          value: "activityName",
+          value: "scaleRanking",
         },
         {
           name: "门店数量",
-          value: "posterName",
+          value: "storeCount",
         },
         {
           name: "员工数量",
-          value: "posterPic",
+          value: "employeeCount",
         },
         {
           name: "是否签订协议",
-          value: "posterCopyFirst",
+          value: "signAgreement",
         },
         {
           name: "合作等级",
-          value: "posterCopySecond",
+          value: "cooperationLevel",
         },
         {
           name: "学员数量",
-          value: "posterCopyThird",
+          value: "studentCount",
         },
         {
           name: "跟进情况",
-          value: "posterCopyFourth",
+          value: "followUpSituation",
         },
         {
           name: "省校",
-          value: "posterCopyFifth",
+          value: "provincialSchool",
         },
         {
           name: "分校",
-          value: "createAt",
+          value: "branchSchool",
         },
         {
           name: "跟进人",
-          value: "updateAt",
+          value: "followUpUser",
         },
         {
           name: "操作",
@@ -191,7 +208,7 @@ export default {
       ],
        pageConfig: {
         totalCount: 0,
-        currentPage: 1,
+        pageNum: 1,
         pageSize: 10,
       },
       addVisible: false,
@@ -229,7 +246,13 @@ export default {
           options: [
           ],
         },
-
+        {
+          prop: "roleName2",
+          element: "el-date-picker",
+          placeholder: "请选择",
+          label: "首次跟进截止时间",
+          type: "datetime"
+        },
       ],
       addFormOptions: [
         {
@@ -308,7 +331,12 @@ export default {
     }
   },
   components:{
-    RdForm
+    RdForm,
+    CreatChain,
+    uploadFile
+  },
+  mounted(){
+    this.getTableData();
   },
    methods: {
      onSearch(val){
@@ -318,12 +346,24 @@ export default {
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
      },
-     getTableData(){
-
-     },
+     getTableData(params = {}) {
+      this.$fetch("chain_pageList", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+        chainType:"CHAIN_CUSTOMER"
+      }).then((res) => {
+        this.tableData = res.data.records.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.updateAt = this.$common._formatDates(item.updateAt);
+          return item;
+        });
+        this.pageConfig.totalCount = res.data.totalCount;
+      })
+    },
      pageChange(val) {
       console.log(val,'pagechange')
-      this.pageConfig.currentPage = val.page;
+      this.pageConfig.pageNum = val.page;
       this.pageConfig.showCount = val.limit;
       this.getTableData();
     },
@@ -341,14 +381,8 @@ export default {
     },
     handleEdit(data){
       this.addStatus = false;
-      this.addVisible = true;
-      this.addFormOptions.forEach(item => {
-           item.initValue = data[item.prop];
-      })
-      setTimeout(() => {
-        this.$refs.dataForm3.addInitValue();
-      }, 0);
-      this.editId = data.id;
+      this.addVisible = true; 
+      this.editId = data.chainId;
     },
     handleDelete(row) {
       let info = '';
@@ -359,7 +393,7 @@ export default {
       })
         .then(() => {
           this.$fetch("projectType_delete", {
-            id: row.id
+            id: row.chainId
           }).then((res) => {
             if (res) {
               this.$message({
@@ -380,6 +414,19 @@ export default {
     },
     handleDistribute(){
       this.distributeStatus = true;
+    },
+    submitImportForm(){
+      if(!this.importForm.excel){
+        this.$message.warning("请上传文件")
+        return
+      }
+      let obj = new FormData();
+      obj.append("file",this.importForm.excel)
+      this.$fetch("chain_importChainByExcel",obj).then(res => {
+        this.$message.success("操作成功")
+        this.getTableData()
+        this.importVisible = false
+      })
     }
   }
 }
