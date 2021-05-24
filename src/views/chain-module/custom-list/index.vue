@@ -4,6 +4,7 @@
       :formOptions="formOptions"
       :showNum="7"
       @onSearch="onSearch"
+      ref="dataForm2"
     ></search-form>
     <div class="w-container">
       <div class="btn-wrapper">
@@ -33,7 +34,7 @@
           >
           <el-divider direction="vertical"></el-divider>
           <el-button
-            @click="handleDelete(scope.row)"
+            @click="handleDistributeSigle(scope.row)"
             type="text"
             size="small"
             style="color: #67c23a"
@@ -46,14 +47,11 @@
     <!-- 分配 -->
     <rd-dialog
         :title="'分配'"
-        :dialogVisible="distributeStatus"
-        @handleClose="distributeStatus = false"
-        @submitForm="submitAddForm('dataForm3')"
+        :dialogVisible="distributeVisible"
+        @handleClose="distributeVisible = false;"
+        @submitForm="submitDistributeForm('dataForm3')"
       >
-        <RdForm :formOptions="distributeFormOptions" formLabelWidth="150px" :rules="addRules" ref="dataForm3">
-          <template slot="post">
-            <el-button size="small" type="primary">上传</el-button>
-          </template>
+        <RdForm :formOptions="distributeFormOptions" formLabelWidth="150px" :rules="distributeRules" ref="dataForm3">
         </RdForm>
       </rd-dialog>
 
@@ -63,7 +61,7 @@
         :title="addStatus?'添加':'编辑'"
         @change="addVisible = false"
       >
-        <CreatChain v-if="addVisible" :chainId="editId" :editData="editData" :addStatus="addStatus" @close="handleAddClose"/>
+        <CreatChain v-if="addVisible" :chainId="editId" :addStatus="addStatus" @close="handleAddClose"/>
       </full-dialog>
 
       <!-- 导入 -->
@@ -90,49 +88,78 @@ export default {
   name:"view-detail",
   data(){
     return {
+      loading: false,
+      followValue:"",
+      followOptions:[],
       importForm:{
         excel:""
       },
       importVisible: false,
       formOptions: [
         {
-          prop: "menuName",
-          element: "el-select",
-          placeholder: "客户名称",
-          options: []
+          prop: "chainName",
+          element: "el-input",
+          placeholder: "客户名称"
         },
         {
-          prop: "menuName",
+          prop: "distribution",
           element: "el-select",
           placeholder: "是否分配",
-          options: []
+          options: [
+            {
+              label: "是",
+              value: true
+            },
+            {
+              label: "否",
+              value: false
+            }
+          ]
         },
         {
-          prop: "menuName",
+          prop: "cooperationLevel",
           element: "el-select",
           placeholder: "合作等级",
-          options: []
+          options: [{
+              label:"S级",
+              value:"S"
+            },
+            {
+              label:"A级",
+              value:"A"
+            },
+            {
+              label:"B级",
+              value:"B"
+            },
+            {
+              label:"C级",
+              value:"C"
+            },]
         },
         {
-          prop: "menuName",
+          prop: "organizationId",
           element: "el-select",
-          placeholder: "状态",
-          options: []
+          placeholder: "所属组织",
+          options: [],
+          events: {}
         },
         {
-          prop: "menuName",
+          prop: "provincialSchoolId",
           element: "el-select",
           placeholder: "所属校区",
-          options: []
+          options: [],
+          events: {}
         },
         {
-          prop: "menuName",
+          prop: "branchSchoolId",
           element: "el-select",
           placeholder: "所属分校",
-          options: []
+          options: [],
+          events: {}
         },
         {
-          prop: "menuName",
+          prop: "followUpUserId",
           element: "el-select",
           placeholder: "跟进老师",
           options: []
@@ -212,123 +239,66 @@ export default {
         pageSize: 10,
       },
       addVisible: false,
-      distributeStatus:false,
+      distributeVisible:false,
       distributeFormOptions:[
         {
-          prop: "roleName",
+          prop: "organizationId",
           element: "el-select",
           placeholder: "请选择",
           label: "所属组织",
           options: [
           ],
+          events:{}
         },
         {
-          prop: "roleName",
+          prop: "provincialSchoolId",
           element: "el-select",
           placeholder: "请选择",
           label: "所属校区",
           options: [
           ],
+          events:{}
         },
         {
-          prop: "roleName",
+          prop: "branchSchoolId",
           element: "el-select",
           placeholder: "请选择",
           label: "所属分校",
           options: [
           ],
+          events:{}
         },
         {
-          prop: "roleName",
+          prop: "followUpUserId",
           element: "el-select",
           placeholder: "请选择",
           label: "跟进老师",
           options: [
           ],
+
         },
         {
-          prop: "roleName2",
+          prop: "nextVisitDate",
           element: "el-date-picker",
           placeholder: "请选择",
           label: "首次跟进截止时间",
           type: "datetime"
         },
       ],
-      addFormOptions: [
-        {
-          prop: "roleName",
-          element: "el-select",
-          placeholder: "请选择",
-          label: "所属九块九包邮",
-          options: [
-          ],
-        },
-        {
-          prop: "roleName",
-          element: "el-select",
-          placeholder: "请选择",
-          label: "所属活动",
-          options: [
-            {
-              label: "博士",
-              value: "0",
-            },
-            {
-              label: "硕士",
-              value: 1,
-            },
-          ],
-        },
-        {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案一",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案二",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案三",
-          type:"textarea",
-          rows: 2
-        },
-         {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案四",
-          type:"textarea",
-          rows: 2
-        },
-           {
-          prop: "menuName3",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "分享分案五",
-          type:"textarea",
-          rows: 2
-        }
-      ],
-      addRules:{
-        updateReason: [
-          { required: true, message: "请输入修改事由", trigger: "blur" },
+      distributeRules:{
+        organizationId: [
+          { required: true, message: "请选择", trigger: "change" },
         ]
       },
+      distributeId:"",
       addStatus: true,
       editId:"",
       selectedData:"",
-      editData:{}
+      organizationArr: [],
+      provincialSchoolArr: [],
+      branchSchoolArr: [],
+      followUpUserArr: [],
+      distributeStatus: 1, //1单选 2多选
     }
   },
   components:{
@@ -338,8 +308,162 @@ export default {
   },
   mounted(){
     this.getTableData();
+    this.getSelectList();
   },
    methods: {
+     followSelect(query){
+       if (query !== '') {
+         this.loading = true;
+         this.$fetch("chain_getUserListByStaffName",{
+           staffName: query
+         }).then(res => {
+           this.followUpUserArr = res.data.map(item => ({
+             label: item.name,
+             value: item.userId
+           }));
+           this.followOptions = this.followUpUserArr;
+           this.loading = false;
+         })
+       }else {
+         this.options = [];
+       }
+     },
+     getSelectList(){
+       this.$fetch("chain_getCampusList",{
+         parentId: 0
+       }).then(res => {
+         this.organizationArr = res.data.map(item => ({
+           label: item.campusName,
+           value: item.campusId
+         }));
+         this.distributeFormOptions[0].options = this.organizationArr;
+         this.distributeFormOptions[0].events = {
+           change: this.organizationChange
+         }
+         this.formOptions[3].options = this.organizationArr;
+         this.formOptions[3].events = {
+           change: this.organizationChange2
+         }
+       })
+     },
+    setFormValue(prop,val){
+       let obj = {};
+       obj[prop] = val;
+       this.$refs.dataForm3.setValue(obj);
+          setTimeout(() => {
+            this.$refs['dataForm3'].validateField(prop);
+          }, 0);
+     },
+     organizationChange(val){
+       this.$fetch("chain_getCampusList",{
+         parentId: val
+       }).then(res => {
+         this.provincialSchoolArr = res.data.map(item => ({
+           label: item.campusName,
+           value: item.campusId
+         }));
+         this.distributeFormOptions[1].options = this.provincialSchoolArr;
+         this.distributeFormOptions[1].events = {
+           change: this.provincialSchoolChange
+         }
+        //  清除下级的数据和值
+          this.$refs.dataForm3.setValue({
+              provincialSchoolId:'',
+              branchSchoolId:'',
+              followUpUserId:'',
+          })
+        //  赋值必传值，进行校验
+          this.setFormValue("organizationId",val);
+       })
+     },
+      organizationChange2(val){
+       this.$fetch("chain_getCampusList",{
+         parentId: val
+       }).then(res => {
+         let provincialSchoolArr = res.data.map(item => ({
+           label: item.campusName,
+           value: item.campusId
+         }));
+         this.formOptions[4].options = provincialSchoolArr;
+         this.formOptions[4].events = {
+           change: this.provincialSchoolChange2
+         }
+        //  清除下级的数据和值
+          this.$refs.dataForm2.setValue({
+              provincialSchoolId:'',
+              branchSchoolId:'',
+              followUpUserId:'',
+          })
+       })
+     },
+     provincialSchoolChange(val){
+      this.$fetch("chain_getCampusList",{
+         parentId: val
+       }).then(res => {
+         this.branchSchoolArr = res.data.map(item => ({
+           label: item.campusName,
+           value: item.campusId
+         }));
+         this.distributeFormOptions[2].options = this.branchSchoolArr;
+         this.distributeFormOptions[2].events = {
+           change: this.branchSchoolChange
+         }
+         //  清除下级的数据和值
+          this.$refs.dataForm3.setValue({
+              branchSchoolId:'',
+              followUpUserId:'',
+          })
+       })
+     },
+      provincialSchoolChange2(val){
+      this.$fetch("chain_getCampusList",{
+         parentId: val
+       }).then(res => {
+         this.branchSchoolArr = res.data.map(item => ({
+           label: item.campusName,
+           value: item.campusId
+         }));
+         this.formOptions[5].options = this.branchSchoolArr;
+         this.formOptions[5].events = {
+           change: this.branchSchoolChange2
+         }
+         //  清除下级的数据和值
+          this.$refs.dataForm2.setValue({
+              branchSchoolId:'',
+              followUpUserId:'',
+          })
+       })
+     },
+     branchSchoolChange(val){
+        this.$fetch("chain_getUserListByCampusId",{
+         campusId: val
+       }).then(res => {
+         this.followUpUserArr = res.data.map(item => ({
+           label: item.name,
+           value: item.userId
+         }));
+         this.distributeFormOptions[3].options = this.followUpUserArr;
+         //  清除下级的数据和值
+          this.$refs.dataForm3.setValue({
+              followUpUserId:'',
+          })
+       })
+     },
+     branchSchoolChange2(val){
+        this.$fetch("chain_getUserListByCampusId",{
+         campusId: val
+       }).then(res => {
+         this.followUpUserArr = res.data.map(item => ({
+           label: item.name,
+           value: item.userId
+         }));
+         this.formOptions[6].options = this.followUpUserArr;
+         //  清除下级的数据和值
+          this.$refs.dataForm2.setValue({
+              followUpUserId:'',
+          })
+       })
+     },
      handleAddClose(){
        this.addVisible = false;
        this.getTableData();
@@ -376,19 +500,51 @@ export default {
       this.addStatus = true;
       this.addVisible = true;
     },
-    submitAddForm(formName){
+    submitDistributeForm(formName){
       this.$refs[formName].validate((valid, formData) => {
         if(valid){
           console.log(formData, "提交");
+          if(formData.followUpUserId && !formData.nextVisitDate){
+            this.$message.warning("请选择首次跟进截止时间")
+            return;
+          }else if(!formData.followUpUserId && formData.nextVisitDate){
+            this.$message.warning("请输入跟进老师")
+            return;
+          }
+          let organization = this.getSelValue(this.organizationArr,formData.organizationId);
+          let provincialSchool = this.getSelValue(this.provincialSchoolArr,formData.provincialSchoolId);
+          let branchSchool = this.getSelValue(this.branchSchoolArr,formData.branchSchoolId);
+          let followUpUser = this.getSelValue(this.followUpUserArr,formData.followUpUserId);
+          let chainIds = this.distributeStatus == 1? this.distributeId : this.selectedData.map(item => (item.chainId)).join(",");
+          this.$fetch("chain_chainAllocating",{
+            ...formData,
+            nextVisitDate: this.$common._formatDates2(formData.nextVisitDate),
+            chainIds,
+            organization,
+            provincialSchool,
+            branchSchool,
+            followUpUser
+          }).then(res => {
+            this.$message.success('操作成功')
+            this.distributeVisible = false;
+            this.getTableData()
+          })
         }
           
       });
+    },
+    getSelValue(arr,value){
+      let obj = arr.find(item => (item.value == value));
+      if(obj){
+        return obj.label;
+      }else {
+        return '';
+      }
     },
     handleEdit(data){
       this.addStatus = false;
       this.addVisible = true; 
       this.editId = data.chainId;
-      this.editData = data;
     },
     handleDelete(row) {
       let info = '';
@@ -419,7 +575,12 @@ export default {
       this.selectedData = val;
     },
     handleDistribute(){
-      this.distributeStatus = true;
+      if(!this.selectedData.length){
+        this.$message.warning("请选择数据")
+        return;
+      }
+      this.distributeVisible = true;
+      this.distributeStatus = 2;
     },
     submitImportForm(){
       if(!this.importForm.excel){
@@ -433,6 +594,11 @@ export default {
         this.getTableData()
         this.importVisible = false
       })
+    },
+    handleDistributeSigle(data){
+      this.distributeId = data.chainId;
+      this.distributeVisible = true;
+      this.distributeStatus = 1;
     }
   }
 }

@@ -365,28 +365,12 @@ export default {
     },
     addStatus: {
       type: Boolean
-    },
-    editData:{
-      type: Object
     }
   },
   watch: {
     chainId(newVal){
       console.log(newVal,'newval')
       this.getInfo(newVal);
-    },
-    editData(newVal){
-      console.log(newVal,'newVal--')
-      const { addressCoordinates,address,detailAddress,pname, cityname,adname} = newVal;
-      this.currentAddressData = {
-        lat : addressCoordinates.split(",")[0],
-        lng : addressCoordinates.split(",")[1],
-        address,
-        detailAddress,
-        pname,
-        cityname,
-        adname
-      }
     }
   },
   components: {
@@ -396,7 +380,6 @@ export default {
     console.log(this.chainId,'chainid')
     this.getSelectList();
     this.getInfo(this.chainId);
-    
   },
    methods: {
      followSelect(query){
@@ -438,7 +421,7 @@ export default {
        this.$fetch("chain_getUpdateInfo",{
         chainInfoId: id
       }).then(res => {
-        this.currentData = res.data;
+          this.currentData = res.data;
           this.addFormOptions.forEach(item => {
            item.initValue = res.data[item.prop];
           })
@@ -449,7 +432,21 @@ export default {
           // 地址定位
           this.addressCoordinates = this.currentData.addressCoordinates;
           this.detailAddress = this.currentData.detailAddress;
+          this.setPoinit(res.data);
       })
+     },
+     setPoinit(val){
+       console.log(val,'valll---')
+       const { addressCoordinates,address,detailAddress,province, city,county} = val;
+        this.currentAddressData = {
+          lat : addressCoordinates.split(",")[0],
+          lng : addressCoordinates.split(",")[1],
+          address,
+          detailAddress,
+          pname:province,
+          cityname:city,
+          adname:county
+        }
      },
      getSelectList(){
        this.$fetch("chain_getChainTypeList").then(res => {
@@ -483,7 +480,7 @@ export default {
             return;
           }
           const { lat,lng,address,name,pname,cityname,adname } = this.currentAddressData;
-          this.$fetch("chain_add",{
+          this.$fetch(this.addStatus?"chain_add":"chain_update",{
             ...formData,
             address,
             addressCoordinates: [lng,lat].join(","),
@@ -493,7 +490,8 @@ export default {
             county:adname,
             chainType: this.form.chainType,
             nextVisitDate: this.$common._formatDates2(formData.nextVisitDate),
-            followUpUserId: this.followValue
+            followUpUserId: this.followValue,
+            chainId: this.addStatus?"":this.chainId
           }).then(res => {
             this.$message.success("操作成功");
             this.$emit("close");

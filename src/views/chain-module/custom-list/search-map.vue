@@ -49,9 +49,10 @@ export default {
       this.currentAddress = val;
     },
     addressCoordinates(val){
-      setTimeout(() => {
+      if(this.map){
         this.regeoCode(val.split(","));
-      }, 50);
+      }
+        
     },
   },
   mounted(){
