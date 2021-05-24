@@ -141,6 +141,7 @@
             <el-col :span="8">
               <el-form-item label="学员类型">
                 <el-select
+                  @change="changeSelect"
                   v-model="stuForm.studentType"
                   style="width: 200px"
                   placeholder="请选择学员类型"
@@ -392,18 +393,18 @@
           </el-row>
           <el-row>
             <el-col :span="8">
+              <!-- yy: {{ couponList }} -->
               <el-form-item label="优惠券">
                 <el-select
                   v-model="stuForm.couponId"
                   style="width: 200px"
                   placeholder="请选择优惠券"
-                  @focus="handleFocus"
                 >
                   <el-option
-                    :label="item.label"
-                    :value="item.value"
-                    v-for="(item, index) in showInfoArr"
-                    :key="index"
+                    :label="item.couponName"
+                    :value="item.id"
+                    v-for="item in couponList"
+                    :key="item.id"
                   ></el-option>
                 </el-select>
               </el-form-item>
@@ -622,6 +623,7 @@ export default {
           options: [],
         },
       ],
+      couponList: [], //优惠券
       studentTypeList: [], //学员类型
       recentlyYearList: [], //学年
       saleSourceList: [], //来源类型
@@ -710,18 +712,48 @@ export default {
     this.getTableData();
     this.getSelectList();
   },
+  watch: {
+    "stuForm.studentType": {
+      handler(newName, oldName) {
+        console.log("obj.a changed", newName, oldName);
+        if (oldName != undefined) {
+          this.getCounpList();
+        }
+      },
+      immediate: true,
+      // deep: true
+    },
+    "stuForm.courseNum": {
+      handler(newName, oldName) {
+        console.log("obj.a changed courseNum", newName, oldName);
+        if (oldName != undefined) {
+          if (!this.stuForm.studentType) {
+            this.$message.warning("请先选择课程");
+            return;
+          }
+          this.getCounpList();
+        }
+      },
+      immediate: true,
+      // deep: true
+    },
+  },
   methods: {
-    handleFocus() {
+    changeSelect() {
+      this.stuForm.couponId = ""; //置空优惠券
+    },
+    getCounpList() {
       //优惠券
       let { campusId, classTypeId, productId, subjectId } = this.itemData;
-      if (!this.stuForm.studentType) {
-        this.$message.warning("请先选择学员类型");
-        return;
-      }
-      if (this.stuForm.courseNum == 0) {
-        this.$message.warning("请先选择课程");
-        return;
-      }
+      // if (!this.stuForm.studentType) {
+      //   this.$message.warning("请先选择学员类型");
+      //   return;
+      // }
+      // if (this.stuForm.courseNum == 0) {
+      //   this.$message.warning("请先选择课程");
+      //   return;
+      // }
+      this.couponList = [];
       this.$fetch("coupontemplateversiontwo_availableCoupon", {
         campusId,
         classTypeId,
@@ -731,8 +763,9 @@ export default {
         courseNum: this.stuForm.courseNum,
         classId: this.stuForm.classId,
         studentType: this.stuForm.studentType,
+        totalPrice: this.stuForm.realPrice ? this.stuForm.realPrice : 0,
       }).then((res) => {
-        console.log("res--------------->", res, res.data);
+        this.couponList = res.data.dataJson.list;
       });
     },
     choseProvince(e) {
@@ -756,7 +789,6 @@ export default {
           }
         }
       }
-      console.log("this.cityList----------", this.cityList);
     },
     choseCity(e) {
       //选市
@@ -804,6 +836,7 @@ export default {
       this.$fetch("studentcampus_basisIdCardAndPhoneGetInfo", {
         idCardAndPhone: this.stuForm.cardId,
       }).then((res) => {
+        //TODO 校验
         console.log(
           "res--------------->coupontemplateversiontwo_availableCoupon",
           res,
@@ -815,6 +848,7 @@ export default {
       return eval(arr.join("+"));
     },
     changeCheckbox(index, item) {
+      this.stuForm.couponId = ""; //置空优惠券
       item.checked == 0
         ? (this.courseInfoList[index].checked = 1)
         : (this.courseInfoList[index].checked = 0);
@@ -833,7 +867,6 @@ export default {
       this.stuForm.realPrice =
         priceArr && priceArr.length > 0 ? this.sum(priceArr) : 0;
       console.log("this.sum(priceArr)", this.stuForm.realPrice);
-      console.log("this.stuForm.courses-------------111", this.stuForm.courses); 
       // let { campusId, classTypeId, productId, subjectId } = this.itemData;
       // this.$fetch("coupontemplateversiontwo_availableCoupon", {
       //   campusId,
@@ -972,25 +1005,10 @@ export default {
       this.addVisible = true;
       this.itemData = data;
       console.log("data--2223", data);
-      //校区
-      // this.campusList = [
-      //   {
-      //     label: data.campusName,
-      //     value: data.campusId,
-      //   },
-      // ];
-
       this.stuForm.campusName = data.campusName;
       this.stuForm.classType = data.className;
       this.stuForm.campusId = data.campusId;
       this.stuForm.classId = data.id;
-      //班次
-      // this.classTypeList = [
-      //   {
-      //     label: data.className,
-      //     value: data.id,
-      //   },
-      // ];
       this.$fetch("orderinfo_goProductAdd", {
         classId: data.id,
       }).then((res) => {
@@ -1048,14 +1066,6 @@ export default {
           courseId: item.courseId,
         }));
       });
-
-      // this.$fetch("orderinfo_getAddressAreaList", {}).then((res) => {
-      //   console.log("res-------------122", res, res.data);
-      //   this.provinceList = res.data.map((item) => ({
-      //     label: item.addressAreaName,
-      //     value: item.addressAreaId,
-      //   }));
-      // });
     },
   },
 };
