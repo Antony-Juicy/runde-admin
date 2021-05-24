@@ -9,5 +9,7 @@ export default {
     chain_getUserListByCampusId: {url: '/app/chain/console/user/getUserListByCampusId', method: 'post'},//连锁分配根据分校id获取用户列表
     chain_getCampusList: {url: '/app/chain/console/campus/getCampusList', method: 'post'},//级联获取组织架构列表
     chain_chainAllocating: {url: '/app/chain/console/chainInfo/chainAllocating', method: 'post'},//连锁分配
+    chain_chainVisitRecord: {url: '/app/chain/console/chainVisitRecord/pageList', method: 'post'},//分页获取拜访记录
+    chain_getVisitRecordDetail: {url: '/app/chain/console/chainVisitRecord/getVisitRecordDetail', method: 'post'},//获取拜访详情
     
 }

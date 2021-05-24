@@ -1,5 +1,5 @@
 <template>
-  <div class="view-detail">
+  <div class="custom-list">
       <search-form
       :formOptions="formOptions"
       :showNum="7"
@@ -28,6 +28,11 @@
         @select="handelSelect"
         :emptyText="emptyText"
       >
+        <template slot="followUpSituation" slot-scope="scope">
+          <span class="visit-container" @click.stop="openDrawer(scope.row)">{{
+            scope.row.followUpSituation || 0
+          }}</span>
+        </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
             >编辑</el-button
@@ -76,7 +81,16 @@
             <uploadFile :file.sync="importForm.excel"/>
           </el-form-item>
         </el-form>
-    </rd-dialog>
+      </rd-dialog>
+
+      <!-- 查看跟进情况 -->
+      <full-dialog
+        v-model="followVisible"
+        :title="'跟进情况'"
+        @change="followVisible = false"
+      >
+        <followInfo v-if="followVisible"/>
+      </full-dialog>
   </div>
 </template>
 
@@ -84,10 +98,12 @@
 import RdForm from "@/components/RdForm";
 import CreatChain from "./creat-chain";
 import uploadFile from "@/components/Activity/uploadFile";
+import followInfo from './follow-info';
 export default {
-  name:"view-detail",
+  name:"custom-list",
   data(){
     return {
+      followVisible:false,
       loading: false,
       followValue:"",
       followOptions:[],
@@ -212,6 +228,7 @@ export default {
         {
           name: "跟进情况",
           value: "followUpSituation",
+          operate: true
         },
         {
           name: "省校",
@@ -304,7 +321,8 @@ export default {
   components:{
     RdForm,
     CreatChain,
-    uploadFile
+    uploadFile,
+    followInfo
   },
   mounted(){
     this.getTableData();
@@ -599,13 +617,24 @@ export default {
       this.distributeId = data.chainId;
       this.distributeVisible = true;
       this.distributeStatus = 1;
+    },
+    openDrawer(data){
+      this.followVisible = true;
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.view-detail {
-
+.custom-list {
+  .visit-container {
+    display: inline-block;
+    padding: 5px;
+    border: 1px solid #dcdfe6;
+    line-height: 9px;
+    border-radius: 2px;
+    color: #606266;
+    cursor: pointer;
+  }
 }
 </style>
