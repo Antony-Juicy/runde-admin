@@ -140,7 +140,7 @@ export default {
         {
           name: "录播情况",
           value: "playback",
-        },
+        }
       ],
       pageConfig: {
         totalCount: 0,

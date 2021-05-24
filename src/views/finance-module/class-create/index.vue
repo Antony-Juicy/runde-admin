@@ -400,15 +400,15 @@
       :title="'添加班型内容'"
       :dialogVisible="distributeVisible"
       :showFooter="false"
-      :width="'1100px'"
+      :width="'80vw'"
       @handleClose="distributeVisible = false"
     >
       <addClass
         :selectProductId="selectProductId"
         :classTypeArr="classTypeArr"
         :projectArr="projectArr"
-        :opportunityIds="opportunityIds"
-        @refresh="getTableData"
+        :opportunityIds="opportunityIds" 
+        @refresh="getTableData" 
         @addTableData="addTableDataFn"
         @closeTableData="distributeVisible = false"
         v-if="distributeVisible"
