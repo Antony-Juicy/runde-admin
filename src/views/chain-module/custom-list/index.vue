@@ -63,7 +63,7 @@
         :title="addStatus?'添加':'编辑'"
         @change="addVisible = false"
       >
-        <CreatChain v-if="addVisible" :chainId="editId" :addStatus="addStatus"/>
+        <CreatChain v-if="addVisible" :chainId="editId" :editData="editData" :addStatus="addStatus" @close="handleAddClose"/>
       </full-dialog>
 
       <!-- 导入 -->
@@ -327,7 +327,8 @@ export default {
       },
       addStatus: true,
       editId:"",
-      selectedData:""
+      selectedData:"",
+      editData:{}
     }
   },
   components:{
@@ -339,6 +340,10 @@ export default {
     this.getTableData();
   },
    methods: {
+     handleAddClose(){
+       this.addVisible = false;
+       this.getTableData();
+     },
      onSearch(val){
        this.searchForm = {
         ...val
@@ -383,6 +388,7 @@ export default {
       this.addStatus = false;
       this.addVisible = true; 
       this.editId = data.chainId;
+      this.editData = data;
     },
     handleDelete(row) {
       let info = '';

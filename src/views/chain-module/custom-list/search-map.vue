@@ -15,7 +15,7 @@
     </div>
     
     <div class="adress-container">
-      <i class="el-icon-place" v-show="currentAddress"></i>
+      <i class="el-icon-place" v-show="currentAddress" style="color:#409eff;font-weight:bold;"></i>
       {{currentAddress}}
       <!-- <el-input size="small" readonly v-model="currentAddress" placeholder="详细地址(仅展示，请先搜索选点)"></el-input> -->
     </div>
@@ -30,12 +30,34 @@ export default {
     return {
       map: null,
       currentAddress: "",
-      searchText:""
+      searchText:"",
+      geocoder:null,
+      marker: null
     }
+  },
+  props: {
+    addressCoordinates: {
+      type: String
+    },
+    detailAddress: {
+      type: String
+    }
+  },
+  watch: {
+    detailAddress(val){
+      // console.log(val,'valll')
+      this.currentAddress = val;
+    },
+    addressCoordinates(val){
+      setTimeout(() => {
+        this.regeoCode(val.split(","));
+      }, 50);
+    },
   },
   mounted(){
     this.initMap();
-    
+    // 定点
+    // this.initPosition(this.addressCoordinates)
   },
    methods: {
      initMap(){
@@ -55,38 +77,37 @@ export default {
             zoom: 6
           });
           this.initPoiPicker(AMapUI.PoiPicker);
-          // this.initPositionPicker(AMapUI.PositionPicker);
 
-         
-          var geocoder = new AMap.Geocoder({
-            // city: "010", //城市设为北京，默认：“全国”
-            // radius: 1000 //范围，默认：500
+            //  已有经纬度，定点
+            this.geocoder = new AMap.Geocoder({
+              // city: "010", //城市设为北京，默认：“全国”
+              // radius: 1000 //范围，默认：500
             });
-            var marker = new AMap.Marker();
-            this.regeoCode(geocoder,marker);
+            this.marker = new AMap.Marker();
+            this.regeoCode(this.addressCoordinates.split(","));
       }).catch(e => {
           console.log(e);
       })
      },
-     regeoCode(geocoder,marker) {
-                 let p1 = 116.483038,p2 = 39.990633;
-                var lnglat  = [p1,p2];
-                console.log(lnglat,'lnglat---')
-                this.map.add(marker);
-                marker.setPosition(lnglat);
-                this.map.setCenter([lnglat[0], lnglat[1]]);
-                this.map.setZoom(18);
-                geocoder.getAddress(lnglat, (status, result) =>{
-                    console.log(result,'result---')
-                    if (status === 'complete'&&result.regeocode) {
-                        var address = result.regeocode.formattedAddress;
-                        
-                        // document.getElementById('address').value = address;
-                    }else{
-                        log.error('根据经纬度查询地址失败')
-                    }
-                });
-            },
+     regeoCode(lnglat) {
+          //   let p1 = 116.483038,p2 = 39.990633;
+          // var lnglat  = [p1,p2];
+          console.log(lnglat,'lnglat---')
+          this.map.add(this.marker);
+          this.marker.setPosition(lnglat);
+          this.map.setCenter([lnglat[0], lnglat[1]]);
+          this.map.setZoom(18);
+          this.geocoder.getAddress(lnglat, (status, result) =>{
+              console.log(result,'result---')
+              if (status === 'complete'&&result.regeocode) {
+                  var address = result.regeocode.formattedAddress;
+                  
+                  // document.getElementById('address').value = address;
+              }else{
+                  log.error('根据经纬度查询地址失败')
+              }
+          });
+      },
      initPoiPicker(PoiPicker){
        let poiPicker = new PoiPicker({
             input: 'searchInput',

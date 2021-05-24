@@ -26,8 +26,25 @@
       <!-- 填写基础信息 -->
       <div v-show="activeStep == 1">
         <rd-form :formOptions="addFormOptions" formLabelWidth="180px" :rules="addRules" ref="dataForm3" >
+          <template slot="followUpUserId">
+              <el-select
+                v-model="followValue"
+                filterable
+                remote
+                placeholder="请输入用户名"
+                :remote-method="followSelect"
+                :loading="loading"
+                size="small">
+                <el-option
+                  v-for="item in followOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+          </template>
           <template slot="address">
-            <searchMap @poiPicked="poiPicked"/>
+            <searchMap @poiPicked="poiPicked" :addressCoordinates="addressCoordinates" :detailAddress="detailAddress"/>
           </template>
         </rd-form>
         <div style="text-align:right">
@@ -45,6 +62,11 @@ export default {
   name:"creat-chain",
   data(){
     return {
+      loading: false,
+      followValue:"",
+      followOptions:[],
+      addressCoordinates:"",
+      detailAddress:"",
       activeStep: 0,
       addFormOptions: [
         {
@@ -61,15 +83,11 @@ export default {
         },
         {
           prop: "followUpUserId",
-          element: "el-input",
+          element: "el-select",
           placeholder: "请选择跟进人",
-          label: "当前跟进人"
-        },
-         {
-          prop: "dockingPeople",
-          element: "el-input",
-          placeholder: "请输入",
-          label: "对接人"
+          label: "当前跟进人",
+          options: [],
+          operate: true
         },
          {
           prop: "nextVisitDate",
@@ -77,6 +95,12 @@ export default {
           placeholder: "请选择",
           label: "首次跟进截止时间",
           type: "datetime"
+        },
+         {
+          prop: "dockingPeople",
+          element: "el-input",
+          placeholder: "请输入",
+          label: "对接人"
         },
         {
           prop: "dockingPeoplePhone",
@@ -290,18 +314,18 @@ export default {
         dockingPeople: [
           { required: true, message: "请输入", trigger: "blur" },
         ],
-        nextVisitDate: [
-          { required: true, message: "请选择", trigger: "change" },
-        ],
+        // nextVisitDate: [
+        //   { required: true, message: "请选择", trigger: "change" },
+        // ],
         dockingPeoplePhone: [
           { required: true, message: "请输入", trigger: "blur" },
         ],
         dockingPeopleJobRank: [
           { required: true, message: "请选择", trigger: "change" },
         ],
-        // address: [
-        //   { required: true, message: "请输入", trigger: "blur" },
-        // ],
+        address: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
         scaleRanking: [
           { required: true, message: "请输入", trigger: "blur" },
         ],
@@ -341,12 +365,28 @@ export default {
     },
     addStatus: {
       type: Boolean
+    },
+    editData:{
+      type: Object
     }
   },
   watch: {
     chainId(newVal){
       console.log(newVal,'newval')
       this.getInfo(newVal);
+    },
+    editData(newVal){
+      console.log(newVal,'newVal--')
+      const { addressCoordinates,address,detailAddress,pname, cityname,adname} = newVal;
+      this.currentAddressData = {
+        lat : addressCoordinates.split(",")[0],
+        lng : addressCoordinates.split(",")[1],
+        address,
+        detailAddress,
+        pname,
+        cityname,
+        adname
+      }
     }
   },
   components: {
@@ -356,19 +396,38 @@ export default {
     console.log(this.chainId,'chainid')
     this.getSelectList();
     this.getInfo(this.chainId);
-    this.setCurrentPoint();
+    
   },
    methods: {
-     setCurrentPoint(){
-       
+     followSelect(query){
+       if (query !== '') {
+         this.loading = true;
+         this.$fetch("chain_getUserListByStaffName",{
+           staffName: query
+         }).then(res => {
+           this.followOptions = res.data.map(item => ({
+             label: item.name,
+             value: item.userId
+           }))
+           this.loading = false;
+         })
+       }else {
+         this.options = [];
+       }
      },
      poiPicked(val){
        console.log(val,'valll')
        this.currentAddressData = val;
-       if(val.entr_location){
-         let location = JSON.parse(JSON.stringify(val.entr_location));
+       if(val.location){
+         let location = JSON.parse(JSON.stringify(val.location));
          this.currentAddressData.lat = location.lat;
          this.currentAddressData.lng = location.lng;
+         this.$refs.dataForm3.setValue({
+          address: val.address
+          });
+          setTimeout(() => {
+            this.$refs['dataForm3'].validateField("address");
+          }, 0);
        } 
        
      },
@@ -388,7 +447,8 @@ export default {
           }, 0);
 
           // 地址定位
-  
+          this.addressCoordinates = this.currentData.addressCoordinates;
+          this.detailAddress = this.currentData.detailAddress;
       })
      },
      getSelectList(){
@@ -427,15 +487,16 @@ export default {
             ...formData,
             address,
             addressCoordinates: [lng,lat].join(","),
-            detailAddress: pname+cityname+adname+address,
+            detailAddress: pname+cityname+adname+address+name,
             province:pname,
             city: cityname,
             county:adname,
             chainType: this.form.chainType,
-            nextVisitDate: this.$common._formatDates2(formData.nextVisitDate)
+            nextVisitDate: this.$common._formatDates2(formData.nextVisitDate),
+            followUpUserId: this.followValue
           }).then(res => {
-            this.$message.success("操作成功")
-            
+            this.$message.success("操作成功");
+            this.$emit("close");
           })
         }
           

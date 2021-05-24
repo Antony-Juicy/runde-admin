@@ -5,4 +5,6 @@ export default {
     chain_add: {url: '/app/chain/console/chainInfo/add', method: 'post'},//添加
     chain_getUpdateInfo: {url: '/app/chain/console/chainInfo/getUpdateInfo', method: 'post'},//获取编辑数据
     chain_update: {url: '/app/chain/console/chainInfo/update', method: 'post'},//编辑
+    chain_getUserListByStaffName: {url: '/app/chain/console/user/getUserListByStaffName', method: 'post'},//根据姓名搜索用户
+    
 }

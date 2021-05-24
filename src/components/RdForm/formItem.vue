@@ -52,6 +52,8 @@
       :multiple="itemOptions.multiple"
       :filterable="itemOptions.filterable"
       :disabled="itemOptions.disabled"
+      :remote="itemOptions.remote"
+      :remote-method="itemOptions.remoteMethod"
       @focus="setMinWidth"
       style="width:100%"
       clearable>
