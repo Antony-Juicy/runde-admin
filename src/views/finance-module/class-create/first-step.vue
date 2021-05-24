@@ -7,7 +7,7 @@
       class="demo-form-inline"
     >
       <el-form-item
-        label="项目"
+        label="项目："
         label-width="78px"
         prop="productName"
         :rules="{
@@ -34,7 +34,7 @@
         </el-select>
       </el-form-item>
       <el-form-item
-        label="科目"
+        label="科目："
          label-width="78px"
         prop="subjectName"
         :rules="{
@@ -63,7 +63,7 @@
 
       <el-form-item
         style="width: 100%"
-        label="班型名称"
+        label="班型名称："
         prop="className"
         :rules="nameRulers"
       >
@@ -76,7 +76,7 @@
       </el-form-item>
       <el-form-item
         style="width: 100%"
-        label="班型年份"
+        label="班型年份："
         prop="classTypeBatch"
         :rules="{
           required: true,
@@ -102,7 +102,7 @@
       </el-form-item>
       <el-form-item
         style="align-items: center; display: flex; flex: 1; height: 100%"
-        label="班型类型"
+        label="班型类型："
         prop="classType"
         :rules="{
           required: true,
@@ -126,7 +126,7 @@
       </el-form-item>
       <el-form-item
         style="align-items: center; display: flex; flex: 1; height: 100%"
-        label="班型分组"
+        label="班型分组："
         prop="classtypeGroupName"
         :rules="{
           required: courseGroupArr.length > 0 ? true : false,
@@ -150,7 +150,7 @@
       </el-form-item>
       <el-form-item
         style="align-items: center; display: flex; flex: 1; height: 100%"
-        label="服务年限"
+        label="服务年限："
         prop="serviceYear"
         :rules="{
           required: true,
@@ -170,7 +170,7 @@
       </el-form-item>
       <el-form-item
         style="align-items: center; display: flex; flex: 1; height: 100%"
-        label="协议类型"
+        label="协议类型："
         prop="protocolType"
         :rules="{
           required: true,
@@ -192,7 +192,7 @@
       </el-form-item>
       <el-form-item
         style="align-items: center; display: flex; flex: 1; height: 100%"
-        label="退费类型"
+        label="退费类型："
         prop="refundType"
         :rules="{
           required: true,
@@ -214,7 +214,7 @@
       </el-form-item>
       <el-form-item
         style="align-items: center; display: flex; flex: 1; height: 100%;"
-        label="状态" 
+        label="状态：" 
          label-width="78px"
         prop="status"
         :rules="{

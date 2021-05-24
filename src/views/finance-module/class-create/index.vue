@@ -194,6 +194,7 @@
                       >
                         <el-checkbox
                           v-model="basicInfo.courses[index].checked"
+                          :disabled='IsDisabled'
                           :label="item.label"
                         ></el-checkbox>
                         <el-input

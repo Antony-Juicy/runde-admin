@@ -3,13 +3,13 @@
     <el-form
       :model="dynamicValidateForm"
       ref="dynamicValidateForm"
-      label-width="140px"
+      label-width="160px"
       class="demo-dynamic"
       inline
     >
       <div class="param-item">
         <el-form-item
-          label="项目"
+          label="项目："
           prop="productName"
           :rules="{
             required: true,
@@ -38,7 +38,7 @@
       </div>
       <div class="param-item">
         <el-form-item
-          label="科目"
+          label="科目："
           prop="subjectName"
           :rules="[
             {
@@ -63,7 +63,7 @@
       </div>
       <div class="param-item">
         <el-form-item
-          label="科目编号"
+          label="科目编号："
           prop="subjectNumber"
           :rules="[
             {
@@ -88,7 +88,7 @@
       </div>
       <div class="param-item">
         <el-form-item
-          label="理论考试时间"
+          label="理论考试时间："
           prop="theoryTestStart"
           :rules="{
             required: true,
@@ -111,7 +111,7 @@
       </div>
       <div class="param-item">
         <el-form-item
-          label="理论考试关课时间"
+          label="理论考试关课时间："
           prop="theoryTestClosingTime"
           :rules="{
             required: true,
@@ -137,7 +137,7 @@
       </div>
       <div class="param-item" v-if="checked1 && showCheckbox">
         <el-form-item
-          label="技能考试"
+          label="技能考试："
           prop="skillTestStart"
           :rules="{
             required: true,
@@ -161,7 +161,7 @@
       <!--二考-->
       <div class="param-item" v-if="checked2 && showCheckbox">
         <el-form-item
-          label="理论二考时间"
+          label="理论二考时间："
           prop="theoryTest2Start"
           :rules="{
             required: true,
@@ -185,7 +185,7 @@
       <!--二考关闭时间-->
       <div class="param-item" v-if="checked2 && showCheckbox">
         <el-form-item
-          label="理论二考关考时间"
+          label="理论二考关考时间："
           prop="theoryTest2ClosingTime"
           :rules="{
             required: true,
@@ -208,7 +208,7 @@
       <div class="param-item">
         <el-form-item
           style="align-items: center; display: flex; flex: 1; height: 100%"
-          label="状态"
+          label="状态："
           prop="subjectStatus"
           :rules="{
             required: true,
@@ -227,7 +227,7 @@
       </div>
       <div class="param-item">
         <el-form-item
-          label="三级类目"
+          label="三级类目："
           prop="financeCodeName3"
           :rules="{
             required: true,
