@@ -94,7 +94,7 @@
       v-model="addVisible"
       :title="'报名信息'"
       hideTitle
-      @change="addVisible = false"
+      @change="handleClose()"
     >
       <el-card shadow="never" class="card-container">
         <div class="card-title">学员信息</div>
@@ -108,7 +108,7 @@
             <el-col :span="24">
               <el-form-item label="查询学员信息">
                 <el-input
-                  v-model="stuForm.cardId"
+                  v-model="idCardAndPhone"
                   style="width: 280px; margin-right: 10px"
                   placeholder="请输入学员身份证或手机号"
                 ></el-input>
@@ -130,7 +130,15 @@
           </el-row>
           <el-row>
             <el-col :span="8">
-              <el-form-item label="学员姓名">
+              <el-form-item
+                label="学员姓名"
+                prop="studentName"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'blur',
+                }"
+              >
                 <el-input
                   v-model="stuForm.studentName"
                   style="width: 200px"
@@ -139,7 +147,15 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="学员类型">
+              <el-form-item
+                label="学员类型"
+                prop="studentType"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'change',
+                }"
+              >
                 <el-select
                   @change="changeSelect"
                   v-model="stuForm.studentType"
@@ -148,7 +164,7 @@
                 >
                   <el-option
                     :label="item.label"
-                    :value="item.label"
+                    :value="item.value"
                     v-for="(item, index) in studentTypeList"
                     :key="index"
                   ></el-option>
@@ -156,7 +172,15 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="学年">
+              <el-form-item
+                label="学年"
+                prop="classBatch"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'change',
+                }"
+              >
                 <el-select
                   v-model="stuForm.classBatch"
                   style="width: 200px"
@@ -174,9 +198,17 @@
           </el-row>
           <el-row>
             <el-col :span="8">
-              <el-form-item label="来源类型">
+              <el-form-item
+                label="来源类型"
+                prop="saleSource"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'change',
+                }"
+              >
                 <el-select
-                  v-model="stuForm.saleSourceType"
+                  v-model="stuForm.saleSource"
                   style="width: 200px"
                   placeholder="请选择来源类型"
                 >
@@ -190,16 +222,32 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="来源名称">
+              <el-form-item
+                label="来源名称"
+                prop="mediatorName"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'blur',
+                }"
+              >
                 <el-input
-                  v-model="stuForm.saleSource"
+                  v-model="stuForm.mediatorName"
                   style="width: 200px"
                   placeholder="请输入来源名称"
                 ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="学历">
+              <el-form-item
+                label="学历"
+                prop="education"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'change',
+                }"
+              >
                 <el-select
                   v-model="stuForm.education"
                   style="width: 200px"
@@ -217,7 +265,15 @@
           </el-row>
           <el-row>
             <el-col :span="8">
-              <el-form-item label="身份证">
+              <el-form-item
+                label="身份证"
+                prop="cardId"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'blur',
+                }"
+              >
                 <el-input
                   v-model="stuForm.cardId"
                   style="width: 200px"
@@ -226,7 +282,15 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="手机号">
+              <el-form-item
+                label="手机号"
+                prop="phone"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'blur',
+                }"
+              >
                 <el-input
                   v-model="stuForm.phone"
                   style="width: 200px"
@@ -234,8 +298,41 @@
                 ></el-input>
               </el-form-item>
             </el-col>
+             <el-col :span="8">
+              <el-form-item
+                v-if="itemData.productName == '健康管理师'"
+                label="报考省份"
+                prop="provinceName"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'change',
+                }"
+              >
+                <el-select
+                  v-model="stuForm.provinceName"
+                  style="width: 200px"
+                  placeholder="请选择报考省份"
+                >
+                  <el-option
+                    :label="item.label"
+                    :value="item.value"
+                    v-for="(item, index) in healthCourseProvinceList"
+                    :key="index"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
             <el-col :span="8">
-              <el-form-item label="性别">
+              <el-form-item
+                label="性别"
+                prop="gender"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'change',
+                }"
+              >
                 <el-select
                   v-model="stuForm.gender"
                   style="width: 200px"
@@ -253,9 +350,17 @@
           </el-row>
           <el-row>
             <el-col :span="8">
-              <el-form-item label="省">
+              <el-form-item
+                label="省"
+                prop="provinc"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'change',
+                }"
+              >
                 <el-select
-                  v-model="stuForm.provinceId"
+                  v-model="stuForm.provinc"
                   style="width: 200px"
                   placeholder="请选择省份"
                   @change="choseProvince"
@@ -270,9 +375,17 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="市">
+              <el-form-item
+                label="市"
+                prop="city"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'change',
+                }"
+              >
                 <el-select
-                  v-model="stuForm.cityId"
+                  v-model="stuForm.city"
                   style="width: 200px"
                   placeholder="请选择市"
                   @change="choseCity"
@@ -287,9 +400,17 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="区/县">
+              <el-form-item
+                label="区/县"
+                prop="county"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'change',
+                }"
+              >
                 <el-select
-                  v-model="stuForm.countyId"
+                  v-model="stuForm.county"
                   style="width: 200px"
                   placeholder="请选择区/县"
                   @change="choseCounty"
@@ -306,7 +427,15 @@
           </el-row>
           <el-row>
             <el-col :span="24">
-              <el-form-item label="收件地址">
+              <el-form-item
+                label="收件地址"
+                prop="address"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'blur',
+                }"
+              >
                 <span style="margin-right: 6px">xx省</span
                 ><span style="margin-right: 6px">xx市</span
                 ><span style="margin-right: 6px">xx区</span>
@@ -334,17 +463,25 @@
       <el-card shadow="never" class="card-container">
         <div class="card-title">课程列表</div>
         <el-form
-          ref="stuForm"
-          :model="stuForm"
+          ref="stuForm2"
+          :model="stuForm2"
           label-width="100px"
           size="small"
         >
           <el-row>
             <el-col :span="8">
-              <el-form-item label="校区">
+              <el-form-item
+                label="校区"
+                prop="campusName"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'change',
+                }"
+              >
                 <el-select
                   disabled
-                  v-model="stuForm.campusName"
+                  v-model="stuForm2.campusName"
                   style="width: 200px"
                   placeholder="请选择校区"
                 >
@@ -358,10 +495,18 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="班次">
+              <el-form-item
+                label="班次"
+                prop="classType"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'change',
+                }"
+              >
                 <el-select
                   disabled
-                  v-model="stuForm.classType"
+                  v-model="stuForm2.classType"
                   style="width: 200px"
                   placeholder="请选择班次"
                 >
@@ -376,7 +521,15 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-form-item label="课程">
+            <el-form-item
+              label="课程"
+              prop="courses"
+              :rules="{
+                required: false,
+                message: '不能为空',
+                trigger: 'change',
+              }"
+            >
               <!-- <el-checkbox-group v-model="stuForm.courses"> -->
               <el-checkbox
                 v-for="(course, index) in courseInfoList"
@@ -393,12 +546,20 @@
           </el-row>
           <el-row>
             <el-col :span="8">
-              <!-- yy: {{ couponList }} -->
-              <el-form-item label="优惠券">
+              <el-form-item
+                label="优惠券"
+                prop="couponId"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'change',
+                }"
+              >
                 <el-select
-                  v-model="stuForm.couponId"
+                  v-model="stuForm2.couponId"
                   style="width: 200px"
                   placeholder="请选择优惠券"
+                  @change="changeCoupon"
                 >
                   <el-option
                     :label="item.couponName"
@@ -410,10 +571,18 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="优惠金额">
+              <el-form-item
+                label="优惠金额"
+                prop="faceValue"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'change',
+                }"
+              >
                 <el-input
                   readonly
-                  v-model="stuForm.faceValue"
+                  v-model="stuForm2.faceValue"
                   style="width: 200px"
                   placeholder="优惠金额"
                 >
@@ -429,10 +598,18 @@
           </el-row>
           <el-row>
             <el-col :span="8">
-              <el-form-item label="应收">
+              <el-form-item
+                label="应收"
+                prop="realPrice"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'change',
+                }"
+              >
                 <el-input
                   readonly
-                  v-model="stuForm.realPrice"
+                  v-model="stuForm2.realPrice"
                   style="width: 200px"
                   placeholder="请选择课程信息"
                 >
@@ -452,16 +629,24 @@
       <el-card shadow="never" class="card-container">
         <div class="card-title">服务信息</div>
         <el-form
-          ref="stuForm"
-          :model="stuForm"
+          ref="stuForm3"
+          :model="stuForm3"
           label-width="100px"
           size="small"
         >
           <el-row>
             <el-col :span="8">
-              <el-form-item label="招生老师">
+              <el-form-item
+                label="招生老师"
+                prop="enrollId"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'change',
+                }"
+              >
                 <el-select
-                  v-model="stuForm.enrollId"
+                  v-model="stuForm3.enrollId"
                   style="width: 200px"
                   placeholder="请选择招生老师"
                 >
@@ -475,9 +660,17 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="班主任">
+              <el-form-item
+                label="班主任"
+                prop="classTeacherId"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'change',
+                }"
+              >
                 <el-select
-                  v-model="stuForm.classTeacherId"
+                  v-model="stuForm3.classTeacherId"
                   style="width: 200px"
                   placeholder="请选择班主任"
                 >
@@ -491,9 +684,9 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="代理人">
+              <el-form-item label="代理人" prop="agent">
                 <el-select
-                  v-model="stuForm.agent"
+                  v-model="stuForm3.agent"
                   style="width: 200px"
                   placeholder="请选择代理人"
                 >
@@ -509,9 +702,17 @@
           </el-row>
           <el-row>
             <el-col :span="8">
-              <el-form-item label="市场老师">
+              <el-form-item
+                label="市场老师"
+                prop="staffId"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'change',
+                }"
+              >
                 <el-select
-                  v-model="stuForm.staffId"
+                  v-model="stuForm3.staffId"
                   style="width: 200px"
                   placeholder="请选择市场老师"
                 >
@@ -525,9 +726,17 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="教务老师">
+              <el-form-item
+                label="教务老师"
+                prop="eduUserId"
+                :rules="{
+                  required: true,
+                  message: '不能为空',
+                  trigger: 'change',
+                }"
+              >
                 <el-select
-                  v-model="stuForm.eduUserId"
+                  v-model="stuForm3.eduUserId"
                   style="width: 200px"
                   placeholder="请选择教务老师"
                 >
@@ -547,17 +756,17 @@
       <el-card shadow="never" class="card-container">
         <div class="card-title">其他</div>
         <el-form
-          ref="stuForm"
-          :model="stuForm"
+          ref="stuForm4"
+          :model="stuForm4"
           label-width="100px"
           size="small"
         >
           <el-row>
-            <el-form-item label="备注">
+            <el-form-item label="备注" prop="remark">
               <el-input
                 type="textarea"
                 rows="3"
-                v-model="stuForm.remark"
+                v-model="stuForm4.remark"
                 placeholder="请输入备注内容"
               ></el-input>
             </el-form-item>
@@ -566,7 +775,7 @@
       </el-card>
 
       <div class="btn-wrapper" style="text-align: right">
-        <el-button type="primary">提交</el-button>
+        <el-button type="primary" @click="submitAddForm()">提交</el-button>
       </div>
     </full-dialog>
   </div>
@@ -629,6 +838,7 @@ export default {
       saleSourceList: [], //来源类型
       eduList: [], //学历
       genderList: [], //性别
+      healthCourseProvinceList: [], //报考省份
       eduStaffList: [], //教务老师,班主任
       marketStaffList: [], //市场老师
       staffInfoList: [], //招生老师
@@ -667,21 +877,28 @@ export default {
       editId: "",
       visible: true,
       itemData: "",
+      idCardAndPhone: "13570911549",
       stuForm: {
-        cardId: "",
         studentName: "",
         studentType: "",
         classBatch: "",
-        saleSourceType: "",
         saleSource: "",
+        mediatorName: "",
         education: "",
-        cardId: "13570911549",
-        phone: "",
+        cardId: "",
+        provinceName:"",
+        phone: "13570911549",
         gender: "",
         provincId: "",
         cityId: "",
         countyId: "",
+        provinc: "",
+        city: "",
+        county: "",
         address: "",
+        studentId: "",
+      },
+      stuForm2: {
         campusName: "",
         classType: "",
         campusId: "",
@@ -692,11 +909,20 @@ export default {
         couponId: "",
         faceValue: "",
         realPrice: "",
+        toTalPrice: "",
+      },
+      stuForm3: {
         enrollId: "",
         classTeacherId: "",
         eduUserId: "",
+      },
+      stuForm4: {
         remark: "",
       },
+      stuFormForm1Valid: false, //表单1校验
+      stuFormForm2Valid: false, //表单2校验
+      stuFormForm3Valid: false, //表单3校验
+      stuFormForm4Valid: false, //表单4校验
       radio: "",
     };
   },
@@ -717,21 +943,25 @@ export default {
       handler(newName, oldName) {
         console.log("obj.a changed", newName, oldName);
         if (oldName != undefined) {
-          this.getCounpList();
+          this.$nextTick(() => {
+            this.getCounpList();
+          });
         }
       },
       immediate: true,
       // deep: true
     },
-    "stuForm.courseNum": {
+    "stuForm2.courseNum": {
       handler(newName, oldName) {
         console.log("obj.a changed courseNum", newName, oldName);
         if (oldName != undefined) {
           if (!this.stuForm.studentType) {
-            this.$message.warning("请先选择课程");
+            this.$message.warning("请先选择学员类型");
             return;
           }
-          this.getCounpList();
+          this.$nextTick(() => {
+            this.getCounpList();
+          });
         }
       },
       immediate: true,
@@ -739,8 +969,67 @@ export default {
     },
   },
   methods: {
+    handleClose() {
+      this.addVisible = false;
+      this.$refs.stuForm.resetFields();
+      this.$refs.stuForm2.resetFields();
+      this.$refs.stuForm3.resetFields();
+      this.$refs.stuForm4.resetFields();
+      this.idCardAndPhone = "";
+    },
+    changeCoupon(e) {
+      //选择优惠券
+      this.couponList.map((el) => {
+        if (e == el.id) {
+          switch (el.couponType) {
+            case "折扣优惠":
+              this.stuForm2.faceValue =
+                (Number(this.stuForm2.toTalPrice) *
+                  (100 - Number(el.couponRate))) /
+                100;
+              this.stuForm2.realPrice =
+                Number(this.stuForm2.toTalPrice) *
+                (Number(el.couponRate) / 100);
+              return;
+            case "满减优惠":
+              if (Number(this.stuForm2.toTalPrice) < el.fullPrice) {
+                this.$message.warning("未到达满减优惠条件！");
+                this.stuForm2.faceValue = 0;
+                return;
+              }
+              // 总价-(Math.floor(总价/1000))*400
+              this.stuForm2.realPrice =
+                Number(this.stuForm2.toTalPrice) -
+                Math.floor(Number(this.stuForm2.toTalPrice) / el.fullPrice) *
+                  el.faceValue;
+              this.stuForm2.faceValue =
+                Math.floor(Number(this.stuForm2.toTalPrice) / el.fullPrice) *
+                el.faceValue;
+              return;
+            case "普通优惠":
+              this.stuForm2.realPrice =
+                Number(this.stuForm2.toTalPrice) - el.faceValue;
+              this.stuForm2.faceValue = el.faceValue;
+              return;
+            case "梯度优惠":
+              let money = JSON.parse(el.gradientInfo).filter((el) => {
+                if (el.key == this.stuForm2.courseNum) {
+                  return el.value;
+                }
+              })[0].value;
+              this.stuForm2.realPrice =
+                Number(this.stuForm2.toTalPrice) - Number(money);
+              this.stuForm2.faceValue = Number(money);
+              return;
+          }
+        }
+      });
+    },
     changeSelect() {
-      this.stuForm.couponId = ""; //置空优惠券
+      //选择学员类型
+      this.stuForm2.couponId = ""; //置空优惠券
+      this.stuForm2.realPrice = ""; //应收
+      this.stuForm2.faceValue = ""; //优惠金额
     },
     getCounpList() {
       //优惠券
@@ -759,11 +1048,11 @@ export default {
         classTypeId,
         productId,
         subjectId,
-        courseNames: this.stuForm.courseNames,
-        courseNum: this.stuForm.courseNum,
-        classId: this.stuForm.classId,
-        studentType: this.stuForm.studentType,
-        totalPrice: this.stuForm.realPrice ? this.stuForm.realPrice : 0,
+        courseNames: this.stuForm2.courseNames,
+        courseNum: this.stuForm2.courseNum,
+        classId: this.stuForm2.classId,
+        studentType: this.stuForm.studentType == "New" ? "新学员" : "老学员",
+        totalPrice: this.stuForm2.toTalPrice ? this.stuForm2.toTalPrice : 0,
       }).then((res) => {
         this.couponList = res.data.dataJson.list;
       });
@@ -834,25 +1123,37 @@ export default {
     },
     handleCheckInfo() {
       this.$fetch("studentcampus_basisIdCardAndPhoneGetInfo", {
-        idCardAndPhone: this.stuForm.cardId,
+        idCardAndPhone: this.idCardAndPhone,
       }).then((res) => {
-        //TODO 校验
-        console.log(
-          "res--------------->coupontemplateversiontwo_availableCoupon",
-          res,
-          res.data
-        );
+        //校验
+        if (res.data.studentCampusModel) {
+          //老学员
+          for (var key in res.data.studentCampusModel) {
+            if (this.stuForm[key] != undefined) {
+              this.stuForm[key] = res.data.studentCampusModel[key];
+            }
+          }
+          this.stuForm.studentType = "Old";
+        } else {
+          //新学员
+          this.stuForm.studentType = "New";
+          this.$refs.stuForm.resetFields();
+          this.$refs.stuForm2.resetFields();
+          this.$refs.stuForm3.resetFields();
+          this.$refs.stuForm4.resetFields();
+          this.idCardAndPhone = "";
+        }
       });
     },
     sum(arr) {
       return eval(arr.join("+"));
     },
     changeCheckbox(index, item) {
-      this.stuForm.couponId = ""; //置空优惠券
+      this.stuForm2.couponId = ""; //置空优惠券
       item.checked == 0
         ? (this.courseInfoList[index].checked = 1)
         : (this.courseInfoList[index].checked = 0);
-      this.stuForm.courses = this.courseInfoList
+      this.stuForm2.courses = this.courseInfoList
         .filter((item) => item.checked)
         .map((item) => {
           return item.label;
@@ -862,18 +1163,20 @@ export default {
         .map((item) => {
           return item.price;
         });
-      this.stuForm.courseNames = this.stuForm.courses.toString();
-      this.stuForm.courseNum = this.stuForm.courses.length;
-      this.stuForm.realPrice =
+      this.stuForm2.courseNames = this.stuForm2.courses.toString();
+      this.stuForm2.courseNum = this.stuForm2.courses.length;
+      this.stuForm2.toTalPrice =
         priceArr && priceArr.length > 0 ? this.sum(priceArr) : 0;
-      console.log("this.sum(priceArr)", this.stuForm.realPrice);
+      console.log("this.sum(priceArr)", this.stuForm2.toTalPrice);
+      this.stuForm2.realPrice = "";
+      this.stuForm2.faceValue = "";
       // let { campusId, classTypeId, productId, subjectId } = this.itemData;
       // this.$fetch("coupontemplateversiontwo_availableCoupon", {
       //   campusId,
       //   classTypeId,
       //   productId,
       //   subjectId,
-      //   courseNames: this.stuForm.courseNames,
+      //   courseNames: this.stuForm2.courseNames,
       //   courseNum: this.stuForm.courseNum,
       //   classId: this.stuForm.classId,
       //   studentType: this.stuForm.studentType,
@@ -983,12 +1286,146 @@ export default {
       this.addStatus = true;
       this.addVisible = true;
     },
-    submitAddForm(formName) {
-      this.$refs[formName].validate((valid, formData) => {
+    addBaseInfo() {
+      that.$refs["store"].validate((valid) => {
+        //第一个表单ref="store”
         if (valid) {
-          console.log(formData, "提交");
+          this.titleFormValid = true; //如果通过，加个true相当于开关判断
         }
       });
+      if (this.store.type == 1) {
+        that.$refs["school"].validate((valid) => {
+          //第二个表单ref='school'
+          if (valid) {
+            that.customFormValid = true; //同上
+          }
+        });
+      } else if (this.store.type == 3) {
+        that.$refs["company"].validate((valid) => {
+          if (valid) {
+            that.customFormValid = true;
+          }
+        });
+      } else {
+        that.$refs["community"].validate((valid) => {
+          if (valid) {
+            that.customFormValid = true;
+          }
+        });
+      }
+      that.$refs["dynamicValidateForm"].validate((valid) => {
+        //第三个表单ref='dynamicValidateForm'
+        if (valid) {
+          that.orangerFormValid = true; //同上
+        }
+      });
+      if (
+        this.titleFormValid &&
+        this.customFormValid &&
+        this.orangerFormValid
+      ) {
+        //这是最关键的，当这三个表单都通过，之间是且关系，才能走下一步
+      }
+    },
+    submitAddForm() {
+      this.$refs["stuForm"].validate((valid) => {
+        //第一个表单ref="stuForm"
+        if (valid) {
+          this.stuFormForm1Valid = true;
+        }
+      });
+      this.$refs["stuForm2"].validate((valid) => {
+        //第2个表单ref="stuForm2"
+        if (valid) {
+          this.stuFormForm2Valid = true;
+        }
+      });
+      this.$refs["stuForm3"].validate((valid) => {
+        //第3个表单ref="stuForm3"
+        if (valid) {
+          this.stuFormForm3Valid = true;
+        }
+      });
+      if (
+        this.stuFormForm1Valid &&
+        this.stuFormForm2Valid &&
+        this.stuFormForm3Valid
+      ) {
+        //当这三个表单都通过
+        let classTeacherName, couponName, eduUserName, enrollName, staffName;
+        this.provinceList.filter((el) => {
+          if (this.stuForm.provincId == el.id) {
+            this.stuForm.provinc = el.value;
+          }
+        });
+        this.cityList.filter((el) => {
+          if (this.stuForm.cityId == el.id) {
+            this.stuForm.city = el.value;
+          }
+        });
+        this.countyList.filter((el) => {
+          if (this.stuForm.countyId == el.id) {
+            this.stuForm.county = el.value;
+          }
+        });
+        this.eduStaffList.filter((el) => {
+          if (this.stuForm3.classTeacherId == el.value) {
+            classTeacherName = el.label;
+          }
+        });
+        this.couponList.filter((el) => {
+          if (this.stuForm2.couponId == el.value) {
+            couponName = el.label;
+          }
+        });
+        this.eduStaffList.filter((el) => {
+          if (this.stuForm3.eduUserId == el.value) {
+            eduUserName = el.label;
+          }
+        });
+        this.staffInfoList.filter((el) => {
+          if (this.stuForm3.enrollId == el.value) {
+            enrollName = el.label;
+          }
+        });
+        this.marketStaffList.filter((el) => {
+          if (this.stuForm.staffId == el.value) {
+            staffName = el.label;
+          }
+        });
+        this.couponList.filter((el) => {
+          if (this.stuForm2.couponId == el.id) {
+            couponName = el.couponName;
+          }
+        });
+        this.$fetch("orderinfo_saveProduct", {
+          ...this.stuForm,
+          ...this.stuForm2,
+          ...this.stuForm3,
+          ...this.stuForm4,
+          provinc: this.stuForm.provinc,
+          city: this.stuForm.city,
+          county: this.stuForm.county,
+          classTeacherName,
+          couponName,
+          eduUserName,
+          enrollName,
+          staffName,
+          courses: JSON.stringify(this.stuForm2.courses),
+          serviceYear: this.itemData.serviceYear,
+          idCardAndPhone: this.idCardAndPhone,
+        }).then((res) => {
+          console.log("提交---32424", this.$refs.stuForm, this.$refs);
+          this.$message.success("操作成功");
+          this.addVisible = false;
+          this.$refs.stuForm.resetFields();
+          this.$refs.stuForm2.resetFields();
+          this.$refs.stuForm3.resetFields();
+          this.$refs.stuForm4.resetFields();
+          this.idCardAndPhone = "";
+          this.getTableData();
+        });
+      }
     },
     handleEdit(data) {
       this.addStatus = false;
@@ -1004,11 +1441,12 @@ export default {
     signUp(data) {
       this.addVisible = true;
       this.itemData = data;
+      this.stuForm.classBatch = data.classBatch;
       console.log("data--2223", data);
-      this.stuForm.campusName = data.campusName;
-      this.stuForm.classType = data.className;
-      this.stuForm.campusId = data.campusId;
-      this.stuForm.classId = data.id;
+      this.stuForm2.campusName = data.campusName;
+      this.stuForm2.classType = data.className;
+      this.stuForm2.campusId = data.campusId;
+      this.stuForm2.classId = data.id;
       this.$fetch("orderinfo_goProductAdd", {
         classId: data.id,
       }).then((res) => {
@@ -1037,6 +1475,11 @@ export default {
             label: item.value,
             value: item.key,
           }))),
+          (this.healthCourseProvinceList = JSON.parse(res.data.healthCourseProvinceList).map((item) => ({
+           label: item.provinceName,
+            value: item.provinceId,
+          }))),
+       
           //教务老师,班主任
           (this.eduStaffList = res.data.eduStaffList.map((item) => ({
             label: item.staffName,
@@ -1073,6 +1516,9 @@ export default {
 
 <style lang="scss" scoped>
 .goods-list {
+  .el-form-item{
+    margin-bottom: 26px;
+  }
   .content-container {
     padding: 5px;
     width: 49%;
