@@ -3,7 +3,7 @@
     <div class="contain">
       <div class="info-tab">
         <!-- 列表信息 -->
-        <h3>跟进情况</h3>
+        <!-- <h3>跟进情况</h3> -->
         <el-timeline>
           <el-timeline-item v-for="(item,index) in tableData" :key="index" placement="top">
             <div class="item-li" @click="clickItem(item)">
@@ -14,7 +14,7 @@
                   更新时间：{{item.endVisitTime }}
                   <i
                     class="el-icon-arrow-right is-click"
-                    v-if="drawer && ruleForm.id == item.id"
+                    v-if="drawer && currentId == item.visitRecordId"
                   ></i>
                 </span>
               </div>
@@ -43,19 +43,20 @@
         <el-form
           :model="ruleForm"
           ref="ruleForm"
-          label-width="100px"
+          label-width="120px"
           class="demo-ruleForm"
         >
           <template v-for="item in formDataArrNew">
-            <el-form-item :label="item.label" :prop="item.id" :key="item.id" :required="item.required">
+            <el-form-item :label="item.label" :key="item.id" :required="item.required">
               <!-- 单选 -->
               <template v-if="item.type=='radio'">
-                <el-radio v-model="item.value" :label="ele.OptionName" v-for="(ele,i) in item.singleOption" :key="i">{{ele.OptionName}}</el-radio>
+                <el-radio v-model="item.value" :label="ele.OptionName" v-for="(ele,i) in item.singleOption" :key="i" disabled>{{ele.OptionName}}</el-radio>
               </template>
               <!-- 多选 -->
               <template v-else-if="item.type=='checkBox'">
                 <el-checkbox-group 
                   v-model="item.value"
+                  disabled
                   >
                   <el-checkbox v-for="(ele,i) in item.checkOption" :label="ele.OptionName" :key="i">{{ele.OptionName}}</el-checkbox>
                 </el-checkbox-group>
@@ -83,7 +84,27 @@
               </template>
             </el-form-item>
           </template>
-          
+          <!-- 现场 -->
+          <template v-if="currentData.visitType == 'SITE'">
+            <el-form-item label="开始拜访">
+              <el-image
+                  style="width: 100px; height: 100px"
+                  :src="currentData.startVisitPhoto"
+                  :fit="'cover'"
+                ></el-image>
+                <div><i class="el-icon-location" style="font-size:16px;color:#409eff"></i>{{currentData.startVisitAddress}}</div>
+                <div>时间：{{currentData.startVisitTime}}</div>
+            </el-form-item>
+            <el-form-item label="结束拜访">
+              <el-image
+                  style="width: 100px; height: 100px"
+                  :src="currentData.endVisitPhoto"
+                  :fit="'cover'"
+                ></el-image>
+                <div><i class="el-icon-location" style="font-size:16px;color:#409eff"></i>{{currentData.endVisitAddress}}</div>
+                <div>时间：{{currentData.endVisitTime}}</div>
+            </el-form-item>
+          </template>
         </el-form>
       </div>
     </div>
@@ -91,96 +112,11 @@
 </template>
 
 <script>
+import { scrollTo } from '@/utils/scroll-to';
 export default {
   name: "temp",
   data() {
     return {
-      list: [
-        {
-          id: 4,
-          count: 1,
-          name: "飞翔的荷兰人",
-          phone: 12345678910,
-          job: "负责人",
-          situation: "跟进情况",
-          result: "达成结果",
-          time: "2021-01-01 12：00",
-          nowPhoto:
-            "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2867258487,3621741239&fm=26&gp=0.jpg",
-          beginImg:
-            "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2867258487,3621741239&fm=26&gp=0.jpg",
-          beginAddr: "HIMONDAY产业园—B栋",
-          beginTime: "2021-01-01 12：00",
-          endImg:
-            "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2867258487,3621741239&fm=26&gp=0.jpg",
-          endAddr: "2021-01-01 12：00",
-          endTime: "HIMONDAY产业园—A栋",
-          isNowStrike: true,
-        },
-        {
-          id: 3,
-          count: 1,
-          name: "飞翔的荷兰人",
-          phone: 12345678910,
-          job: "负责人",
-          situation: "跟进情况",
-          result: "达成结果",
-          time: "2021-01-01 12：00",
-          nowPhoto:
-            "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2867258487,3621741239&fm=26&gp=0.jpg",
-          beginImg:
-            "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2867258487,3621741239&fm=26&gp=0.jpg",
-          beginAddr: "HIMONDAY产业园—B栋",
-          beginTime: "2021-01-01 12：00",
-          endImg:
-            "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2867258487,3621741239&fm=26&gp=0.jpg",
-          endAddr: "2021-01-01 12：00",
-          endTime: "HIMONDAY产业园—A栋",
-          isNowStrike: true,
-        },
-        {
-          id: 2,
-          count: 1,
-          name: "飞翔的荷兰人",
-          phone: 12345678910,
-          job: "负责人",
-          situation: "跟进情况",
-          result: "达成结果",
-          time: "2021-01-01 12：00",
-          nowPhoto:
-            "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2867258487,3621741239&fm=26&gp=0.jpg",
-          beginImg:
-            "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2867258487,3621741239&fm=26&gp=0.jpg",
-          beginAddr: "HIMONDAY产业园—B栋",
-          beginTime: "2021-01-01 12：00",
-          endImg:
-            "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2867258487,3621741239&fm=26&gp=0.jpg",
-          endAddr: "2021-01-01 12：00",
-          endTime: "HIMONDAY产业园—A栋",
-          isNowStrike: true,
-        },
-        {
-          id: 1,
-          count: 1,
-          name: "飞翔的荷兰人",
-          phone: 12345678910,
-          job: "负责人",
-          situation: "跟进情况",
-          result: "达成结果",
-          time: "2021-01-01 12：00",
-          nowPhoto:
-            "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2867258487,3621741239&fm=26&gp=0.jpg",
-          beginImg:
-            "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2867258487,3621741239&fm=26&gp=0.jpg",
-          beginAddr: "HIMONDAY产业园—B栋",
-          beginTime: "2021-01-01 12：00",
-          endImg:
-            "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2867258487,3621741239&fm=26&gp=0.jpg",
-          endAddr: "2021-01-01 12：00",
-          endTime: "HIMONDAY产业园—A栋",
-          isNowStrike: true,
-        },
-      ],
       drawer: false,
 
       ruleForm: {
@@ -207,8 +143,14 @@ export default {
       },
       tableData:[],
       currentData: {},
-      formDataArr: []
+      formDataArr: [],
+      currentId:""
     };
+  },
+  props: {
+    followId: {
+      type: String | Number
+    }
   },
   mounted(){
     this.getTableData();
@@ -217,7 +159,7 @@ export default {
     formDataArrNew(){
       return this.formDataArr.map(item => {
         if(item.type == 'checkBox'){
-          item.value = item.value.split(',')
+          item.value = item.value?item.value.split(','):[];
         }
         return item;
       })
@@ -225,12 +167,13 @@ export default {
   },
   methods: {
     download(data){
-      // location.href = data.value;
-      window.open(data.value);
+      location.href = data.value;
+      // window.open(data.value);
     },
     clickItem(item) {
       console.log("123");
       this.drawer = true;
+      this.currentId = item.visitRecordId;
       // this.ruleForm = item;
       this.$fetch("chain_getVisitRecordDetail",{
         chainVisitRecordId: item.visitRecordId
@@ -244,7 +187,7 @@ export default {
       this.$fetch("chain_chainVisitRecord", {
         ...this.pageConfig,
         ...params,
-        chainId: 12
+        chainId: this.followId
       }).then((res) => {
         this.tableData = res.data.records;
         this.pageConfig.totalCount = res.data.totalCount;
@@ -325,6 +268,7 @@ export default {
       box-shadow: 0px 8px 24px 0px rgba(68, 142, 247, 0.15);
       border-radius: 6px;
       padding: 16px 10px 16px 16px;
+      cursor: pointer;
     }
   }
   .contain {

@@ -18,6 +18,26 @@ const $common = {
             callback();
         }
     },
+    // 检验是否是数字
+    _validatorNumber(rule, value, callback) {
+        if(value == undefined || value == ''){
+            callback();
+        }else if ( parseFloat(value).toString() == "NaN") {
+            callback(new Error('请输入数字'));
+        } else {
+            callback();
+        }
+    },
+    // 非必填的手机校验
+    _validatorPhone2(rule, value, callback) {
+        if (value == undefined || value === '') {
+            callback()
+        } else if (!/^1\d{10}$/.test(value)) {
+            callback(new Error('手机号格式错误'))
+        } else {
+            callback()
+        }
+    },
     // 年月日时分时间处理
     _formatDates(date) {
         if (!date) {

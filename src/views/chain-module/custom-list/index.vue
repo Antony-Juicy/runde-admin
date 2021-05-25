@@ -89,7 +89,7 @@
         :title="'跟进情况'"
         @change="followVisible = false"
       >
-        <followInfo v-if="followVisible"/>
+        <followInfo v-if="followVisible" :followId="followId"/>
       </full-dialog>
   </div>
 </template>
@@ -103,6 +103,7 @@ export default {
   name:"custom-list",
   data(){
     return {
+      followId:"",
       followVisible:false,
       loading: false,
       followValue:"",
@@ -620,6 +621,7 @@ export default {
     },
     openDrawer(data){
       this.followVisible = true;
+      this.followId = data.chainId;
     }
   }
 }

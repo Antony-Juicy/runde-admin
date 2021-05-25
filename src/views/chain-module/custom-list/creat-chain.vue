@@ -58,6 +58,7 @@
 
 <script>
 import searchMap from "./search-map";
+import Common from "@/utils/common";
 export default {
   name:"creat-chain",
   data(){
@@ -115,23 +116,23 @@ export default {
           label: "职务等级",
           options: [
             {
-              label: "CHAIRMAN",
+              label: "董事长",
               value: "CHAIRMAN"
             },
              {
-              label: "DIRECTOR",
+              label: "总监",
               value: "DIRECTOR"
             },
              {
-              label: "MINISTER",
+              label: "部长",
               value: "MINISTER"
             },
              {
-              label: "SUPERVISOR",
+              label: "主管",
               value: "SUPERVISOR"
             },
              {
-              label: "COMMISSIONER",
+              label: "专员",
               value: "COMMISSIONER"
             },
           ]
@@ -203,10 +204,16 @@ export default {
           ]
         },
         {
-          prop: "studentCount",
+          prop: "pharmacistsStudentCount",
           element: "el-input",
-          placeholder: "请输入学员数量",
-          label: "学员数量"
+          placeholder: "请输入",
+          label: "药师学员数量"
+        },
+         {
+          prop: "educationStudentCount",
+          element: "el-input",
+          placeholder: "请输入",
+          label: "学历学员数量"
         },
           {
           prop: "pharmacistsCount",
@@ -255,15 +262,15 @@ export default {
           label: "公开课类型",
           options: [
             {
-              label: "EDUCATION",
+              label: "学历",
               value:"EDUCATION"
             },
             {
-              label: "PHARMACIST",
+              label: "药师",
               value:"PHARMACIST"
             },
             {
-              label: "PHYSICIAN",
+              label: "医师",
               value:"PHYSICIAN"
             },
           ]
@@ -319,6 +326,7 @@ export default {
         // ],
         dockingPeoplePhone: [
           { required: true, message: "请输入", trigger: "blur" },
+          { validator: Common._validatorPhone, trigger: "blur" },
         ],
         dockingPeopleJobRank: [
           { required: true, message: "请选择", trigger: "change" },
@@ -328,22 +336,44 @@ export default {
         ],
         scaleRanking: [
           { required: true, message: "请输入", trigger: "blur" },
+          { validator: Common._validatorNumber, message: "请输入数字", trigger: "blur" },
         ],
         storeCount: [
           { required: true, message: "请输入", trigger: "blur" },
+          { validator: Common._validatorNumber, message: "请输入数字", trigger: "blur" },
         ],
         employeeCount: [
           { required: true, message: "请输入", trigger: "blur" },
+          { validator: Common._validatorNumber, message: "请输入数字", trigger: "blur" },
         ],
          cooperationLevel: [
           { required: true, message: "请选择", trigger: "change" },
         ],
-         studentCount: [
-          { required: true, message: "请输入", trigger: "blur" },
-        ],
+        //  studentCount: [
+        //   { required: true, message: "请输入", trigger: "blur" },
+        // ],
          phoneCount: [
           { required: true, message: "请输入", trigger: "blur" },
-        ]
+          { validator: Common._validatorNumber, message: "请输入数字", trigger: "blur" },
+        ],
+        pharmacistsStudentCount: [
+          { validator: Common._validatorNumber, message: "请输入数字", trigger: "blur" },
+        ],
+        educationStudentCount: [
+          { validator: Common._validatorNumber, message: "请输入数字", trigger: "blur" },
+        ],
+        pharmacistsCount: [
+          { validator: Common._validatorNumber, message: "请输入数字", trigger: "blur" },
+        ],
+        examsCount: [
+          { validator: Common._validatorNumber, message: "请输入数字", trigger: "blur" },
+        ],
+        wechatGroupMemberCount: [
+          { validator: Common._validatorNumber, message: "请输入数字", trigger: "blur" },
+        ],
+        enterprisePrincipalPhone: [
+          { validator: Common._validatorPhone2, message: "手机格式错误", trigger: "blur" },
+        ],
       },
       form: {
         chainType: "CHAIN_CUSTOMER"
@@ -502,7 +532,7 @@ export default {
     },
     next() {
         if (this.activeStep++ > 1) this.activeStep = 0;
-    }
+    },
   }
 }
 </script>
