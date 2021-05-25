@@ -877,7 +877,7 @@ export default {
       editId: "",
       visible: true,
       itemData: "",
-      idCardAndPhone: "13570911549",
+      idCardAndPhone: "",
       stuForm: {
         studentName: "",
         studentType: "",
@@ -887,7 +887,7 @@ export default {
         education: "",
         cardId: "",
         provinceName:"",
-        phone: "13570911549",
+        phone: "",
         gender: "",
         provincId: "",
         cityId: "",
@@ -1034,14 +1034,6 @@ export default {
     getCounpList() {
       //优惠券
       let { campusId, classTypeId, productId, subjectId } = this.itemData;
-      // if (!this.stuForm.studentType) {
-      //   this.$message.warning("请先选择学员类型");
-      //   return;
-      // }
-      // if (this.stuForm.courseNum == 0) {
-      //   this.$message.warning("请先选择课程");
-      //   return;
-      // }
       this.couponList = [];
       this.$fetch("coupontemplateversiontwo_availableCoupon", {
         campusId,
@@ -1170,19 +1162,6 @@ export default {
       console.log("this.sum(priceArr)", this.stuForm2.toTalPrice);
       this.stuForm2.realPrice = "";
       this.stuForm2.faceValue = "";
-      // let { campusId, classTypeId, productId, subjectId } = this.itemData;
-      // this.$fetch("coupontemplateversiontwo_availableCoupon", {
-      //   campusId,
-      //   classTypeId,
-      //   productId,
-      //   subjectId,
-      //   courseNames: this.stuForm2.courseNames,
-      //   courseNum: this.stuForm.courseNum,
-      //   classId: this.stuForm.classId,
-      //   studentType: this.stuForm.studentType,
-      // }).then((res) => {
-      //   console.log("res--------------->", res, res.data);
-      // });
     },
     getSelectList() {
       this.$fetch("courseclass_classOrderlistJsonSearch").then((res) => {
