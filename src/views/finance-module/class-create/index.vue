@@ -176,6 +176,7 @@
                   <template
                     v-if="courseList.length > 0 && basicInfo.courses.length > 0"
                   >
+                  <div class="courseArea">
                     <div
                       class="param-item"
                       v-for="(item, index) in courseList"
@@ -223,6 +224,7 @@
                         >
                         </el-switch>
                       </el-form-item>
+                    </div>
                     </div>
                   </template>
                 </div>
@@ -308,8 +310,13 @@
                     <el-col :span="12">
                       <el-input
                         v-model="basicInfo.passDeductFee"
+                          @keyup.native="
+                          basicInfo.passDeductFee = checkInput(
+                            basicInfo.passDeductFee
+                          )
+                        "
                         placeholder="请输入价格"
-                        :readonly="IsDisabled"
+                        :disabled="IsDisabled"
                         size="small"
                       >
                       </el-input>
@@ -1830,10 +1837,15 @@ export default {
 
 <style lang="scss" scoped>
 .class-create {
+  .courseArea{
+    max-height: 300px;
+    overflow-y: auto;
+  }
   .row-item {
     display: flex;
     font-size: 14px;
     align-items: flex-start;
+    padding-bottom: 50px; 
     .sumPriceRow {
       margin-left: 30px;
       display: inline-block;
