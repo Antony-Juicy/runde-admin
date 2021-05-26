@@ -11,6 +11,22 @@ const $common = {
             callback()
         }
     },
+
+    /**
+     * 校验身份证号格式(简单位数格式校验)
+     * param card 身份证号
+     * returns true格式正确，false格式错误
+     */
+    _isCardNo(rule,card,callback) {
+        // 身份证号码为15位或者18位，15位时全为数字，18位前17位为数字，最后一位是校验位，可能为数字或字符X  
+        var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/
+        if (!reg.test(card)) {
+            callback(new Error('身份证号格式错误'))
+        }else{
+            callback() 
+        }
+    },  
+
     _validatePassWord(rule, value, callback) {
         if (value === '') {
             callback(new Error('请输入密码'));

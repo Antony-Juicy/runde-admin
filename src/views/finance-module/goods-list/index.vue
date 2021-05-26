@@ -101,14 +101,28 @@
         <el-form
           ref="stuForm"
           :model="stuForm"
-          label-width="100px"
+          label-width="110px"
           size="small"
         >
           <el-row>
             <el-col :span="24">
-              <el-form-item label="查询学员信息">
+              <el-form-item
+                label="查询学员信息"
+                prop="idCardAndPhone"
+                :rules="[
+                  {
+                    required: true,
+                    message: '请输入正确的身份证号或手机号',
+                    trigger: 'blur',
+                  },
+                  {
+                    validator:stuForm.idCardAndPhone.length> 11 ?validator2: validator,
+                    trigger: 'blur',
+                  },
+                ]"
+              >
                 <el-input
-                  v-model="idCardAndPhone"
+                  v-model="stuForm.idCardAndPhone"
                   style="width: 280px; margin-right: 10px"
                   placeholder="请输入学员身份证或手机号"
                 ></el-input>
@@ -799,10 +813,13 @@ import Pagination from "@/components/Pagination";
 import { scrollTo } from "@/utils/scroll-to";
 import Axios from "axios";
 import testData from "./area.json";
+import Common from "@/utils/common";
 export default {
   name: "goods-list",
   data() {
     return {
+      validator: Common._validatorPhone, 
+      validator2:Common._isCardNo,
       testData: "",
       addVisible: false,
       formOptions: [
@@ -890,8 +907,8 @@ export default {
       editId: "",
       visible: true,
       itemData: "",
-      idCardAndPhone: "",
       stuForm: {
+        idCardAndPhone: "",
         studentName: "",
         studentType: "",
         classBatch: "",
@@ -992,7 +1009,7 @@ export default {
       this.$refs.stuForm2.resetFields();
       this.$refs.stuForm3.resetFields();
       this.$refs.stuForm4.resetFields();
-      this.idCardAndPhone = "";
+      // this.idCardAndPhone = "";
     },
     changeCoupon(e) {
       //选择优惠券
@@ -1075,7 +1092,7 @@ export default {
       this.countyList = [];
       for (var index2 in this.provinceList) {
         if (e == this.provinceList[index2].id) {
-          let shi, pname; 
+          let shi, pname;
           shi = this.provinceList[index2].children;
           pname = this.provinceList[index2].value;
           this.stuForm.provincinitValue = pname; //省
@@ -1142,7 +1159,7 @@ export default {
     },
     handleCheckInfo() {
       this.$fetch("studentcampus_basisIdCardAndPhoneGetInfo", {
-        idCardAndPhone: this.idCardAndPhone,
+        idCardAndPhone: this.stuForm.idCardAndPhone,
       }).then((res) => {
         //校验
         if (res.data.studentCampusModel) {
@@ -1166,7 +1183,7 @@ export default {
           this.$refs.stuForm2.resetFields();
           this.$refs.stuForm3.resetFields();
           this.$refs.stuForm4.resetFields();
-          this.idCardAndPhone = "";
+          // this.idCardAndPhone = "";
         }
       });
     },
@@ -1426,7 +1443,7 @@ export default {
           staffName,
           courses: JSON.stringify(this.stuForm2.courses),
           serviceYear: this.itemData.serviceYear,
-          idCardAndPhone: this.idCardAndPhone,
+          idCardAndPhone: this.stuForm.idCardAndPhone,
         }).then((res) => {
           console.log("提交---32424", this.$refs.stuForm, this.$refs);
           this.$message.success("操作成功");
@@ -1435,7 +1452,7 @@ export default {
           this.$refs.stuForm2.resetFields();
           this.$refs.stuForm3.resetFields();
           this.$refs.stuForm4.resetFields();
-          this.idCardAndPhone = "";
+          // this.idCardAndPhone = "";
           this.getTableData();
         });
       }
