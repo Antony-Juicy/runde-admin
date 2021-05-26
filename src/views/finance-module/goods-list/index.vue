@@ -1453,11 +1453,11 @@ export default {
           (this.genderList = res.data.genderList.map((item) => ({
             label: item.value,
             value: item.key,
-          }))),
-          (this.healthCourseProvinceList = JSON.parse(res.data.healthCourseProvinceList).map((item) => ({
+          }))), 
+          (this.healthCourseProvinceList = res.data.healthCourseProvinceList && JSON.parse(res.data.healthCourseProvinceList).length >0 ? JSON.parse(res.data.healthCourseProvinceList).map((item) => ({
            label: item.provinceName,
             value: item.provinceId,
-          }))),
+          })) : []),
        
           //教务老师,班主任
           (this.eduStaffList = res.data.eduStaffList.map((item) => ({

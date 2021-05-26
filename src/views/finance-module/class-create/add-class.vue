@@ -6,7 +6,7 @@
           v-model="formInline.productName"
           placeholder="项目"
           filterable
-          clearable
+          clearable 
           size="small"
           @change="handleChangeProduct"
         >
@@ -150,10 +150,6 @@ export default {
     };
   },
   props: {
-    opportunityIds: {
-      type: String,
-      default: "",
-    },
     projectArr: {
       //项目
       type: Array,
