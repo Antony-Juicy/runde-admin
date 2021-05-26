@@ -367,6 +367,7 @@ export default {
       console.log("val==", val);
       //  获取科目下拉
       this.basicInfo.subjectName = '';//置空科目
+      this.subjecttArr = [];//置空科目
       this.basicInfo.productId = val;
       this.currentProductId = val;
       this.$emit("message", val);
