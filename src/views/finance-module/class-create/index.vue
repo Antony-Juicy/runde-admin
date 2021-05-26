@@ -176,6 +176,7 @@
                   <template
                     v-if="courseList.length > 0 && basicInfo.courses.length > 0"
                   >
+                  <div class="courseArea">
                     <div
                       class="param-item"
                       v-for="(item, index) in courseList"
@@ -194,6 +195,7 @@
                       >
                         <el-checkbox
                           v-model="basicInfo.courses[index].checked"
+                          :disabled='IsDisabled'
                           :label="item.label"
                         ></el-checkbox>
                         <el-input
@@ -222,6 +224,7 @@
                         >
                         </el-switch>
                       </el-form-item>
+                    </div>
                     </div>
                   </template>
                 </div>
@@ -307,8 +310,13 @@
                     <el-col :span="12">
                       <el-input
                         v-model="basicInfo.passDeductFee"
+                          @keyup.native="
+                          basicInfo.passDeductFee = checkInput(
+                            basicInfo.passDeductFee
+                          )
+                        "
                         placeholder="请输入价格"
-                        :readonly="IsDisabled"
+                        :disabled="IsDisabled"
                         size="small"
                       >
                       </el-input>
@@ -400,15 +408,15 @@
       :title="'添加班型内容'"
       :dialogVisible="distributeVisible"
       :showFooter="false"
-      :width="'1100px'"
+      :width="'80vw'"
       @handleClose="distributeVisible = false"
     >
       <addClass
         :selectProductId="selectProductId"
         :classTypeArr="classTypeArr"
         :projectArr="projectArr"
-        :opportunityIds="opportunityIds"
-        @refresh="getTableData"
+        :opportunityIds="opportunityIds" 
+        @refresh="getTableData" 
         @addTableData="addTableDataFn"
         @closeTableData="distributeVisible = false"
         v-if="distributeVisible"
@@ -919,7 +927,7 @@ export default {
           label: "校区可见：",
           options: [],
           events: {},
-          initValue: [37],
+          // initValue: [37],
         },
         {
           prop: "financeCodeName1",
@@ -1829,10 +1837,15 @@ export default {
 
 <style lang="scss" scoped>
 .class-create {
+  .courseArea{
+    max-height: 300px;
+    overflow-y: auto;
+  }
   .row-item {
     display: flex;
     font-size: 14px;
     align-items: flex-start;
+    padding-bottom: 50px; 
     .sumPriceRow {
       margin-left: 30px;
       display: inline-block;
