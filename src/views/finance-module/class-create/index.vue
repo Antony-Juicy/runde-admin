@@ -415,7 +415,6 @@
         :selectProductId="selectProductId"
         :classTypeArr="classTypeArr"
         :projectArr="projectArr"
-        :opportunityIds="opportunityIds" 
         @refresh="getTableData" 
         @addTableData="addTableDataFn"
         @closeTableData="distributeVisible = false"
@@ -861,14 +860,14 @@ export default {
           options: [
             {
               label: "有权限",
-              value: "Open",
+              value: true,
             },
             {
               label: "无权限",
-              value: "Close",
+              value: false,
             },
           ],
-          initValue: "Open",
+          initValue: "",
         },
         {
           prop: "studyPower",
@@ -878,14 +877,14 @@ export default {
           options: [
             {
               label: "有权限",
-              value: "Open",
+              value: true,
             },
             {
               label: "无权限",
-              value: "Close",
+              value: false,
             },
           ],
-          initValue: "Open",
+          initValue: "",
         },
         {
           prop: "crowdType",
@@ -1008,7 +1007,6 @@ export default {
       campusArr: [],
       campusIds: [], //校区id [{name:汕头分校(广东校区),val:10}]
       distributeVisible: false,
-      opportunityIds: "",
       detailTableData: [],
       detailTableKey: [
         { name: "id", value: "id" },
@@ -1149,6 +1147,7 @@ export default {
     },
     getCourseListFunc(data) {
       //获取课程
+      this.basicInfo.tableData = [];//选择科目后置空班型内容列表
       this.courseList = data;
       this.basicInfo.courses = data.map((item) => ({
         courseName: item.label,
