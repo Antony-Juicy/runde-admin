@@ -1114,6 +1114,7 @@ export default {
     },
     addTableDataFn(data) {
       this.distributeVisible = false;
+      console.log(" addTableDataFn data ",data) 
       if (data && data.length > 0) {
         if (this.basicInfo.tableData && this.basicInfo.tableData.length > 0) {
           let idArr = this.basicInfo.tableData.map((item) => {
@@ -1127,6 +1128,7 @@ export default {
           this.basicInfo.tableData = this.basicInfo.tableData.concat(data);
         }
       }
+      console.log("this.basicInfo.tableData ",this.basicInfo.tableData )
     },
     initProductIdFn(data) {
       this.selectProductId = data;
