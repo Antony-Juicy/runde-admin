@@ -107,7 +107,6 @@
             ref="dataForm2"
             :model="basicInfo"
             :rules="rules"
-            label-width="120px"
           >
             <!-- start -->
             <div class="">
@@ -167,7 +166,7 @@
                         readonly
                         v-model="totalPrice"
                         size="small"
-                        style="width: 300px"
+                        style="width: 100px"
                         @keyup.native="totalPrice = checkInput(totalPrice)"
                       ></el-input>
                       <span style="margin-left: 10px">元</span>
@@ -176,55 +175,57 @@
                   <template
                     v-if="courseList.length > 0 && basicInfo.courses.length > 0"
                   >
-                  <div class="courseArea">
-                    <div
-                      class="param-item"
-                      v-for="(item, index) in courseList"
-                      :key="item.value"
-                    >
-                      <el-form-item
-                        :prop="'courses.' + index + '.coursePrice'"
-                        label-width="0"
-                        :rules="{
-                          required: basicInfo.courses[index].checked
-                            ? true
-                            : false,
-                          message: '请输入价格',
-                          trigger: 'blur',
-                        }"
+                    <div class="courseArea">
+                      <div
+                        class="param-item"
+                        v-for="(item, index) in courseList"
+                        :key="item.value"
                       >
-                        <el-checkbox
-                          v-model="basicInfo.courses[index].checked"
-                          :disabled='IsDisabled'
-                          :label="item.label"
-                        ></el-checkbox>
-                        <el-input
-                          v-model="basicInfo.courses[index].coursePrice"
-                          size="small"
-                          @keyup.native="
-                            basicInfo.courses[index].coursePrice = checkInput(
-                              basicInfo.courses[index].coursePrice
-                            )
-                          "
-                          placeholder="请输入价格"
-                          style="width: 200px; margin-left: 20px"
-                        ></el-input>
-
-                        <el-switch
-                          active-text="计算业绩"
-                          style="margin-left: 20px"
-                          v-model="basicInfo.courses[index].isperformance"
-                          active-color="#13ce66"
-                          inactive-color="#dcdfe6"
-                          @change="
-                            handleSwitchChange(
-                              basicInfo.courses[index].isperformance
-                            )
-                          "
+                        <el-form-item
+                          style="display: flex; flex: 1"
+                          :prop="'courses.' + index + '.coursePrice'"
+                          label-width="0"
+                          :rules="{
+                            required: basicInfo.courses[index].checked
+                              ? true
+                              : false,
+                            message: '请输入价格',
+                            trigger: 'blur',
+                          }"
                         >
-                        </el-switch>
-                      </el-form-item>
-                    </div>
+                          <el-checkbox
+                            style="flex: 1"
+                            v-model="basicInfo.courses[index].checked"
+                            :disabled="IsDisabled"
+                            :label="item.label"
+                          ></el-checkbox>
+                          <el-input
+                            v-model="basicInfo.courses[index].coursePrice"
+                            size="small"
+                            @keyup.native="
+                              basicInfo.courses[index].coursePrice = checkInput(
+                                basicInfo.courses[index].coursePrice
+                              )
+                            "
+                            placeholder="请输入价格"
+                            style="width: 100px; margin-left: 20px"
+                          ></el-input>
+
+                          <el-switch
+                            active-text="计算业绩"
+                            style="margin-left: 20px"
+                            v-model="basicInfo.courses[index].isperformance"
+                            active-color="#13ce66"
+                            inactive-color="#dcdfe6"
+                            @change="
+                              handleSwitchChange(
+                                basicInfo.courses[index].isperformance
+                              )
+                            "
+                          >
+                          </el-switch>
+                        </el-form-item>
+                      </div>
                     </div>
                   </template>
                 </div>
@@ -310,7 +311,7 @@
                     <el-col :span="12">
                       <el-input
                         v-model="basicInfo.passDeductFee"
-                          @keyup.native="
+                        @keyup.native="
                           basicInfo.passDeductFee = checkInput(
                             basicInfo.passDeductFee
                           )
@@ -415,7 +416,7 @@
         :selectProductId="selectProductId"
         :classTypeArr="classTypeArr"
         :projectArr="projectArr"
-        @refresh="getTableData" 
+        @refresh="getTableData"
         @addTableData="addTableDataFn"
         @closeTableData="distributeVisible = false"
         v-if="distributeVisible"
@@ -1114,7 +1115,7 @@ export default {
     },
     addTableDataFn(data) {
       this.distributeVisible = false;
-      console.log(" addTableDataFn data ",data) 
+      console.log(" addTableDataFn data ", data);
       if (data && data.length > 0) {
         if (this.basicInfo.tableData && this.basicInfo.tableData.length > 0) {
           let idArr = this.basicInfo.tableData.map((item) => {
@@ -1128,7 +1129,7 @@ export default {
           this.basicInfo.tableData = this.basicInfo.tableData.concat(data);
         }
       }
-      console.log("this.basicInfo.tableData ",this.basicInfo.tableData )
+      console.log("this.basicInfo.tableData ", this.basicInfo.tableData);
     },
     initProductIdFn(data) {
       this.selectProductId = data;
@@ -1149,7 +1150,7 @@ export default {
     },
     getCourseListFunc(data) {
       //获取课程
-      this.basicInfo.tableData = [];//选择科目后置空班型内容列表
+      this.basicInfo.tableData = []; //选择科目后置空班型内容列表
       this.courseList = data;
       this.basicInfo.courses = data.map((item) => ({
         courseName: item.label,
@@ -1838,7 +1839,7 @@ export default {
 
 <style lang="scss" scoped>
 .class-create {
-  .courseArea{
+  .courseArea {
     max-height: 300px;
     overflow-y: auto;
   }
@@ -1846,9 +1847,9 @@ export default {
     display: flex;
     font-size: 14px;
     align-items: flex-start;
-    padding-bottom: 50px; 
+    padding-bottom: 50px;
     .sumPriceRow {
-      margin-left: 30px;
+      margin-left: 10px;
       display: inline-block;
       padding-top: 10px;
     }
@@ -1856,9 +1857,24 @@ export default {
       margin-left: 10px;
     }
   }
+  .courseArea {
+    .param-item {
+      width: 100%;
+      padding-right: 120px;
+      box-sizing: border-box;
+      /deep/.el-form-item__content {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex: 1;
+        // width: 100%;
+      }
+    }
+  }
   .param-item {
     display: flex;
     align-items: center;
+
     // margin-bottom: 20px;
   }
   .steps-box {

@@ -116,7 +116,10 @@
                     trigger: 'blur',
                   },
                   {
-                    validator:stuForm.idCardAndPhone.length> 11 ?validator2: validator,
+                    validator:
+                      stuForm.idCardAndPhone.length > 11
+                        ? validator2
+                        : validator,
                     trigger: 'blur',
                   },
                 ]"
@@ -557,18 +560,17 @@
                 trigger: 'change',
               }"
             >
-              <!-- <el-checkbox-group v-model="stuForm.courses"> -->
-              <el-checkbox
-                v-for="(course, index) in courseInfoList"
-                @change="changeCheckbox(index, course)"
-                :key="course.vaule"
-                :label="course.vaule"
-                >{{ course.label }}</el-checkbox
+              <el-checkbox-group
+                v-model="stuForm2.courses"
+                @change="changeCheckbox"
               >
-              <!-- <el-checkbox :label="6">中药二</el-checkbox>
-                <el-checkbox :label="9">中药综合</el-checkbox> 
-                <el-checkbox :label="10">中药法规</el-checkbox> -->
-              <!-- </el-checkbox-group> -->
+                <el-checkbox
+                  v-for="course in courseInfoList"
+                  :key="course.vaule"
+                  :label="course.label"
+                  :value="course.value"
+                ></el-checkbox>
+              </el-checkbox-group>
             </el-form-item>
           </el-row>
           <el-row>
@@ -818,8 +820,8 @@ export default {
   name: "goods-list",
   data() {
     return {
-      validator: Common._validatorPhone, 
-      validator2:Common._isCardNo,
+      validator: Common._validatorPhone,
+      validator2: Common._isCardNo,
       testData: "",
       addVisible: false,
       formOptions: [
@@ -949,6 +951,7 @@ export default {
         classTeacherId: "",
         eduUserId: "",
         staffId: "",
+        agent: "",
       },
       stuForm4: {
         remark: "",
@@ -1009,7 +1012,6 @@ export default {
       this.$refs.stuForm2.resetFields();
       this.$refs.stuForm3.resetFields();
       this.$refs.stuForm4.resetFields();
-      // this.idCardAndPhone = "";
     },
     changeCoupon(e) {
       //选择优惠券
@@ -1158,58 +1160,61 @@ export default {
         });
     },
     handleCheckInfo() {
-      this.$fetch("studentcampus_basisIdCardAndPhoneGetInfo", {
-        idCardAndPhone: this.stuForm.idCardAndPhone,
-      }).then((res) => {
-        //校验
-        if (res.data.studentCampusModel) {
-          //老学员
-          for (var key in res.data.studentCampusModel) {
-            if (this.stuForm[key] != undefined) {
-              this.stuForm[key] = res.data.studentCampusModel[key];
-            }
-          }
-          this.stuForm["provincinitValue"] =
-            res.data.studentCampusModel["provinc"];
-          this.stuForm["cityinitValue"] = res.data.studentCampusModel["city"];
-          this.stuForm["countyinitValue"] =
-            res.data.studentCampusModel["county"];
-          console.log("countycountycounty1111", this.stuForm);
-          this.stuForm.studentType = "Old";
+      this.$refs.stuForm.validateField("idCardAndPhone", (errMsg) => {
+        if (errMsg) {
+          console.log("校验失败");
         } else {
-          //新学员
-          this.stuForm.studentType = "New";
-          this.$refs.stuForm.resetFields();
-          this.$refs.stuForm2.resetFields();
-          this.$refs.stuForm3.resetFields();
-          this.$refs.stuForm4.resetFields();
-          // this.idCardAndPhone = "";
+          //校验通过
+          this.$fetch("studentcampus_basisIdCardAndPhoneGetInfo", {
+            idCardAndPhone: this.stuForm.idCardAndPhone,
+          }).then((res) => {
+            //根据身份证或手机查询学员信息
+            if (res.data.studentCampusModel) {
+              //老学员
+              for (var key in res.data.studentCampusModel) {
+                if (this.stuForm[key] != undefined) {
+                  this.stuForm[key] = res.data.studentCampusModel[key];
+                }
+              }
+              this.stuForm["provincinitValue"] =
+                res.data.studentCampusModel["provinc"];
+              this.stuForm["cityinitValue"] =
+                res.data.studentCampusModel["city"];
+              this.stuForm["countyinitValue"] =
+                res.data.studentCampusModel["county"];
+              console.log("countycountycounty1111", this.stuForm);
+              this.stuForm.studentType = "Old";
+            } else {
+              //新学员
+              this.stuForm.studentType = "New";
+              this.$refs.stuForm.resetFields();
+              this.$refs.stuForm2.resetFields();
+              this.$refs.stuForm3.resetFields();
+              this.$refs.stuForm4.resetFields();
+            }
+          });
         }
       });
     },
     sum(arr) {
       return eval(arr.join("+"));
     },
-    changeCheckbox(index, item) {
+    changeCheckbox(val) {
       this.stuForm2.couponId = ""; //置空优惠券
-      item.checked == 0
-        ? (this.courseInfoList[index].checked = 1)
-        : (this.courseInfoList[index].checked = 0);
-      this.stuForm2.courses = this.courseInfoList
-        .filter((item) => item.checked)
-        .map((item) => {
-          return item.label;
-        });
-      let priceArr = this.courseInfoList
-        .filter((item) => item.checked)
-        .map((item) => {
-          return item.price;
-        });
+      this.stuForm2.courses = val;
+      let arr = this.courseInfoList.filter((el) => val.indexOf(el.label) != -1);
+      let priceArr = arr.map((item) => {
+        return item.price;
+      });
       this.stuForm2.courseNames = this.stuForm2.courses.toString();
       this.stuForm2.courseNum = this.stuForm2.courses.length;
       this.stuForm2.toTalPrice =
         priceArr && priceArr.length > 0 ? this.sum(priceArr) : 0;
-      console.log("this.sum(priceArr)", this.stuForm2.toTalPrice);
+      console.log(
+        "this.sum(priceArr)",
+        this.stuForm2,
+        this.stuForm2.toTalPrice
+      );
       this.stuForm2.realPrice = "";
       this.stuForm2.faceValue = "";
     },
@@ -1452,7 +1457,6 @@ export default {
           this.$refs.stuForm2.resetFields();
           this.$refs.stuForm3.resetFields();
           this.$refs.stuForm4.resetFields();
-          // this.idCardAndPhone = "";
           this.getTableData();
         });
       }
