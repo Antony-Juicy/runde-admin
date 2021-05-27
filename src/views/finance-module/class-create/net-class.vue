@@ -252,18 +252,19 @@ export default {
       });
     },
     onSearch(val) {
-      this.searchForm = {
+      this.searchForm = { 
         ...val,
       };
       this.getTableData();
     },
     getTableData(params = {}) {
-      //TODO  secretexamsubject_list
+      let courseName = this.classTypeArr && this.classTypeArr.length > 0? this.classTypeArr.find(item => (item.value == this.searchForm.courseId)).label : '';
       this.$fetch("courseclasstypemiddle_listJsp", {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
-        classTypeId: this.classTypeId
+        classTypeId: this.classTypeId,
+        courseName
       }).then((res) => {
         this.tableData = res.data.varList.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);

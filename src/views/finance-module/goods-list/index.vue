@@ -101,14 +101,31 @@
         <el-form
           ref="stuForm"
           :model="stuForm"
-          label-width="100px"
+          label-width="110px"
           size="small"
         >
           <el-row>
             <el-col :span="24">
-              <el-form-item label="查询学员信息">
+              <el-form-item
+                label="查询学员信息"
+                prop="idCardAndPhone"
+                :rules="[
+                  {
+                    required: true,
+                    message: '请输入正确的身份证号或手机号',
+                    trigger: 'blur',
+                  },
+                  {
+                    validator:
+                      stuForm.idCardAndPhone.length > 11
+                        ? validator2
+                        : validator,
+                    trigger: 'blur',
+                  },
+                ]"
+              >
                 <el-input
-                  v-model="idCardAndPhone"
+                  v-model="stuForm.idCardAndPhone"
                   style="width: 280px; margin-right: 10px"
                   placeholder="请输入学员身份证或手机号"
                 ></el-input>
@@ -298,7 +315,7 @@
                 ></el-input>
               </el-form-item>
             </el-col>
-             <el-col :span="8">
+            <el-col :span="8">
               <el-form-item
                 v-if="itemData.productName == '健康管理师'"
                 label="报考省份"
@@ -352,7 +369,7 @@
             <el-col :span="8">
               <el-form-item
                 label="省"
-                prop="provinc"
+                prop="provincinitValue"
                 :rules="{
                   required: true,
                   message: '不能为空',
@@ -360,7 +377,7 @@
                 }"
               >
                 <el-select
-                  v-model="stuForm.provinc"
+                  v-model="stuForm.provincinitValue"
                   style="width: 200px"
                   placeholder="请选择省份"
                   @change="choseProvince"
@@ -377,7 +394,7 @@
             <el-col :span="8">
               <el-form-item
                 label="市"
-                prop="city"
+                prop="cityinitValue"
                 :rules="{
                   required: true,
                   message: '不能为空',
@@ -385,7 +402,7 @@
                 }"
               >
                 <el-select
-                  v-model="stuForm.city"
+                  v-model="stuForm.cityinitValue"
                   style="width: 200px"
                   placeholder="请选择市"
                   @change="choseCity"
@@ -402,7 +419,7 @@
             <el-col :span="8">
               <el-form-item
                 label="区/县"
-                prop="county"
+                prop="countyinitValue"
                 :rules="{
                   required: true,
                   message: '不能为空',
@@ -410,7 +427,7 @@
                 }"
               >
                 <el-select
-                  v-model="stuForm.county"
+                  v-model="stuForm.countyinitValue"
                   style="width: 200px"
                   placeholder="请选择区/县"
                   @change="choseCounty"
@@ -436,9 +453,22 @@
                   trigger: 'blur',
                 }"
               >
-                <span style="margin-right: 6px">xx省</span
-                ><span style="margin-right: 6px">xx市</span
-                ><span style="margin-right: 6px">xx区</span>
+                <span
+                  style="margin-right: 6px"
+                  v-text="
+                    stuForm.provincinitValue ? stuForm.provincinitValue : '省'
+                  "
+                ></span
+                ><span
+                  style="margin-right: 6px"
+                  v-text="stuForm.cityinitValue ? stuForm.cityinitValue : '市'"
+                ></span
+                ><span
+                  style="margin-right: 6px"
+                  v-text="
+                    stuForm.countyinitValue ? stuForm.countyinitValue : '区'
+                  "
+                ></span>
                 <el-input
                   v-model="stuForm.address"
                   style="width: 500px"
@@ -530,18 +560,17 @@
                 trigger: 'change',
               }"
             >
-              <!-- <el-checkbox-group v-model="stuForm.courses"> -->
-              <el-checkbox
-                v-for="(course, index) in courseInfoList"
-                @change="changeCheckbox(index, course)"
-                :key="course.vaule"
-                :label="course.vaule"
-                >{{ course.label }}</el-checkbox
+              <el-checkbox-group
+                v-model="stuForm2.courses"
+                @change="changeCheckbox"
               >
-              <!-- <el-checkbox :label="6">中药二</el-checkbox>
-                <el-checkbox :label="9">中药综合</el-checkbox> 
-                <el-checkbox :label="10">中药法规</el-checkbox> -->
-              <!-- </el-checkbox-group> -->
+                <el-checkbox
+                  v-for="course in courseInfoList"
+                  :key="course.vaule"
+                  :label="course.label"
+                  :value="course.value"
+                ></el-checkbox>
+              </el-checkbox-group>
             </el-form-item>
           </el-row>
           <el-row>
@@ -786,10 +815,13 @@ import Pagination from "@/components/Pagination";
 import { scrollTo } from "@/utils/scroll-to";
 import Axios from "axios";
 import testData from "./area.json";
+import Common from "@/utils/common";
 export default {
   name: "goods-list",
   data() {
     return {
+      validator: Common._validatorPhone,
+      validator2: Common._isCardNo,
       testData: "",
       addVisible: false,
       formOptions: [
@@ -877,8 +909,8 @@ export default {
       editId: "",
       visible: true,
       itemData: "",
-      idCardAndPhone: "",
       stuForm: {
+        idCardAndPhone: "",
         studentName: "",
         studentType: "",
         classBatch: "",
@@ -886,7 +918,7 @@ export default {
         mediatorName: "",
         education: "",
         cardId: "",
-        provinceName:"",
+        provinceName: "",
         phone: "",
         gender: "",
         provincId: "",
@@ -895,6 +927,9 @@ export default {
         provinc: "",
         city: "",
         county: "",
+        provincinitValue: "",
+        cityinitValue: "",
+        countyinitValue: "",
         address: "",
         studentId: "",
       },
@@ -915,6 +950,8 @@ export default {
         enrollId: "",
         classTeacherId: "",
         eduUserId: "",
+        staffId: "",
+        agent: "",
       },
       stuForm4: {
         remark: "",
@@ -975,7 +1012,6 @@ export default {
       this.$refs.stuForm2.resetFields();
       this.$refs.stuForm3.resetFields();
       this.$refs.stuForm4.resetFields();
-      this.idCardAndPhone = "";
     },
     changeCoupon(e) {
       //选择优惠券
@@ -1051,8 +1087,9 @@ export default {
     },
     choseProvince(e) {
       //选省
-      this.stuForm.cityId = ""; //重置市区
-      this.stuForm.countyId = ""; //重置区县
+      this.stuForm.provincId = e;
+      this.stuForm.cityinitValue = ""; //重置市区
+      this.stuForm.countyinitValue = ""; //重置区县
       this.cityList = [];
       this.countyList = [];
       for (var index2 in this.provinceList) {
@@ -1060,6 +1097,7 @@ export default {
           let shi, pname;
           shi = this.provinceList[index2].children;
           pname = this.provinceList[index2].value;
+          this.stuForm.provincinitValue = pname; //省
           console.log("citem,cIndexshi,pname", shi, pname);
           for (let pitem in shi) {
             this.cityList.push({
@@ -1073,13 +1111,14 @@ export default {
     },
     choseCity(e) {
       //选市
-      this.stuForm.countyId = ""; //重置区县
+      this.stuForm.cityId = e;
+      this.stuForm.countyinitValue = ""; //重置区县
       this.countyList = [];
       for (var index3 in this.cityList) {
-        console.log("this.cityList[index3].id", this.cityList[index3].id, e);
         if (e == this.cityList[index3].id) {
           this.qu1 = this.cityList[index3].children;
           this.cname = this.cityList[index3].value;
+          this.stuForm.cityinitValue = this.cname; //市
           console.log("cname,qu1", this.qu1, this.cname);
           for (let citem in this.qu1) {
             this.countyList.push({
@@ -1093,7 +1132,14 @@ export default {
     },
     choseCounty(e) {
       // 选区
-      console.log(e, "e--------------333333", e, this.stuForm.countyId);
+      this.stuForm.countyId = e;
+      for (var index4 in this.countyList) {
+        if (e == this.countyList[index4].id) {
+          let quname = this.countyList[index4].value;
+          this.stuForm.countyinitValue = quname; //区
+          console.log("cname,qu1 quname", quname);
+        }
+      }
     },
     getdata() {
       Axios.get("https://rdimg.rundejy.com/data/common/address/address.json")
@@ -1114,52 +1160,61 @@ export default {
         });
     },
     handleCheckInfo() {
-      this.$fetch("studentcampus_basisIdCardAndPhoneGetInfo", {
-        idCardAndPhone: this.idCardAndPhone,
-      }).then((res) => {
-        //校验
-        if (res.data.studentCampusModel) {
-          //老学员
-          for (var key in res.data.studentCampusModel) {
-            if (this.stuForm[key] != undefined) {
-              this.stuForm[key] = res.data.studentCampusModel[key];
-            }
-          }
-          this.stuForm.studentType = "Old";
+      this.$refs.stuForm.validateField("idCardAndPhone", (errMsg) => {
+        if (errMsg) {
+          console.log("校验失败");
         } else {
-          //新学员
-          this.stuForm.studentType = "New";
-          this.$refs.stuForm.resetFields();
-          this.$refs.stuForm2.resetFields();
-          this.$refs.stuForm3.resetFields();
-          this.$refs.stuForm4.resetFields();
-          this.idCardAndPhone = "";
+          //校验通过
+          this.$fetch("studentcampus_basisIdCardAndPhoneGetInfo", {
+            idCardAndPhone: this.stuForm.idCardAndPhone,
+          }).then((res) => {
+            //根据身份证或手机查询学员信息
+            if (res.data.studentCampusModel) {
+              //老学员
+              for (var key in res.data.studentCampusModel) {
+                if (this.stuForm[key] != undefined) {
+                  this.stuForm[key] = res.data.studentCampusModel[key];
+                }
+              }
+              this.stuForm["provincinitValue"] =
+                res.data.studentCampusModel["provinc"];
+              this.stuForm["cityinitValue"] =
+                res.data.studentCampusModel["city"];
+              this.stuForm["countyinitValue"] =
+                res.data.studentCampusModel["county"];
+              console.log("countycountycounty1111", this.stuForm);
+              this.stuForm.studentType = "Old";
+            } else {
+              //新学员
+              this.stuForm.studentType = "New";
+              this.$refs.stuForm.resetFields();
+              this.$refs.stuForm2.resetFields();
+              this.$refs.stuForm3.resetFields();
+              this.$refs.stuForm4.resetFields();
+            }
+          });
         }
       });
     },
     sum(arr) {
       return eval(arr.join("+"));
     },
-    changeCheckbox(index, item) {
+    changeCheckbox(val) {
       this.stuForm2.couponId = ""; //置空优惠券
-      item.checked == 0
-        ? (this.courseInfoList[index].checked = 1)
-        : (this.courseInfoList[index].checked = 0);
-      this.stuForm2.courses = this.courseInfoList
-        .filter((item) => item.checked)
-        .map((item) => {
-          return item.label;
-        });
-      let priceArr = this.courseInfoList
-        .filter((item) => item.checked)
-        .map((item) => {
-          return item.price;
-        });
+      this.stuForm2.courses = val;
+      let arr = this.courseInfoList.filter((el) => val.indexOf(el.label) != -1);
+      let priceArr = arr.map((item) => {
+        return item.price;
+      });
       this.stuForm2.courseNames = this.stuForm2.courses.toString();
       this.stuForm2.courseNum = this.stuForm2.courses.length;
       this.stuForm2.toTalPrice =
         priceArr && priceArr.length > 0 ? this.sum(priceArr) : 0;
-      console.log("this.sum(priceArr)", this.stuForm2.toTalPrice);
+      console.log(
+        "this.sum(priceArr)",
+        this.stuForm2,
+        this.stuForm2.toTalPrice
+      );
       this.stuForm2.realPrice = "";
       this.stuForm2.faceValue = "";
     },
@@ -1377,6 +1432,7 @@ export default {
             couponName = el.couponName;
           }
         });
+        console.log("this.stuForm-------------------", this.stuForm);
         this.$fetch("orderinfo_saveProduct", {
           ...this.stuForm,
           ...this.stuForm2,
@@ -1392,7 +1448,7 @@ export default {
           staffName,
           courses: JSON.stringify(this.stuForm2.courses),
           serviceYear: this.itemData.serviceYear,
-          idCardAndPhone: this.idCardAndPhone,
+          idCardAndPhone: this.stuForm.idCardAndPhone,
         }).then((res) => {
           console.log("提交---32424", this.$refs.stuForm, this.$refs);
           this.$message.success("操作成功");
@@ -1401,7 +1457,6 @@ export default {
           this.$refs.stuForm2.resetFields();
           this.$refs.stuForm3.resetFields();
           this.$refs.stuForm4.resetFields();
-          this.idCardAndPhone = "";
           this.getTableData();
         });
       }
@@ -1453,12 +1508,15 @@ export default {
           (this.genderList = res.data.genderList.map((item) => ({
             label: item.value,
             value: item.key,
-          }))), 
-          (this.healthCourseProvinceList = res.data.healthCourseProvinceList && JSON.parse(res.data.healthCourseProvinceList).length >0 ? JSON.parse(res.data.healthCourseProvinceList).map((item) => ({
-           label: item.provinceName,
-            value: item.provinceId,
-          })) : []),
-       
+          }))),
+          (this.healthCourseProvinceList =
+            res.data.healthCourseProvinceList &&
+            JSON.parse(res.data.healthCourseProvinceList).length > 0
+              ? JSON.parse(res.data.healthCourseProvinceList).map((item) => ({
+                  label: item.provinceName,
+                  value: item.provinceId,
+                }))
+              : []),
           //教务老师,班主任
           (this.eduStaffList = res.data.eduStaffList.map((item) => ({
             label: item.staffName,
@@ -1495,7 +1553,7 @@ export default {
 
 <style lang="scss" scoped>
 .goods-list {
-  .el-form-item{
+  .el-form-item {
     margin-bottom: 26px;
   }
   .content-container {
