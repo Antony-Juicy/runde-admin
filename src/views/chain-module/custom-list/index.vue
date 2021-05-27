@@ -11,9 +11,9 @@
         <el-button type="primary" size="small" @click="handleAdd"
           >添加</el-button
         >
-        <el-button type="warning" size="small" @click="importVisible = true"
+        <!-- <el-button type="warning" size="small" @click="importVisible = true"
           >导入</el-button
-        >
+        > -->
         <el-button type="success" size="small" @click="handleDistribute"
           >批量分配</el-button
         >
@@ -200,7 +200,7 @@ export default {
         },
         {
           name: "所属集团",
-          value: "group",
+          value: "membershipGroup",
         },
         {
           name: "规模排名",
@@ -223,8 +223,12 @@ export default {
           value: "cooperationLevel",
         },
         {
-          name: "学员数量",
-          value: "studentCount",
+          name: "药师学员数量",
+          value: "pharmacistsStudentCount",
+        },
+        {
+          name: "学历学员数量",
+          value: "educationStudentCount",
         },
         {
           name: "跟进情况",
@@ -266,7 +270,8 @@ export default {
           label: "所属组织",
           options: [
           ],
-          events:{}
+          events:{},
+          filterable:true
         },
         {
           prop: "provincialSchoolId",
@@ -275,7 +280,8 @@ export default {
           label: "所属校区",
           options: [
           ],
-          events:{}
+          events:{},
+          filterable:true
         },
         {
           prop: "branchSchoolId",
@@ -284,7 +290,8 @@ export default {
           label: "所属分校",
           options: [
           ],
-          events:{}
+          events:{},
+          filterable:true
         },
         {
           prop: "followUpUserId",
@@ -293,7 +300,7 @@ export default {
           label: "跟进老师",
           options: [
           ],
-
+          filterable:true
         },
         {
           prop: "nextVisitDate",
@@ -504,6 +511,7 @@ export default {
         this.tableData = res.data.records.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
           item.updateAt = this.$common._formatDates(item.updateAt);
+          item.signAgreement = item.signAgreement?'是':'否';
           return item;
         });
         this.pageConfig.totalCount = res.data.totalCount;

@@ -59,6 +59,17 @@
 <script>
 import searchMap from "./search-map";
 import Common from "@/utils/common";
+let validateStoreCount = (rule, value, callback) => {
+        if(value == undefined || value == ''){
+            callback();
+        }else if ( parseFloat(value).toString() == "NaN") {
+            callback(new Error('请输入数字'));
+        } else if(Number(value) < 10){
+          callback(new Error('门店数量不能少于10'));
+        }else{
+            callback();
+        }
+    }
 export default {
   name:"creat-chain",
   data(){
@@ -83,19 +94,55 @@ export default {
           label: "所属集团"
         },
         {
+          prop: "organizationId",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "所属组织",
+          options: [
+          ],
+          events:{},
+          filterable:true,
+          disabled: false
+        },
+        {
+          prop: "provincialSchoolId",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "所属校区",
+          options: [
+          ],
+          events:{},
+          filterable:true,
+          disabled: false
+        },
+        {
+          prop: "branchSchoolId",
+          element: "el-select",
+          placeholder: "请选择",
+          label: "所属分校",
+          options: [
+          ],
+          events:{},
+          filterable:true,
+          disabled: false
+        },
+        {
           prop: "followUpUserId",
           element: "el-select",
-          placeholder: "请选择跟进人",
-          label: "当前跟进人",
-          options: [],
-          operate: true
+          placeholder: "请选择",
+          label: "跟进人",
+          options: [
+          ],
+          filterable:true,
+          disabled: false
         },
          {
           prop: "nextVisitDate",
           element: "el-date-picker",
           placeholder: "请选择",
           label: "首次跟进截止时间",
-          type: "datetime"
+          type: "datetime",
+          disabled: false
         },
          {
           prop: "dockingPeople",
@@ -241,13 +288,15 @@ export default {
               label:"否",
               value:false
             }
-          ]
+          ],
+          events: {}
         },
             {
           prop: "wechatGroupMemberCount",
           element: "el-input",
           placeholder: "请输入",
-          label: "微信群人数"
+          label: "微信群人数",
+          hide: true
         },
             {
           prop: "phoneCount",
@@ -340,7 +389,7 @@ export default {
         ],
         storeCount: [
           { required: true, message: "请输入", trigger: "blur" },
-          { validator: Common._validatorNumber, message: "请输入数字", trigger: "blur" },
+          { validator: validateStoreCount, trigger: "blur" },
         ],
         employeeCount: [
           { required: true, message: "请输入", trigger: "blur" },
@@ -385,7 +434,11 @@ export default {
       },
       chainTypeArr: [],
       currentData: {},
-      currentAddressData: {}
+      currentAddressData: {},
+      organizationArr: [],
+      provincialSchoolArr: [],
+      branchSchoolArr: [],
+      followUpUserArr: [],
     }
   },
   props: {
@@ -401,6 +454,10 @@ export default {
     chainId(newVal){
       console.log(newVal,'newval')
       this.getInfo(newVal);
+    },
+    addStatus(newVal){
+      console.log(newVal,'addStatus----')
+      
     }
   },
   components: {
@@ -410,8 +467,24 @@ export default {
     console.log(this.chainId,'chainid')
     this.getSelectList();
     this.getInfo(this.chainId);
+    this.checkAddStatus();
   },
    methods: {
+     checkAddStatus(){
+       if(this.addStatus){
+        this.addFormOptions[2].disabled = false;
+        this.addFormOptions[3].disabled = false;
+        this.addFormOptions[4].disabled = false;
+        this.addFormOptions[5].disabled = false;
+        this.addFormOptions[6].disabled = false;
+      }else {
+        this.addFormOptions[2].disabled = true;
+        this.addFormOptions[3].disabled = true;
+        this.addFormOptions[4].disabled = true;
+        this.addFormOptions[5].disabled = true;
+        this.addFormOptions[6].disabled = true;
+      }
+     },
      followSelect(query){
        if (query !== '') {
          this.loading = true;
@@ -484,6 +557,82 @@ export default {
            label: item.chainTypeName,
            value: item.chainTypeValue
          }))
+       });
+       this.$fetch("chain_getCampusList",{
+         parentId: 0
+       }).then(res => {
+         this.organizationArr = res.data.map(item => ({
+           label: item.campusName,
+           value: item.campusId
+         }));
+         this.addFormOptions[2].options = this.organizationArr;
+         this.addFormOptions[2].events = {
+           change: this.organizationChange
+         }
+         this.addFormOptions[20].events = {
+           change: this.creatGroupChange
+         }
+       })
+     },
+     creatGroupChange(val){
+       if(val){
+         this.addFormOptions[21].hide = false;
+       }else {
+         this.addFormOptions[21].hide = true;
+       }
+     },
+      organizationChange(val){
+       this.$fetch("chain_getCampusList",{
+         parentId: val
+       }).then(res => {
+         this.provincialSchoolArr = res.data.map(item => ({
+           label: item.campusName,
+           value: item.campusId
+         }));
+         this.addFormOptions[3].options = this.provincialSchoolArr;
+         this.addFormOptions[3].events = {
+           change: this.provincialSchoolChange
+         }
+        //  清除下级的数据和值
+          this.$refs.dataForm3.setValue({
+              provincialSchoolId:'',
+              branchSchoolId:'',
+              followUpUserId:'',
+          })
+       })
+     },
+      provincialSchoolChange(val){
+      this.$fetch("chain_getCampusList",{
+         parentId: val
+       }).then(res => {
+         this.branchSchoolArr = res.data.map(item => ({
+           label: item.campusName,
+           value: item.campusId
+         }));
+         this.addFormOptions[4].options = this.branchSchoolArr;
+         this.addFormOptions[4].events = {
+           change: this.branchSchoolChange
+         }
+         //  清除下级的数据和值
+          this.$refs.dataForm3.setValue({
+              branchSchoolId:'',
+              followUpUserId:'',
+          })
+       })
+     },
+      branchSchoolChange(val){
+        this.$fetch("chain_getUserListByCampusId",{
+         campusId: val
+       }).then(res => {
+         this.followUpUserArr = res.data.map(item => ({
+           label: item.name,
+           value: item.userId
+         }));
+         this.addFormOptions[5].options = this.followUpUserArr;
+         //  清除下级的数据和值
+          this.$refs.dataForm3.setValue({
+              followUpUserId:'',
+          })
        })
      },
      goBack(){
@@ -501,6 +650,14 @@ export default {
         });
        
      },
+    getSelValue(arr,value){
+      let obj = arr.find(item => (item.value == value));
+      if(obj){
+        return obj.label;
+      }else {
+        return '';
+      }
+    },
      submitAddForm(formName){
       this.$refs[formName].validate((valid, formData) => {
         if(valid){
@@ -509,6 +666,17 @@ export default {
             this.$message.error("请对地图进行搜索选点定位")
             return;
           }
+          if(formData.followUpUserId && !formData.nextVisitDate){
+            this.$message.warning("请选择首次跟进截止时间")
+            return;
+          }else if(!formData.followUpUserId && formData.nextVisitDate){
+            this.$message.warning("请输入跟进老师")
+            return;
+          }
+           let organization = this.getSelValue(this.organizationArr,formData.organizationId);
+          let provincialSchool = this.getSelValue(this.provincialSchoolArr,formData.provincialSchoolId);
+          let branchSchool = this.getSelValue(this.branchSchoolArr,formData.branchSchoolId);
+          let followUpUser = this.getSelValue(this.followUpUserArr,formData.followUpUserId);
           const { lat,lng,address,name,pname,cityname,adname } = this.currentAddressData;
           this.$fetch(this.addStatus?"chain_add":"chain_update",{
             ...formData,
@@ -520,12 +688,17 @@ export default {
             county:adname,
             chainType: this.form.chainType,
             nextVisitDate: this.$common._formatDates2(formData.nextVisitDate),
-            followUpUserId: this.followValue,
-            chainId: this.addStatus?"":this.chainId
+            chainId: this.addStatus?"":this.chainId,
+            organization,
+            provincialSchool,
+            branchSchool,
+            followUpUser
           }).then(res => {
             this.$message.success("操作成功");
             this.$emit("close");
           })
+        }else {
+          this.$message.error("请完善信息")
         }
           
       });
