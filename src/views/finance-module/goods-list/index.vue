@@ -67,7 +67,7 @@
               <span style="font-size: 16px">￥</span>{{ item.totalFee }}
             </div>
             <div>
-              <el-button type="primary" size="small" @click="signUp(item)"
+              <el-button :type="item.status == '暂停'?'info':'primary'" :disabled="item.status == '暂停'" size="small" @click="signUp(item)"
                 >报名</el-button
               >
             </div>
