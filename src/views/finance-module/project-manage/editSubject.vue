@@ -447,7 +447,7 @@ export default {
               productId: this.id ? this.id : productId,
               id: this.issuseId,
               theoryTestClosingTime,
-              theoryTest2ClosingTime,
+              theoryTest2ClosingTime: this.checked2 ? theoryTest2End : "",
             }
           ).then((res) => {
             this.$message.success("操作成功");

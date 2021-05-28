@@ -855,12 +855,14 @@ export default {
           placeholder: "科目",
           options: [],
           events: {},
+          disabled: false,
         },
         {
           prop: "classTypeId",
           element: "el-select",
           placeholder: "班型",
           options: [],
+          disabled: false,
         },
         {
           prop: "classType",
@@ -1261,9 +1263,12 @@ export default {
         }));
         this.formOptions[2].events = {
           change: this.productChange,
+          clear: this.clearProductFn,
         };
+
         this.formOptions[3].events = {
           change: this.subjectChange,
+          clear: this.clearSubjectFn,
         };
         this.formOptions[5].options = classTypeList.map((item) => ({
           label: item.value,
@@ -1283,8 +1288,6 @@ export default {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
-        token:
-          "eyJhbGciOiJIUzI1NiIsIlR5cGUiOiJKd3QiLCJ0eXAiOiJKV1QifQ.eyJsb2dpblVzZXJJZCI6IjgiLCJwYXJ0bmVySWQiOjEsInR5cGUiOjAsImV4cCI6MTYwNzM5MDM4NCwidXNlcm5hbWUiOiJhZG1pbjAxIn0.GikWXxIa8BYLGvV12Yf2WBCywDnKpUDylKReR3TRuP8",
       }).then((res) => {
         this.tableData = res.data.list.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
@@ -1294,38 +1297,73 @@ export default {
         this.pageConfig.totalCount = res.data.pager.totalRows;
       });
     },
-    productChange(val) {
-      this.$fetch("courseclasstype_subjectList", {
-        productId: val,
-      }).then((res) => {
-        let subjectArr = res.data.list.map((item) => ({
-          label: item.subjectName,
-          value: item.id,
-        }));
-        this.formOptions[3].options = subjectArr;
-        this.formOptions[4].options = [];
-        this.$refs.dataForm.setValue({
-          subjectId: "",
-        });
+    clearProductFn() {
+      this.formOptions[3].options = []; //清除科目的下拉
+      //清除科目选中
+      this.$refs.dataForm.setValue({
+        subjectId: "",
+      });
+      this.formOptions[4].options = []; //清除班型类型的下拉
+      //清除班型类型选中
+      this.$refs.dataForm.setValue({
+        classTypeId: "",
       });
     },
-    subjectChange(val) {
-      this.$fetch("courseclasstype_classtypeList", {
-        subjectId: val,
-      }).then((res) => {
-        if (!res.data.dataJson.list) {
-          return;
-        }
-        let classTypeArr = res.data.dataJson.list.map((item) => ({
-          label: item.className,
-          value: item.id,
-        }));
-        console.log(classTypeArr);
-        this.formOptions[4].options = classTypeArr;
-        this.$refs.dataForm.setValue({
-          classTypeId: "",
-        });
+    clearSubjectFn() {
+      this.formOptions[4].options = []; //清除班型类型的下拉
+      //清除班型类型选中
+      this.$refs.dataForm.setValue({
+        classTypeId: "",
       });
+    },
+    productChange(val) {
+      // this.formOptions[3].disabled = false;
+      if (val) {
+        //有选中项目才请求科目
+        this.$fetch("courseclasstype_subjectList", {
+          productId: val,
+        })
+          .then((res) => {
+            let subjectArr = res.data.list.map((item) => ({
+              label: item.subjectName,
+              value: item.id,
+            }));
+            this.formOptions[3].options = subjectArr;
+            this.formOptions[4].options = [];
+            this.$refs.dataForm.setValue({
+              subjectId: "",
+            });
+            this.$refs.dataForm.setValue({
+              classTypeId: "",
+            });
+          })
+          .catch((err) => {
+            //没数据的时候
+            this.clearProductFn();
+          });
+      }
+    },
+    subjectChange(val) {
+      // this.formOptions[4].disabled = false;
+      if (val) {
+        //有选中科目才请求
+        this.$fetch("courseclasstype_classtypeList", {
+          subjectId: val,
+        }).then((res) => {
+          if (!res.data.dataJson.list) {
+            return;
+          }
+          let classTypeArr = res.data.dataJson.list.map((item) => ({
+            label: item.className,
+            value: item.id,
+          }));
+          console.log(classTypeArr);
+          this.formOptions[4].options = classTypeArr;
+          this.$refs.dataForm.setValue({
+            classTypeId: "",
+          });
+        });
+      }
     },
     pageChange(val) {
       this.pageConfig.currentPage = val;
