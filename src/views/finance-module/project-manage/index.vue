@@ -343,7 +343,8 @@ export default {
       }).then((res) => {
         this.tableData = res.data.data.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
-          item.status = item.productStatus == true ? "正常" : "暂停";
+          //注意：item.productStatus true为暂停，false为正常
+          item.status = item.productStatus == false ? "正常" : "暂停";
           return item;
         });
         this.pageConfig.totalCount = res.data.pager.totalRows;

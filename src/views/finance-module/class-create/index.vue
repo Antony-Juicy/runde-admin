@@ -1560,7 +1560,7 @@ export default {
       this.$refs.dataForm3.onReset();
       this.$refs.dataForm2.resetFields();
       for (var key in this.basicInfo) {
-        if (Array.isArray(this.basicInfo[key]) == true) {
+        if (Array.isArray(this.basicInfo[key]) == true && key!='tableKey') {
           this.basicInfo[key] = [];
         }
       }

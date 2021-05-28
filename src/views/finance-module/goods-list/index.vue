@@ -67,7 +67,7 @@
               <span style="font-size: 16px">￥</span>{{ item.totalFee }}
             </div>
             <div>
-              <el-button type="primary" size="small" @click="signUp(item)"
+              <el-button :type="item.status == '暂停'?'info':'primary'" :disabled="item.status == '暂停'" size="small" @click="signUp(item)"
                 >报名</el-button
               >
             </div>
@@ -555,7 +555,7 @@
               label="课程"
               prop="courses"
               :rules="{
-                required: false,
+                required: true,
                 message: '不能为空',
                 trigger: 'change',
               }"
@@ -575,19 +575,13 @@
           </el-row>
           <el-row>
             <el-col :span="8">
-              <el-form-item
-                label="优惠券"
-                prop="couponId"
-                :rules="{
-                  required: true,
-                  message: '不能为空',
-                  trigger: 'change',
-                }"
-              >
+              <el-form-item label="优惠券" prop="couponId">
                 <el-select
                   v-model="stuForm2.couponId"
                   style="width: 200px"
                   placeholder="请选择优惠券"
+                  clearable
+                  @clear="clearCoupon"
                   @change="changeCoupon"
                 >
                   <el-option
@@ -942,7 +936,7 @@ export default {
         courseNum: 0,
         courseNames: "",
         couponId: "",
-        faceValue: "",
+        faceValue: 0,
         realPrice: "",
         toTalPrice: "",
       },
@@ -992,13 +986,16 @@ export default {
       handler(newName, oldName) {
         console.log("obj.a changed courseNum", newName, oldName);
         if (oldName != undefined) {
-          if (!this.stuForm.studentType) {
-            this.$message.warning("请先选择学员类型");
-            return;
-          }
+          // if (!this.stuForm.studentType) {
+          //   this.$message.warning("请先选择学员类型");
+          //   return;
+          // }
           this.$nextTick(() => {
             this.getCounpList();
           });
+        }
+        if(newName == 0){
+          this.stuForm2.realPrice =  0
         }
       },
       immediate: true,
@@ -1012,6 +1009,10 @@ export default {
       this.$refs.stuForm2.resetFields();
       this.$refs.stuForm3.resetFields();
       this.$refs.stuForm4.resetFields();
+    },
+    clearCoupon() {
+      this.stuForm2.faceValue = 0;
+      this.stuForm2.realPrice = this.stuForm2.toTalPrice;
     },
     changeCoupon(e) {
       //选择优惠券
@@ -1064,8 +1065,8 @@ export default {
     changeSelect() {
       //选择学员类型
       this.stuForm2.couponId = ""; //置空优惠券
-      this.stuForm2.realPrice = ""; //应收
-      this.stuForm2.faceValue = ""; //优惠金额
+      // this.stuForm2.realPrice = ""; //应收
+      // this.stuForm2.faceValue = ""; //优惠金额
     },
     getCounpList() {
       //优惠券
@@ -1200,7 +1201,15 @@ export default {
       return eval(arr.join("+"));
     },
     changeCheckbox(val) {
+      console.log('val valval',val)
+
+      if (!this.stuForm.studentType) {
+        this.$message.warning("请先选择学员类型");
+        this.stuForm2.courses = [];
+        return;
+      }
       this.stuForm2.couponId = ""; //置空优惠券
+      this.stuForm2.faceValue = 0;
       this.stuForm2.courses = val;
       let arr = this.courseInfoList.filter((el) => val.indexOf(el.label) != -1);
       let priceArr = arr.map((item) => {
@@ -1215,8 +1224,9 @@ export default {
         this.stuForm2,
         this.stuForm2.toTalPrice
       );
-      this.stuForm2.realPrice = "";
-      this.stuForm2.faceValue = "";
+      this.stuForm2.realPrice = this.stuForm2.toTalPrice;
+      // this.stuForm2.realPrice = "";
+      // this.stuForm2.faceValue = "";
     },
     getSelectList() {
       this.$fetch("courseclass_classOrderlistJsonSearch").then((res) => {
