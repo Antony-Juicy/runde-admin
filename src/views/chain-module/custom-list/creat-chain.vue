@@ -385,7 +385,7 @@ export default {
         ],
         scaleRanking: [
           { required: true, message: "请输入", trigger: "blur" },
-          { validator: Common._validatorNumber, message: "请输入数字", trigger: "blur" },
+          { validator: Common._validatorNonnegative,  trigger: "blur" },
         ],
         storeCount: [
           { required: true, message: "请输入", trigger: "blur" },
@@ -393,7 +393,7 @@ export default {
         ],
         employeeCount: [
           { required: true, message: "请输入", trigger: "blur" },
-          { validator: Common._validatorNumber, message: "请输入数字", trigger: "blur" },
+          { validator: Common._validatorNonnegative,  trigger: "blur" },
         ],
          cooperationLevel: [
           { required: true, message: "请选择", trigger: "change" },
@@ -403,22 +403,22 @@ export default {
         // ],
          phoneCount: [
           { required: true, message: "请输入", trigger: "blur" },
-          { validator: Common._validatorNumber, message: "请输入数字", trigger: "blur" },
+          { validator: Common._validatorNonnegative,  trigger: "blur" },
         ],
         pharmacistsStudentCount: [
-          { validator: Common._validatorNumber, message: "请输入数字", trigger: "blur" },
+          { validator: Common._validatorNonnegative,  trigger: "blur" },
         ],
         educationStudentCount: [
-          { validator: Common._validatorNumber, message: "请输入数字", trigger: "blur" },
+          { validator: Common._validatorNonnegative,  trigger: "blur" },
         ],
         pharmacistsCount: [
-          { validator: Common._validatorNumber, message: "请输入数字", trigger: "blur" },
+          { validator: Common._validatorNonnegative,  trigger: "blur" },
         ],
         examsCount: [
-          { validator: Common._validatorNumber, message: "请输入数字", trigger: "blur" },
+          { validator: Common._validatorNonnegative,  trigger: "blur" },
         ],
         wechatGroupMemberCount: [
-          { validator: Common._validatorNumber, message: "请输入数字", trigger: "blur" },
+          { validator: Common._validatorNonnegative,  trigger: "blur" },
         ],
         enterprisePrincipalPhone: [
           { validator: Common._validatorPhone2, message: "手机格式错误", trigger: "blur" },
@@ -472,12 +472,14 @@ export default {
    methods: {
      checkAddStatus(){
        if(this.addStatus){
+         //新增
         this.addFormOptions[2].disabled = false;
         this.addFormOptions[3].disabled = false;
         this.addFormOptions[4].disabled = false;
         this.addFormOptions[5].disabled = false;
         this.addFormOptions[6].disabled = false;
       }else {
+        // 编辑 禁用组织、校区、分校、跟进人
         this.addFormOptions[2].disabled = true;
         this.addFormOptions[3].disabled = true;
         this.addFormOptions[4].disabled = true;
@@ -525,6 +527,19 @@ export default {
         chainInfoId: id
       }).then(res => {
           this.currentData = res.data;
+          // 下拉赋值
+          this.addFormOptions[3].options = [{
+            label: this.currentData.provincialSchool,
+            value: this.currentData.provincialSchoolId
+          }]
+          this.addFormOptions[4].options = [{
+            label: this.currentData.branchSchool,
+            value: this.currentData.branchSchoolId
+          }]
+           this.addFormOptions[5].options = [{
+            label: this.currentData.followUpUser,
+            value: this.currentData.followUpUserId
+          }]
           this.addFormOptions.forEach(item => {
            item.initValue = res.data[item.prop];
           })
@@ -682,7 +697,7 @@ export default {
             ...formData,
             address,
             addressCoordinates: [lng,lat].join(","),
-            detailAddress: pname+cityname+adname+address+name,
+            detailAddress: pname+cityname+adname+address+(name || ''),
             province:pname,
             city: cityname,
             county:adname,

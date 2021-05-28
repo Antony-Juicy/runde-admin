@@ -11,5 +11,6 @@ export default {
     chain_chainAllocating: {url: '/app/chain/console/chainInfo/chainAllocating', method: 'post'},//连锁分配
     chain_chainVisitRecord: {url: '/app/chain/console/chainVisitRecord/pageList', method: 'post'},//分页获取拜访记录
     chain_getVisitRecordDetail: {url: '/app/chain/console/chainVisitRecord/getVisitRecordDetail', method: 'post'},//获取拜访详情
+    chain_getChainAllocatingInfo: {url: '/app/chain/console/chainInfo/getChainAllocatingInfo', method: 'post'},//获取连锁分配信息
     
 }

@@ -44,6 +44,18 @@ const $common = {
             callback();
         }
     },
+    // 检验是否是非负数字
+    _validatorNonnegative(rule, value, callback) {
+        if(value == undefined || value == ''){
+            callback();
+        }else if ( parseFloat(value).toString() == "NaN") {
+            callback(new Error('请输入数字'));
+        } else if ( parseFloat(value) < 0) {
+            callback(new Error('请输入不小于0的数字'));
+        }else {
+            callback();
+        }
+    },
     // 非必填的手机校验
     _validatorPhone2(rule, value, callback) {
         if (value == undefined || value === '') {

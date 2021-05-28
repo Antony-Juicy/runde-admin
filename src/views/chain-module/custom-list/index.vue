@@ -159,27 +159,31 @@ export default {
           element: "el-select",
           placeholder: "所属组织",
           options: [],
-          events: {}
+          events: {},
+          filterable: true
         },
         {
           prop: "provincialSchoolId",
           element: "el-select",
           placeholder: "所属校区",
           options: [],
-          events: {}
+          events: {},
+          filterable: true
         },
         {
           prop: "branchSchoolId",
           element: "el-select",
           placeholder: "所属分校",
           options: [],
-          events: {}
+          events: {},
+          filterable: true
         },
         {
           prop: "followUpUserId",
           element: "el-select",
           placeholder: "跟进老师",
-          options: []
+          options: [],
+          filterable: true
         },
       ],
       searchForm:{},
@@ -271,7 +275,8 @@ export default {
           options: [
           ],
           events:{},
-          filterable:true
+          filterable:true,
+          disabled: false
         },
         {
           prop: "provincialSchoolId",
@@ -281,7 +286,8 @@ export default {
           options: [
           ],
           events:{},
-          filterable:true
+          filterable:true,
+          disabled: false
         },
         {
           prop: "branchSchoolId",
@@ -291,7 +297,8 @@ export default {
           options: [
           ],
           events:{},
-          filterable:true
+          filterable:true,
+          disabled: false
         },
         {
           prop: "followUpUserId",
@@ -300,14 +307,16 @@ export default {
           label: "跟进老师",
           options: [
           ],
-          filterable:true
+          filterable:true,
+          disabled: false
         },
         {
           prop: "nextVisitDate",
           element: "el-date-picker",
           placeholder: "请选择",
           label: "首次跟进截止时间",
-          type: "datetime"
+          type: "datetime",
+          disabled: false
         },
       ],
       distributeRules:{
@@ -380,29 +389,42 @@ export default {
             this.$refs['dataForm3'].validateField(prop);
           }, 0);
      },
-     organizationChange(val){
+     organizationChange(val,schoolId){
+       if(!val){
+         return;
+       }
        this.$fetch("chain_getCampusList",{
          parentId: val
        }).then(res => {
-         this.provincialSchoolArr = res.data.map(item => ({
-           label: item.campusName,
-           value: item.campusId
-         }));
-         this.distributeFormOptions[1].options = this.provincialSchoolArr;
-         this.distributeFormOptions[1].events = {
-           change: this.provincialSchoolChange
-         }
-        //  清除下级的数据和值
-          this.$refs.dataForm3.setValue({
-              provincialSchoolId:'',
-              branchSchoolId:'',
-              followUpUserId:'',
-          })
-        //  赋值必传值，进行校验
-          this.setFormValue("organizationId",val);
-       })
+        return new Promise(resolve => {
+          this.provincialSchoolArr = res.data.map(item => ({
+            label: item.campusName,
+            value: item.campusId
+          }));
+          this.distributeFormOptions[1].options = this.provincialSchoolArr;
+          this.distributeFormOptions[1].events = {
+            change: this.provincialSchoolChange
+          }
+          //  清除下级的数据和值
+          if(!schoolId){
+            this.$refs.dataForm3.setValue({
+                provincialSchoolId: '',
+                branchSchoolId:'',
+                followUpUserId:'',
+            })
+          }
+            
+          //  赋值必传值，进行校验
+            this.setFormValue("organizationId",val);
+
+            resolve();
+        })
+        })
      },
       organizationChange2(val){
+        if(!val){
+         return;
+       }
        this.$fetch("chain_getCampusList",{
          parentId: val
        }).then(res => {
@@ -422,26 +444,39 @@ export default {
           })
        })
      },
-     provincialSchoolChange(val){
-      this.$fetch("chain_getCampusList",{
-         parentId: val
-       }).then(res => {
-         this.branchSchoolArr = res.data.map(item => ({
-           label: item.campusName,
-           value: item.campusId
-         }));
-         this.distributeFormOptions[2].options = this.branchSchoolArr;
-         this.distributeFormOptions[2].events = {
-           change: this.branchSchoolChange
-         }
-         //  清除下级的数据和值
-          this.$refs.dataForm3.setValue({
-              branchSchoolId:'',
-              followUpUserId:'',
-          })
-       })
+     provincialSchoolChange(val,branchId){
+      return new Promise(resolve => {
+        if(!val){
+         return;
+       }
+        this.$fetch("chain_getCampusList",{
+          parentId: val
+        }).then(res => {
+          this.branchSchoolArr = res.data.map(item => ({
+            label: item.campusName,
+            value: item.campusId
+          }));
+          this.distributeFormOptions[2].options = this.branchSchoolArr;
+          this.distributeFormOptions[2].events = {
+            change: this.branchSchoolChange
+          }
+          //  清除下级的数据和值
+          if(!branchId){
+            this.$refs.dataForm3.setValue({
+                branchSchoolId:  '',
+                followUpUserId:'',
+            })
+          }
+            
+
+            resolve();
+        })
+      })
      },
       provincialSchoolChange2(val){
+        if(!val){
+         return;
+       }
       this.$fetch("chain_getCampusList",{
          parentId: val
        }).then(res => {
@@ -460,22 +495,35 @@ export default {
           })
        })
      },
-     branchSchoolChange(val){
-        this.$fetch("chain_getUserListByCampusId",{
-         campusId: val
-       }).then(res => {
-         this.followUpUserArr = res.data.map(item => ({
-           label: item.name,
-           value: item.userId
-         }));
-         this.distributeFormOptions[3].options = this.followUpUserArr;
-         //  清除下级的数据和值
-          this.$refs.dataForm3.setValue({
-              followUpUserId:'',
+     branchSchoolChange(val,userId){
+       if(!val){
+         return;
+       }
+        return new Promise(resolve => {
+          this.$fetch("chain_getUserListByCampusId",{
+            campusId: val
+          }).then(res => {
+            this.followUpUserArr = res.data.map(item => ({
+              label: item.name,
+              value: item.userId
+            }));
+            this.distributeFormOptions[3].options = this.followUpUserArr;
+            //  清除下级的数据和值
+            if(!userId){
+              this.$refs.dataForm3.setValue({
+                  followUpUserId: '',
+              })
+            }
+              
+
+              resolve();
           })
-       })
+        })
      },
      branchSchoolChange2(val){
+       if(!val){
+         return;
+       }
         this.$fetch("chain_getUserListByCampusId",{
          campusId: val
        }).then(res => {
@@ -598,7 +646,6 @@ export default {
         .catch(() => {});
     },
     handelSelect(val) {
-      console.log(val, "valll");
       this.selectedData = val;
     },
     handleDistribute(){
@@ -608,6 +655,7 @@ export default {
       }
       this.distributeVisible = true;
       this.distributeStatus = 2;
+      this.getDistributeInfo(this.selectedData.map(item => (item.chainId)).join(","));
     },
     submitImportForm(){
       if(!this.importForm.excel){
@@ -626,6 +674,31 @@ export default {
       this.distributeId = data.chainId;
       this.distributeVisible = true;
       this.distributeStatus = 1;
+      this.getDistributeInfo(data.chainId);
+    },
+    getDistributeInfo(chainIds){
+      this.$fetch("chain_getChainAllocatingInfo",{
+        chainIds
+      }).then(async res => {
+        const { 
+          organizationId,provincialSchoolId,branchSchoolId,followUpUserId,nextVisitDate,
+          updateOrganization,updateProvincialSchool,updateBranchSchool,updateFollowUpUser,updateNextVisitDate
+        } = res.data;
+        Promise.all([organizationId&&this.organizationChange(organizationId,provincialSchoolId),
+        provincialSchoolId&&this.provincialSchoolChange(provincialSchoolId,branchSchoolId),
+        branchSchoolId&&this.branchSchoolChange(branchSchoolId,followUpUserId)]).then(res => {
+            this.$refs.dataForm3.setValue({
+              organizationId,provincialSchoolId,branchSchoolId,followUpUserId,nextVisitDate
+            })
+        })
+        
+        // 判断是否禁用
+        this.distributeFormOptions[0].disabled = !updateOrganization;
+        this.distributeFormOptions[1].disabled = !updateProvincialSchool;
+        this.distributeFormOptions[2].disabled = !updateBranchSchool;
+        this.distributeFormOptions[3].disabled = !updateFollowUpUser;
+        this.distributeFormOptions[4].disabled = !updateNextVisitDate;
+      })
     },
     openDrawer(data){
       this.followVisible = true;
