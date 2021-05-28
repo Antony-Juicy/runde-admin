@@ -24,8 +24,9 @@
         @pageChange="pageChange"
       >
         <template slot="courses" slot-scope="scope">
-          <span v-for="item in scope.row.courses" :key="item.courseId">
+          <span v-for="(item, k) in scope.row.courses" :key="item.courseId">
             {{ item.courseName }}
+            <i v-if="k != scope.row.courses.length - 1">、</i>
           </span>
         </template>
         <template slot="className" slot-scope="scope">
@@ -103,11 +104,7 @@
         </div>
 
         <div class="class-step2 class-moudle" v-show="active == 1">
-          <el-form
-            ref="dataForm2"
-            :model="basicInfo"
-            :rules="rules"
-          >
+          <el-form ref="dataForm2" :model="basicInfo" :rules="rules">
             <!-- start -->
             <div class="">
               <el-row :gutter="20" v-if="basicInfo.courseStageArr.length > 0">
@@ -682,23 +679,23 @@ export default {
       tableData: [],
       tableKey: [
         { name: "ID", value: "id" },
-        { name: "班型名称", value: "className", operate: true },
+        { name: "班型名称", value: "className", operate: true, width: 200 },
         { name: "年份", value: "classTypeBatch" },
         { name: "项目", value: "productName" },
         { name: "科目", value: "subjectName" },
         { name: "班型类型", value: "classType" },
         { name: "协议类型", value: "protocolType" },
         { name: "退费类型", value: "refundType" },
-        { name: "退费规则", value: "refundRules" },
-        { name: "课程", value: "courses", operate: true },
-        { name: "班型内容", value: "contentName", operate: true },
+        { name: "退费规则", value: "refundRules", width: 200 },
+        { name: "课程", value: "courses", operate: true, width: 200 },
+        { name: "班型内容", value: "contentName", operate: true, width: 200 },
         { name: "学费/元", value: "totalFee" },
         { name: "服务年限", value: "serviceYear" },
-        { name: "不可退金额/元", value: "norefundFee" },
-        { name: "通过扣除费用", value: "passDeductFee" },
+        { name: "不可退金额/元", value: "norefundFee", width: 110 },
+        { name: "通过扣除费用", value: "passDeductFee", width: 200 },
         { name: "班型分组", value: "classtypeGroupName" },
         { name: "班型阶段", value: "classTypeStage" },
-        { name: "班群服务类型", value: "crowdType" },
+        { name: "班群服务类型", value: "crowdType", width: 200 },
         { name: "班群人数", value: "crowdNum" },
         { name: "状态", value: "status" },
         {
@@ -1019,8 +1016,8 @@ export default {
         { name: "课程阶段", value: "stageGroupName" },
         { name: "核算规则", value: "accountingRules" },
         { name: "录播情况", value: "playback" },
-        { name: "授课开始时间", value: "courseStartTime" },
-        { name: "创建时间", value: "createAt" },
+        { name: "授课开始时间", value: "courseStartTime", width: 200 },
+        { name: "创建时间", value: "createAt", width: 200 },
         { name: "状态", value: "status" },
       ],
       title: "",
@@ -1560,7 +1557,7 @@ export default {
       this.$refs.dataForm3.onReset();
       this.$refs.dataForm2.resetFields();
       for (var key in this.basicInfo) {
-        if (Array.isArray(this.basicInfo[key]) == true && key!='tableKey') {
+        if (Array.isArray(this.basicInfo[key]) == true && key != "tableKey") {
           this.basicInfo[key] = [];
         }
       }

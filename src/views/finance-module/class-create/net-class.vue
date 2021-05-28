@@ -258,7 +258,7 @@ export default {
       this.getTableData();
     },
     getTableData(params = {}) {
-      let courseName = this.classTypeArr && this.classTypeArr.length > 0? this.classTypeArr.find(item => (item.value == this.searchForm.courseId)).label : '';
+      let courseName = this.classTypeArr && this.classTypeArr.length > 0 && this.searchForm.courseId? this.classTypeArr.find(item => (item.value == this.searchForm.courseId)).label : '';
       this.$fetch("courseclasstypemiddle_listJsp", {
         ...this.pageConfig,
         ...this.searchForm,

@@ -367,7 +367,7 @@ const $common = {
             console.log("arr22", 'day', day, month)
         }
         var year = new Date().getFullYear();
-        return `${year}-${month}-${day} 00:00:00`; 
+        return `${year}-${month}-${day}`; 
         // str = (year + '-' + month + '-' + day).toString();
         // return str;
     },
