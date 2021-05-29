@@ -13,89 +13,96 @@
         <p>暂无数据</p>
       </div>
       <template v-if="tableData && tableData.length > 0">
-        <div
-          class="content-container"
-          v-for="(item, index) in tableData"
-          :key="index"
-          :style="{ float: index % 2 == 0 ? 'left' : 'right' }"
-        >
-          <div class="class-item">
-            <div class="content-left">
-              <div class="title-container">
-                <div class="title">{{ item.className }}</div>
-                <div>
-                  <el-tag>{{ item.classType }}</el-tag>
+        <div class="content-wrap">
+          <div class="container-wrap">
+            <div
+              class="content-container"
+              v-for="(item, index) in tableData"
+              :key="index"
+              :style="{ float: index % 2 == 0 ? 'left' : 'right' }"
+            >
+              <div class="class-item">
+                <div class="content-left">
+                  <div class="title-container">
+                    <div class="title">{{ item.className }}</div>
+                    <div>
+                      <el-tag>{{ item.classType }}</el-tag>
+                    </div>
+                  </div>
+                  <div class="details">
+                    <el-tag
+                      v-if="item.productName"
+                      type="info"
+                      size="small"
+                      style="margin-right: 10px; color: #63656b"
+                      >{{ item.productName }}</el-tag
+                    >
+                    <el-tag
+                      v-if="item.subjectName"
+                      type="info"
+                      size="small"
+                      style="margin-right: 10px; color: #63656b"
+                      >{{ item.subjectName }}</el-tag
+                    >
+                    <el-tag
+                      v-if="item.protocolType"
+                      type="info"
+                      size="small"
+                      style="margin-right: 10px; color: #63656b"
+                      >{{ item.protocolType }}</el-tag
+                    >
+                    <el-tag
+                      v-if="item.refundType"
+                      type="info"
+                      size="small"
+                      style="margin-right: 10px; color: #63656b"
+                      >{{ item.refundType }}</el-tag
+                    >
+                    <el-tag
+                      v-if="item.classBatch"
+                      type="info"
+                      size="small"
+                      style="margin-right: 10px; color: #63656b"
+                      >{{ item.classBatch }}学年</el-tag
+                    >
+                  </div>
+                  <div class="content-bottom">
+                    <div class="campus-name"><i class="el-icon-location-outline"></i>{{item.campusName}}</div>
+                    <div class="year-text">
+                      服务年限{{ item.serviceYear }}年
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div class="details">
-                <el-tag
-                  v-if="item.productName"
-                  type="info"
-                  size="small"
-                  style="margin-right: 10px; color: #63656b"
-                  >{{ item.productName }}</el-tag
-                >
-                <el-tag
-                  v-if="item.subjectName"
-                  type="info"
-                  size="small"
-                  style="margin-right: 10px; color: #63656b"
-                  >{{ item.subjectName }}</el-tag
-                >
-                <el-tag
-                  v-if="item.protocolType"
-                  type="info"
-                  size="small"
-                  style="margin-right: 10px; color: #63656b"
-                  >{{ item.protocolType }}</el-tag
-                >
-                <el-tag
-                  v-if="item.refundType"
-                  type="info"
-                  size="small"
-                  style="margin-right: 10px; color: #63656b"
-                  >{{ item.refundType }}</el-tag
-                >
-                <el-tag
-                  v-if="item.classBatch"
-                  type="info"
-                  size="small"
-                  style="margin-right: 10px; color: #63656b"
-                  >{{ item.classBatch }}学年</el-tag
-                >
-              </div>
-              <div class="content-bottom">
-                <div class="year-text">服务年限{{ item.serviceYear }}年</div>
-              </div>
-            </div>
-            <div class="content-right">
-              <div class="price">
-                <span style="font-size: 16px">￥</span>{{ item.totalFee }}
-              </div>
-              <div>
-                <el-button
-                  :type="item.status == '暂停' ? 'info' : 'primary'"
-                  :disabled="item.status == '暂停'"
-                  size="small"
-                  @click="signUp(item)"
-                  >报名</el-button
-                >
+                <div class="content-right">
+                  <div class="price">
+                    <span style="font-size: 16px">￥</span>{{ item.totalFee }}
+                  </div>
+                  <div v-if="item.status == '正常'" >
+                    <el-button
+                      type="primary"
+                      size="small"
+                      @click="signUp(item)"
+                      >报名</el-button
+                    >
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="fr" style="margin-bottom: 20px">
-          <el-pagination
-            background
-            @size-change="sizeChange"
-            @current-change="pageChange"
-            :current-page="pageConfig.currentPage"
-            :page-sizes="[10, 20, 30, 50]"
-            :page-size="pageConfig.showCount"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="pageConfig.totalCount"
-          >
-          </el-pagination>
+
+          <div class="el-pagination-box" style="margin-bottom: 20px">
+            <el-pagination
+              background
+              @size-change="sizeChange"
+              @current-change="pageChange"
+              :current-page="pageConfig.currentPage"
+              :page-sizes="[10, 20, 30, 50]"
+              :page-size="pageConfig.showCount"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="pageConfig.totalCount"
+            >
+            </el-pagination>
+          </div>
         </div>
       </template>
     </div>
@@ -1281,6 +1288,7 @@ export default {
         ...val,
       };
       console.log(val, this.searchForm, "val---");
+      this.pageConfig.currentPage = 1;
       this.getTableData();
     },
     getTableData(params = {}) {
@@ -1623,6 +1631,15 @@ export default {
   .el-form-item {
     margin-bottom: 26px;
   }
+  .content-wrap {
+    display: flex;
+    flex-direction: column;
+    .el-pagination-box {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+    }
+  }
   .content-container {
     padding: 5px;
     width: 49%;
@@ -1658,7 +1675,10 @@ export default {
           margin: 0 14px;
           font-size: 14px;
         }
-        .year-text {
+        .campus-name {
+          margin-right: 30px;
+        }
+        .year-text,.campus-name {
           font-size: 14px;
           color: #333;
           margin-top: 16px;
@@ -1671,7 +1691,7 @@ export default {
         color: #ec5b56;
         font-weight: bold;
         font-size: 32px;
-        margin-bottom: 8px;
+        // margin-bottom: 8px;
         margin-right: 20px;
       }
     }
