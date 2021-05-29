@@ -32,7 +32,7 @@
         <template slot="edit" slot-scope="scope">
           <el-button @click="editRow(scope.$index,scope.row.id,scope.row)" type="text" size="small" style="color: #67c23a">编辑</el-button>
           <el-divider direction="vertical"></el-divider>
-          <el-button @click="configCampus(scope.$index,scope.row.id,scope.row)" type="text" size="small">多校区管理</el-button>
+          <el-button @click="dianhuan(scope.$index,scope.row.id,scope.row)" type="text" size="small">多校区管理</el-button>
         </template>
       </rd-table>
       <!-- 添加用户 -->
@@ -71,8 +71,8 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="角色" prop="roleName">
-            <el-select v-model="userForm.roleName" filterable placeholder="请选择">
+          <el-form-item label="角色" prop="roleId">
+            <el-select v-model="userForm.roleId" filterable placeholder="请选择">
               <el-option
                 v-for="item in options"
                 :key="item.value"
@@ -85,7 +85,7 @@
             <el-input v-model.trim="userForm.qimoAccount" autocomplete="off" placeholder="请输入七陌账号" />
           </el-form-item>
           <el-form-item label="智博账号" prop="zhiboAccount">
-            <el-input v-model.trim="userForm.zhiboAccount" autocomplete="off" placeholder="请输入七陌账号" />
+            <el-input v-model.trim="userForm.zhiboAccount" autocomplete="off" placeholder="请输入智博账号" />
           </el-form-item>
           <el-form-item label="用户类型" prop="userType">
             <el-select v-model.trim="userForm.userType" placeholder="请选择">
@@ -101,6 +101,7 @@
           </el-form-item>
         </el-form>
       </rd-dialog>
+      <!-- 员工详情 -->
       <el-drawer
         title=""
         :before-close="handleDrawerClose"
@@ -113,7 +114,7 @@
         size="60%"
         ref="drawer">
         <div class="demo-drawer__content">
-          <el-form :model="formDrawer">
+          <el-form :model="outBound" :rules="editRules" ref="outBoundForm">
             <div class="title_drawer">基本信息</div>
             <el-row :gutter="24">
               <el-col :span="8">
@@ -124,10 +125,6 @@
                 <div class="term">所属部门：</div>
                 <div class="detail">{{dataUser.campusName}}</div>
               </el-col>
-              <!-- <el-col :span="8">
-                <div class="term">状态：</div>
-                <div class="detail">{{dataUser.status | statusFilter}}</div>
-              </el-col> -->
               <el-col :span="8">
                 <div class="term">入职时间：</div>
                 <div class="detail">{{$common._formatDates(dataUser.hireDate)}}</div>
@@ -173,7 +170,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="公司类型:" :label-width="formLabelWidth">
+                <el-form-item label="公司类型:" :label-width="formLabelWidth" prop="companyType">
                   <el-select v-model="outBound.companyType" placeholder="请选择公司类型">
                     <el-option
                       :label="'广东长兴润德教育科技有限公司'"
@@ -193,10 +190,9 @@
               </el-col>
             </el-row>
             <el-divider></el-divider>
-            <!-- <div class="title_drawer">多角色管理</div> -->
             <el-row :gutter="24">
               <el-col :span="12">
-                <el-form-item label="角色管理:" :label-width="formLabelWidth">
+                <el-form-item label="多角色管理:" :label-width="formLabelWidth">
                   <el-select v-model="formDrawer.valueDept" filterable multiple placeholder="请选择">
                     <el-option
                       v-for="item in options"
@@ -230,6 +226,7 @@
           </div>
         </div>
       </el-drawer>
+      <!-- 多校区 -->
       <fullDialog v-model="showCampus" title="配置多校区管理" @change="showCampus = false">
         <el-divider content-position="left">选择配置校区</el-divider>
         <el-form ref="campusForm" :model="campusForm" label-width="80px">
@@ -325,12 +322,6 @@ export default {
             }
           ],
         },
-        // {
-        //   prop: 'idcard',
-        //   element: 'el-input',
-        //   initValue: '',
-        //   placeholder: '请输入ID',
-        // },
       ],
       tableData: [],
       tableKey: [
@@ -371,8 +362,11 @@ export default {
         workPhone:"",
         status: '', // Stop Normal
       },
-      options: [],
-      formLabelWidth: '80px',
+      editRules: {
+        companyType: [{ required: true, message: "请选择公司类型", trigger: "change" }]
+      },
+      options: [], // 多角色数组
+      formLabelWidth: '90px',
       timer: null,
       userLogoUrl: require('@/assets/userlogo.png'),
       currentId:'',
@@ -391,7 +385,7 @@ export default {
         account: '',
         password: '',
         confirmPassword: '',
-        roleName: '',
+        roleId: '',
         qimoAccount: '',
         zhiboAccount: '',
         userType: '',
@@ -407,13 +401,12 @@ export default {
         password: [{ required: true, message: "请输入密码", trigger: "blur" }],
         confirmPassword: [{ required: true, message: "请输入密码", trigger: "blur" }],
         positionName: [{ required: true, message: "请选择职位", trigger: "blur" }],
-        roleName: [{ required: true, message: "请选择角色", trigger: "blur" }],
+        roleId: [{ required: true, message: "请选择角色", trigger: "blur" }],
         qimoAccount: [{ required: true, message: "请输入七陌账号", trigger: "blur" }],
         zhiboAccount: [{ required: true, message: "请输入智博账号", trigger: "blur" }],
         userType: [{ required: true, message: "请选择用户类型", trigger: "blur" }],
         campusNature: [{ required: true, message: "请勾选状态", trigger: "blur" }],
       },
-
       // 多校区配置
       campusForm: {
         campusName: ''
@@ -463,13 +456,6 @@ export default {
     // 搜索栏
     onSearch(val) {
       this.searchForm = {...val};
-      // this.getTableData({
-      //   currentPage: 1,
-      //   pageSize: 10,
-      //   loginUserId,
-      //   campusId: this.campusId,
-      //   ...this.searchForm
-      // })
       this.pageConfig.currentPage = 1;
       this.getTableData();
     },
@@ -595,38 +581,42 @@ export default {
       if (this.loading) {
         return;
       }
-      let roleIds = this.formDrawer.valueDept.toString()
-      console.log(this.dataUser,this.outBound, 'this.dataUser----this.outBound')
-      Promise.all([ this.$fetch(
-        "staff_role_list",{
-          userId: this.campususerId,
-          roleIds
-        }), this.$fetch(
-        "staff_detail_save",{
-          userId: this.campususerId,
-          loginUserId,
-          companyType: this.outBound.companyType,
-          id: this.currentId,
-          qimoAccount: this.outBound.qimoAccount,
-          qimoPwd: this.outBound.qimoPwd,
-          workPhone: this.outBound.workPhone,
-          zhiboAccount: this.outBound.zhiboAccount,
-          zhiboPwd: this.outBound.zhiboPwd,
-          status: this.outBound.status
-        })])
-        .then(_ => {
-          this.loading = true;
-          // this.onSearch()
-          this.getTableData();
-          this.timer = setTimeout(() => {
-            done();
-            // 动画关闭需要一定的时间
-            setTimeout(() => {
-              this.loading = false;
-            }, 400);
-          }, 500);
-        })
-        .catch(_ => {});
+      this.$refs.outBoundForm.validate((val, data) => {
+        if(val) {
+          let roleIds = this.formDrawer.valueDept.toString()
+          console.log(this.dataUser,this.outBound, 'this.dataUser----this.outBound')
+          Promise.all([ this.$fetch(
+            "staff_role_list",{
+              userId: this.campususerId,
+              roleIds
+            }), this.$fetch(
+            "staff_detail_updateStaff",{
+              userId: this.campususerId,
+              loginUserId,
+              companyType: this.outBound.companyType,
+              id: this.currentId,
+              qimoAccount: this.outBound.qimoAccount,
+              qimoPwd: this.outBound.qimoPwd,
+              workPhone: this.outBound.workPhone,
+              zhiboAccount: this.outBound.zhiboAccount,
+              zhiboPwd: this.outBound.zhiboPwd,
+              status: this.outBound.status
+            })])
+            .then(_ => {
+              this.loading = true;
+              // this.onSearch()
+              this.getTableData();
+              this.timer = setTimeout(() => {
+                done();
+                // 动画关闭需要一定的时间
+                setTimeout(() => {
+                  this.loading = false;
+                }, 400);
+              }, 500);
+            })
+            .catch(_ => {});
+        }
+      })
         
     },
     // 关闭抽屉
@@ -641,8 +631,6 @@ export default {
         if(val) {
           if(this.userStatusVisible) {
             // 新增
-            // console.log(this.userForm,this.selectedTree.id,this.selectedTree.campusName,'this.userForm----')
-            // return
             this.$fetch("staff_save", {
               ...this.userForm,
               campusId: this.selectedTree.id,
@@ -651,12 +639,19 @@ export default {
               positionName: this.positionName,
               loginUserId: this.$common.getUserId()
             }).then((res) => {
-              this.$message({
-                message: "提交成功",
-                type: "success",
-              });
-              this.getTableData();
-              this.closeUser('dataForm');
+              let roleIds = this.userForm.roleId;
+              this.$fetch(
+              "staff_role_list",{
+                userId: res.data.id,
+                roleIds
+              }).then((res) => {
+                this.$message({
+                  message: "提交成功",
+                  type: "success",
+                });
+                this.getTableData();
+                this.closeUser('dataForm');
+              })
             });
           } else {
             
