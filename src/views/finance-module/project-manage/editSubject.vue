@@ -220,8 +220,8 @@
             v-model="dynamicValidateForm.subjectStatus"
             @change="partChange"
           >
-            <el-radio :label="true">正常</el-radio>
-            <el-radio :label="false">暂停</el-radio>
+            <el-radio :label="false">正常</el-radio>
+            <el-radio :label="true">暂停</el-radio>
           </el-radio-group>
         </el-form-item>
       </div>

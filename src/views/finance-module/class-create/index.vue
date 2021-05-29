@@ -367,17 +367,6 @@
             formLabelWidth="180px"
             :multiple="true"
           >
-            <template slot="crowdNum" slot-scope="scope">
-              <el-input
-                v-model="step3FormOptions['crowdNum']"
-                placeholder="班级群人数"
-                @input="
-                  step3FormOptions['crowdNum'] = String(
-                    step3FormOptions['crowdNum']
-                  ).replace(/[^\d]/g, '')
-                "
-              ></el-input>
-            </template>
           </RdForm>
         </div>
 
@@ -895,14 +884,14 @@ export default {
               value: "1",
             },
           ],
-          initValue: "",
+          initValue: "", 
         },
         {
           prop: "crowdNum",
-          element: "el-input",
+          element: "el-input-number",
           placeholder: "班级群人数",
           label: "班级群人数：",
-          operate: true,
+          min:0
         },
         // {
         // prop: "campusVisible",
@@ -1656,7 +1645,6 @@ export default {
                   productName,
                   subjectName,
                 };
-
                 //保存修改
                 this.$fetch("courseclasstype_edit", {
                   ...formData,

@@ -48,6 +48,7 @@
       :dialogVisible="distributeVisible"
       :showFooter="false"
       :width="'990px'"
+      v-if="distributeVisible"
       appendToBody
       @handleClose="distributeVisible = false"
     >
