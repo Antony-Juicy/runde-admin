@@ -78,13 +78,13 @@
                     inline
                 >
                     <template v-if="currentData.productId == 19">
-                        <el-form-item label="报考省份" prop="provinceId" :rules="{
+                        <el-form-item label="报考省份"  label-width="140px"  prop="provinceId" :rules="{
                             required: true,
                             message: '请选择',
                             trigger: 'change',
                           }"
-                          style="margin: 20px 0 20px -120px;"> 
-                          <el-select v-model="basicInfo.provinceId" placeholder="请选择" multiple size="small" filterable :disabled="checkDisabled">
+                          style="margin: 20px 0 20px -140px;display:flex;flex-direction: row;width:100%"> 
+                          <el-select  style="flex:1;display:flex;width:100%"  v-model="basicInfo.provinceId" placeholder="请选择"  size="small" filterable :disabled="checkDisabled">
                             <el-option :label="item.label" :value="item.value" v-for="item in provinceArr" :key="item.value"></el-option>
                           </el-select>
                         </el-form-item>
@@ -96,7 +96,7 @@
                         :key="item.value"
                         style="margin-bottom: 13px;"
                       >
-                        <el-form-item
+                        <el-form-item 
                           :prop="'course.' + index + '.checked'"
                           label-width="0"
                         >
@@ -520,7 +520,7 @@ export default {
           ],
           subjectName:"",
           isperformance: true,
-          provinceId: []
+          provinceId: ""
       },
       rules: {
       },
@@ -632,7 +632,8 @@ export default {
           this.currentData = pd;
           this.basicInfo.subjectName = subjectName;
           this.basicInfo.isperformance = true;
-          this.basicInfo.provinceId = [];
+          // this.basicInfo.provinceId = [];
+          this.basicInfo.provinceId = "";
           this.currentData.chargePattern = chargePattern_text;
           this.basicInfo.course = courses.map(item => ({
               checked: false,
@@ -687,15 +688,16 @@ export default {
            })
           // 省份的处理
            let provinceIds = [];
-           this.basicInfo.provinceId.forEach(item => {
-             let target = this.provinceArr.find(ele => (ele.value == item));
+           console.log(' this.basicInfo.provinceId', this.basicInfo.provinceId)
+          //  this.basicInfo.provinceId.forEach(item => {
+             let target = this.provinceArr.find(ele => (ele.value == this.basicInfo.provinceId));
              if(target){
                provinceIds.push({
                  name: target.label,
                  val: target.value
                })
              }
-           })
+          //  })
           let obj,course = [];
             obj = {};
             this.basicInfo.course.forEach(item => {
@@ -713,7 +715,8 @@ export default {
             chargePattern: this.currentData.chargePattern,
             campusIds: JSON.stringify(campusIds),
             provinceIds: JSON.stringify(provinceIds),
-            provinceId: this.basicInfo.provinceId.join(','),
+            // provinceId: this.basicInfo.provinceId.join(','),
+            provinceId: this.basicInfo.provinceId,
             classBatch: this.currentData.classTypeBatch,
             classType: this.currentData.classType_text,
             productId: this.currentData.productId,
@@ -761,7 +764,8 @@ export default {
           this.currentData.chargePattern_text = pd.chargePattern;
           this.currentData.chargePattern = pd.chargePattern_text;
           this.currentData.productId = pd.productId;
-          this.basicInfo.provinceId = [provinceId];
+          // this.basicInfo.provinceId = [provinceId];
+          this.basicInfo.provinceId = provinceId;
           this.basicInfo.course = courseList.map(item => ({
             ...item,
             coursePrice: item.price,
