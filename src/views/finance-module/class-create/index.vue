@@ -588,7 +588,7 @@ export default {
           element: "el-select",
           placeholder: "请选择科目",
           options: [],
-          disabled: true,
+          // disabled: true,
         },
         {
           prop: "status",
@@ -884,14 +884,14 @@ export default {
               value: "1",
             },
           ],
-          initValue: "", 
+          initValue: "",
         },
         {
           prop: "crowdNum",
           element: "el-input-number",
           placeholder: "班级群人数",
           label: "班级群人数：",
-          min:0
+          min: 0,
         },
         // {
         // prop: "campusVisible",
@@ -1157,6 +1157,7 @@ export default {
         console.log("projectArr-==", this.projectArr);
         this.formOptions[1].events = {
           change: this.productChange,
+          clear: this.clearProductFn,
         };
         // 状态
         this.statusArr = this.formOptions[3].options = res.data.statusList.map(
@@ -1292,25 +1293,33 @@ export default {
         );
       });
     },
+    clearProductFn() {
+      this.formOptions[2].options = []; //清除科目的下拉
+      //清除科目选中
+      this.$refs.searchForm.setValue({
+        subjectId: "",
+      });
+    },
     productChange(val) {
       console.log(val, "val");
-      this.currentProductId = val;
-      this.formOptions[2].disabled = val ? false : true;
-      this.formOptions[2].options = [];
-      this.$refs.searchForm.setValue({
-        subjectName: "",
-      });
-      //  获取科目下拉
-      this.$fetch("courseclasstype_subjectList", { productId: val }).then(
-        (res) => {
-          this.subjecttArr = this.formOptions[2].options = res.data.list.map(
-            (item) => ({
-              label: item.subjectName,
-              value: item.id,
-            })
-          );
-        }
-      );
+      if (val) {
+        this.currentProductId = val;
+        this.formOptions[2].options = [];
+        this.$refs.searchForm.setValue({
+          subjectId: "",
+        });
+        //  获取科目下拉
+        this.$fetch("courseclasstype_subjectList", { productId: val }).then(
+          (res) => {
+            this.subjecttArr = this.formOptions[2].options = res.data.list.map(
+              (item) => ({
+                label: item.subjectName,
+                value: item.id,
+              })
+            );
+          }
+        );
+      }
     },
     handleSet(row, index) {
       //设置配送图书
@@ -1386,7 +1395,7 @@ export default {
       this.getTableData();
     },
     onReset() {
-      this.formOptions[2].disabled = true;
+      this.formOptions[2].options = [];
     },
     pageChange(val) {
       console.log(val, "pagechange");
