@@ -708,7 +708,9 @@ export default {
             })
             course = this.basicInfo.course.filter(item=>(item.checked)).map(item=>(item.courseId));
           
-           
+           console.log('provinceName 9999',this.provinceArr,target)
+          //  let provinceName = this.provinceArr.map(el=>)
+          //  return
           this.$fetch(this.addStatus?"courseclass_save":"courseclass_editJsp",{
             ...formData,
             classTypeId: this.classTypeId,
@@ -717,6 +719,7 @@ export default {
             provinceIds: JSON.stringify(provinceIds),
             // provinceId: this.basicInfo.provinceId.join(','),
             provinceId: this.basicInfo.provinceId,
+            provinceName:target.label,
             classBatch: this.currentData.classTypeBatch,
             classType: this.currentData.classType_text,
             productId: this.currentData.productId,
