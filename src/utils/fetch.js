@@ -228,6 +228,8 @@ const $fetch = async (apiName, params, config) => {
 
   if (paramType == "body") {
     newConfig.headers["Content-Type"] = 'application/json';
+  } else {
+    newConfig.headers["Content-Type"] = 'application/x-www-form-urlencoded'
   }
 
   if (params) {

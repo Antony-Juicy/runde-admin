@@ -9,12 +9,14 @@
       <div style="font-weight: 700;margin-bottom: 20px;">{{selectedTree.campusName}}</div>
       <div class="btn-wrapper">
         <el-button type="primary" size="small" @click="handleAdd">添加</el-button>
+        <el-button type="warning" size="small" @click="dianhuan">调换校区</el-button>
       </div>
       <rd-table
         :tableData="tableData"
         :tableKey="tableKey"
         :loading="loading"
         :fixedTwoRow="fixedTwoRow"
+        :multiple="true"
         :pageConfig.sync="pageConfig"
         :emptyText="emptyText"
         :tbodyHeight="600"
@@ -28,7 +30,9 @@
           <span>{{ scope.row.status | statusFilter }}</span>
         </template>
         <template slot="edit" slot-scope="scope">
-          <el-button @click="editRow(scope.$index,scope.row.id,scope.row)" type="text" size="small">编辑</el-button>
+          <el-button @click="editRow(scope.$index,scope.row.id,scope.row)" type="text" size="small" style="color: #67c23a">编辑</el-button>
+          <el-divider direction="vertical"></el-divider>
+          <el-button @click="configCampus(scope.$index,scope.row.id,scope.row)" type="text" size="small">多校区管理</el-button>
         </template>
       </rd-table>
       <!-- 添加用户 -->
@@ -120,10 +124,10 @@
                 <div class="term">所属部门：</div>
                 <div class="detail">{{dataUser.campusName}}</div>
               </el-col>
-              <el-col :span="8">
+              <!-- <el-col :span="8">
                 <div class="term">状态：</div>
                 <div class="detail">{{dataUser.status | statusFilter}}</div>
-              </el-col>
+              </el-col> -->
               <el-col :span="8">
                 <div class="term">入职时间：</div>
                 <div class="detail">{{$common._formatDates(dataUser.hireDate)}}</div>
@@ -189,10 +193,10 @@
               </el-col>
             </el-row>
             <el-divider></el-divider>
-            <div class="title_drawer">多角色管理</div>
+            <!-- <div class="title_drawer">多角色管理</div> -->
             <el-row :gutter="24">
               <el-col :span="12">
-                <el-form-item label="角色:" :label-width="formLabelWidth">
+                <el-form-item label="角色管理:" :label-width="formLabelWidth">
                   <el-select v-model="formDrawer.valueDept" filterable multiple placeholder="请选择">
                     <el-option
                       v-for="item in options"
@@ -200,6 +204,20 @@
                       :label="item.label"
                       :value="item.value"
                       >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="状态:" :label-width="formLabelWidth">
+                  <el-select v-model="outBound.status" placeholder="请选择状态">
+                    <el-option
+                      :label="'在职'"
+                      :value="'Normal'">
+                    </el-option>
+                    <el-option
+                      :label="'离职'"
+                      :value="'Stop'">
                     </el-option>
                   </el-select>
                 </el-form-item>
@@ -212,12 +230,48 @@
           </div>
         </div>
       </el-drawer>
+      <fullDialog v-model="showCampus" title="配置多校区管理" @change="showCampus = false">
+        <el-divider content-position="left">选择配置校区</el-divider>
+        <el-form ref="campusForm" :model="campusForm" label-width="80px">
+          <el-row :gutter="24">
+            <el-col :span="8">
+              <el-form-item label="校区" prop="campusName">
+                <el-select v-model="campusForm.campusName" filterable placeholder="请选择">
+                  <!-- <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option> -->
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-button type="primary">保存</el-button>
+            </el-col>
+          </el-row>
+        </el-form>
+        <el-divider content-position="left">当前管理校区</el-divider>
+        <rd-table
+          :tableData="campusTableData"
+          :tableKey="campusTableKey"
+          :loading="loading"
+          :fixedTwoRow="fixedTwoRow"
+          :emptyText="campusEmptyText"
+          :tbodyHeight="600"
+        >
+        <template slot="value8" slot-scope="scope">
+          <el-button type="text" size="small">删除</el-button>
+        </template>
+        </rd-table>
+      </fullDialog>
     </div>
   </div>
 </template>
 
 <script>
 import RdTree from '@/components/RdTree';
+import fullDialog from "@/components/FullDialog";
 import searchForm from '@/components/Searchform';
 import axios from 'axios';
 import Common from "@/utils/common";
@@ -227,7 +281,8 @@ export default {
   name:'addressbook',
   components: {
     RdTree,
-    searchForm
+    searchForm,
+    fullDialog
   },
   data () {
     return {
@@ -286,7 +341,7 @@ export default {
         { name: '职位',value: 'positionName' },
         { name: '角色',value: 'roleName' },
         { name: '状态',value: 'status',operate: true },
-        { name: '操作', value: 'edit', operate: true, width: 100, fixed: 'right'},
+        { name: '操作', value: 'edit', operate: true, fixed: 'right'},
       ],
       emptyText: '暂无数据，请选择相应的组织架构',
       fixedTwoRow: true,
@@ -313,7 +368,8 @@ export default {
         zhiboAccount:"",
         zhiboPwd:"",
         companyType:"",
-        workPhone:""
+        workPhone:"",
+        status: '', // Stop Normal
       },
       options: [],
       formLabelWidth: '80px',
@@ -357,6 +413,24 @@ export default {
         userType: [{ required: true, message: "请选择用户类型", trigger: "blur" }],
         campusNature: [{ required: true, message: "请勾选状态", trigger: "blur" }],
       },
+
+      // 多校区配置
+      campusForm: {
+        campusName: ''
+      },
+      showCampus: false, // 多校区大弹窗
+      campusTableData: [],
+      campusTableKey: [
+        { name: '员工',value: 'value1' },
+        { name: '校区',value: 'value2' },
+        { name: '手机号',value: 'value3' },
+        { name: '角色名',value: 'value4' },
+        { name: '职位名',value: 'value5' },
+        { name: '分配时间',value: 'value6' },
+        { name: '更新时间',value: 'value7' },
+        { name: '操作',value: 'value8' },
+      ],
+      campusEmptyText: '暂无数据',
     }
   },
   mounted() {
@@ -537,7 +611,8 @@ export default {
           qimoPwd: this.outBound.qimoPwd,
           workPhone: this.outBound.workPhone,
           zhiboAccount: this.outBound.zhiboAccount,
-          zhiboPwd: this.outBound.zhiboPwd
+          zhiboPwd: this.outBound.zhiboPwd,
+          status: this.outBound.status
         })])
         .then(_ => {
           this.loading = true;
@@ -589,6 +664,33 @@ export default {
         }
       });
     },
+    // 调换校区操作
+    dianhuan() {
+      this.$message({
+        message: "暂未开放",
+        type: "warning",
+      });
+    },
+    // 多校区配置操作
+    configCampus() {
+      this.showCampus = true;
+    },
+    getCampusTreeData() {
+      this.$fetch(
+        "",
+      ).then((res) => {
+        
+      });
+    },
+    getCampusTableData(params) {
+      this.$fetch(
+        "staff_list",
+        params || {
+          
+        }).then(res => {
+          
+        })
+    }
   }
 }
 </script>
