@@ -45,7 +45,7 @@ export default {
   },
   watch: {
     detailAddress(val){
-      // console.log(val,'valll')
+      console.log(val,'valll')
       this.currentAddress = val;
     },
     addressCoordinates(val){
@@ -105,7 +105,7 @@ export default {
                   
                   // document.getElementById('address').value = address;
               }else{
-                  log.error('根据经纬度查询地址失败')
+                  console.error('根据经纬度查询地址失败')
               }
           });
       },

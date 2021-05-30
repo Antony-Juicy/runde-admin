@@ -1,17 +1,17 @@
 <template>
   <div class="daily-work">
-      <el-breadcrumb separator="/" v-if="currentChain && (currentIndex == 1 )" style="margin-bottom: 20px">
+     <el-breadcrumb separator="/" v-if="currentChain && (currentIndex == 1 )" style="margin-bottom: 20px">
         <el-breadcrumb-item><a href="javascript:;" @click="goBack(0)">{{chaintitle}}</a></el-breadcrumb-item>
         <el-breadcrumb-item ><a href="javascript:;" @click="goBack(1)">{{currentChain}}</a></el-breadcrumb-item>
       </el-breadcrumb>
-       <div v-show="currentIndex == 0">
+      <div v-show="currentIndex == 0">
         <el-row :gutter="12" v-if="mode != 'overdue'">
           <el-col :span="4">
             <el-card shadow="hover">
               <div class="pane-item">
                 <div class="pane-item-top"><span class="pre-icon"></span>任务总量</div>
                 <el-divider></el-divider>
-                <div class="pane-item-bottom">{{synopsisData.totalCount}}个任务</div>
+                <div class="pane-item-bottom">{{synopsisData.totalTaskCount}}个任务</div>
               </div>
             </el-card>
           </el-col>
@@ -29,7 +29,7 @@
               <div class="pane-item">
                 <div class="pane-item-top"><span class="pre-icon" style="background-color:#909399"></span>逾期完成</div>
                 <el-divider></el-divider>
-                <div class="pane-item-bottom">{{synopsisData.overdueCompleteCount}}个任务</div>
+                <div class="pane-item-bottom">{{synopsisData.overdueComplete}}个任务</div>
               </div>
             </el-card>
           </el-col>
@@ -47,7 +47,7 @@
               <div class="pane-item">
                 <div class="pane-item-top"><span class="pre-icon" style="background-color:#E6A23C"></span>逾期待完成</div>
                 <el-divider></el-divider>
-                <div class="pane-item-bottom">{{synopsisData.overdueUnfinishedCount}}个任务</div>
+                <div class="pane-item-bottom">{{synopsisData.overdueCount}}个任务</div>
               </div>
             </el-card>
           </el-col>
@@ -56,18 +56,18 @@
               <div class="pane-item">
                 <div class="pane-item-top"><span class="pre-icon"></span>完成率</div>
                 <el-divider></el-divider>
-                <div class="pane-item-bottom">{{synopsisData.completePercentage}}%</div>
+                <div class="pane-item-bottom">{{synopsisData.percentage}}%</div>
               </div>
             </el-card>
           </el-col>
 
         </el-row>
-        <search-form
-        :formOptions="formOptions"
-        :showNum="7"
-        @onSearch="onSearch"
-        ref="dataForm2"
-        ></search-form>
+        <!-- <search-form
+          :formOptions="formOptions"
+          :showNum="7"
+          @onSearch="onSearch"
+          ref="dataForm2"
+        ></search-form> -->
         <div class="w-container">
           <!-- <div class="btn-wrapper">
             <el-button type="primary" size="small" @click="handleAdd"
@@ -106,12 +106,11 @@
             </template>
           </rd-table>
         </div>
-       </div>
-
-       <div v-show="currentIndex == 1">
+      </div>
+    
+      <div v-show="currentIndex == 1">
          <followInfo :followId="followId"/>
        </div>
-
       <!-- 查看跟进情况 -->
       <!-- <full-dialog
         v-model="followVisible"
@@ -120,7 +119,6 @@
       >
         <followInfo v-if="followVisible" :followId="followId"/>
       </full-dialog> -->
-      
   </div>
 </template>
 
@@ -351,7 +349,6 @@ export default {
         currentIndex: 0,
         chaintitle:'< 返回',
         currentChain:''
-
     }
   },
   components:{
@@ -364,31 +361,35 @@ export default {
       }
   },
   mounted(){
-      this.getSelectList();
+      // this.getSelectList();
       this.getSynopsis();
       this.getTableData();
   },
    methods: {
-     goBack(index){
-      this.currentIndex = index;
-    },
      radioChange(){
        this.getTableData();
      },
       getTableData(params = {}) {
-        let url;
+        let obj;
         if(this.mode == 'day'){
-         url = "chain_getGroupStatisticsTodayData";
+         obj = {
+           dateType:'DAY'
+         }
        }else if(this.mode == 'week'){
-         url = "chain_getGroupStatisticsWeekData";
+         obj = {
+           dateType:'WEEK'
+         }
        }else if(this.mode == 'overdue'){
-         url = "chain_getGroupStatisticsOverdueData";
+         obj = {
+           completeStatus:'OVERDUE'
+         }
        }
-        this.$fetch(url, {
+        this.$fetch("chain_getPeopleVisitData", {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
-        completeStatus: this.radio1
+        completeStatus: this.radio1,
+        ...obj
         }).then((res) => {
           this.tableData = res.data.records.map((item) => {
             item.createAt = this.$common._formatDates(item.createAt);
@@ -400,15 +401,17 @@ export default {
         })
       },
      getSynopsis(){
-       let url;
+       let type;
        if(this.mode == 'day'){
-         url = "chain_getVisitStatisticsTodaySynopsis";
+         type = "DAY";
        }else if(this.mode == 'week'){
-         url = "chain_getVisitStatisticsWeekSynopsis";
+         type = "WEEK";
        }else if(this.mode == 'overdue'){
          return;
        }
-       this.$fetch(url).then(res => {
+       this.$fetch("chain_getPeopleVisitSynopsis",{
+         dateType: type
+       }).then(res => {
         this.synopsisData = res.data;
        })
        
@@ -545,9 +548,12 @@ export default {
     openDrawer(data){
       this.followVisible = true;
       this.followId = data.chainId;
-      this.currentIndex = 1;
+       this.currentIndex = 1;
       this.currentChain = data.chainName;
-    }
+    },
+    goBack(index){
+      this.currentIndex = index;
+    },
   }
 }
 </script>

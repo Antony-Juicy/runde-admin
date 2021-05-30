@@ -73,11 +73,18 @@
               </template>
               <!-- 图片 -->
               <template v-else-if="item.type=='uploadPicField'">
-                <el-image
-                  style="width: 100px; height: 100px"
-                  :src="item.value"
-                  :fit="'cover'"
-                ></el-image>
+                <template v-if="item.value">
+                  <el-image
+                    style="width: 100px; height: 100px"
+                    :src="item.value"
+                    :fit="'cover'"
+                  ></el-image>
+                </template>
+                 <template v-else>
+                   <img
+                    style="width: 100px; height: 100px"
+                    src="@/assets/icon/noimg.png"/>
+                 </template>
               </template>
               <template v-else>
                   <el-input v-model="item.value" readonly></el-input>
@@ -152,6 +159,14 @@ export default {
       type: String | Number
     }
   },
+  watch: {
+    followId(newVal){
+      if(!newVal){
+        return;
+      }
+      this.getTableData();
+    }
+  },
   mounted(){
     this.getTableData();
   },
@@ -184,6 +199,9 @@ export default {
       })
     },
     getTableData(params = {}) {
+      if(!this.followId){
+        return;
+      }
       this.$fetch("chain_chainVisitRecord", {
         ...this.pageConfig,
         ...params,

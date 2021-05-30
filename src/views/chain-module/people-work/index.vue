@@ -1,6 +1,6 @@
 <template>
-  <div class="team-work">
-    <div class="team-work-top">
+  <div class="people-work">
+    <div class="people-work-top">
       <el-row :gutter="22">
         <el-col :span="6">
           <el-card shadow="hover">
@@ -127,12 +127,12 @@
         </el-col>
         </el-row>
     </div>
-      <search-form
+      <!-- <search-form
         :formOptions="formOptions"
         :showNum="7"
         @onSearch="onSearch"
         ref="dataForm2"
-      ></search-form>
+      ></search-form> -->
       <div class="w-container">
         <div class="complete">
           <div class="complete-top">
@@ -147,46 +147,42 @@
           <div style="overflow:hidden"><div id="chain-bar"></div></div>
         </div>
         <div class="visit-rank">
-          <div style="display:flex;justify-content:space-between;">
-            <div class="complete-title">拜访排名</div>
+          <div style="display:flex;justify-content: flex-end;">
+            <!-- <div class="complete-title">拜访排名</div> -->
             <div class="complete-dimension">
-              <div :class="{'dimension-item':true, 'current-item': currentRankItem == 'PROVINCIAL_SCHOOL'}"  @click="clickTab('PROVINCIAL_SCHOOL',1)">省校</div>
-              <div :class="{'dimension-item':true, 'current-item': currentRankItem == 'BRANCH_SCHOOL'}"  @click="clickTab('BRANCH_SCHOOL',1)">分校</div>
-              <div :class="{'dimension-item':true, 'current-item': currentRankItem == 'PERSON'}"  @click="clickTab('PERSON',1)">个人</div>
+              
+              <div :class="{'dimension-item':true, 'current-item': currentRankItem == 'COMPLETED'}"  @click="clickTab('COMPLETED',1)">已完成</div>
+              <div :class="{'dimension-item':true, 'current-item': currentRankItem == 'UNFINISHED'}"  @click="clickTab('UNFINISHED',1)">待完成</div>
+              <div :class="{'dimension-item':true, 'current-item': currentRankItem == 'OVERDUE'}"  @click="clickTab('OVERDUE',1)">已逾期</div>
+              <div :class="{'dimension-item':true, 'current-item': currentRankItem == 'OVERDUE_COMPLETE'}"  @click="clickTab('OVERDUE_COMPLETE',1)">逾期完成</div>
             </div>
           </div>
           <div class="rank-content">
-            <rd-table
-              :tableData="rankingData"
+            <!-- <rd-table
+              :tableData="chainList"
               :tableKey="rankingKey"
               :border="false"
               fixedTwoRow
               @sortChange="handelSortChange"
             >
                <template slot="name" slot-scope="scope">
-                  <div class="rank-index"><span :class="{'rank-index-left':true,'rank-index-top': Number(scope.row.ranking) <= 3 }">{{scope.row.ranking}}</span><span>{{scope.row.name}}</span></div>
+                  <div class="rank-index"><span :class="{'rank-index-left':true,'rank-index-top': Number(scope.row.ranking) < 3 }">{{scope.row.ranking}}</span><span>{{scope.row.name}}</span></div>
                </template>
-            </rd-table>
-             <div class="rank-item" v-if="rankingData.length" style="text-align:center;cursor:pointer;display: flex;justify-content: center;color:#409eff" @click="rankVisible = true">查看更多></div>
-            <!-- <template v-if="rankingData.length">
-              <div class="rank-item">
-                <div class="rank-index"></div>
-                <div class="rank-num" style="cursor:pointer">数量<i class="el-icon-d-caret"></i></div>
-                <div class="rank-rate" style="cursor:pointer">比例<i class="el-icon-d-caret"></i></div>
+            </rd-table> -->
+             <!-- <div class="rank-item" v-if="chainList.length" style="text-align:center;cursor:pointer;display: flex;justify-content: center;" @click="rankVisible = true">查看更多></div> -->
+            <template v-if="chainList.length">
+              <div class="rank-item" v-for="item in chainList" :key="item.ranking">
+                <div class="rank-index"><span :class="{'rank-index-left':true,'rank-index-top': item.ranking == 1 || item.ranking == 2 || item.ranking == 3 }">{{item.ranking}}</span><span>{{item.chainName}}</span></div>
+                <div class="rank-time">拜访时间：{{item.date}}</div>
               </div>
-              <div class="rank-item" v-for="item in rankingData" :key="item.ranking">
-                <div class="rank-index"><span :class="{'rank-index-left':true,'rank-index-top': item.ranking == 1 || item.ranking == 2 || item.ranking == 3 }">{{item.ranking}}</span><span>{{item.name}}</span></div>
-                <div class="rank-num">{{item.count}}</div>
-                <div class="rank-rate">{{item.percentage}}%</div>
-              </div>
-              <div class="rank-item" style="text-align:center;cursor:pointer;display: flex;justify-content: center;" @click="rankVisible = true">查看更多></div>
+              <div class="rank-item" style="text-align:center;cursor:pointer;display: flex;justify-content: center;color:#409eff" @click="showWeekWork">查看更多></div>
             </template>
             <template v-else>
               <div style="text-align:center">
                 <img src="@/assets/empty-image.png" alt="" class="img-empty" style="margin-top: 70px;width: 200px"/>
                 <p style="color: #a9a8a8">暂无数据</p>
               </div>
-            </template> -->
+            </template>
           </div>
         </div>
       </div>
@@ -217,12 +213,12 @@ import echarts from 'echarts'
 import dailyWork from './daily-work'
 import rankStatics from './rank-statics'
 export default {
-  name:"team-work",
+  name:"people-work",
   data(){
     return {
       orderForm:{},
       defaultData:{},
-      currentRankItem:'PROVINCIAL_SCHOOL',
+      currentRankItem:'COMPLETED',
       rankVisible: false,
       dialogTitle:'今日任务',
       mode:'day',
@@ -264,7 +260,7 @@ export default {
       todayTask: {},
       weekCompletePercentage: {},
       weekTask: {},
-      rankingData: [],
+      chainList: [],
       rankingKey: [
          {
           name: "",
@@ -290,14 +286,16 @@ export default {
     rankStatics
   },
   mounted(){
-    this.getSelectList();
+    // this.getSelectList();
     // this.$nextTick(() => {
     //   this.initChart()
     // })
 
     this.getStatics(); //获取金刚区数据
+    // 获取图标数据
+    this.compeleteStatics();
     
-    this.getDefault();//获取该账号可以看到的数据
+
   },
   beforeDestroy() {
     if (!this.chart) {
@@ -327,19 +325,8 @@ export default {
       }
       this.compeleteStatics(this.orderForm);
     },
-     getDefault(){
-       this.$fetch("chain_getGroupStatisticsDefaultOption").then(res => {
-        //  this.defaultData = res.data;
-        const { updateOrganization,updateProvincialSchool,updateBranchSchool,dataType } = res.data;
-         this.formOptions[0].disabled = !updateOrganization;
-         this.formOptions[1].disabled = !updateProvincialSchool;
-         this.formOptions[2].disabled = !updateBranchSchool;
-         this.currentRankItem = dataType;
-         this.compeleteStatics();//获取图表和排名
-       })
-     },
      getStatics(){
-       this.$fetch("chain_getGroupStatisticsSynopsis").then(res => {
+       this.$fetch("chain_getPeopleStatisticsSynopsis").then(res => {
          const { overdueTask,todayTask,weekCompletePercentage,weekTask }  = res.data;
         this.overdueTask = overdueTask;
         this.todayTask = todayTask;
@@ -348,42 +335,42 @@ export default {
        })
      },
      compeleteStatics(param={}){
-       this.$fetch('chain_getGroupStatisticsData',{
+       this.$fetch('chain_getPeopleStatisticsData',{
          dateType: this.currentItem,
-         dataType: this.currentRankItem,
+         completeStatus: this.currentRankItem,
          ...this.searchForm,
          ...param
        }).then(res => {
-         const { completeList,rankingData } = res.data;
+         const { completeList,chainList } = res.data;
          let xData = completeList.map(item => (item.date));
          let yData = completeList.map(item => (item.count));
           this.initChart(xData,yData);
-          this.rankingData = rankingData;
+          this.chainList = chainList;
           return;
-          this.rankingData = [
+          this.chainList = [
             {
               ranking: 1,
               percentage: 50,
-              name: '广东校区',
-              count: 60
+              chainName: '广东校区',
+              date: 60
             },
             {
               ranking: 2,
               percentage: 50,
-              name: '广东校区2',
-              count: 60
+              chainName: '广东校区2',
+              date: 60
             },
             {
               ranking: 3,
               percentage: 50,
-              name: '广东校区3',
-              count: 60
+              chainName: '广东校区3',
+              date: 60
             },
              {
               ranking: 4,
               percentage: 50,
-              name: '广东校区4',
-              count: 60
+              chainName: '广东校区4',
+              date: 60
             },
           ]
        })
@@ -429,8 +416,7 @@ export default {
               trigger: 'axis',
               axisPointer: {
                 type: 'shadow'
-              },
-              confine: true
+              }
           }
           
         });
@@ -525,9 +511,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.team-work {
+.people-work {
    
-  .team-work-top {
+  .people-work-top {
     /deep/{
       .el-card__body {
         padding: 0;
@@ -640,7 +626,7 @@ export default {
       margin-right: 10px;
     }
     .rank-index {
-          width: 120px;
+          // width: 120px;
           text-align: center;
           display: flex;
           align-items: center;
@@ -661,10 +647,18 @@ export default {
           }
         }
     .rank-content {
+      margin-top: 44px;
       .rank-item {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 28px;
+        // display: flex;
+        // justify-content: space-between;
+        margin-top: 20px;
+
+        .rank-time {
+          margin-left: 19px;
+          font-size: 12px;
+          margin-top: 5px;
+          color: #999999;
+        }
         
         .rank-num {
           width: 80px;

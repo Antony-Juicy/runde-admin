@@ -555,15 +555,16 @@ export default {
      },
      setPoinit(val){
        console.log(val,'valll---')
-       const { addressCoordinates,address,detailAddress,province, city,county} = val;
+       const { addressCoordinates,address,detailAddress,province, city,county,name} = val;
         this.currentAddressData = {
-          lat : addressCoordinates.split(",")[0],
-          lng : addressCoordinates.split(",")[1],
+          lat : addressCoordinates.split(",")[1],
+          lng : addressCoordinates.split(",")[0],
           address,
           detailAddress,
           pname:province,
           cityname:city,
-          adname:county
+          adname:county,
+          name
         }
      },
      getSelectList(){
@@ -692,12 +693,13 @@ export default {
           let provincialSchool = this.getSelValue(this.provincialSchoolArr,formData.provincialSchoolId);
           let branchSchool = this.getSelValue(this.branchSchoolArr,formData.branchSchoolId);
           let followUpUser = this.getSelValue(this.followUpUserArr,formData.followUpUserId);
-          const { lat,lng,address,name,pname,cityname,adname } = this.currentAddressData;
+          const { lat,lng,address,name,pname,cityname,adname,detailAddress } = this.currentAddressData;
+          console.log(this.currentAddressData,'this.currentAddressData------')
           this.$fetch(this.addStatus?"chain_add":"chain_update",{
             ...formData,
             address,
             addressCoordinates: [lng,lat].join(","),
-            detailAddress: pname+cityname+adname+address+(name || ''),
+            detailAddress: detailAddress ? detailAddress : (pname+cityname+adname+address+(name || '')),
             province:pname,
             city: cityname,
             county:adname,

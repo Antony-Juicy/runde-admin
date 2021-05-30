@@ -12,5 +12,19 @@ export default {
     chain_chainVisitRecord: {url: '/app/chain/console/chainVisitRecord/pageList', method: 'post'},//分页获取拜访记录
     chain_getVisitRecordDetail: {url: '/app/chain/console/chainVisitRecord/getVisitRecordDetail', method: 'post'},//获取拜访详情
     chain_getChainAllocatingInfo: {url: '/app/chain/console/chainInfo/getChainAllocatingInfo', method: 'post'},//获取连锁分配信息
+    chain_getGroupStatisticsSynopsis: {url: '/app/chain/console/chainVisitStatistics/getGroupStatisticsSynopsis', method: 'post'},//获取团队统计概要
+    chain_getGroupStatisticsData: {url: '/app/chain/console/chainVisitStatistics/getGroupStatisticsData', method: 'post'},//获取团队统计数据
+    chain_getGroupStatisticsDefaultOption: {url: '/app/chain/console/chainVisitStatistics/getGroupStatisticsDefaultOption', method: 'post'},//获取团队数据面板选项
+    chain_getVisitStatisticsTodaySynopsis: {url: '/app/chain/console/chainVisitStatistics/getVisitStatisticsTodaySynopsis', method: 'post'},//获取团队统计今日任务概要
+    chain_getVisitStatisticsWeekSynopsis: {url: '/app/chain/console/chainVisitStatistics/getVisitStatisticsWeekSynopsis', method: 'post'},//获取团队统计本周任务概要
+    chain_getGroupStatisticsTodayData: {url: '/app/chain/console/chainVisitStatistics/getGroupStatisticsTodayData', method: 'post'},//获取团队统计本周任务概要
+    chain_getGroupStatisticsWeekData: {url: '/app/chain/console/chainVisitStatistics/getGroupStatisticsWeekData', method: 'post'},//获取团队统计本周任务概要
+    chain_getGroupStatisticsOverdueData: {url: '/app/chain/console/chainVisitStatistics/getGroupStatisticsOverdueData', method: 'post'},//获取团队统计本周任务概要
+    chain_getGroupStatisticsRankingData: {url: '/app/chain/console/chainVisitStatistics/getGroupStatisticsRankingData', method: 'post'},//获取团队统计本周任务概要
+    chain_getPeopleStatisticsSynopsis: {url: '/app/chain/console/chainVisitStatistics/getPeopleStatisticsSynopsis', method: 'post'},//获取个人统计概要
+    chain_getPeopleStatisticsData: {url: '/app/chain/console/chainVisitStatistics/getPeopleStatisticsData', method: 'post'},//获取个人统计数据
+    chain_getPeopleVisitData: {url: '/app/chain/console/chainVisitStatistics/getPeopleVisitData', method: 'post'},//获取个人拜访数据
+    chain_getPeopleVisitSynopsis: {url: '/app/chain/console/chainVisitStatistics/getPeopleVisitSynopsis', method: 'post'},//获取个人拜访概要
+    
     
 }
