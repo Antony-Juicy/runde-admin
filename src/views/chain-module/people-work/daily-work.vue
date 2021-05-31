@@ -87,6 +87,7 @@
             :tableData="tableData"
             :tableKey="tableKey"
             :pageConfig.sync="pageConfig"
+            :pageSizes="[10, 20, 30, 50, 100,200]"
             fixedTwoRow
             @pageChange="pageChange"
             :emptyText="emptyText"

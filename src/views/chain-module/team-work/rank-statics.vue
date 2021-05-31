@@ -35,6 +35,7 @@
         :tableKey="tableKey"
         :pageConfig.sync="pageConfig"
         :border="false"
+        :pageSizes="[10, 20, 30, 50, 100,200]"
         fixedTwoRow
         @pageChange="pageChange"
          @sortChange="handelSortChange"

@@ -95,6 +95,7 @@
         :limit.sync="pageConfig.pageSize"
         :pager-count="pagerCount"
         :autoScroll="autoScroll"
+        :pageSizes="pageSizes"
         @pagination="pageChange"
       />
     </template>
@@ -199,6 +200,12 @@ export default {
     autoScroll: {
       type: Boolean,
       default: true
+    },
+    pageSizes: {
+      type: Array,
+      default() {
+        return [10, 20, 30, 50]
+      }
     }
   },
   components: {
