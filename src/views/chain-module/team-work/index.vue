@@ -5,7 +5,7 @@
         <el-col :span="6">
           <el-card shadow="hover">
             <div class="pane-item" @click="showDayWork">
-              <div class="total-info">
+              <div class="total-info" style="padding-bottom: 19px;">
                 <div class="total-info-top">
                   <img src="@/assets/icon/jinri.png" alt="" class="task-img">
                   <div class="task">
@@ -28,7 +28,7 @@
         <el-col :span="6">
           <el-card shadow="hover">
             <div class="pane-item" @click="showWeekWork">
-              <div class="total-info">
+              <div class="total-info" style="padding-bottom: 19px;">
                 <div class="total-info-top">
                   <img src="@/assets/icon/benzhou.png" alt="" class="task-img">
                   <div class="task">
@@ -132,6 +132,7 @@
         :showNum="7"
         @onSearch="onSearch"
         ref="dataForm2"
+        :btnItems="btnItems"
       ></search-form>
       <div class="w-container">
         <div class="complete">
@@ -150,9 +151,9 @@
           <div style="display:flex;justify-content:space-between;">
             <div class="complete-title">拜访排名</div>
             <div class="complete-dimension">
-              <div :class="{'dimension-item':true, 'current-item': currentRankItem == 'PROVINCIAL_SCHOOL'}"  @click="clickTab('PROVINCIAL_SCHOOL',1)">省校</div>
-              <div :class="{'dimension-item':true, 'current-item': currentRankItem == 'BRANCH_SCHOOL'}"  @click="clickTab('BRANCH_SCHOOL',1)">分校</div>
-              <div :class="{'dimension-item':true, 'current-item': currentRankItem == 'PERSON'}"  @click="clickTab('PERSON',1)">个人</div>
+              <div :class="{'dimension-item':true, 'current-item': currentRankItem == 'PROVINCIAL_SCHOOL', 'disabled-item': disabledItem1}"  @click="clickTab('PROVINCIAL_SCHOOL',1)">省校</div>
+              <div :class="{'dimension-item':true, 'current-item': currentRankItem == 'BRANCH_SCHOOL', 'disabled-item': disabledItem2}"  @click="clickTab('BRANCH_SCHOOL',1)">分校</div>
+              <div :class="{'dimension-item':true, 'current-item': currentRankItem == 'PERSON', 'disabled-item': disabledItem3}"  @click="clickTab('PERSON',1)">个人</div>
             </div>
           </div>
           <div class="rank-content">
@@ -166,8 +167,11 @@
                <template slot="name" slot-scope="scope">
                   <div class="rank-index"><span :class="{'rank-index-left':true,'rank-index-top': Number(scope.row.ranking) <= 3 }">{{scope.row.ranking}}</span><span>{{scope.row.name}}</span></div>
                </template>
+               <template slot="percentage" slot-scope="scope">
+                 {{scope.row.percentage}}%
+               </template>
             </rd-table>
-             <div class="rank-item" v-if="rankingData.length" style="text-align:center;cursor:pointer;display: flex;justify-content: center;color:#409eff" @click="rankVisible = true">查看更多></div>
+             <div class="rank-item" v-if="rankingData.length" style="text-align:center;cursor:pointer;display: flex;justify-content: center;color:#409eff" @click="viewMore">查看更多></div>
             <!-- <template v-if="rankingData.length">
               <div class="rank-item">
                 <div class="rank-index"></div>
@@ -206,7 +210,11 @@
         :title="'排名统计'"
         @change="rankVisible = false"
       >
-        <rankStatics  v-if="rankVisible"/>
+        <rankStatics  
+          v-if="rankVisible"
+          :dateType="currentItem"
+          :dataType="currentRankItem"
+        />
       </full-dialog>
 
   </div>
@@ -220,6 +228,7 @@ export default {
   name:"team-work",
   data(){
     return {
+      btnItems:"search",
       orderForm:{},
       defaultData:{},
       currentRankItem:'PROVINCIAL_SCHOOL',
@@ -281,8 +290,12 @@ export default {
           name: "比例",
           value: "percentage",
             sortable: 'custom',
+            operate: true
         },
-      ]
+      ],
+      disabledItem1: false,
+      disabledItem2: false,
+      disabledItem3: false,
     }
   },
   components: {
@@ -317,10 +330,16 @@ export default {
       }else {
         sortBy = null
       }
+      let prop;
+      if(val.prop == 'count'){
+        prop = 'totalCompleteCount'
+      }else {
+        prop = val.prop
+      }
       if(sortBy){
         this.orderForm = {
           sortBy,
-          sortField: val.prop
+          sortField: prop
         };
       }else {
         this.orderForm = {};
@@ -328,13 +347,66 @@ export default {
       this.compeleteStatics(this.orderForm);
     },
      getDefault(){
-       this.$fetch("chain_getGroupStatisticsDefaultOption").then(res => {
+       this.$fetch("chain_getGroupStatisticsDefaultOption").then(async res => {
         //  this.defaultData = res.data;
-        const { updateOrganization,updateProvincialSchool,updateBranchSchool,dataType } = res.data;
+        const { updateOrganization,updateProvincialSchool,updateBranchSchool,dataType,organization,organizationId,provincialSchool,provincialSchoolId,branchSchool,branchSchoolId } = res.data;
          this.formOptions[0].disabled = !updateOrganization;
          this.formOptions[1].disabled = !updateProvincialSchool;
          this.formOptions[2].disabled = !updateBranchSchool;
          this.currentRankItem = dataType;
+        //  给选项赋值
+        if(organizationId){
+           this.formOptions[0].options = [
+             {
+               label: organization,
+               value: organizationId
+             }
+           ]
+           this.$refs.dataForm2.setValue({
+             organizationId
+          })
+          await this.organizationChange(organizationId);
+          if(provincialSchoolId){
+            this.formOptions[1].options = [
+              {
+                label: provincialSchool,
+                value: provincialSchoolId
+              }
+            ]
+            this.$refs.dataForm2.setValue({
+              provincialSchoolId
+            })
+            await this.provincialSchoolChange(provincialSchoolId);
+            if(branchSchoolId){
+              this.formOptions[2].options = [
+                {
+                  label: branchSchool,
+                  value: branchSchoolId
+                }
+              ]
+              this.$refs.dataForm2.setValue({
+                branchSchoolId
+              })
+            }
+          }
+        }
+        
+        // 根据权限禁用 省校 分校 个人
+          if(dataType == 'PERSON'){
+            this.disabledItem1 = true;
+            this.disabledItem2 = true;
+            this.disabledItem3 = false;
+          }else if(dataType == 'BRANCH_SCHOOL'){
+            this.disabledItem1 = true;
+            this.disabledItem2 = false;
+            this.disabledItem3 = false;
+          }else if(dataType == 'PROVINCIAL_SCHOOL'){
+            this.disabledItem1 = false;
+            this.disabledItem2 = false;
+            this.disabledItem3 = false;
+            this.btnItems = "search, reset";
+          }
+        
          this.compeleteStatics();//获取图表和排名
        })
      },
@@ -460,41 +532,53 @@ export default {
        })
      },
       organizationChange(val){
-       this.$fetch("chain_getCampusList",{
-         parentId: val
-       }).then(res => {
-         this.provincialSchoolArr = res.data.map(item => ({
-           label: item.campusName,
-           value: item.campusId
-         }));
-         this.formOptions[1].options = this.provincialSchoolArr;
-         this.formOptions[1].events = {
-           change: this.provincialSchoolChange
-         }
-        //  清除下级的数据和值
-          this.$refs.dataForm2.setValue({
-              provincialSchoolId:'',
-              branchSchoolId:'',
-          })
+         if(!val){
+          return;
+        }
+       return new Promise(resolve => {
+         this.$fetch("chain_getCampusList",{
+          parentId: val
+        }).then(res => {
+          this.provincialSchoolArr = res.data.map(item => ({
+            label: item.campusName,
+            value: item.campusId
+          }));
+          this.formOptions[1].options = this.provincialSchoolArr;
+          this.formOptions[1].events = {
+            change: this.provincialSchoolChange
+          }
+          //  清除下级的数据和值
+            this.$refs.dataForm2.setValue({
+                provincialSchoolId:'',
+                branchSchoolId:'',
+            })
+            resolve();
+        })
        })
      },
      provincialSchoolChange(val){
-      this.$fetch("chain_getCampusList",{
-         parentId: val
-       }).then(res => {
-         this.branchSchoolArr = res.data.map(item => ({
-           label: item.campusName,
-           value: item.campusId
-         }));
-         this.formOptions[2].options = this.branchSchoolArr;
-        //  this.formOptions[2].events = {
-        //    change: this.branchSchoolChange
-        //  }
-         //  清除下级的数据和值
-          this.$refs.dataForm2.setValue({
-              branchSchoolId:'',
-          })
-       })
+        if(!val){
+          return;
+        }
+      return new Promise(resolve => {
+        this.$fetch("chain_getCampusList",{
+          parentId: val
+        }).then(res => {
+          this.branchSchoolArr = res.data.map(item => ({
+            label: item.campusName,
+            value: item.campusId
+          }));
+          this.formOptions[2].options = this.branchSchoolArr;
+          //  this.formOptions[2].events = {
+          //    change: this.branchSchoolChange
+          //  }
+          //  清除下级的数据和值
+            this.$refs.dataForm2.setValue({
+                branchSchoolId:'',
+            })
+            resolve();
+        })
+      })
      },
      clickTab(index,type){
        if(type == 1){
@@ -519,6 +603,9 @@ export default {
         this.dayVisible = true;
        this.mode = 'overdue';
        this.dialogTitle = '逾期任务';
+     },
+     viewMore(){
+       this.rankVisible = true;
      }
   }
 }
@@ -583,6 +670,11 @@ export default {
         }
       }
     }
+  }
+  .disabled-item {
+    pointer-events: none;
+    cursor: default;
+    opacity: 0.6;
   }
   .w-container{
     padding: 28px;

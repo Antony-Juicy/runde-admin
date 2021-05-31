@@ -358,11 +358,18 @@ export default {
   props: {
       mode: {
           type: String
-      }
+      },
+      dateType: {
+          type: String
+      },
+      completeStatus: {
+          type: String
+      },
   },
   mounted(){
       // this.getSelectList();
       this.getSynopsis();
+      this.radio1 = this.completeStatus;
       this.getTableData();
   },
    methods: {
@@ -431,6 +438,9 @@ export default {
        })
      },
      organizationChange(val){
+        if(!val){
+          return;
+        }
        this.$fetch("chain_getCampusList",{
          parentId: val
        }).then(res => {
@@ -450,6 +460,9 @@ export default {
        })
      },
      provincialSchoolChange(val){
+        if(!val){
+          return;
+        }
       this.$fetch("chain_getCampusList",{
          parentId: val
        }).then(res => {
@@ -468,6 +481,9 @@ export default {
        })
      },
       branchSchoolChange(val,userId){
+         if(!val){
+          return;
+        }
         return new Promise(resolve => {
           this.$fetch("chain_getUserListByCampusId",{
             campusId: val

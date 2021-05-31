@@ -5,6 +5,7 @@
       :showNum="7"
       @onSearch="onSearch"
       ref="dataForm2"
+      :btnItems="btnItems"
     ></search-form>
     <div class="w-container">
       <!-- <div class="btn-wrapper">
@@ -24,9 +25,9 @@
       <el-divider></el-divider>
       <div style="text-align: right;margin-bottom:20px">
           <el-radio-group v-model="radio1" size="small" @change="clickRadio">
-            <el-radio-button label="PROVINCIAL_SCHOOL">省校</el-radio-button>
-            <el-radio-button label="BRANCH_SCHOOL">分校</el-radio-button>
-            <el-radio-button label="PERSON">个人</el-radio-button>
+            <el-radio-button label="PROVINCIAL_SCHOOL" :disabled="disabledItem1">省校</el-radio-button>
+            <el-radio-button label="BRANCH_SCHOOL" :disabled="disabledItem2">分校</el-radio-button>
+            <el-radio-button label="PERSON" :disabled="disabledItem3">个人</el-radio-button>
             </el-radio-group>
       </div>
       <rd-table
@@ -40,7 +41,7 @@
         :emptyText="emptyText"
       >
         <template slot="provincialSchool" slot-scope="scope">
-            <div class="rank-index"><span :class="{'rank-index-left':true,'rank-index-top': Number(scope.row.ranking) < 3 }">{{scope.row.ranking}}</span><span>{{scope.row.provincialSchool}}</span></div>
+            <div class="rank-index"><span :class="{'rank-index-left':true,'rank-index-top': Number(scope.row.ranking) <= 3 }">{{scope.row.ranking}}</span><span>{{scope.row.provincialSchool}}</span></div>
         </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
@@ -69,6 +70,7 @@ export default {
   name:"daily-work",
   data(){
     return {
+       btnItems:"search",
       currentItem:'WEEK',
         radio1:'PROVINCIAL_SCHOOL',
       formOptions: [
@@ -169,7 +171,32 @@ export default {
       provincialSchoolArr:[],
       branchSchoolArr: [],
       followUpUserArr: [],
-      orderForm:{}
+      orderForm:{},
+       statusOptions: [
+          {
+            label: '全部',
+            value: ''
+          },
+          {
+            label: '已完成',
+            value: 'COMPLETED'
+          },
+          {
+            label: '待完成',
+            value: 'UNFINISHED'
+          },
+          {
+            label: '逾期',
+            value: 'OVERDUE'
+          },
+          {
+            label: '逾期完成',
+            value: 'OVERDUE_COMPLETE'
+          },
+        ],
+        disabledItem1: false,
+        disabledItem2: false,
+        disabledItem3: false,
     }
   },
   components:{
@@ -178,11 +205,22 @@ export default {
   props: {
       mode: {
           type: String
+      },
+      dateType: {
+        type: String
+      },
+      dataType: {
+        type: String
       }
   },
   mounted(){
       this.getSelectList();
+      this.currentItem = this.dateType;
+      this.radio1 = this.dataType;
       this.getTableData();
+
+      // 获取默认权限
+      this.getDefault();
   },
    methods: {
      handelSortChange(val){
@@ -226,44 +264,120 @@ export default {
          }
        })
      },
-     organizationChange(val){
-       this.$fetch("chain_getCampusList",{
-         parentId: val
-       }).then(res => {
-         this.provincialSchoolArr = res.data.map(item => ({
-           label: item.campusName,
-           value: item.campusId
-         }));
-         this.formOptions[1].options = this.provincialSchoolArr;
-         this.formOptions[1].events = {
-           change: this.provincialSchoolChange
-         }
-        //  清除下级的数据和值
-          this.$refs.dataForm2.setValue({
-              provincialSchoolId:'',
-              branchSchoolId:'',
+     getDefault(){
+       this.$fetch("chain_getGroupStatisticsDefaultOption").then(async res => {
+        //  this.defaultData = res.data;
+        const { updateOrganization,updateProvincialSchool,updateBranchSchool,dataType,organization,organizationId,provincialSchool,provincialSchoolId,branchSchool,branchSchoolId } = res.data;
+         this.formOptions[0].disabled = !updateOrganization;
+         this.formOptions[1].disabled = !updateProvincialSchool;
+         this.formOptions[2].disabled = !updateBranchSchool;
+         this.currentRankItem = dataType;
+          if(dataType == 'PERSON'){
+            this.disabledItem1 = true;
+            this.disabledItem2 = true;
+            this.disabledItem3 = false;
+          }else if(dataType == 'BRANCH_SCHOOL'){
+            this.disabledItem1 = true;
+            this.disabledItem2 = false;
+            this.disabledItem3 = false;
+          }else if(dataType == 'PROVINCIAL_SCHOOL'){
+            this.disabledItem1 = false;
+            this.disabledItem2 = false;
+            this.disabledItem3 = false;
+            this.btnItems = "search, reset";
+          }
+        //  给选项赋值
+        if(organizationId){
+           this.formOptions[0].options = [
+             {
+               label: organization,
+               value: organizationId
+             }
+           ]
+           this.$refs.dataForm2.setValue({
+             organizationId
           })
+          await this.organizationChange(organizationId);
+          if(provincialSchoolId){
+            this.formOptions[1].options = [
+              {
+                label: provincialSchool,
+                value: provincialSchoolId
+              }
+            ]
+            this.$refs.dataForm2.setValue({
+              provincialSchoolId
+            })
+            await this.provincialSchoolChange(provincialSchoolId);
+            if(branchSchoolId){
+              this.formOptions[2].options = [
+                {
+                  label: branchSchool,
+                  value: branchSchoolId
+                }
+              ]
+              this.$refs.dataForm2.setValue({
+                branchSchoolId
+              })
+              this.branchSchoolChange(branchSchoolId);
+            }
+          }
+        }
+       })
+     },
+      organizationChange(val){
+         if(!val){
+          return;
+        }
+       return new Promise(resolve => {
+         this.$fetch("chain_getCampusList",{
+          parentId: val
+        }).then(res => {
+          this.provincialSchoolArr = res.data.map(item => ({
+            label: item.campusName,
+            value: item.campusId
+          }));
+          this.formOptions[1].options = this.provincialSchoolArr;
+          this.formOptions[1].events = {
+            change: this.provincialSchoolChange
+          }
+          //  清除下级的数据和值
+            this.$refs.dataForm2.setValue({
+                provincialSchoolId:'',
+                branchSchoolId:'',
+            })
+            resolve();
+        })
        })
      },
      provincialSchoolChange(val){
-      this.$fetch("chain_getCampusList",{
-         parentId: val
-       }).then(res => {
-         this.branchSchoolArr = res.data.map(item => ({
-           label: item.campusName,
-           value: item.campusId
-         }));
-         this.formOptions[2].options = this.branchSchoolArr;
-         this.formOptions[2].events = {
-           change: this.branchSchoolChange
-         }
-         //  清除下级的数据和值
-          this.$refs.dataForm2.setValue({
-              branchSchoolId:'',
-          })
-       })
+        if(!val){
+          return;
+        }
+      return new Promise(resolve => {
+        this.$fetch("chain_getCampusList",{
+          parentId: val
+        }).then(res => {
+          this.branchSchoolArr = res.data.map(item => ({
+            label: item.campusName,
+            value: item.campusId
+          }));
+          this.formOptions[2].options = this.branchSchoolArr;
+           this.formOptions[2].events = {
+             change: this.branchSchoolChange
+           }
+          //  清除下级的数据和值
+            this.$refs.dataForm2.setValue({
+                branchSchoolId:'',
+            })
+            resolve();
+        })
+      })
      },
       branchSchoolChange(val,userId){
+         if(!val){
+          return;
+        }
         return new Promise(resolve => {
           this.$fetch("chain_getUserListByCampusId",{
             campusId: val
@@ -299,7 +413,7 @@ export default {
           this.tableData = res.data.records.map((item) => {
             item.createAt = this.$common._formatDates(item.createAt);
             item.updateAt = this.$common._formatDates(item.updateAt);
-            item.completeStatus = this.statusOptions.find(ele => (ele.value == item.completeStatus)).label;
+            // item.completeStatus = this.statusOptions.find(ele => (ele.value == item.completeStatus)).label;
             return item;
           });
           this.pageConfig.totalCount = res.data.totalCount;

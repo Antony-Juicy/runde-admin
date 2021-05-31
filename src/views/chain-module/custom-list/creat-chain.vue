@@ -598,6 +598,9 @@ export default {
        }
      },
       organizationChange(val){
+        if(!val){
+          return;
+        }
        this.$fetch("chain_getCampusList",{
          parentId: val
        }).then(res => {
@@ -618,6 +621,9 @@ export default {
        })
      },
       provincialSchoolChange(val){
+         if(!val){
+          return;
+        }
       this.$fetch("chain_getCampusList",{
          parentId: val
        }).then(res => {
@@ -637,6 +643,9 @@ export default {
        })
      },
       branchSchoolChange(val){
+         if(!val){
+          return;
+        }
         this.$fetch("chain_getUserListByCampusId",{
          campusId: val
        }).then(res => {

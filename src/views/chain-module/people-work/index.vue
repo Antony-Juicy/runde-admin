@@ -5,7 +5,7 @@
         <el-col :span="6">
           <el-card shadow="hover">
             <div class="pane-item" @click="showDayWork">
-              <div class="total-info">
+              <div class="total-info" style="padding-bottom: 19px;">
                 <div class="total-info-top">
                   <img src="@/assets/icon/jinri.png" alt="" class="task-img">
                   <div class="task">
@@ -28,7 +28,7 @@
         <el-col :span="6">
           <el-card shadow="hover">
             <div class="pane-item" @click="showWeekWork">
-              <div class="total-info">
+              <div class="total-info" style="padding-bottom: 19px;">
                 <div class="total-info-top">
                   <img src="@/assets/icon/benzhou.png" alt="" class="task-img">
                   <div class="task">
@@ -158,22 +158,11 @@
             </div>
           </div>
           <div class="rank-content">
-            <!-- <rd-table
-              :tableData="chainList"
-              :tableKey="rankingKey"
-              :border="false"
-              fixedTwoRow
-              @sortChange="handelSortChange"
-            >
-               <template slot="name" slot-scope="scope">
-                  <div class="rank-index"><span :class="{'rank-index-left':true,'rank-index-top': Number(scope.row.ranking) < 3 }">{{scope.row.ranking}}</span><span>{{scope.row.name}}</span></div>
-               </template>
-            </rd-table> -->
-             <!-- <div class="rank-item" v-if="chainList.length" style="text-align:center;cursor:pointer;display: flex;justify-content: center;" @click="rankVisible = true">查看更多></div> -->
+          
             <template v-if="chainList.length">
               <div class="rank-item" v-for="item in chainList" :key="item.ranking">
                 <div class="rank-index"><span :class="{'rank-index-left':true,'rank-index-top': item.ranking == 1 || item.ranking == 2 || item.ranking == 3 }">{{item.ranking}}</span><span>{{item.chainName}}</span></div>
-                <div class="rank-time">拜访时间：{{item.date}}</div>
+                <div class="rank-time"><span v-if="currentRankItem == 'UNFINISHED' ||　currentRankItem == 'OVERDUE'">截止时间：</span><span v-else>拜访时间：</span>{{item.date}}</div>
               </div>
               <div class="rank-item" style="text-align:center;cursor:pointer;display: flex;justify-content: center;color:#409eff" @click="showWeekWork">查看更多></div>
             </template>
@@ -183,6 +172,7 @@
                 <p style="color: #a9a8a8">暂无数据</p>
               </div>
             </template>
+            
           </div>
         </div>
       </div>
@@ -193,16 +183,12 @@
         :title="dialogTitle"
         @change="dayVisible = false"
       >
-        <dailyWork :mode="mode" v-if="dayVisible"/>
-      </full-dialog>
-
-      <!-- 排名统计 -->
-      <full-dialog
-        v-model="rankVisible"
-        :title="'排名统计'"
-        @change="rankVisible = false"
-      >
-        <rankStatics  v-if="rankVisible"/>
+        <dailyWork 
+          :mode="mode" 
+          v-if="dayVisible"
+          :dateType="currentItem"
+          :completeStatus="currentRankItem"
+        />
       </full-dialog>
 
   </div>
@@ -211,7 +197,6 @@
 <script>
 import echarts from 'echarts'
 import dailyWork from './daily-work'
-import rankStatics from './rank-statics'
 export default {
   name:"people-work",
   data(){
@@ -219,7 +204,6 @@ export default {
       orderForm:{},
       defaultData:{},
       currentRankItem:'COMPLETED',
-      rankVisible: false,
       dialogTitle:'今日任务',
       mode:'day',
       weekVisible:false,
@@ -282,8 +266,7 @@ export default {
     }
   },
   components: {
-    dailyWork,
-    rankStatics
+    dailyWork
   },
   mounted(){
     // this.getSelectList();
@@ -446,6 +429,9 @@ export default {
        })
      },
       organizationChange(val){
+         if(!val){
+          return;
+        }
        this.$fetch("chain_getCampusList",{
          parentId: val
        }).then(res => {
@@ -465,6 +451,9 @@ export default {
        })
      },
      provincialSchoolChange(val){
+        if(!val){
+          return;
+        }
       this.$fetch("chain_getCampusList",{
          parentId: val
        }).then(res => {

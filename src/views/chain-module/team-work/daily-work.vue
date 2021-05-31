@@ -67,6 +67,7 @@
         :showNum="7"
         @onSearch="onSearch"
         ref="dataForm2"
+        :btnItems="btnItems"
         ></search-form>
         <div class="w-container">
           <!-- <div class="btn-wrapper">
@@ -131,6 +132,7 @@ export default {
   name:"daily-work",
   data(){
     return {
+      btnItems:"search",
       followVisible: false,
       followId:'',
       synopsisData:{},
@@ -367,6 +369,8 @@ export default {
       this.getSelectList();
       this.getSynopsis();
       this.getTableData();
+
+       this.getDefault();//获取该账号可以看到的数据
   },
    methods: {
      goBack(index){
@@ -427,44 +431,109 @@ export default {
          }
        })
      },
-     organizationChange(val){
-       this.$fetch("chain_getCampusList",{
-         parentId: val
-       }).then(res => {
-         this.provincialSchoolArr = res.data.map(item => ({
-           label: item.campusName,
-           value: item.campusId
-         }));
-         this.formOptions[1].options = this.provincialSchoolArr;
-         this.formOptions[1].events = {
-           change: this.provincialSchoolChange
+     getDefault(){
+       this.$fetch("chain_getGroupStatisticsDefaultOption").then(async res => {
+        //  this.defaultData = res.data;
+        const { updateOrganization,updateProvincialSchool,updateBranchSchool,dataType,organization,organizationId,provincialSchool,provincialSchoolId,branchSchool,branchSchoolId } = res.data;
+         this.formOptions[0].disabled = !updateOrganization;
+         this.formOptions[1].disabled = !updateProvincialSchool;
+         this.formOptions[2].disabled = !updateBranchSchool;
+         this.currentRankItem = dataType;
+         if(dataType == 'PROVINCIAL_SCHOOL'){
+           this.btnItems = "search, reset";
          }
-        //  清除下级的数据和值
-          this.$refs.dataForm2.setValue({
-              provincialSchoolId:'',
-              branchSchoolId:'',
+        //  给选项赋值
+        if(organizationId){
+           this.formOptions[0].options = [
+             {
+               label: organization,
+               value: organizationId
+             }
+           ]
+           this.$refs.dataForm2.setValue({
+             organizationId
           })
+          await this.organizationChange(organizationId);
+          if(provincialSchoolId){
+            this.formOptions[1].options = [
+              {
+                label: provincialSchool,
+                value: provincialSchoolId
+              }
+            ]
+            this.$refs.dataForm2.setValue({
+              provincialSchoolId
+            })
+            await this.provincialSchoolChange(provincialSchoolId);
+            if(branchSchoolId){
+              this.formOptions[2].options = [
+                {
+                  label: branchSchool,
+                  value: branchSchoolId
+                }
+              ]
+              this.$refs.dataForm2.setValue({
+                branchSchoolId
+              })
+              this.branchSchoolChange(branchSchoolId);
+            }
+          }
+        }
+       })
+     },
+      organizationChange(val){
+         if(!val){
+          return;
+        }
+       return new Promise(resolve => {
+         this.$fetch("chain_getCampusList",{
+          parentId: val
+        }).then(res => {
+          this.provincialSchoolArr = res.data.map(item => ({
+            label: item.campusName,
+            value: item.campusId
+          }));
+          this.formOptions[1].options = this.provincialSchoolArr;
+          this.formOptions[1].events = {
+            change: this.provincialSchoolChange
+          }
+          //  清除下级的数据和值
+            this.$refs.dataForm2.setValue({
+                provincialSchoolId:'',
+                branchSchoolId:'',
+            })
+            resolve();
+        })
        })
      },
      provincialSchoolChange(val){
-      this.$fetch("chain_getCampusList",{
-         parentId: val
-       }).then(res => {
-         this.branchSchoolArr = res.data.map(item => ({
-           label: item.campusName,
-           value: item.campusId
-         }));
-         this.formOptions[2].options = this.branchSchoolArr;
-         this.formOptions[2].events = {
-           change: this.branchSchoolChange
-         }
-         //  清除下级的数据和值
-          this.$refs.dataForm2.setValue({
-              branchSchoolId:'',
-          })
-       })
+        if(!val){
+          return;
+        }
+      return new Promise(resolve => {
+        this.$fetch("chain_getCampusList",{
+          parentId: val
+        }).then(res => {
+          this.branchSchoolArr = res.data.map(item => ({
+            label: item.campusName,
+            value: item.campusId
+          }));
+          this.formOptions[2].options = this.branchSchoolArr;
+           this.formOptions[2].events = {
+             change: this.branchSchoolChange
+           }
+          //  清除下级的数据和值
+            this.$refs.dataForm2.setValue({
+                branchSchoolId:'',
+            })
+            resolve();
+        })
+      })
      },
       branchSchoolChange(val,userId){
+         if(!val){
+          return;
+        }
         return new Promise(resolve => {
           this.$fetch("chain_getUserListByCampusId",{
             campusId: val
