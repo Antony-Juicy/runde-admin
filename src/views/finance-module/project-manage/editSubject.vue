@@ -101,7 +101,7 @@
           <el-date-picker
             size="small"
             v-model="dynamicValidateForm.theoryTestStart"
-            type="datetimerange"
+            type="daterange"
             range-separator="至"
             start-placeholder="开始时间"
             end-placeholder="结束时间"
@@ -122,7 +122,7 @@
           <el-date-picker
             style="margin-right: 30px"
             v-model="dynamicValidateForm.theoryTestClosingTime"
-            type="datetime"
+            type="date"
             placeholder="选择日期时间"
             :picker-options="startDateDisabled"
           >
@@ -150,7 +150,7 @@
           <el-date-picker
             size="small"
             v-model="dynamicValidateForm.skillTestStart"
-            type="datetimerange"
+            type="daterange"
             range-separator="至"
             start-placeholder="开始时间"
             end-placeholder="结束时间"
@@ -174,7 +174,7 @@
           <el-date-picker
             size="small"
             v-model="dynamicValidateForm.theoryTest2Start"
-            type="datetimerange"
+            type="daterange"
             range-separator="至"
             start-placeholder="开始时间"
             end-placeholder="结束时间"
@@ -198,7 +198,7 @@
           <el-date-picker
             size="small"
             v-model="dynamicValidateForm.theoryTest2ClosingTime"
-            type="datetime"
+            type="date"
             placeholder="选择日期时间"
             :picker-options="startDateDisabled"
           >
@@ -220,8 +220,8 @@
             v-model="dynamicValidateForm.subjectStatus"
             @change="partChange"
           >
-            <el-radio :label="true">正常</el-radio>
-            <el-radio :label="false">暂停</el-radio>
+            <el-radio :label="false">正常</el-radio>
+            <el-radio :label="true">暂停</el-radio>
           </el-radio-group>
         </el-form-item>
       </div>
@@ -396,18 +396,19 @@ export default {
           this.dynamicValidateForm.theoryTestStart[1] = this.$common._formatDates3(
             this.dynamicValidateForm.theoryTestStart[1]
           );
-          this.dynamicValidateForm.theoryTest2ClosingTime = this.$common._formatDates3(
+          let theoryTest2ClosingTime =  this.dynamicValidateForm.theoryTest2ClosingTime ? this.$common._formatDates3(
             this.dynamicValidateForm.theoryTest2ClosingTime
-          );
-          this.dynamicValidateForm.theoryTestClosingTime = this.$common._formatDates3(
+          ):"";
+         let theoryTestClosingTime = this.dynamicValidateForm.theoryTestClosingTime? this.$common._formatDates3(
             this.dynamicValidateForm.theoryTestClosingTime
-          );
-          let skillTestStart = this.$common._formatDates3(
+          ):"";
+        
+          let skillTestStart = this.dynamicValidateForm.skillTestStart? this.$common._formatDates3(
             this.dynamicValidateForm.skillTestStart[0]
-          );
-          let skillTestEnd = this.$common._formatDates3(
+          ) :"";
+          let skillTestEnd =  this.dynamicValidateForm.skillTestStart ? this.$common._formatDates3(
             this.dynamicValidateForm.skillTestStart[1]
-          );
+          ):"";
           let theoryTestStart = this.$common._formatDates3(
             this.dynamicValidateForm.theoryTestStart[0]
           );
@@ -415,12 +416,12 @@ export default {
             this.dynamicValidateForm.theoryTestStart[1]
           );
 
-          let theoryTest2Start = this.$common._formatDates3(
+          let theoryTest2Start =  this.dynamicValidateForm.theoryTest2Start? this.$common._formatDates3(
             this.dynamicValidateForm.theoryTest2Start[0]
-          );
-          let theoryTest2End = this.$common._formatDates3(
+          ):"";
+          let theoryTest2End =  this.dynamicValidateForm.theoryTest2Start ? this.$common._formatDates3(
             this.dynamicValidateForm.theoryTest2Start[1]
-          );
+          ):"";
           let financeCode3;
           let obj1 = this.threeCategoriesArr.find((item) => {
             return item.label == this.dynamicValidateForm.financeCodeName3;
@@ -445,6 +446,8 @@ export default {
               financeCode3,
               productId: this.id ? this.id : productId,
               id: this.issuseId,
+              theoryTestClosingTime,
+              theoryTest2ClosingTime: this.checked2 ? theoryTest2End : "",
             }
           ).then((res) => {
             this.$message.success("操作成功");

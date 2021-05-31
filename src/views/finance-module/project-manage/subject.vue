@@ -92,11 +92,11 @@ export default {
           options: [
             {
               label: "正常",
-              value: true,
+              value: false,
             },
             {
               label: "暂停",
-              value: false,
+              value: true,
             },
           ],
         },
@@ -175,7 +175,7 @@ export default {
       }).then((res) => {
         this.tableData = res.data.data.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
-          item.subjectStatus = item.subjectStatus == true ? "正常" : "暂停";
+          item.subjectStatus = item.subjectStatus == false ? "正常" : "暂停";
           return item;
         });
         this.pageConfig.totalCount = res.data.pager.totalRows;

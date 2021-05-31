@@ -6,87 +6,105 @@
       @onSearch="onSearch"
       ref="dataForm"
     ></search-form>
+
     <div class="clearfix">
-      <div
-        class="content-container"
-        v-for="(item, index) in tableData"
-        :key="index"
-        :style="{ float: index % 2 == 0 ? 'left' : 'right' }"
-      >
-        <div class="class-item">
-          <div class="content-left">
-            <div class="title-container">
-              <div class="title">{{ item.className }}</div>
-              <div>
-                <el-tag>{{ item.classType }}</el-tag>
+      <div class="empty_box" v-if="tableData && tableData.length == 0">
+        <img src="@/assets/empty-image.png" alt="" class="img-empty" />
+        <p>暂无数据</p>
+      </div>
+      <template v-if="tableData && tableData.length > 0">
+        <div class="content-wrap">
+          <div class="container-wrap">
+            <div
+              class="content-container"
+              v-for="(item, index) in tableData"
+              :key="index"
+              :style="{ float: index % 2 == 0 ? 'left' : 'right' }"
+            >
+              <div class="class-item">
+                <div class="content-left">
+                  <div class="title-container">
+                    <div class="title">{{ item.className }}</div>
+                    <div>
+                      <el-tag>{{ item.classType }}</el-tag>
+                    </div>
+                  </div>
+                  <div class="details">
+                    <el-tag
+                      v-if="item.productName"
+                      type="info"
+                      size="small"
+                      style="margin-right: 10px; color: #63656b"
+                      >{{ item.productName }}</el-tag
+                    >
+                    <el-tag
+                      v-if="item.subjectName"
+                      type="info"
+                      size="small"
+                      style="margin-right: 10px; color: #63656b"
+                      >{{ item.subjectName }}</el-tag
+                    >
+                    <el-tag
+                      v-if="item.protocolType"
+                      type="info"
+                      size="small"
+                      style="margin-right: 10px; color: #63656b"
+                      >{{ item.protocolType }}</el-tag
+                    >
+                    <el-tag
+                      v-if="item.refundType"
+                      type="info"
+                      size="small"
+                      style="margin-right: 10px; color: #63656b"
+                      >{{ item.refundType }}</el-tag
+                    >
+                    <el-tag
+                      v-if="item.classBatch"
+                      type="info"
+                      size="small"
+                      style="margin-right: 10px; color: #63656b"
+                      >{{ item.classBatch }}学年</el-tag
+                    >
+                  </div>
+                  <div class="content-bottom">
+                    <div class="campus-name"><i class="el-icon-location-outline"></i>{{item.campusName}}</div>
+                    <div class="year-text">
+                      服务年限{{ item.serviceYear }}年
+                    </div>
+                  </div>
+                </div>
+                <div class="content-right">
+                  <div class="price">
+                    <span style="font-size: 16px">￥</span>{{ item.totalFee }}
+                  </div>
+                  <div v-if="item.status == '正常'" >
+                    <el-button
+                      type="primary"
+                      size="small"
+                      @click="signUp(item)"
+                      >报名</el-button
+                    >
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="details">
-              <el-tag
-                v-if="item.productName"
-                type="info"
-                size="small"
-                style="margin-right: 10px; color: #63656b"
-                >{{ item.productName }}</el-tag
-              >
-              <el-tag
-                v-if="item.subjectName"
-                type="info"
-                size="small"
-                style="margin-right: 10px; color: #63656b"
-                >{{ item.subjectName }}</el-tag
-              >
-              <el-tag
-                v-if="item.protocolType"
-                type="info"
-                size="small"
-                style="margin-right: 10px; color: #63656b"
-                >{{ item.protocolType }}</el-tag
-              >
-              <el-tag
-                v-if="item.refundType"
-                type="info"
-                size="small"
-                style="margin-right: 10px; color: #63656b"
-                >{{ item.refundType }}</el-tag
-              >
-              <el-tag
-                v-if="item.classBatch"
-                type="info"
-                size="small"
-                style="margin-right: 10px; color: #63656b"
-                >{{ item.classBatch }}学年</el-tag
-              >
-            </div>
-            <div class="content-bottom">
-              <div class="year-text">服务年限{{ item.serviceYear }}年</div>
-            </div>
           </div>
-          <div class="content-right">
-            <div class="price">
-              <span style="font-size: 16px">￥</span>{{ item.totalFee }}
-            </div>
-            <div>
-              <el-button :type="item.status == '暂停'?'info':'primary'" :disabled="item.status == '暂停'" size="small" @click="signUp(item)"
-                >报名</el-button
-              >
-            </div>
+
+          <div class="el-pagination-box" style="margin-bottom: 20px">
+            <el-pagination
+              background
+              @size-change="sizeChange"
+              @current-change="pageChange"
+              :current-page="pageConfig.currentPage"
+              :page-sizes="[10, 20, 30, 50]"
+              :page-size="pageConfig.showCount"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="pageConfig.totalCount"
+            >
+            </el-pagination>
           </div>
         </div>
-      </div>
-      <div class="fr" style="margin-bottom: 20px">
-        <el-pagination
-          background
-          @size-change="sizeChange"
-          @current-change="pageChange"
-          :current-page="pageConfig.currentPage"
-          :page-sizes="[10, 20, 30, 50]"
-          :page-size="pageConfig.showCount"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="pageConfig.totalCount"
-        >
-        </el-pagination>
-      </div>
+      </template>
     </div>
 
     <!-- 报名弹窗 -->
@@ -844,12 +862,14 @@ export default {
           placeholder: "科目",
           options: [],
           events: {},
+          disabled: false,
         },
         {
           prop: "classTypeId",
           element: "el-select",
           placeholder: "班型",
           options: [],
+          disabled: false,
         },
         {
           prop: "classType",
@@ -994,8 +1014,8 @@ export default {
             this.getCounpList();
           });
         }
-        if(newName == 0){
-          this.stuForm2.realPrice =  0
+        if (newName == 0) {
+          this.stuForm2.realPrice = 0;
         }
       },
       immediate: true,
@@ -1201,7 +1221,7 @@ export default {
       return eval(arr.join("+"));
     },
     changeCheckbox(val) {
-      console.log('val valval',val)
+      console.log("val valval", val);
 
       if (!this.stuForm.studentType) {
         this.$message.warning("请先选择学员类型");
@@ -1250,9 +1270,12 @@ export default {
         }));
         this.formOptions[2].events = {
           change: this.productChange,
+          clear: this.clearProductFn,
         };
+
         this.formOptions[3].events = {
           change: this.subjectChange,
+          clear: this.clearSubjectFn,
         };
         this.formOptions[5].options = classTypeList.map((item) => ({
           label: item.value,
@@ -1265,6 +1288,7 @@ export default {
         ...val,
       };
       console.log(val, this.searchForm, "val---");
+      this.pageConfig.currentPage = 1;
       this.getTableData();
     },
     getTableData(params = {}) {
@@ -1272,8 +1296,6 @@ export default {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
-        token:
-          "eyJhbGciOiJIUzI1NiIsIlR5cGUiOiJKd3QiLCJ0eXAiOiJKV1QifQ.eyJsb2dpblVzZXJJZCI6IjgiLCJwYXJ0bmVySWQiOjEsInR5cGUiOjAsImV4cCI6MTYwNzM5MDM4NCwidXNlcm5hbWUiOiJhZG1pbjAxIn0.GikWXxIa8BYLGvV12Yf2WBCywDnKpUDylKReR3TRuP8",
       }).then((res) => {
         this.tableData = res.data.list.map((item) => {
           item.createAt = this.$common._formatDates(item.createAt);
@@ -1283,38 +1305,73 @@ export default {
         this.pageConfig.totalCount = res.data.pager.totalRows;
       });
     },
-    productChange(val) {
-      this.$fetch("courseclasstype_subjectList", {
-        productId: val,
-      }).then((res) => {
-        let subjectArr = res.data.list.map((item) => ({
-          label: item.subjectName,
-          value: item.id,
-        }));
-        this.formOptions[3].options = subjectArr;
-        this.formOptions[4].options = [];
-        this.$refs.dataForm.setValue({
-          subjectId: "",
-        });
+    clearProductFn() {
+      this.formOptions[3].options = []; //清除科目的下拉
+      //清除科目选中
+      this.$refs.dataForm.setValue({
+        subjectId: "",
+      });
+      this.formOptions[4].options = []; //清除班型类型的下拉
+      //清除班型类型选中
+      this.$refs.dataForm.setValue({
+        classTypeId: "",
       });
     },
-    subjectChange(val) {
-      this.$fetch("courseclasstype_classtypeList", {
-        subjectId: val,
-      }).then((res) => {
-        if (!res.data.dataJson.list) {
-          return;
-        }
-        let classTypeArr = res.data.dataJson.list.map((item) => ({
-          label: item.className,
-          value: item.id,
-        }));
-        console.log(classTypeArr);
-        this.formOptions[4].options = classTypeArr;
-        this.$refs.dataForm.setValue({
-          classTypeId: "",
-        });
+    clearSubjectFn() {
+      this.formOptions[4].options = []; //清除班型类型的下拉
+      //清除班型类型选中
+      this.$refs.dataForm.setValue({
+        classTypeId: "",
       });
+    },
+    productChange(val) {
+      // this.formOptions[3].disabled = false;
+      if (val) {
+        //有选中项目才请求科目
+        this.$fetch("courseclasstype_subjectList", {
+          productId: val,
+        })
+          .then((res) => {
+            let subjectArr = res.data.list.map((item) => ({
+              label: item.subjectName,
+              value: item.id,
+            }));
+            this.formOptions[3].options = subjectArr;
+            this.formOptions[4].options = [];
+            this.$refs.dataForm.setValue({
+              subjectId: "",
+            });
+            this.$refs.dataForm.setValue({
+              classTypeId: "",
+            });
+          })
+          .catch((err) => {
+            //没数据的时候
+            this.clearProductFn();
+          });
+      }
+    },
+    subjectChange(val) {
+      // this.formOptions[4].disabled = false;
+      if (val) {
+        //有选中科目才请求
+        this.$fetch("courseclasstype_classtypeList", {
+          subjectId: val,
+        }).then((res) => {
+          if (!res.data.dataJson.list) {
+            return;
+          }
+          let classTypeArr = res.data.dataJson.list.map((item) => ({
+            label: item.className,
+            value: item.id,
+          }));
+          console.log(classTypeArr);
+          this.formOptions[4].options = classTypeArr;
+          this.$refs.dataForm.setValue({
+            classTypeId: "",
+          });
+        });
+      }
     },
     pageChange(val) {
       this.pageConfig.currentPage = val;
@@ -1563,8 +1620,25 @@ export default {
 
 <style lang="scss" scoped>
 .goods-list {
+  .empty_box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    color: #909399;
+  }
   .el-form-item {
     margin-bottom: 26px;
+  }
+  .content-wrap {
+    display: flex;
+    flex-direction: column;
+    .el-pagination-box {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+    }
   }
   .content-container {
     padding: 5px;
@@ -1601,7 +1675,10 @@ export default {
           margin: 0 14px;
           font-size: 14px;
         }
-        .year-text {
+        .campus-name {
+          margin-right: 30px;
+        }
+        .year-text,.campus-name {
           font-size: 14px;
           color: #333;
           margin-top: 16px;
@@ -1614,7 +1691,7 @@ export default {
         color: #ec5b56;
         font-weight: bold;
         font-size: 32px;
-        margin-bottom: 8px;
+        // margin-bottom: 8px;
         margin-right: 20px;
       }
     }

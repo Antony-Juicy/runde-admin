@@ -45,6 +45,7 @@
     <rd-dialog
       :title="addStatus ? '添加菜单' : '编辑菜单'"
       :dialogVisible="distributeVisible"
+      v-if="distributeVisible"
       :showFooter="false"
       :width="'990px'"
       appendToBody

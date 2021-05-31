@@ -305,9 +305,10 @@ export default {
         },
         {
           prop: "contentPrice",
-          element: "el-input",
+          element: "el-input-number",
           placeholder: "请输入具体金额",
           label: "学费金额：",
+          min:0
         },
         {
           prop: "accountingRules",
@@ -391,7 +392,7 @@ export default {
         },
       ],
       addRules: {
-        contentYear: [{ required: true, message: "请选择", trigger: "change" }],
+        contentYear: [{ required: true, message: "请输入", trigger: "change" }],
         productId: [{ required: true, message: "请选择", trigger: "change" }],
         contentName: [{ required: true, message: "请输入", trigger: "blur" }],
         contentType: [{ required: true, message: "请选择", trigger: "change" }],

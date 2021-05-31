@@ -24,8 +24,9 @@
         @pageChange="pageChange"
       >
         <template slot="courses" slot-scope="scope">
-          <span v-for="item in scope.row.courses" :key="item.courseId">
+          <span v-for="(item, k) in scope.row.courses" :key="item.courseId">
             {{ item.courseName }}
+            <i v-if="k != scope.row.courses.length - 1">、</i>
           </span>
         </template>
         <template slot="className" slot-scope="scope">
@@ -103,11 +104,7 @@
         </div>
 
         <div class="class-step2 class-moudle" v-show="active == 1">
-          <el-form
-            ref="dataForm2"
-            :model="basicInfo"
-            :rules="rules"
-          >
+          <el-form ref="dataForm2" :model="basicInfo" :rules="rules">
             <!-- start -->
             <div class="">
               <el-row :gutter="20" v-if="basicInfo.courseStageArr.length > 0">
@@ -370,17 +367,6 @@
             formLabelWidth="180px"
             :multiple="true"
           >
-            <template slot="crowdNum" slot-scope="scope">
-              <el-input
-                v-model="step3FormOptions['crowdNum']"
-                placeholder="班级群人数"
-                @input="
-                  step3FormOptions['crowdNum'] = String(
-                    step3FormOptions['crowdNum']
-                  ).replace(/[^\d]/g, '')
-                "
-              ></el-input>
-            </template>
           </RdForm>
         </div>
 
@@ -602,7 +588,7 @@ export default {
           element: "el-select",
           placeholder: "请选择科目",
           options: [],
-          disabled: true,
+          // disabled: true,
         },
         {
           prop: "status",
@@ -682,23 +668,23 @@ export default {
       tableData: [],
       tableKey: [
         { name: "ID", value: "id" },
-        { name: "班型名称", value: "className", operate: true },
+        { name: "班型名称", value: "className", operate: true, width: 200 },
         { name: "年份", value: "classTypeBatch" },
         { name: "项目", value: "productName" },
         { name: "科目", value: "subjectName" },
         { name: "班型类型", value: "classType" },
         { name: "协议类型", value: "protocolType" },
         { name: "退费类型", value: "refundType" },
-        { name: "退费规则", value: "refundRules" },
-        { name: "课程", value: "courses", operate: true },
-        { name: "班型内容", value: "contentName", operate: true },
+        { name: "退费规则", value: "refundRules", width: 200 },
+        { name: "课程", value: "courses", operate: true, width: 200 },
+        { name: "班型内容", value: "contentName", operate: true, width: 200 },
         { name: "学费/元", value: "totalFee" },
         { name: "服务年限", value: "serviceYear" },
-        { name: "不可退金额/元", value: "norefundFee" },
-        { name: "通过扣除费用", value: "passDeductFee" },
+        { name: "不可退金额/元", value: "norefundFee", width: 110 },
+        { name: "通过扣除费用", value: "passDeductFee", width: 200 },
         { name: "班型分组", value: "classtypeGroupName" },
         { name: "班型阶段", value: "classTypeStage" },
-        { name: "班群服务类型", value: "crowdType" },
+        { name: "班群服务类型", value: "crowdType", width: 200 },
         { name: "班群人数", value: "crowdNum" },
         { name: "状态", value: "status" },
         {
@@ -902,10 +888,10 @@ export default {
         },
         {
           prop: "crowdNum",
-          element: "el-input",
+          element: "el-input-number",
           placeholder: "班级群人数",
           label: "班级群人数：",
-          operate: true,
+          min: 0,
         },
         // {
         // prop: "campusVisible",
@@ -1019,8 +1005,8 @@ export default {
         { name: "课程阶段", value: "stageGroupName" },
         { name: "核算规则", value: "accountingRules" },
         { name: "录播情况", value: "playback" },
-        { name: "授课开始时间", value: "courseStartTime" },
-        { name: "创建时间", value: "createAt" },
+        { name: "授课开始时间", value: "courseStartTime", width: 200 },
+        { name: "创建时间", value: "createAt", width: 200 },
         { name: "状态", value: "status" },
       ],
       title: "",
@@ -1171,6 +1157,7 @@ export default {
         console.log("projectArr-==", this.projectArr);
         this.formOptions[1].events = {
           change: this.productChange,
+          clear: this.clearProductFn,
         };
         // 状态
         this.statusArr = this.formOptions[3].options = res.data.statusList.map(
@@ -1306,25 +1293,33 @@ export default {
         );
       });
     },
+    clearProductFn() {
+      this.formOptions[2].options = []; //清除科目的下拉
+      //清除科目选中
+      this.$refs.searchForm.setValue({
+        subjectId: "",
+      });
+    },
     productChange(val) {
       console.log(val, "val");
-      this.currentProductId = val;
-      this.formOptions[2].disabled = val ? false : true;
-      this.formOptions[2].options = [];
-      this.$refs.searchForm.setValue({
-        subjectName: "",
-      });
-      //  获取科目下拉
-      this.$fetch("courseclasstype_subjectList", { productId: val }).then(
-        (res) => {
-          this.subjecttArr = this.formOptions[2].options = res.data.list.map(
-            (item) => ({
-              label: item.subjectName,
-              value: item.id,
-            })
-          );
-        }
-      );
+      if (val) {
+        this.currentProductId = val;
+        this.formOptions[2].options = [];
+        this.$refs.searchForm.setValue({
+          subjectId: "",
+        });
+        //  获取科目下拉
+        this.$fetch("courseclasstype_subjectList", { productId: val }).then(
+          (res) => {
+            this.subjecttArr = this.formOptions[2].options = res.data.list.map(
+              (item) => ({
+                label: item.subjectName,
+                value: item.id,
+              })
+            );
+          }
+        );
+      }
     },
     handleSet(row, index) {
       //设置配送图书
@@ -1400,7 +1395,7 @@ export default {
       this.getTableData();
     },
     onReset() {
-      this.formOptions[2].disabled = true;
+      this.formOptions[2].options = [];
     },
     pageChange(val) {
       console.log(val, "pagechange");
@@ -1560,7 +1555,7 @@ export default {
       this.$refs.dataForm3.onReset();
       this.$refs.dataForm2.resetFields();
       for (var key in this.basicInfo) {
-        if (Array.isArray(this.basicInfo[key]) == true && key!='tableKey') {
+        if (Array.isArray(this.basicInfo[key]) == true && key != "tableKey") {
           this.basicInfo[key] = [];
         }
       }
@@ -1659,7 +1654,6 @@ export default {
                   productName,
                   subjectName,
                 };
-
                 //保存修改
                 this.$fetch("courseclasstype_edit", {
                   ...formData,

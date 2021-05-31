@@ -64,7 +64,7 @@
           :loading="btnLoading"
           @click="handleSubmit('dataForm3')"
           v-prevent-re-click="2000"
-          >添加</el-button
+          >保存</el-button
         >
       </div>
     </rd-dialog>
@@ -128,11 +128,11 @@ export default {
           options: [
             {
               label: "正常",
-              value: true,
+              value: false,
             },
             {
               label: "暂停",
-              value: false,
+              value: true,
             },
           ],
           events: {},
@@ -191,11 +191,11 @@ export default {
           options: [
             {
               label: "正常",
-              value: true,
+              value: false,
             },
             {
               label: "暂停",
-              value: false,
+              value: true,
             },
           ],
         },
@@ -360,7 +360,8 @@ export default {
       this.editId = data.id;
       this.addStatus = false;
       this.distributeVisible = true;
-      let status = data.status == "正常" ? true : false;
+       //注意：item.productStatus true为暂停，false为正常
+      let status = data.status == "暂停" ? true : false;
       this.addFormOptions.forEach((item) => {
         if (item.prop == "status") {
           item.initValue = status;
