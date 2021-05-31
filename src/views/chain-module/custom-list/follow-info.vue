@@ -9,14 +9,22 @@
             <div class="item-li" @click="clickItem(item)">
               <div class="flex-box">
                 <span class="count">第{{item.visitIndex}}次</span>
-                <span class="inputer">操作人：{{item.visitUserName}}</span>
-                <span class="time">
-                  更新时间：{{item.endVisitTime }}
-                  <i
+                <div class="inputer">
+                  <div>操作人：</div>
+                  <div>{{item.visitUserName}}</div>
+                </div>
+                <div class="time">
+                  <div>更新时间：</div>
+                  <div>{{item.endVisitTime }}</div>
+                </div>
+                <div class="time">
+                  <div>任务截止日期：</div>
+                  <div>{{item.deadline }}</div>
+                </div>
+                 <i
                     class="el-icon-arrow-right is-click"
                     v-if="drawer && currentId == item.visitRecordId"
                   ></i>
-                </span>
               </div>
               <div class="flex-box danger" v-if="item.msg">
                 <i class="el-icon-warning">{{item.msg}}</i>
@@ -263,14 +271,15 @@ export default {
     }
 
     .inputer {
-      height: 14px;
+      // height: 14px;
       font-size: 14px;
       font-family: PingFang SC;
       font-weight: 400;
       color: #333333;
+      // line-height: 22px;
     }
     .time {
-      height: 14px;
+      // height: 14px;
       font-size: 14px;
       font-family: PingFang SC;
       font-weight: 400;

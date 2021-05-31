@@ -164,7 +164,6 @@
                 <div class="rank-index"><span :class="{'rank-index-left':true,'rank-index-top': item.ranking == 1 || item.ranking == 2 || item.ranking == 3 }">{{item.ranking}}</span><span>{{item.chainName}}</span></div>
                 <div class="rank-time"><span v-if="currentRankItem == 'UNFINISHED' ||　currentRankItem == 'OVERDUE'">截止时间：</span><span v-else>拜访时间：</span>{{item.date}}</div>
               </div>
-              <div class="rank-item" style="text-align:center;cursor:pointer;display: flex;justify-content: center;color:#409eff" @click="showWeekWork">查看更多></div>
             </template>
             <template v-else>
               <div style="text-align:center">
@@ -174,6 +173,7 @@
             </template>
             
           </div>
+          <div v-if="chainList.length" class="rank-item" style="text-align:center;cursor:pointer;display: flex;justify-content: center;color:#409eff" @click="showWeekWork">查看更多></div>
         </div>
       </div>
 
@@ -350,6 +350,18 @@ export default {
               date: 60
             },
              {
+              ranking: 4,
+              percentage: 50,
+              chainName: '广东校区4',
+              date: 60
+            },
+              {
+              ranking: 4,
+              percentage: 50,
+              chainName: '广东校区4',
+              date: 60
+            },
+              {
               ranking: 4,
               percentage: 50,
               chainName: '广东校区4',
@@ -636,7 +648,11 @@ export default {
           }
         }
     .rank-content {
-      margin-top: 44px;
+      // margin-top: 44px;
+      height: 360px;
+      .table-wrapper {
+        height: 360px;
+      }
       .rank-item {
         // display: flex;
         // justify-content: space-between;

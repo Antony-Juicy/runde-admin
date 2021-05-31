@@ -279,7 +279,7 @@ export default {
           name: "",
           value: "name",
           operate: true,
-          width: 180
+          width: 220
         },
          {
           name: "数量",
@@ -452,6 +452,24 @@ export default {
               count: 60
             },
              {
+              ranking: 4,
+              percentage: 50,
+              name: '广东校区4',
+              count: 60
+            },
+            {
+              ranking: 4,
+              percentage: 50,
+              name: '广东校区4',
+              count: 60
+            },
+            {
+              ranking: 4,
+              percentage: 50,
+              name: '广东校区4',
+              count: 60
+            },
+            {
               ranking: 4,
               percentage: 50,
               name: '广东校区4',
@@ -732,7 +750,7 @@ export default {
       margin-right: 10px;
     }
     .rank-index {
-          width: 120px;
+          // width: 120px;
           text-align: center;
           display: flex;
           align-items: center;
@@ -753,6 +771,9 @@ export default {
           }
         }
     .rank-content {
+      .table-wrapper {
+        height: 360px;
+      }
       .rank-item {
         display: flex;
         justify-content: space-between;

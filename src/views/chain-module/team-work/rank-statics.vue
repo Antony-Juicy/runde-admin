@@ -43,6 +43,9 @@
         <template slot="provincialSchool" slot-scope="scope">
             <div class="rank-index"><span :class="{'rank-index-left':true,'rank-index-top': Number(scope.row.ranking) <= 3 }">{{scope.row.ranking}}</span><span>{{scope.row.provincialSchool}}</span></div>
         </template>
+        <template slot="percentage" slot-scope="scope">
+                 {{scope.row.percentage}}%
+        </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
             >查看记录</el-button
@@ -157,6 +160,7 @@ export default {
           name: "完成比例",
           value: "percentage",
            sortable: 'custom',
+           operate: true
         },
       ],
        pageConfig: {
