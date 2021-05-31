@@ -146,6 +146,29 @@ function castToFlatRoute(routes, parentPath, flatRoutes = []) {
   return flatRoutes;
 }
 
+/**
+ * 替换接口字段名
+ */
+function changeParam(records,arr){
+  records.forEach(item => {
+    let obj = {
+      name: item.menuName,
+      type: item.menuType,
+      orderNum: item.menuOrder,
+      menuIcon: item.menuIcon,
+      frontUrl: item.menuUrl,
+      backUrl: item.menuBackUrl,
+      id: item.id,
+      children: []
+    };
+    if(item.children && item.children.length){
+      changeParam(item.children,obj.children);
+    }
+    arr.push(obj)
+  })
+  return arr;
+}
+
 const actions = {
   async generateRoutes({ commit }, { type }) {
     return new Promise(async (resolve) => {
@@ -211,7 +234,7 @@ const actions = {
           loginUserId: JSON.parse(localStorage.getItem('userInfo')).userId,
           type: 0
         })
-        let menuList = data.records;
+        let menuList = changeParam(data.records,[]);
         // const { data } = await axios.get('/json/menu.json')
         // let menuList = data.data.records;
         let processedRoutes = []
