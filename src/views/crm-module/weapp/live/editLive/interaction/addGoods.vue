@@ -44,13 +44,10 @@
         @select="handelSelect"
       >
         <template slot="name" slot-scope="scope">
-            <!-- {{scope.row.phone}} -->
-            <div class="goods-item-left">
-              <div class="pic">
-                <el-image
-                    style="width: 130px; height: 100px"
-                    :src="scope.row.goodsThumbnail"
-                    fit="cover"></el-image>
+          <!-- {{scope.row.phone}} -->
+          <div class="goods-item-left">
+            <div class="pic">
+              <el-image style="width: 130px; height: 100px" :src="scope.row.goodsThumbnail" fit="cover"></el-image>
             </div>
             <div class="table-content">
                 <div class="title">{{scope.row.goodsName}}</div>
@@ -58,6 +55,13 @@
                     <el-tag size="small" v-for="(item,index) in scope.row.goodsLabels || []" :key="index">{{item}}</el-tag>
                 </div>
                 <div class="price">￥ {{scope.row.goodsPrices}}</div>
+            </div>
+            <div class="table-num">
+              <el-form class="kcClass" ref="kcform" label-width="80px">
+                <el-form-item label="库存">
+                  <el-input v-model="scope.row.goodsTotalStock "></el-input>
+                </el-form-item>
+              </el-form>
             </div>
           </div>
         </template>
@@ -95,7 +99,10 @@ export default {
         pageSize: 10,
       },
       productList:[],
-      selectedData:[]
+      selectedData:[],
+      kcform: {
+        goodsTotalStock : ''
+      }
     };
   },
   props: {
@@ -164,6 +171,10 @@ export default {
       }
       this.$fetch("live_batch_add_related",{
         goodsIds: JSON.stringify(this.selectedData.map(item=>(item.goodsId))),
+        goodsTotalStocks: JSON.stringify(this.selectedData.map(item=>({
+          goodsId : item.goodsId,
+          goodsTotalStock: item.goodsTotalStock
+        }))),
         liveId: this.liveId
       }).then(res=>{
         if(res.code == 200){
@@ -182,15 +193,15 @@ export default {
 <style lang="scss" scoped>
 .add-goods {
   margin-bottom: -20px;
-    .content {
-        border-top: 1px solid #dcdfe6;
-        border-bottom: 1px solid #dcdfe6;
-        padding-top: 20px;
-        padding-bottom: 20px;
-        min-height: 180px;
-        max-height: calc(81vh - 200px);
-        overflow: auto;
-        &::-webkit-scrollbar {
+  .content {
+    border-top: 1px solid #dcdfe6;
+    border-bottom: 1px solid #dcdfe6;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    min-height: 180px;
+    max-height: calc(81vh - 200px);
+    overflow: auto;
+    &::-webkit-scrollbar {
       /*滚动条整体样式*/
       width : 10px;  /*高宽分别对应横竖滚动条的尺寸*/
       height: 1px;
@@ -201,37 +212,42 @@ export default {
       box-shadow   : inset 0 0 5px #d0d1d3;
       background   : #d0d1d3;
     }
-        .goods-item-left {
-            display: flex;
-            .pic {
-                margin-right: 25px;
-            }
-            .table-content {
-                display: flex;
-                flex-direction: column;
-                justify-content: space-around;
-            }
+    .goods-item-left {
+      display: flex;
+      .pic {
+        margin-right: 25px;
+      }
+      .table-content {
+        flex: 2;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        .title, .price {
+          color: #606266;
+          font-size: 14px;
+          font-weight: bold;
         }
-        // /deep/ {
-        //     .el-table td {
-        //         border: none;
-        //     }
-        //     .el-table::before {
-        //         display: none;
-        //     }
-        // }
-    }
-    .add-goods-btn {
-      /deep/ {
-        .el-button {
-          float: right;
-          margin-top: 10px;
-          margin-bottom: 10px;
-        }
-        .el-button--primary {
-          margin-left: 10px;
+      }
+      .table-num {
+        flex: 1;
+        .kcClass {
+          display: flex;
+          flex-direction: column;
         }
       }
     }
+  }
+  .add-goods-btn {
+    /deep/ {
+      .el-button {
+        float: right;
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+      .el-button--primary {
+        margin-left: 10px;
+      }
+    }
+  }
 }
 </style>
