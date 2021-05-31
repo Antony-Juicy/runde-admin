@@ -763,9 +763,7 @@ export default {
             .filter((item) => item.checked)
             .map((item) => item.courseId);
 
-          console.log("provinceName 9999", this.provinceArr); 
-           let provinceName = provinceIds.map(el=>el.name)
-          console.log(",target 9999", provinceIds,provinceName,provinceName.join(","));
+          let provinceName = provinceIds.map((el) => el.name);
           this.$fetch(
             this.addStatus ? "courseclass_save" : "courseclass_editJsp",
             {
@@ -818,6 +816,7 @@ export default {
           campusId,
           provinceId,
           productId,
+          status_text
         } = res.data.pd;
         const { pd, courseList, provinceList } = res.data;
         this.$refs.dataForm3.setValue({
@@ -826,6 +825,7 @@ export default {
           productName,
           subjectName,
           campusId: [campusId],
+         status :status_text,
         });
         this.basicInfo.subjectName = subjectName;
         this.currentData.chargePattern_text = pd.chargePattern;

@@ -125,12 +125,12 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item
-        v-if="provinceShow"
+        v-show="provinceShow"
         label="省："
         label-width="90px"
         prop="provinceIds"
         :rules="{
-          required: true,
+          required:provinceShow,
           message: '不能为空',
           trigger: 'change',
         }"

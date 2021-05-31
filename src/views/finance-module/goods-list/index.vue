@@ -67,7 +67,10 @@
                     >
                   </div>
                   <div class="content-bottom">
-                    <div class="campus-name"><i class="el-icon-location-outline"></i>{{item.campusName}}</div>
+                    <div class="campus-name">
+                      <i class="el-icon-location-outline"></i
+                      >{{ item.campusName }}
+                    </div>
                     <div class="year-text">
                       服务年限{{ item.serviceYear }}年
                     </div>
@@ -77,11 +80,8 @@
                   <div class="price">
                     <span style="font-size: 16px">￥</span>{{ item.totalFee }}
                   </div>
-                  <div v-if="item.status == '正常'" >
-                    <el-button
-                      type="primary"
-                      size="small"
-                      @click="signUp(item)"
+                  <div v-if="item.status == '正常'">
+                    <el-button type="primary" size="small" @click="signUp(item)"
                       >报名</el-button
                     >
                   </div>
@@ -130,14 +130,11 @@
                 :rules="[
                   {
                     required: true,
-                    message: '请输入正确的身份证号或手机号',
+                    message: '请输入正确的身份证号',
                     trigger: 'blur',
                   },
                   {
-                    validator:
-                      stuForm.idCardAndPhone.length > 11
-                        ? validator2
-                        : validator,
+                    validator: validator2,
                     trigger: 'blur',
                   },
                 ]"
@@ -145,10 +142,14 @@
                 <el-input
                   v-model="stuForm.idCardAndPhone"
                   style="width: 280px; margin-right: 10px"
-                  placeholder="请输入学员身份证或手机号"
+                  :maxlength="18"
+                  placeholder="请输入学员身份证"
                 ></el-input>
                 <el-button type="primary" @click="handleCheckInfo"
                   >查询</el-button
+                >
+                <el-button type="primary" @click="handleResetInfo"
+                  >重置</el-button
                 >
               </el-form-item>
             </el-col>
@@ -303,15 +304,22 @@
               <el-form-item
                 label="身份证"
                 prop="cardId"
-                :rules="{
-                  required: true,
-                  message: '不能为空',
-                  trigger: 'blur',
-                }"
+                :rules="[
+                  {
+                    required: true,
+                    message: '不能为空',
+                    trigger: 'blur',
+                  },
+                  {
+                    validator: validator2,
+                    trigger: 'blur',
+                  },
+                ]"
               >
                 <el-input
                   v-model="stuForm.cardId"
                   style="width: 200px"
+                  :maxlength="18"
                   placeholder="请输入身份证"
                 ></el-input>
               </el-form-item>
@@ -320,14 +328,21 @@
               <el-form-item
                 label="手机号"
                 prop="phone"
-                :rules="{
-                  required: true,
-                  message: '不能为空',
-                  trigger: 'blur',
-                }"
+                :rules="[
+                  {
+                    required: true,
+                    message: '不能为空',
+                    trigger: 'blur',
+                  },
+                  {
+                    validator: validator,
+                    trigger: 'blur',
+                  },
+                ]"
               >
                 <el-input
                   v-model="stuForm.phone"
+                  :maxlength="11"
                   style="width: 200px"
                   placeholder="请输入手机号"
                 ></el-input>
@@ -1027,6 +1042,8 @@ export default {
       this.addVisible = false;
       this.$refs.stuForm.resetFields();
       this.$refs.stuForm2.resetFields();
+      this.stuForm2.campusName = this.itemData.campusName;
+      this.stuForm2.classType = this.itemData.className;
       this.$refs.stuForm3.resetFields();
       this.$refs.stuForm4.resetFields();
     },
@@ -1180,6 +1197,13 @@ export default {
           console.log("testData err", err);
         });
     },
+    handleResetInfo() {
+      //重置
+      this.$refs.stuForm.resetFields();
+      this.$refs.stuForm2.resetFields();
+      this.stuForm2.campusName = this.itemData.campusName;
+      this.stuForm2.classType = this.itemData.className;
+    },
     handleCheckInfo() {
       this.$refs.stuForm.validateField("idCardAndPhone", (errMsg) => {
         if (errMsg) {
@@ -1210,6 +1234,8 @@ export default {
               this.stuForm.studentType = "New";
               this.$refs.stuForm.resetFields();
               this.$refs.stuForm2.resetFields();
+              this.stuForm2.campusName = this.itemData.campusName;
+              this.stuForm2.classType = this.itemData.className;
               this.$refs.stuForm3.resetFields();
               this.$refs.stuForm4.resetFields();
             }
@@ -1387,47 +1413,6 @@ export default {
       this.addStatus = true;
       this.addVisible = true;
     },
-    addBaseInfo() {
-      that.$refs["store"].validate((valid) => {
-        //第一个表单ref="store”
-        if (valid) {
-          this.titleFormValid = true; //如果通过，加个true相当于开关判断
-        }
-      });
-      if (this.store.type == 1) {
-        that.$refs["school"].validate((valid) => {
-          //第二个表单ref='school'
-          if (valid) {
-            that.customFormValid = true; //同上
-          }
-        });
-      } else if (this.store.type == 3) {
-        that.$refs["company"].validate((valid) => {
-          if (valid) {
-            that.customFormValid = true;
-          }
-        });
-      } else {
-        that.$refs["community"].validate((valid) => {
-          if (valid) {
-            that.customFormValid = true;
-          }
-        });
-      }
-      that.$refs["dynamicValidateForm"].validate((valid) => {
-        //第三个表单ref='dynamicValidateForm'
-        if (valid) {
-          that.orangerFormValid = true; //同上
-        }
-      });
-      if (
-        this.titleFormValid &&
-        this.customFormValid &&
-        this.orangerFormValid
-      ) {
-        //这是最关键的，当这三个表单都通过，之间是且关系，才能走下一步
-      }
-    },
     submitAddForm() {
       this.$refs["stuForm"].validate((valid) => {
         //第一个表单ref="stuForm"
@@ -1522,6 +1507,8 @@ export default {
           this.addVisible = false;
           this.$refs.stuForm.resetFields();
           this.$refs.stuForm2.resetFields();
+          this.stuForm2.campusName = this.itemData.campusName;
+          this.stuForm2.classType = this.itemData.className;
           this.$refs.stuForm3.resetFields();
           this.$refs.stuForm4.resetFields();
           this.getTableData();
@@ -1678,7 +1665,8 @@ export default {
         .campus-name {
           margin-right: 30px;
         }
-        .year-text,.campus-name {
+        .year-text,
+        .campus-name {
           font-size: 14px;
           color: #333;
           margin-top: 16px;
