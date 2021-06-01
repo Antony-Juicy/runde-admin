@@ -413,7 +413,7 @@ export default {
   created(){
     // 限制开始日期不能超过当前日期
     this.startDateDisabled.disabledDate = function (time) {
-      return (time.getTime() + 24 * 3600 * 1000) < Date.now()
+      return (time.getTime() ) < Date.now()
     }
   },
   mounted() {
@@ -476,7 +476,6 @@ export default {
       this.getSubjectList(enquireProductIdOne);
       this.getCourseList(enquireSubjectIdOne);
       this.getClassList(enquireSubjectIdOne);
-      console.log(enquireClassOne,'enquireClassOne')
       this.basicInfo2 = {
         saleSource,
         labelInfoName,
@@ -527,6 +526,7 @@ export default {
             if(res.code == 200 || res.code == 1){
               this.$message.success("保存成功")
               this.refreshTable();
+              this.$refs[formName].resetFields();
             }
           });
         }

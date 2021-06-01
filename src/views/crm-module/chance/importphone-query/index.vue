@@ -29,30 +29,19 @@
         @handleClose="closeDialog('dataForm')"
         @submitForm="submitForm('dataForm')"
       >
-        <el-form ref="dataForm" :model="phoneForm" label-width="150px">
+        <el-form ref="dataForm" :model="phoneForm" label-width="150px" :rules="importRules">
           <el-form-item label="导入模版">
             <el-button type="primary" size="small" @click="downloadTemp">点击下载模版</el-button>
           </el-form-item>
-          <el-form-item label="文件">
-            <el-upload
-                class="upload-demo"
-                action="#"
-                :before-remove="beforeRemove"
-                :limit="1"
-                :on-exceed="handleExceed"
-                :on-change="handleChange"
-                :file-list="fileList"
-                :auto-upload="false"
-              >
-            <el-button size="small" type="primary">点击上传</el-button>
-          </el-upload>
+          <el-form-item label="文件" prop="importFile">
+            <uploadFile :file.sync="phoneForm.importFile" @change="fileChange"/>
           </el-form-item>
           <el-form-item label="备注" prop="remark">
             <el-input
               v-model.trim="phoneForm.remark"
               autocomplete="off"
               type="textarea"
-              placeholder="请勿输入备注"
+              placeholder="请输入备注"
               size="small"
             />
           </el-form-item>
@@ -64,11 +53,11 @@
 </template>
 
 <script>
-import searchForm from '@/components/Searchform';
+import uploadFile from '@/components/Activity/uploadFile';
 export default {
   name:'importphone-query',
   components: {
-    searchForm
+    uploadFile
   },
   data () {
     return {
@@ -105,11 +94,16 @@ export default {
       // 导入手机弹窗参数
       dialogVisible: false,
       phoneForm: {
-        remark: ''
+        remark: "",
+        importFile:""
       },
       fileList: [
       ],
-      importFile:""
+      importFile:"",
+      importRules: {
+        remark: [{ required: true, message: "请输入", trigger: "blur" }],
+        importFile: [{ required: true, message: "请上传", trigger: ["change","blur"] }],
+      }
     }
   },
   mounted(){
@@ -137,15 +131,20 @@ export default {
     // 导入手机号码弹窗
     openDialog() {
       this.dialogVisible = true;
+      this.phoneForm = {
+        remark: "",
+        importFile:""
+      }
     },
     closeDialog(formName) {
       this.dialogVisible = false;
-      // this.$refs[formName].resetFields();
     },
     submitForm(formName) {
-       let obj = new FormData();
-          obj.append("file", this.importFile);
-          obj.append("remark", this.phoneForm.res);
+      this.$refs[formName].validate((valid, formData) => {
+        if(valid){
+           let obj = new FormData();
+          obj.append("file", this.phoneForm.importFile);
+          obj.append("remark", this.phoneForm.remark);
           this.$fetch("chance_import_phone", obj).then((res) => {
             if(res.code == 200){
               this.$message.success("操作成功")
@@ -153,6 +152,9 @@ export default {
               this.getTableData();
             }
           });
+        }
+      })
+       
     },
     getTableData(params = {}) {
       this.$fetch("chance_import_list", {
@@ -184,22 +186,13 @@ export default {
           this.formOptions = [...this.formOptions];
       })
     },
-    // 上传文件
-    handleExceed(files, fileList) {
-      this.$message.warning(
-        `当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${
-          files.length + fileList.length
-        } 个文件`
-      );
-    },
-    beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${file.name}？`);
-    },
-    handleChange(file, fileList) {
-      this.importFile = file.raw;
-    },
     downloadTemp(){
       window.location.href = "/temp/crmopportunitylog_import.xlsx"
+    },
+    fileChange(){
+      this.$refs['dataForm'].validateField("importFile",(errorMessage)=> {
+        console.log(errorMessage,'errorMessage')
+      })
     }
   }
 }

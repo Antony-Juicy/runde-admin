@@ -11,7 +11,7 @@
       >
         <template v-for="(item, index) in formOptions">
             <el-form-item
-              :key="newKeys[index]"
+              :key="index"
               :prop="item.prop"
               :label="item.label ? item.label : ''"
               :rules="item.rules"
@@ -22,6 +22,7 @@
               <div v-else>
                  <slot
                   :name="item.prop"
+                  :data="formData[item.prop]"
                 ></slot>
               </div>
             </el-form-item>
@@ -102,6 +103,10 @@ export default {
   },
   
   methods: {
+    // 校验单个表单
+    validateField(props,callback){
+      this.$refs.formRef.validateField(props,callback&&callback())
+    },
     // 校验
     validate(callback) {
       this.$refs.formRef.validate((valid) => {
@@ -118,8 +123,15 @@ export default {
     onReset() {
       const obj = {};
       this.formOptions.forEach((v) => {
-          obj[v.prop] = undefined;
-          v.initValue = undefined;
+          // obj[v.prop] = undefined;
+
+          if(v.element == 'el-checkbox'){
+             v.initValue = [];
+             obj[v.prop] = [];
+          }else {
+             v.initValue = undefined;
+             obj[v.prop] = undefined;
+          }
       });
       this.formData = obj;
       this.$emit('onReset')
@@ -137,11 +149,21 @@ export default {
         if (v.initValue !== undefined) {
           obj[v.prop] = v.initValue;
         }
+        if(v.multiple && !v.initValue){
+           obj[v.prop] = [];
+        }
       });
       this.formData = obj;
+    },
+
+    // 给表单的任意一个赋值
+    setValue(obj){
+      this.formData = {
+        ...this.formData,
+        ...obj
+      }
     }
   },
-
   computed: {
     newKeys() {
       return this.formOptions.map((v) => {

@@ -108,3 +108,9 @@
   color: #777;
   line-height: 0;
 }
+
+
+// 日期时间选择器，优化选择时间的时候靠右会有遮挡的问题
+.el-time-panel {
+  left: -24px;
+}

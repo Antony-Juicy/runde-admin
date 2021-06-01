@@ -5,6 +5,10 @@ import weapp from './weapp/index'
 import activity from './activity/index'
 import order from './order'
 import officialAccounts from './official-accounts'
+import classmanage from './classmanage'
+import project from './project'
+import teachGoods from './teach/goods'
+import chainmanage from './chainmanage'
 
 export default {
     ...user,
@@ -13,5 +17,9 @@ export default {
     ...chance,
     ...activity,
     ...order,
-    ...officialAccounts
+    ...officialAccounts,
+    ...classmanage,
+    ...project,
+    ...teachGoods,
+    ...chainmanage
 }

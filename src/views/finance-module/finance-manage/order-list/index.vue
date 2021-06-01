@@ -4,12 +4,12 @@
         <el-form ref="form" :model="form" label-width="80px">
             <el-row :gutter="20">
                     <el-col :span="2">
-                        <div class="label-wrapper" style="line-height:40px">
+                        <div class="label-wrapper">
                             查看类型：
                         </div>
                     </el-col>
                     <el-col :span="9">
-                        <el-radio-group v-model="form.type">
+                        <el-radio-group v-model="form.type" size="small">
                             <el-radio-button label="我招生的"></el-radio-button>
                             <el-radio-button label="我服务的"></el-radio-button>
                             <el-radio-button label="我管理的"></el-radio-button>
@@ -192,7 +192,7 @@
                 <template slot="productName" slot-scope="scope">
                    项目：{{scope.row.studentName}}<br/>
                    科目：{{scope.row.subjectName}}<br/>
-                   班型：<el-button type="text" style="padding: 0">{{scope.row.classTypeName}}</el-button><br/>
+                   班型：<el-button type="text" style="padding: 0" @click="addVisible = true">{{scope.row.classTypeName}}</el-button><br/>
                    班次年份：{{scope.row.classBatch}}<br/>
                    课程：{{scope.row.courseName}}<br/>
                    邮寄图书发放类型：{{scope.row.bookType}}<br/>
@@ -260,15 +260,52 @@
                 </template>
             </rd-table>
       </div>
+
+      <!-- 订单详情 -->
+       <full-dialog
+        v-model="addVisible"
+        hideTitle
+        @change="addVisible = false"
+      >
+        <el-radio-group v-model="tabPosition" style="margin-bottom: 30px;" @change="tabClick">
+            <el-radio-button label="1">订单课程</el-radio-button>
+            <el-radio-button label="2">缴费记录</el-radio-button>
+            <el-radio-button label="3">订单日志</el-radio-button>
+            <el-radio-button label="4">网课开通记录</el-radio-button>
+            <el-radio-button label="5">直播开通记录</el-radio-button>
+            <el-radio-button label="6">看课进度记录</el-radio-button>
+            <el-radio-button label="7">协议列表</el-radio-button>
+            <el-radio-button label="8">图书快递记录</el-radio-button>
+            <el-radio-button label="9">用户组开通记录</el-radio-button>
+            <el-radio-button label="10">收入确认</el-radio-button>
+        </el-radio-group>
+        <!-- 订单课程 -->
+        <orderCourse v-if="tabPosition == '1'"/>
+        <!-- 缴费记录 -->
+        <paymentRecord v-if="tabPosition == '2'"/>
+        <!-- 订单日志 -->
+        <orderLog v-if="tabPosition == '3'"/>
+        <!-- 协议列表 -->
+        <protocolList v-if="tabPosition == '7'"/>
+        <!-- 收入确认 -->
+        <revenueConfirm v-if="tabPosition == '10'"/>
+        
+      </full-dialog>
   </div>
 </template>
 
 <script>
-
+import orderCourse from './orderCourse';
+import paymentRecord from './paymentRecord';
+import orderLog from './orderLog';
+import protocolList from './protocolList';
+import revenueConfirm from './revenueConfirm';
 export default {
   name:"order-list",
   data(){
     return {
+        tabPosition:"1",
+        addVisible: false,
         form: {
 
         },
@@ -324,7 +361,17 @@ export default {
   mounted(){
       this.getTableData();
   },
+  components: {
+      orderCourse,
+      paymentRecord,
+      orderLog,
+      protocolList,
+      revenueConfirm
+  },
    methods: {
+       tabClick(e){
+           console.log(e,'---')
+       },
        onSearch(){
            this.getTableData();
        },
@@ -368,13 +415,16 @@ export default {
     .label-wrapper {
         text-align: right;
         line-height: 32px;
+        font-size: 14px;
+        color: #333333;
+        font-weight: 600;
     }
     .line-divider {
         border-top: 1px dashed #ccc;
         width: 100%;
         height: 1px;
-        margin-top: 20px;
-        margin-bottom: 20px;
+        margin-top: 10px;
+        margin-bottom: 10px;
     }
     .btn-wrapper {
         text-align: right;

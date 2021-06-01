@@ -26,6 +26,7 @@
       v-bind="bindProps"
       v-on="bindEvents"
       size="small"
+      :disabled="itemOptions.disabled"
       :multiple="itemOptions.multiple"
       :filterable="itemOptions.filterable"
       :clearable="!itemOptions.unClearable">

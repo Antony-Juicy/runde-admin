@@ -43,9 +43,6 @@ service.interceptors.request.use(
       config.data.token = getToken()
       config.data.loginUserId = common.getUserId()
     }
-    else if (totalNewConfig.headers["Content-Type"] && totalNewConfig.headers["Content-Type"] == "application/json") {
-
-    }
     else {
       config.data = qs.stringify({
         token: getToken(),
@@ -72,7 +69,17 @@ service.interceptors.response.use(
     const res = response.data
     // 文件流直接返回
     if (res.code == undefined) {
-      return res
+      if(response.headers.msg == "SUCCESS") {
+        return res
+      } else {
+        let errorMsg = decodeURI(response.headers.msg)
+        Message({
+          message: errorMsg || 'Error',
+          type: 'error',
+          duration: 3 * 1000
+        })
+        return Promise.reject(new Error(errorMsg || 'Error'))
+      }
     }
     // if the custom code is not 1, it is judged as an error.
     if (res.code !== 200 && res.code !== 1 && res.code !== "Success") {
@@ -216,12 +223,13 @@ const $fetch = async (apiName, params, config) => {
   }
 
   if (getToken()) {
-    // newConfig.headers["Authorization"] = getToken();
-    newConfig.headers["Authorization"] = process.env.NODE_ENV == 'development' ? 'rd_superadmin' : getToken();
+    newConfig.headers["Authorization"] =  process.env.NODE_ENV == 'development' ? 'rd_superadmin' : getToken();
   }
 
   if (paramType == "body") {
     newConfig.headers["Content-Type"] = 'application/json';
+  } else {
+    newConfig.headers["Content-Type"] = 'application/x-www-form-urlencoded'
   }
 
   if (params) {

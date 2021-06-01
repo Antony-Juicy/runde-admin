@@ -17,19 +17,20 @@
 
 
     <template v-if="isRadio">
-      <template  v-for="item in itemOptions.options">
-        <el-radio
-          :key="item.value"
-          :label="item.value"
-          v-model.trim="currentVal"
-            v-bind="bindProps"
-            v-on="bindEvents"
-          :disabled="itemOptions.disabled">
-          {{item.label}}
-        </el-radio>
-        <span class="radio-tips" :key="item.label" v-if="item.tips">({{item.tips}})</span>
-      </template>
-      
+      <el-radio-group v-model="currentVal">
+        <template  v-for="item in itemOptions.options">
+          <el-radio
+            :key="item.value"
+            :label="item.value"
+            v-model.trim="currentVal"
+              v-bind="bindProps"
+              v-on="bindEvents"
+            :disabled="itemOptions.disabled">
+            {{item.label}}
+          </el-radio>
+          <span class="radio-tips" :key="item.label" v-if="item.tips">({{item.tips}})</span>
+        </template>
+      </el-radio-group>
     </template>
     
     <el-input-number
@@ -55,13 +56,30 @@
       style="width:100%"
       clearable>
       <el-option
-        v-for="item in itemOptions.options"
-        :key="item.value"
+        v-for="(item,index) in itemOptions.options"
+        :key="item.value + '-' +index"
         :label="item.label"
         :value="item.value"
+        :disabled="item.disabled"
         :style="{'min-width': minWidth + 2 + 'px'}">
       </el-option>
     </el-select>
+
+    <el-checkbox-group 
+      v-if="isCheckbox" 
+      v-model="currentVal"
+      v-bind="bindProps"
+      v-on="bindEvents"
+      size="small"
+    >
+        <el-checkbox
+          v-for="(item,index) in itemOptions.options" 
+          :label="item.label"
+          :key="index"
+        >
+        {{item.value}}
+        </el-checkbox>
+    </el-checkbox-group>
 
     <!-- datetimerange/daterange -->
     <el-date-picker
@@ -118,7 +136,7 @@
       v-on="bindEvents"
       :disabled="itemOptions.disabled"
       size="small"
-      :props="itemOptions.props"
+      :props="{...itemOptions.props,multiple: itemOptions.multiple}"
       clearable>
     </el-cascader>
   </div>
@@ -199,6 +217,9 @@ export default {
     // el-select 下拉框
     isSelect () {
       return this.itemOptions.element === 'el-select'
+    },
+    isCheckbox () {
+      return this.itemOptions.element === 'el-checkbox'
     },
     // el-date-picker (type: datetimerange/daterange)
     isDatePickerDateRange () {

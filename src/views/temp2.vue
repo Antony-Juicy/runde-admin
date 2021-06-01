@@ -62,11 +62,11 @@
         @handleClose="addVisible = false"
         @submitForm="submitAddForm('dataForm3')"
       >
-        <RdForm :formOptions="addFormOptions" :rules="addRules" ref="dataForm3">
+        <rd-form :formOptions="addFormOptions" :rules="addRules" ref="dataForm3">
           <template slot="temp">
             <el-button size="small" type="primary">点击下载模板</el-button>
         </template>
-        </RdForm>
+        </rd-form>
       </rd-dialog>
 
        <!-- 回访抽屉 -->
