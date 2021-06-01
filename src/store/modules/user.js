@@ -58,10 +58,10 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password, VerifyCode, slatkey } = userInfo
     return new Promise((resolve, reject) => {
-
+      console.log(222222222)
       Fetch('user_login',{ username: username.trim(), password: md5(password), code: VerifyCode, slatkey }).then(response => {
         const { data } = response
-        console.log(data)
+        console.log(data,'data-----')
         commit('SET_TOKEN', data.token) //在全局vuex中存入state
         setToken(data.token)   //把token存储在本地cookie之中
         commit('SET_NAME', data.username)  //用户名

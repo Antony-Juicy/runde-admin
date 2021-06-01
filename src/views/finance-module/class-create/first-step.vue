@@ -8,7 +8,7 @@
     >
       <el-form-item
         label="项目："
-        label-width="78px"
+        label-width="90px"
         prop="productName"
         :rules="{
           required: true,
@@ -17,7 +17,7 @@
         }"
       >
         <el-select
-          style="width: 280px;"
+          style="width: 280px"
           v-model="basicInfo.productName"
           placeholder="请选择"
           size="small"
@@ -35,7 +35,7 @@
       </el-form-item>
       <el-form-item
         label="科目："
-         label-width="78px"
+        label-width="78px"
         prop="subjectName"
         :rules="{
           required: true,
@@ -112,7 +112,7 @@
       >
         <el-radio-group v-model="basicInfo.classType">
           <el-radio
-           :disabled="IsDisabled"
+            :disabled="IsDisabled"
             v-for="item in classTypeArr"
             :label="item.value"
             :key="item.value"
@@ -123,6 +123,32 @@
           <el-radio :label="4">证书</el-radio>
           <el-radio :label="5">公开课</el-radio> -->
         </el-radio-group>
+      </el-form-item>
+      <el-form-item
+        v-show="provinceShow"
+        label="省："
+        label-width="90px"
+        prop="provinceIds"
+        :rules="{
+          required:provinceShow,
+          message: '不能为空',
+          trigger: 'change',
+        }"
+      >
+        <el-select
+          v-model="basicInfo.provinceIds"
+          multiple
+          placeholder="请选择"
+          size="small"
+        >
+          <el-option
+            v-for="item in provinceArr"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item
         style="align-items: center; display: flex; flex: 1; height: 100%"
@@ -213,9 +239,9 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item
-        style="align-items: center; display: flex; flex: 1; height: 100%;"
-        label="状态：" 
-         label-width="78px"
+        style="align-items: center; display: flex; flex: 1; height: 100%"
+        label="状态："
+        label-width="90px"
         prop="status"
         :rules="{
           required: true,
@@ -243,6 +269,7 @@ export default {
   name: "add-class",
   data() {
     return {
+      provinceShow: false,
       subjecttArr: [], //科目
       courseGroupArr: [], //班型分组
       currentProductId: "",
@@ -282,6 +309,7 @@ export default {
         refundType: "", //退费类型
         protocolType: "",
         status: "",
+        provinceIds: "",
       },
       nameRulers: [
         { required: true, message: "请输入", trigger: "blur" },
@@ -293,6 +321,10 @@ export default {
     opportunityIds: {
       type: String,
       default: "",
+    },
+    provinceArr: {
+      //省份
+      type: Array,
     },
     projectArr: {
       //项目
@@ -364,10 +396,21 @@ export default {
       });
     },
     handleChange(val) {
-      console.log("val==", val);
+      let productName;
+      this.projectArr.map((el) => {
+        if (el.value == val) {
+          productName = el.label;
+        }
+      });
+      if (productName == "健康管理师") {
+        this.provinceShow = true;
+      } else {
+        this.provinceShow = false;
+      }
+      console.log("val== productName", val, productName);
       //  获取科目下拉
-      this.basicInfo.subjectName = '';//置空科目
-      this.subjecttArr = [];//置空科目
+      this.basicInfo.subjectName = ""; //置空科目
+      this.subjecttArr = []; //置空科目
       this.basicInfo.productId = val;
       this.currentProductId = val;
       this.$emit("message", val);

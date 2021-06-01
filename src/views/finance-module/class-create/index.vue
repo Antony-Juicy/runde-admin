@@ -87,6 +87,7 @@
 
         <div class="class-step1 class-moudle" v-show="active == 0">
           <firstStep
+            :provinceArr="provinceArr"
             :yearArr="yearArr"
             :classTypeArr="classTypeArr"
             :protocolTypeArr="protocolTypeArr"
@@ -783,6 +784,7 @@ export default {
       yearArr: [], //班型年份
       classTypeArr: [], //班型类型
       // classtypeGroupArr: [], //班型分组
+      provinceArr: [], //省份
       serviceYearArr: [
         {
           label: "1年",
@@ -1205,6 +1207,12 @@ export default {
 
       this.$fetch("courseclasstype_goAddWindows").then((res) => {
         console.log("goAddWindows 111", res.data);
+        this.provinceArr = res.data.healthProvinceList
+          ? JSON.parse(res.data.healthProvinceList).map((el) => ({
+              label: el.provinceName,
+              value: el.provinceId,
+            }))
+          : [];
         //获取年份的数组
         this.yearArr = this.formOptions[5].options = res.data.recentlyYear.map(
           (item) => ({
@@ -1761,7 +1769,20 @@ export default {
                   productName,
                   subjectName,
                 };
-
+                //省份的处理
+                let province = [];
+                this.$refs.dataForm1.basicInfo.provinceIds.forEach((item) => {
+                  let target = this.provinceArr.find(
+                    (ele) => ele.value == item
+                  );
+                  if (target) {
+                    province.push({
+                      name: target.label,
+                      val: target.value,
+                    });
+                  }
+                });
+            
                 this.$fetch("courseclasstype_save", {
                   ...formData,
                   financeCode1,
@@ -1770,6 +1791,7 @@ export default {
                   financeCode4,
                   campusIds: JSON.stringify(this.campusIds),
                   ...paramas,
+                  province: JSON.stringify(province),
                 })
                   .then((res) => {
                     this.$message.success("操作成功");

@@ -52,6 +52,8 @@
       :multiple="itemOptions.multiple"
       :filterable="itemOptions.filterable"
       :disabled="itemOptions.disabled"
+      :remote="itemOptions.remote"
+      :remote-method="itemOptions.remoteMethod"
       @focus="setMinWidth"
       style="width:100%"
       clearable>
@@ -112,6 +114,18 @@
       range-separator="至"
       :end-placeholder="itemOptions.endPlaceholder"
       value-format="yyyy-MM">
+    </el-date-picker>
+
+    <el-date-picker
+      v-if="isDatePickerDatetime"
+      v-model="currentVal"
+      v-bind="bindProps"
+      v-on="bindEvents"
+      type="datetime"
+      size="small"
+      clearable
+      :placeholder="itemOptions.placeholder"
+      >
     </el-date-picker>
 
     <!-- others -->
@@ -235,10 +249,15 @@ export default {
       const isMonthRange = this.itemOptions.type === 'monthrange'
       return isDatePicker && isMonthRange
     },
+    isDatePickerDatetime () {
+      const isDatePicker = this.itemOptions.element === 'el-date-picker'
+      const isDatetime = this.itemOptions.type === 'datetime'
+      return isDatetime
+    },
     //  el-date-picker (type: other)
     isDatePickerOthers () {
       const isDatePicker = this.itemOptions.element === 'el-date-picker'
-      return isDatePicker && !this.isDatePickerDateRange && !this.isDatePickerMonthRange
+      return isDatePicker && !this.isDatePickerDateRange && !this.isDatePickerMonthRange && !this.isDatePickerDatetime
     },
     // el-cascader 级联选择器
     isCascader () {
