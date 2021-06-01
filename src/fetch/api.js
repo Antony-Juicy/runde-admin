@@ -9,6 +9,7 @@ import classmanage from './classmanage'
 import project from './project'
 import teachGoods from './teach/goods'
 import chainmanage from './chainmanage'
+import chaincustom from './chain/custom'
 
 export default {
     ...user,
@@ -21,5 +22,6 @@ export default {
     ...classmanage,
     ...project,
     ...teachGoods,
-    ...chainmanage
+    ...chainmanage,
+    ...chaincustom
 }

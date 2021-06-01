@@ -35,7 +35,7 @@ export default {
   watch: {
     value(val){
       if(val){
-        scrollTo(0, 800)
+        scrollTo(0, 500)
       }
     }
   },
