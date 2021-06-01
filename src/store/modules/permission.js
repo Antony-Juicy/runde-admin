@@ -150,6 +150,9 @@ function castToFlatRoute(routes, parentPath, flatRoutes = []) {
  * 替换接口字段名
  */
 function changeParam(records,arr){
+  if(records.length && records[0].name && records[0].type){
+    return records;
+  }
   records.forEach(item => {
     let obj = {
       name: item.menuName,
