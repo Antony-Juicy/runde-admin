@@ -6,22 +6,27 @@
 				<div class="accountName">{{accountName}}</div>
 				<div class="scroll-wrap">
 					<div class="notice" v-if="mode == 'notice'">
-						<div v-for="(item,index) in cardData" :key="index">
-							<template v-if="item.key == 'first'">
-								<div class="title" :style="{color:item.color}">{{item.value || '请输入内容'}}</div>
-								<div class="date line">{{mmdd}}</div>
-							</template>
-							<template v-else-if="item.key == 'remark'">
-								<div class="remark line" :style="{color:item.color}">{{item.value || '请输入内容'}}</div>
-							</template>
-							<template v-else>
-								<div class="line ">
-									<div class="label">{{item.label}}</div>
-									<div class="value" :style="{color:item.color}">{{item.value || '请输入内容'}}</div>
-								</div>
-							</template>
-							<div class="count" :class="{danger:noticeFontCount > 200}">{{noticeFontCount}} / 200</div>
-						</div>
+						<template v-if="noticeCanFill">
+							<div v-for="(item,index) in cardData" :key="index">
+								<template v-if="item.key == 'first'">
+									<div class="title" :style="{color:item.color}">{{item.value || '请输入内容'}}</div>
+									<div class="date line">{{mmdd}}</div>
+								</template>
+								<template v-else-if="item.key == 'remark'">
+									<div class="remark line" :style="{color:item.color}">{{item.value || '请输入内容'}}</div>
+								</template>
+								<template v-else>
+									<div class="line ">
+										<div class="label">{{item.label}}</div>
+										<div class="value" :style="{color:item.color}">{{item.value || '请输入内容'}}</div>
+									</div>
+								</template>
+								<div class="count" :class="{danger:noticeFontCount > 200}">{{noticeFontCount}} / 200</div>
+							</div>
+						</template>
+						<template v-else>
+							<div>{{cardData}}</div>
+						</template>
 					</div>
 					<div class="text" v-if="mode == 'text'">
 						<div class="avatar">
@@ -170,7 +175,7 @@ export default {
 			this.$common.getFormatDate(Date.now(), 'mm月dd日')
 		},
 		noticeFontCount() {
-			if (this.mode == 'notice') {
+			if (this.mode == 'notice' && this.noticeCanFill) {
 				let count = 0
 				this.cardData.forEach((v) => {
 					count += v.value.length
@@ -178,6 +183,18 @@ export default {
 				return count
 			} else {
 				return 0
+			}
+		},
+		noticeCanFill() {
+			if (this.mode == 'notice') {
+				if (typeof this.cardData != 'string') {
+					return true
+				}
+				else {
+					return false
+				}
+			} else {
+				return false
 			}
 		}
 	},

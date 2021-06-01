@@ -2,7 +2,7 @@
 	<div class="textmsg">
 		<div class="form-line" style="padding-bottom:0">
 			<div class="label">文字消息：</div>
-			<div class="likeInput" ref='likeInput' contenteditable="plaintext-only" @input="handle_change" @focus="handle_focus" @blur="handle_blur"><br></div>
+			<div class="likeInput" ref='likeInput' contenteditable="plaintext-only" @input="handle_change" @focus="handle_focus" @blur="handle_blur"></div>
 		</div>
 
 		<div class="form-line">
@@ -81,6 +81,9 @@ export default {
 
 		},
 		async handle_focus() {
+			if (this.$refs.likeInput.innerHTML == '请输入') {
+				this.$refs.likeInput.innerHTML = ""
+			}
 			try {
 				let c = await navigator.clipboard.readText()
 				navigator.clipboard.writeText(c)
@@ -90,6 +93,9 @@ export default {
 
 		},
 		handle_blur() {
+			if (this.$refs.likeInput.innerHTML == '') {
+				this.$refs.likeInput.innerHTML = "请输入"
+			}
 		},
 		handle_change(e) {
 			this.msgForm.content = this.$refs.likeInput.innerHTML
