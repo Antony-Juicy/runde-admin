@@ -15,6 +15,7 @@
               :prop="item.prop"
               :label="item.label ? item.label : ''"
               :rules="item.rules"
+              :class="{'oneRow':item.oneRow}"
               v-if="!item.hide"
             >
               <formItem v-model="formData[item.prop]" :itemOptions="item" v-if="!item.operate"/>
@@ -113,22 +114,18 @@ export default {
         this.$emit("onSearch", this.formData);
       });
     },
-
+    //这个能把表单所有值清空为undefined
     onReset() {
-      // this.$refs.boxId.resetFields();
       const obj = {};
       this.formOptions.forEach((v) => {
-          // if (v.initValue !== undefined) {
-          //   obj[v.prop] = v.initValue;
-          // }else {
           obj[v.prop] = undefined;
-        // }
+          v.initValue = undefined;
       });
       this.formData = obj;
       this.$emit('onReset')
     },
 
-    // 重置表单
+    // 重置表单,注意 重置不了已经设置过的初始值
     resetFields(){
       this.$refs.formRef.resetFields();
     },
@@ -170,6 +167,12 @@ export default {
     .el-form--inline {
       .el-form-item {
           width: 40%;
+          &.oneRow {
+             width: 100%;
+             input,textarea {
+              width: 170%;
+            }
+          }
           .el-form-item__content {
             width: 300px;
           }
@@ -182,6 +185,7 @@ export default {
           .el-date-editor--datetimerange.el-input__inner {
             width: 300px;
           }
+          
         }
     }
     

@@ -38,6 +38,10 @@ service.interceptors.request.use(
       for (const i in _param) {
         config.data.append(i, _param[i])
       }
+    } 
+    else if(totalNewConfig.headers["Content-Type"]&& totalNewConfig.headers["Content-Type"] == "application/json"){
+      config.data.token = getToken()
+      config.data.loginUserId = common.getUserId()
     }
     else if (totalNewConfig.headers["Content-Type"] && totalNewConfig.headers["Content-Type"] == "application/json") {
 

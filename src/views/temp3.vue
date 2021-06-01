@@ -1,5 +1,5 @@
 <template>
-  <div class="post-manage">
+  <div class="view-detail">
       <search-form
       :formOptions="formOptions"
       :showNum="7"
@@ -15,7 +15,6 @@
         :tableData="tableData"
         :tableKey="tableKey"
         :pageConfig.sync="pageConfig"
-        :tbodyHeight="600"
         fixedTwoRow
         @pageChange="pageChange"
         :emptyText="emptyText"
@@ -67,7 +66,7 @@
 <script>
 import RdForm from "@/components/RdForm";
 export default {
-  name:"post-manage",
+  name:"view-detail",
   data(){
     return {
       formOptions: [
@@ -261,7 +260,8 @@ export default {
           { required: true, message: "请输入修改事由", trigger: "blur" },
         ]
       },
-      addStatus: true
+      addStatus: true,
+      editId:""
     }
   },
   components:{
@@ -285,6 +285,7 @@ export default {
       this.getTableData();
     },
     handleAdd(){
+      this.addStatus = true;
       this.addVisible = true;
     },
     submitAddForm(formName){
@@ -298,6 +299,13 @@ export default {
     handleEdit(data){
       this.addStatus = false;
       this.addVisible = true;
+      this.addFormOptions.forEach(item => {
+           item.initValue = data[item.prop];
+      })
+      setTimeout(() => {
+        this.$refs.dataForm3.addInitValue();
+      }, 0);
+      this.editId = data.id;
     },
     handleDelete(row) {
       let info = '';
@@ -329,7 +337,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.post-manage {
+.view-detail {
 
 }
 </style>

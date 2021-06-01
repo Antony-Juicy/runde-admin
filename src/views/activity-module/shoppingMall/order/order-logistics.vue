@@ -23,37 +23,57 @@
       </rd-table>
     </div>
     
+    <!-- 导入数据 -->
+    <rd-dialog
+        :title="'导入模板'"
+        :dialogVisible="addVisible"
+        @handleClose="addVisible = false"
+        @submitForm="submitAddForm('dataForm3')"
+      >
+        <el-form ref="dataForm3" :model="importForm" label-width="80px">
+          <el-form-item label="导入模版">
+            <el-button type="primary" size="small" @click="downLoad">点击下载模板</el-button>
+          </el-form-item>
+          <el-form-item label="文件" prop="excel">
+            <uploadFile :file.sync="importForm.excel"/>
+          </el-form-item>
+        </el-form>
+    </rd-dialog>
   </div>
 </template>
 
 <script>
+import uploadFile from "@/components/Activity/uploadFile";
 export default {
   name:"post-manage",
   data(){
     return {
+      importForm: {
+        excel: ""
+      },
       formOptions: [
         {
-          prop: "menuName",
+          prop: "name",
           element: "el-input",
           placeholder: "收货人姓名",
         },
         {
-          prop: "menuName",
+          prop: "phone",
           element: "el-input",
           placeholder: "联系电话",
         },
         {
-          prop: "menuName",
+          prop: "expressNo",
           element: "el-input",
           placeholder: "快递单号",
         },
         {
-          prop: "menuName",
+          prop: "expressCompany",
           element: "el-input",
           placeholder: "快递公司名称",
         },
         {
-          prop: "menuName",
+          prop: "goodsName",
           element: "el-input",
           placeholder: "商品名称",
         }
@@ -61,13 +81,6 @@ export default {
       searchForm:{},
       emptyText:"暂无数据",
       tableData:[
-         {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-        },
       ],
       tableKey: [
         {
@@ -78,39 +91,39 @@ export default {
         },
         {
           name: "收货人姓名",
-          value: "staffName",
+          value: "name",
         },
         {
           name: "电话号码",
-          value: "goodsName",
+          value: "phone",
         },
         {
           name: "联系地址",
-          value: "activityName",
+          value: "address",
         },
         {
           name: "订单ID",
-          value: "posterName",
+          value: "payId",
         },
         {
           name: "润德老师",
-          value: "posterPic",
+          value: "staffName",
         },
         {
           name: "快递单号",
-          value: "posterPic",
+          value: "expressNo",
         },
         {
           name: "快递公司",
-          value: "posterPic",
+          value: "expressCompany",
         },
         {
           name: "商品名称",
-          value: "posterPic",
+          value: "goodsName",
         },
         {
           name: "导入时间",
-          value: "posterPic",
+          value: "createAt",
         }
       ],
        pageConfig: {
@@ -216,6 +229,12 @@ export default {
       addStatus: true
     }
   },
+  components: {
+    uploadFile
+  },
+  mounted(){
+    this.getTableData();
+  },
    methods: {
      onSearch(val){
        this.searchForm = {
@@ -224,8 +243,20 @@ export default {
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
      },
-     getTableData(){
-
+     getTableData(params = {}){
+       this.$fetch("mobilegoodsexpresslog_listJsp", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.varList.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.phone = this.$common.hidePhone(item.phone);
+          
+          return item;
+        });;
+        this.pageConfig.totalCount = res.data.page.totalResult;
+      })
      },
      pageChange(val) {
       console.log(val,'pagechange')
@@ -237,12 +268,17 @@ export default {
       this.addVisible = true;
     },
     submitAddForm(formName){
-      this.$refs[formName].validate((valid, formData) => {
-        if(valid){
-          console.log(formData, "提交");
-        }
-          
-      });
+      if(!this.importForm.excel){
+        this.$message.warning("请上传文件")
+        return
+      }
+      let obj = new FormData();
+      obj.append("excel",this.importForm.excel)
+      this.$fetch("mobilegoodsexpresslog_saveImport",obj).then(res => {
+        this.$message.success("操作成功")
+        this.getTableData()
+        this.addVisible = false
+      })
     },
     handleEdit(data){
       this.addStatus = false;
@@ -272,6 +308,9 @@ export default {
           });
         })
         .catch(() => {});
+    },
+    downLoad(){
+      window.location.href = "/temp/express_import.xlsx"
     }
   }
 }

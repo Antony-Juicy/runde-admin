@@ -15,6 +15,7 @@
   </div>
 </template>
 <script>
+import { scrollTo } from '@/utils/scroll-to'
 export default {
   props: {
     value: {
@@ -25,6 +26,13 @@ export default {
       type: String,
       default: "详情",
     },
+  },
+  watch: {
+    value(val){
+      if(val){
+        scrollTo(0, 800)
+      }
+    }
   },
   methods: {
     cancelClick: function () {
