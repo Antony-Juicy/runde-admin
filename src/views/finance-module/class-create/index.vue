@@ -18,7 +18,6 @@
         :tableData="tableData"
         :tableKey="tableKey"
         :loading="loading"
-        :tbodyHeight="600"
         :filterColumn="filterColumn"
         :pageConfig.sync="pageConfig"
         @pageChange="pageChange"

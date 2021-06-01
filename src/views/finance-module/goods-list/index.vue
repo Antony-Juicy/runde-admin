@@ -143,6 +143,7 @@
                   v-model="stuForm.cardId"
                   style="width: 280px; margin-right: 10px"
                   :maxlength="18"
+                  @focus="handleFocus"
                   @blur="handleCheckInfo"
                   :disabled="disabled"
                   placeholder="请输入学员身份证"
@@ -150,7 +151,7 @@
                 <!-- <el-button type="primary" @click="handleCheckInfo"
                   >查询</el-button
                 > -->
-                <el-button type="primary" @click="handleResetInfo"
+                <el-button type="primary" :disabled="clickdisabled" @click="handleResetInfo"
                   >重置</el-button
                 >
               </el-form-item>
@@ -353,11 +354,11 @@
             </el-col>
             <el-col :span="8">
               <el-form-item
-                v-if="itemData.productName == '健康管理师'"
+                v-show="itemData.productName == '健康管理师'"
                 label="报考省份"
                 prop="provinceName"
                 :rules="{
-                  required: true,
+                  required: itemData.productName == '健康管理师' ?true:false,
                   message: '不能为空',
                   trigger: 'change',
                 }"
@@ -834,7 +835,7 @@
       </el-card>
 
       <div class="btn-wrapper" style="text-align: right">
-        <el-button type="primary" @click="submitAddForm()">提交</el-button>
+        <el-button type="primary" :disabled="clickdisabled" @click="submitAddForm()">提交</el-button>
       </div>
     </full-dialog>
   </div>
@@ -851,6 +852,7 @@ export default {
   data() {
     return {
       disabled:false,
+      clickdisabled:false,
       validator: Common._validatorPhone,
       validator2: Common._isCardNo,
       testData: "",
@@ -1044,6 +1046,7 @@ export default {
   methods: {
     handleClose() {
       this.addVisible = false;
+      this.disabled = false;
       this.$refs.stuForm.resetFields();
       this.$refs.stuForm2.resetFields();
       this.stuForm2.campusName = this.itemData.campusName;
@@ -1276,7 +1279,11 @@ export default {
           this.$refs.stuForm4.resetFields();
         });
     },
+    handleFocus(){
+      this.clickdisabled = true;
+    },
     handleCheckInfo() {
+      this.clickdisabled = false;
       this.$refs.stuForm.validateField("cardId", (errMsg) => {
         if (errMsg) {
           console.log("校验失败");

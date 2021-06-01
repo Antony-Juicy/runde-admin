@@ -84,7 +84,7 @@
         :width="'940px'"
         appendToBody
         :customClass="'class-detail-dialog'"
-        @handleClose="addVisible = false"
+        @handleClose="handleClose"
         @submitForm="submitAddForm('dataForm3')"
       >
         <RdForm
@@ -106,13 +106,13 @@
               label-width="120px"
               inline
             >
-              <template v-if="currentData.productId == 19">
+              <template v-if="productName == '健康管理师'">
                 <el-form-item
                   label="报考省份"
                   label-width="140px"
-                  prop="provinceId"
+                  prop="provinceNameInitVal"
                   :rules="{
-                    required: true,
+                    required: productName == '健康管理师' ? true : false,
                     message: '请选择',
                     trigger: 'change',
                   }"
@@ -125,7 +125,7 @@
                 >
                   <el-select
                     style="flex: 1; display: flex; width: 100%"
-                    v-model="basicInfo.provinceId"
+                    v-model="basicInfo.provinceNameInitVal"
                     multiple
                     placeholder="请选择"
                     size="small"
@@ -247,6 +247,7 @@ export default {
   name: "class-detail",
   data() {
     return {
+      productName: "",
       checkDisabled: false,
       detailsVisible: false,
       currentIndex: 0,
@@ -387,27 +388,23 @@ export default {
           label: "服务年限",
           options: [
             {
-              label: 1,
+              label: "1年",
               value: 1,
             },
             {
-              label: 2,
+              label: "2年",
               value: 2,
             },
             {
-              label: 3,
+              label: "3年",
               value: 3,
             },
             {
-              label: 4,
+              label: "4年",
               value: 4,
             },
-            {
-              label: 5,
-              value: 5,
-            },
           ],
-          initValue: 1,
+          initValue: "",
           disabled: false,
         },
         {
@@ -559,6 +556,7 @@ export default {
         subjectName: "",
         isperformance: true,
         provinceId: [],
+        provinceNameInitVal: [],
       },
       rules: {},
       campusArr: [],
@@ -592,6 +590,10 @@ export default {
     this.getTableData();
   },
   methods: {
+    handleClose() {
+      this.addVisible = false;
+      this.basicInfo.provinceNameInitVal = [];
+    },
     openChainTable(data) {
       this.currentIndex = 2;
       this.currentCompany = data.chainName;
@@ -650,6 +652,7 @@ export default {
       this.getTableData();
     },
     handleAdd(index) {
+      //  this.$refs.dataForm3.clearValidate("provinceNameInitVal");
       if (index == 1) {
         this.addStatus = true;
         this.addVisible = true;
@@ -670,6 +673,7 @@ export default {
             productId,
             chargePattern_text,
           } = res.data.pd;
+          this.productName = productName;
           this.$refs.dataForm3.setValue({
             className,
             classType,
@@ -680,7 +684,23 @@ export default {
           this.basicInfo.subjectName = subjectName;
           this.basicInfo.isperformance = true;
           this.basicInfo.provinceId = [];
-          // this.basicInfo.provinceId = "";
+          //        this.$nextTick(() => {//清除校验
+
+          //  this.$refs.dataForm3.clearValidate("provinceNameInitVal");
+          //   });
+          console.log(
+            ' this.$refs.dataForm3.clearValidate("provinceNameInitVal");',
+            this.$refs.dataForm3.clearValidate
+          );
+
+          // this.$refs.dataForm3.setValue({
+          // provinceNameInitVal: ['哈哈哈']
+          // });
+
+          this.basicInfo.provinceNameInitVal = [];
+
+          // this.$refs.stuForm2.clearValidate("courses");
+
           this.currentData.chargePattern = chargePattern_text;
           this.basicInfo.course = courses.map((item) => ({
             checked: false,
@@ -734,14 +754,8 @@ export default {
           });
           // 省份的处理
           let provinceIds = [];
-          console.log(
-            " this.basicInfo.provinceId",
-            this.basicInfo.provinceId,
-            this.provinceArr
-          );
-          this.basicInfo.provinceId.forEach((item) => {
+          this.basicInfo.provinceNameInitVal.forEach((item) => {
             let target = this.provinceArr.find((ele) => ele.value == item);
-            console.log(" targettargettargettargettarget111111111", target);
             //  let target = this.provinceArr.find(ele => (ele.value == this.basicInfo.provinceId));
             if (target) {
               provinceIds.push({
@@ -764,6 +778,13 @@ export default {
             .map((item) => item.courseId);
 
           let provinceName = provinceIds.map((el) => el.name);
+          console.log(
+            "provinceNameprovinceName9999999999",
+            provinceName,
+            provinceIds,
+            this.basicInfo.provinceId,
+            this.basicInfo.provinceNameInitVal
+          );
           this.$fetch(
             this.addStatus ? "courseclass_save" : "courseclass_editJsp",
             {
@@ -772,7 +793,7 @@ export default {
               chargePattern: this.currentData.chargePattern,
               campusIds: JSON.stringify(campusIds),
               provinceIds: JSON.stringify(provinceIds),
-              provinceId: this.basicInfo.provinceId.join(","),
+              provinceId: this.basicInfo.provinceNameInitVal.join(","),
               // provinceId: this.basicInfo.provinceId,
               provinceName: provinceName.join(","),
               classBatch: this.currentData.classTypeBatch,
@@ -798,7 +819,7 @@ export default {
         }
       });
     },
-     handleEdit(data) {
+    handleEdit(data) {
       this.addStatus = false;
       this.addVisible = true;
       this.editId = data.id;
@@ -816,8 +837,10 @@ export default {
           campusId,
           provinceId,
           productId,
-          status_text
+          status_text,
+          serviceYear,
         } = res.data.pd;
+        this.productName = productName;
         const { pd, courseList, provinceList } = res.data;
         this.$refs.dataForm3.setValue({
           className,
@@ -825,7 +848,8 @@ export default {
           productName,
           subjectName,
           campusId: [campusId],
-         status :status_text,
+          status: status_text,
+          serviceYear,
         });
         this.basicInfo.subjectName = subjectName;
         this.currentData.chargePattern_text = pd.chargePattern;
@@ -845,6 +869,17 @@ export default {
             value: item.provinceId,
           }));
         }
+        let provinceIds = [];
+        this.basicInfo.provinceId.forEach((item) => {
+          let target = this.provinceArr.find((ele) => ele.value == item); //  let target = this.provinceArr.find(ele => (ele.value == this.basicInfo.provinceId));
+          if (target) {
+            provinceIds.push({
+              name: target.label,
+              val: target.value,
+            });
+          }
+        });
+        this.basicInfo.provinceNameInitVal = provinceIds.map((el) => el.name);
       });
     },
 
