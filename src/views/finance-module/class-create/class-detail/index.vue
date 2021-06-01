@@ -798,7 +798,7 @@ export default {
         }
       });
     },
-    handleEdit(data) {
+     handleEdit(data) {
       this.addStatus = false;
       this.addVisible = true;
       this.editId = data.id;
@@ -847,6 +847,7 @@ export default {
         }
       });
     },
+
     handleDelete(row) {
       let info = "";
       this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {

@@ -186,6 +186,18 @@
             />
           </el-form-item>
           <el-form-item
+            label="过滤数据"
+            prop="filterData"
+            :label-width="formLabelWidth"
+            v-if="basicInfo.menuType == '2'"
+          >
+            <el-input
+              v-model.trim ="basicInfo.filterData"
+              autocomplete="off"
+              placeholder="请输入过滤数据"
+            />
+          </el-form-item>
+          <el-form-item
             label="图标"
             prop="menuIcon"
             :label-width="formLabelWidth"
@@ -313,7 +325,8 @@ export default {
         updateReason: "",
         menuIcon: "",
         filterType: "",
-        filterWhere:""
+        filterWhere:"",
+        filterData:""
       },
       rules: {
         updateReason: [

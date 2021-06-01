@@ -162,7 +162,7 @@ export default {
           prop: "frequencyCode",
           element: "el-input",
           placeholder: "请输入",
-          label: "直播编码",
+          label: "音频编码",
         },
 
         // {
