@@ -4,13 +4,14 @@
         class="upload-demo"
         action="#"
         :before-remove="beforeRemove"
+        :on-remove="onRemove"
         :limit="1"
         :on-exceed="handleExceed"
         :on-change="handleChange"
         :file-list="fileList"
         :before-upload="beforeAvatarUpload"
         :auto-upload="false"
-        accept=".xls, .xlsx"
+        :accept="accept"
       >
         <el-button size="small" type="primary">点击上传</el-button>
       </el-upload>
@@ -26,7 +27,15 @@ export default {
       fileList: []
     };
   },
-  props: ["file"],
+  props: {
+    file: {
+      type: Object | String
+    },
+    accept: {
+      type: String,
+      default: ".xls, .xlsx"
+    }
+  },
   methods: {
     submitImportForm() {
       if (!this.importFile) {
@@ -55,10 +64,16 @@ export default {
     beforeRemove(file, fileList) {
       return this.$confirm(`确定移除 ${file.name}？`);
     },
+    onRemove(file, fileList){
+      if(file){
+        this.$emit("update:file","");
+        this.$emit("onRemove")
+      }
+    },
     handleChange(file, fileList) {
       this.importFile = file.raw;
       this.$emit("update:file",file.raw);
-
+      this.$emit("change",file.raw)
     },
      // 导入上传之前的文件格式校验
     beforeAvatarUpload(file) {

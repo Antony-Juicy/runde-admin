@@ -11,16 +11,18 @@
       >
         <template v-for="(item, index) in formOptions">
             <el-form-item
-              :key="newKeys[index]"
+              :key="index"
               :prop="item.prop"
               :label="item.label ? item.label : ''"
               :rules="item.rules"
+              :class="{'oneRow':item.oneRow}"
               v-if="!item.hide"
             >
               <formItem v-model="formData[item.prop]" :itemOptions="item" v-if="!item.operate"/>
               <div v-else>
                  <slot
                   :name="item.prop"
+                  :data="formData[item.prop]"
                 ></slot>
               </div>
             </el-form-item>
@@ -101,6 +103,10 @@ export default {
   },
   
   methods: {
+    // 校验单个表单
+    validateField(props,callback){
+      this.$refs.formRef.validateField(props,callback&&callback())
+    },
     // 校验
     validate(callback) {
       this.$refs.formRef.validate((valid) => {
@@ -113,22 +119,25 @@ export default {
         this.$emit("onSearch", this.formData);
       });
     },
-
+    //这个能把表单所有值清空为undefined
     onReset() {
-      // this.$refs.boxId.resetFields();
       const obj = {};
       this.formOptions.forEach((v) => {
-          // if (v.initValue !== undefined) {
-          //   obj[v.prop] = v.initValue;
-          // }else {
-          obj[v.prop] = undefined;
-        // }
+          // obj[v.prop] = undefined;
+
+          if(v.element == 'el-checkbox'){
+             v.initValue = [];
+             obj[v.prop] = [];
+          }else {
+             v.initValue = undefined;
+             obj[v.prop] = undefined;
+          }
       });
       this.formData = obj;
       this.$emit('onReset')
     },
 
-    // 重置表单
+    // 重置表单,注意 重置不了已经设置过的初始值
     resetFields(){
       this.$refs.formRef.resetFields();
     },
@@ -140,11 +149,21 @@ export default {
         if (v.initValue !== undefined) {
           obj[v.prop] = v.initValue;
         }
+        if(v.multiple && !v.initValue){
+           obj[v.prop] = [];
+        }
       });
       this.formData = obj;
+    },
+
+    // 给表单的任意一个赋值
+    setValue(obj){
+      this.formData = {
+        ...this.formData,
+        ...obj
+      }
     }
   },
-
   computed: {
     newKeys() {
       return this.formOptions.map((v) => {
@@ -170,6 +189,12 @@ export default {
     .el-form--inline {
       .el-form-item {
           width: 40%;
+          &.oneRow {
+             width: 100%;
+             input,textarea {
+              width: 170%;
+            }
+          }
           .el-form-item__content {
             width: 300px;
           }
@@ -182,6 +207,7 @@ export default {
           .el-date-editor--datetimerange.el-input__inner {
             width: 300px;
           }
+          
         }
     }
     

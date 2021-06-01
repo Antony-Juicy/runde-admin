@@ -11,11 +11,59 @@ const $common = {
             callback()
         }
     },
+
+    /**
+     * 校验身份证号格式(简单位数格式校验)
+     * param card 身份证号
+     * returns true格式正确，false格式错误
+     */
+    _isCardNo(rule,card,callback) {
+        // 身份证号码为15位或者18位，15位时全为数字，18位前17位为数字，最后一位是校验位，可能为数字或字符X  
+        var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/
+        if (!reg.test(card)) {
+            callback(new Error('身份证号格式错误'))
+        }else{
+            callback() 
+        }
+    },  
+
     _validatePassWord(rule, value, callback) {
         if (value === '') {
             callback(new Error('请输入密码'));
         } else {
             callback();
+        }
+    },
+    // 检验是否是数字
+    _validatorNumber(rule, value, callback) {
+        if(value == undefined || value == ''){
+            callback();
+        }else if ( parseFloat(value).toString() == "NaN") {
+            callback(new Error('请输入数字'));
+        } else {
+            callback();
+        }
+    },
+    // 检验是否是非负数字
+    _validatorNonnegative(rule, value, callback) {
+        if(value == undefined || value == ''){
+            callback();
+        }else if ( parseFloat(value).toString() == "NaN") {
+            callback(new Error('请输入数字'));
+        } else if ( parseFloat(value) < 0) {
+            callback(new Error('请输入不小于0的数字'));
+        }else {
+            callback();
+        }
+    },
+    // 非必填的手机校验
+    _validatorPhone2(rule, value, callback) {
+        if (value == undefined || value === '') {
+            callback()
+        } else if (!/^1\d{10}$/.test(value)) {
+            callback(new Error('手机号格式错误'))
+        } else {
+            callback()
         }
     },
     // 年月日时分时间处理
@@ -77,8 +125,11 @@ const $common = {
     // 传入结束时间的倒计时功能
     showCutDown(endtime) {
         let nowtime = new Date();
-        let lefttime = endtime - nowtime.getTime(),  //距离结束时间的毫秒数
-            leftd = Math.floor(lefttime / (1000 * 60 * 60 * 24)),  //计算天数
+        let lefttime = new Date(endtime).getTime() - nowtime.getTime(); //距离结束时间的毫秒数
+        if (lefttime <= 0) {
+            return '';
+        }
+        let leftd = Math.floor(lefttime / (1000 * 60 * 60 * 24)),  //计算天数
             lefth = Math.floor(lefttime / (1000 * 60 * 60) % 24),  //计算小时数
             leftm = Math.floor(lefttime / (1000 * 60) % 60),  //计算分钟数
             lefts = Math.floor(lefttime / 1000 % 60);  //计算秒数
@@ -312,6 +363,65 @@ const $common = {
             dateText = hours + ':' + minutes;
         }
         return dateText;
+    },
+    /**
+ * 获取时间公共方法
+ * startYear 开始年份 null为当前年份前5年
+ * endYear 结束年份 null为当前年份
+ */
+    addYearArr(startYear, endYear) {
+        var yearArr = [];
+        var myDate = new Date();
+        let nowYear = myDate.getFullYear();//当前年
+        if (endYear) {
+        } else {//为空为当前年
+            endYear = nowYear;
+        }
+        if (startYear) {
+        } else {//为空为当前年前5年
+            startYear = nowYear - 4;
+        }
+        for (var int = startYear; int <= endYear; int++) {
+            yearArr.push(int);
+        }
+        return yearArr;
+    },
+
+    _getNowYearDate(str) {//返回当前年月日数据格式
+        var strArr = str.split('-');
+        if (strArr.length > 2) {//str 2001-08-20 00:00
+            var arr = strArr[2].split(' ');
+            var day = arr[0];
+            var month = strArr[1];
+        } else {//str 08-20 
+            var month = strArr[0];
+            var day = strArr[1];
+            console.log("arr22", 'day', day, month)
+        }
+        var year = new Date().getFullYear();
+        return `${year}-${month}-${day}`; 
+        // str = (year + '-' + month + '-' + day).toString();
+        // return str;
+    },
+    _formatDates3(date) {//只返回年月的日期格式
+        if (!date) {
+            return ''
+        }
+        let time = new Date(date)
+        let year = time.getFullYear();
+        let month = time.getMonth() + 1;
+        let day = time.getDate();
+        let hours = time.getHours();
+        let minutes = time.getMinutes();
+        let seconds = time.getSeconds();
+
+        if (month < 10) month = `0${month}`;
+        if (day < 10) day = `0${day}`
+        if (hours < 10) hours = `0${hours}`
+        if (minutes < 10) minutes = `0${minutes}`
+        if (seconds < 10) seconds = `0${seconds}`
+
+        return `${month}-${day}`;
     },
 
 }

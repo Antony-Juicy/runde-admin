@@ -302,7 +302,7 @@ export default {
       },
       rules:{
         campusId: [
-          { required: true, message: "请选择组织架构", trigger: "blur" },
+          { required: true, message: "请选择组织架构", trigger: "change" },
         ]
       },
       editId:""
@@ -483,7 +483,7 @@ export default {
     margin-bottom: 8px;
   }
   .el-divider--horizontal {
-    margin: 10px 0 10px;
+    margin: 20px 0 10px;
   }
   .el-form--inline .el-form-item {
     margin: 0 0 0 0;

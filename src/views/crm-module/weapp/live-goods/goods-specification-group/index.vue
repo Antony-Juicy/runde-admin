@@ -13,6 +13,9 @@
         :pageConfig.sync="pageConfig"
         @select="handleSelect"
         @pageChange="pageChange">
+        <template slot="goodsType" slot-scope="scope">
+          <span>{{ scope.row.goodsType | goodsTypeFilter }}</span>
+        </template>
         <template slot="goodsGroupStatus" slot-scope="scope">
           <span>{{ scope.row.goodsGroupStatus | Filter }}</span>
         </template>
@@ -32,6 +35,12 @@
         <el-form ref="dataForm" :model="groupForm" :rules="rules" label-width="100px">
           <el-form-item label="规格组名称" prop="goodsGroupName">
             <el-input v-model.trim="groupForm.goodsGroupName" autocomplete="off" placeholder="请输入规格组名称" />
+          </el-form-item>
+          <el-form-item label="规格组类型" prop="goodsType">
+            <el-select v-model.trim="groupForm.goodsType" :disabled="groupVisibleStatus ? false : true" placeholder="请选择规格组类型">
+              <el-option label="课程" value="Course"></el-option>
+              <el-option label="图书" value="Book"></el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="项目类型" prop="typeId">
             <el-cascader
@@ -91,16 +100,22 @@
             <el-form-item label="划线价" prop="originalPrice">
               <el-input-number controls-position="right" v-model.trim ="ruleForm.originalPrice" autocomplete="off" :min="0" placeholder="" />
             </el-form-item>
-            <el-form-item label="开通的班型id" prop="openClassId">
+            <el-form-item label="活动编码" prop="activityCode" v-if="this.showGroupTpye == 'Book'">
+              <el-input v-model.trim="ruleForm.activityCode" autocomplete="off" placeholder="请输入活动编码" />
+            </el-form-item>
+            <el-form-item label="科目名称" prop="subjectName" v-if="this.showGroupTpye == 'Book'">
+              <el-input v-model.trim="ruleForm.subjectName" autocomplete="off" placeholder="请输入规格组名称" />
+            </el-form-item>
+            <el-form-item label="开通的班型id" prop="openClassId" v-if="this.showGroupTpye == 'Course'">
               <el-input v-model.trim="ruleForm.openClassId" autocomplete="off" @input="ruleForm.openClassId = String(ruleForm.openClassId).replace(/[^\d]/g,'')" placeholder="请输入班型id" />
             </el-form-item>
-            <el-form-item label="开通的班型名称" prop="openClassName">
+            <el-form-item label="开通的班型名称" prop="openClassName" v-if="this.showGroupTpye == 'Course'">
               <el-input v-model.trim="ruleForm.openClassName" autocomplete="off" placeholder="请输入班型名称" />
             </el-form-item>
-            <el-form-item label="开通的课程id" prop="openSubjectId">
+            <el-form-item label="开通的课程id" prop="openSubjectId" v-if="this.showGroupTpye == 'Course'">
               <el-input v-model.trim="ruleForm.openSubjectId" autocomplete="off" @input="ruleForm.openSubjectId = String(ruleForm.openSubjectId).replace(/[^\d]/g,'')" placeholder="请输入课程id" />
             </el-form-item>
-            <el-form-item label="开通的课程名称" prop="openSubjectName">
+            <el-form-item label="开通的课程名称" prop="openSubjectName" v-if="this.showGroupTpye == 'Course'">
               <el-input v-model.trim="ruleForm.openSubjectName" autocomplete="off" placeholder="请输入课程名称" />
             </el-form-item>
             <el-form-item
@@ -143,6 +158,21 @@ export default {
         { prop: 'goodsGroupName', element: 'el-input', placeholder: '规格组名称' },
         { prop: 'typeId', element: 'el-cascader', placeholder: '选择项目类型', props: { checkStrictly: true } },
         { 
+          prop: 'goodsType',
+          element: 'el-select',
+          placeholder: '请选择规格组分类',
+          options: [
+            {
+              label: "课程",
+              value: "Course",
+            },
+            {
+              label: "图书",
+              value: "Book",
+            },
+          ],
+        },
+        { 
           prop: 'goodsGroupStatus',
           element: 'el-select',
           placeholder: '选择状态',
@@ -169,6 +199,7 @@ export default {
       ],
       tableKey: [
         { name: '规格组名称',value: 'goodsGroupName' },
+        { name: '规格组类型',value: 'goodsType',operate: true },
         { name: '项目类型',value: 'typeName' },
         { name: '规格数',value: 'itemCount' },
         { name: '状态',value: 'goodsGroupStatus',operate: true },
@@ -190,6 +221,7 @@ export default {
       groupVisibleStatus: true,
       groupForm: {
         goodsGroupName: '',
+        goodsType: '',
         typeId: '',
         remark: '',
         goodsGroupStatus: ''
@@ -199,6 +231,9 @@ export default {
         goodsGroupName: [
           { required: true, message: "请输入规格组名称", trigger: "blur" },
           {  max: 25, message: '长度不多于25个字符', trigger: 'blur' }
+        ],
+        goodsType: [
+          { required: true, message: "请选择规格组类型", trigger: "blur" }
         ],
         typeId: [
           { required: true, message: "请选择类型", trigger: "blur" }
@@ -228,6 +263,8 @@ export default {
         { name: '价格',value: 'salesPrice' },
         { name: '划线价',value: 'originalPrice' },
         // { name: '剩余库存量',value: 'inventory',width: 120 },
+        { name: '活动编码', value: 'activityCode' },
+        { name: '科目名称', value: 'subjectName' },
         { name: '开通班型id',value: 'openClassId' },
         { name: '开通班型名称',value: 'openClassName' },
         { name: '开通课程id',value: 'openSubjectId' },
@@ -242,8 +279,11 @@ export default {
       ruleVisible: false,
       ruleStatus: true,
       currentGoodsGroupId: '',
+      showGroupTpye: '',
       ruleForm: {
         goodsItemName: '',
+        activityCode: '',
+        subjectName:'',
         salesPrice: '',
         originalPrice: '',
         openClassId: '',
@@ -269,18 +309,25 @@ export default {
         originalPrice: [
           { required: true, message: "请输入划线价(原价)", trigger: "blur" }
         ],
-        // openClassId: [
-        //   { required: true, message: "请输入班型id", trigger: "blur" }
-        // ],
-        // openClassName: [
-        //   { required: true, message: "请输入班型名称", trigger: "blur" }
-        // ],
-        // openSubjectId: [
-        //   { required: true, message: "请输入课程id", trigger: "blur" }
-        // ],
-        // openSubjectName: [
-        //   { required: true, message: "请输入课程名称", trigger: "blur" }
-        // ],
+        activityCode: [
+          { required: true, message: "请输入活动编码", trigger: "blur" }
+        ],
+        subjectName: [
+          { required: true, message: "请输入科目名称", trigger: "blur" },
+          {  max: 25, message: '长度不多于25个字符', trigger: 'blur' }
+        ],
+        openClassId: [
+          { required: true, message: "请输入班型id", trigger: "blur" }
+        ],
+        openClassName: [
+          { required: true, message: "请输入班型名称", trigger: "blur" }
+        ],
+        openSubjectId: [
+          { required: true, message: "请输入课程id", trigger: "blur" }
+        ],
+        openSubjectName: [
+          { required: true, message: "请输入课程名称", trigger: "blur" }
+        ],
         goodsItemStatus: [
           { required: true, message: "请选择状态", trigger: "blur" }
         ]
@@ -407,9 +454,11 @@ export default {
 
     //管理规格大弹窗
     openConfig(row) {
+      console.log(row,'row---')
       this.showGroup = true;
       this.currentGoodsGroupId = row.goodsGroupId
       this.showGroupTitle = row.goodsGroupName
+      this.showGroupTpye = row.goodsType
       this.gitRuletableData(row.goodsGroupId)
     },
     closeConfig(val) {
@@ -531,6 +580,16 @@ export default {
     }
   },
   filters: {
+    goodsTypeFilter(status){
+      switch(status){
+        case "Course":
+          return '课程';
+        case "Book":
+          return '图书';
+        default:
+          return '';
+      }
+    },
     Filter(status){
       switch(status){
         case "Normal":

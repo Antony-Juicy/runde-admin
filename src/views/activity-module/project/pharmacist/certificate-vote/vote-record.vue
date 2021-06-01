@@ -246,7 +246,10 @@ export default {
     RdForm,
   },
   mounted() {
-    this.getTableData();
+    if(!this.$route.params.certificateId){
+      this.getTableData();
+    }
+    
     this.getSelectList();
     
   },

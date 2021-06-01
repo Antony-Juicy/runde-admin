@@ -19,6 +19,12 @@
         @pageChange="pageChange"
         :emptyText="emptyText"
       >
+        <template slot="posterPic" slot-scope="scope">
+          <el-image 
+          style="width: 100px; height: 100px"
+            :src="scope.row.posterPic"
+            fit="cover"></el-image>
+        </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
             >查阅/编辑</el-button
@@ -39,12 +45,15 @@
     <rd-dialog
         :title="addStatus?'添加海报':'编辑海报'"
         :dialogVisible="addVisible"
-        @handleClose="addVisible = false"
+        @handleClose="handleClose"
         @submitForm="submitAddForm('dataForm3')"
       >
         <RdForm :formOptions="addFormOptions" formLabelWidth="120px" :rules="addRules" ref="dataForm3">
           <template slot="posterPic">
-            <uploadFile :file.sync="posterPic"/>
+            <Upload-oss
+              :objConfig="{module: 'activity', project: 'icon_'}"
+              :src.sync="posterPic"
+              />
           </template>
           <template slot="part">
             <el-radio-group v-model="part" @change="partChange">
@@ -60,11 +69,13 @@
 <script>
 import RdForm from "@/components/RdForm";
 import uploadFile from "@/components/Activity/uploadFile";
+import UploadOss from "@/components/UploadOss";
 export default {
   name:"post-manage",
   data(){
     return {
       part: "",
+      postPic:"",
       formOptions: [
         {
           prop: "goodsName",
@@ -119,6 +130,7 @@ export default {
         {
           name: "海报图片",
           value: "posterPic",
+          operate:true
         },
         {
           name: "分享文案一",
@@ -194,7 +206,8 @@ export default {
               value: 2
             }
           ],
-          operate: true
+          operate: true,
+          initValue: 0
         },
         {
           prop: "goodsId",
@@ -261,14 +274,25 @@ export default {
         ],
          activityId: [
           { required: true, message: "请选择", trigger: "blur" },
+        ],
+         posterName: [
+          { required: true, message: "请输入", trigger: "blur" },
+        ],
+         part: [
+          { required: true, message: "请选择", trigger: "blur" },
+        ],
+         posterPic: [
+          { required: true, message: "请上传", trigger: "blur" },
         ]
       },
-      addStatus: true
+      addStatus: true,
+      editId:""
     }
   },
   components:{
     RdForm,
-    uploadFile
+    uploadFile,
+    UploadOss
   },
   mounted(){
     this.getTableData();
@@ -279,7 +303,6 @@ export default {
        this.searchForm = {
         ...val
       };
-      console.log(val,this.searchForm , 'val---')
       this.getTableData();
      },
      getTableData(params = {}){
@@ -299,25 +322,41 @@ export default {
       })
      },
      pageChange(val) {
-      console.log(val,'pagechange')
       this.pageConfig.currentPage = val.page;
       this.pageConfig.showCount = val.limit;
       this.getTableData();
     },
     handleAdd(){
       this.addVisible = true;
+      this.addStatus = true;
     },
     submitAddForm(formName){
       this.$refs[formName].validate((valid, formData) => {
         if(valid){
           console.log(formData, "提交");
+          if(!this.posterPic){
+            this.$message.error(("请上传图片"));
+            return;
+          }
           if(!this.part){
             this.$message.error(("请选择所属模块"));
             return;
           }
+          let goodsName,activityName;
+          let obj1 = this.addFormOptions[3].options.find(item => (item.value == formData.goodsId));
+          goodsName = obj1&&obj1.label;
+          let obj2 = this.addFormOptions[4].options.find(item => (item.value == formData.activityId));
+          activityName = obj2&&obj2.label;
           this.$fetch(this.addStatus?"posterinfo_save":"posterinfo_editJsp",{
             ...formData,
-            posterPic: this.posterPic
+            posterPic: this.posterPic,
+            goodsName,
+            activityName,
+            id: this.addStatus?"": this.editId
+          }).then(res => {
+            this.$message.success("操作成功")
+            this.addVisible = false;
+            this.getTableData();
           })
         }
           
@@ -326,18 +365,29 @@ export default {
     handleEdit(data){
       this.addStatus = false;
       this.addVisible = true;
+      this.posterPic = data.posterPic;
+      this.part = data.goodsId? 1 : 2;
+      this.partChange(this.part);
+      this.addFormOptions.forEach(item => {
+        if(item.prop != "part"){
+           item.initValue = data[item.prop];
+        }
+      })
+      setTimeout(() => {
+        this.$refs.dataForm3.addInitValue();
+      }, 0);
+      this.editId = data.id;
     },
     handleDelete(row) {
-      let info = '海报';
+      let info = '项';
       this.$confirm(`此操作将删除此${info}, 是否继续?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(async () => {
-          const res = await this.$fetch("projectType_delete", {
-            typeId: row.typeId,
-            loginUserId,
+          const res = await this.$fetch("posterinfo_deleteJsp", {
+            id: row.id
           }).then((res) => {
             if (res) {
               this.$message({
@@ -374,6 +424,15 @@ export default {
           value: item.id
         }))
       })
+    },
+    handleClose(){
+      this.addVisible = false;
+      this.posterPic = "";
+      this.part = 0;
+      this.addFormOptions[3].hide = true;
+      this.addFormOptions[4].hide = true;
+      this.$refs.dataForm3.onReset();
+        
     }
   }
 }

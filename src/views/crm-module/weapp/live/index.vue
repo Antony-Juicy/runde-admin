@@ -20,7 +20,7 @@
       >
         <template slot="liveCover" slot-scope="scope">
           <el-image
-            style="width: 100px; height: 100px"
+            style="width: 200px; height: 84px"
             :src="scope.row.liveCover"
             fit="cover"
           ></el-image>
@@ -110,7 +110,7 @@
         :title="'直播间名称：' + liveName"
         :dialogVisible="shareVisible"
         :showFooter="false"
-        :width="'480px'"
+        :width="'650px'"
         @handleClose="shareVisible = false"
       >
         <manageShare :liveId="liveId" v-if="shareVisible" />
@@ -245,7 +245,7 @@ export default {
           name: "直播展示图",
           value: "liveCover",
           operate: true,
-          width: 120,
+          width: 220,
         },
         {
           name: "项目类型",

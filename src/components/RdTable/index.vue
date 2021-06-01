@@ -94,6 +94,8 @@
         :page.sync="currentPage"
         :limit.sync="pageConfig.pageSize"
         :pager-count="pagerCount"
+        :autoScroll="autoScroll"
+        :pageSizes="pageSizes"
         @pagination="pageChange"
       />
     </template>
@@ -159,9 +161,9 @@ export default {
       type: String,
       default: "暂无数据",
     },
-    // 是否显示筛选列按钮
+    // 是否显示筛选列按钮,如果传入数组，默认隐藏该列
     filterColumn: {
-      type: Boolean,
+      type: Boolean | Array,
       default: false,
     },
     // 固定表头时，设置表体的高度
@@ -193,6 +195,17 @@ export default {
      pagerCount:{
       type: Number,
       default: 7
+    },
+    // 翻页是否滚动顶部
+    autoScroll: {
+      type: Boolean,
+      default: true
+    },
+    pageSizes: {
+      type: Array,
+      default() {
+        return [10, 20, 30, 50]
+      }
     }
   },
   components: {
@@ -208,9 +221,17 @@ export default {
     };
   },
   created() {
-    this.tableKey.forEach((item) => {
-      item.show = true;
-    });
+    if(this.filterColumn instanceof Array && this.filterColumn.length){
+      this.tableKey.forEach((item) => {
+        let target = this.filterColumn.find(ele => ele == item.value);
+        item.show = !target;
+      });
+    }else {
+      this.tableKey.forEach((item) => {
+        item.show = true;
+      });
+    }
+    
     this.tableKeyData = this.tableKey;
     store.dispatch("user/setTableText", this.emptyText)
   },

@@ -17,19 +17,20 @@
 
 
     <template v-if="isRadio">
-      <template  v-for="item in itemOptions.options">
-        <el-radio
-          :key="item.value"
-          :label="item.value"
-          v-model.trim="currentVal"
-            v-bind="bindProps"
-            v-on="bindEvents"
-          :disabled="itemOptions.disabled">
-          {{item.label}}
-        </el-radio>
-        <span class="radio-tips" :key="item.label" v-if="item.tips">({{item.tips}})</span>
-      </template>
-      
+      <el-radio-group v-model="currentVal">
+        <template  v-for="item in itemOptions.options">
+          <el-radio
+            :key="item.value"
+            :label="item.value"
+            v-model.trim="currentVal"
+              v-bind="bindProps"
+              v-on="bindEvents"
+            :disabled="itemOptions.disabled">
+            {{item.label}}
+          </el-radio>
+          <span class="radio-tips" :key="item.label" v-if="item.tips">({{item.tips}})</span>
+        </template>
+      </el-radio-group>
     </template>
     
     <el-input-number
@@ -51,17 +52,36 @@
       :multiple="itemOptions.multiple"
       :filterable="itemOptions.filterable"
       :disabled="itemOptions.disabled"
+      :remote="itemOptions.remote"
+      :remote-method="itemOptions.remoteMethod"
       @focus="setMinWidth"
       style="width:100%"
       clearable>
       <el-option
-        v-for="item in itemOptions.options"
-        :key="item.value"
+        v-for="(item,index) in itemOptions.options"
+        :key="item.value + '-' +index"
         :label="item.label"
         :value="item.value"
+        :disabled="item.disabled"
         :style="{'min-width': minWidth + 2 + 'px'}">
       </el-option>
     </el-select>
+
+    <el-checkbox-group 
+      v-if="isCheckbox" 
+      v-model="currentVal"
+      v-bind="bindProps"
+      v-on="bindEvents"
+      size="small"
+    >
+        <el-checkbox
+          v-for="(item,index) in itemOptions.options" 
+          :label="item.label"
+          :key="index"
+        >
+        {{item.value}}
+        </el-checkbox>
+    </el-checkbox-group>
 
     <!-- datetimerange/daterange -->
     <el-date-picker
@@ -96,6 +116,18 @@
       value-format="yyyy-MM">
     </el-date-picker>
 
+    <el-date-picker
+      v-if="isDatePickerDatetime"
+      v-model="currentVal"
+      v-bind="bindProps"
+      v-on="bindEvents"
+      type="datetime"
+      size="small"
+      clearable
+      :placeholder="itemOptions.placeholder"
+      >
+    </el-date-picker>
+
     <!-- others -->
     <el-date-picker
       v-if="isDatePickerOthers"
@@ -118,7 +150,7 @@
       v-on="bindEvents"
       :disabled="itemOptions.disabled"
       size="small"
-      :props="itemOptions.props"
+      :props="{...itemOptions.props,multiple: itemOptions.multiple}"
       clearable>
     </el-cascader>
   </div>
@@ -200,6 +232,9 @@ export default {
     isSelect () {
       return this.itemOptions.element === 'el-select'
     },
+    isCheckbox () {
+      return this.itemOptions.element === 'el-checkbox'
+    },
     // el-date-picker (type: datetimerange/daterange)
     isDatePickerDateRange () {
       const isDatePicker = this.itemOptions.element === 'el-date-picker'
@@ -214,10 +249,15 @@ export default {
       const isMonthRange = this.itemOptions.type === 'monthrange'
       return isDatePicker && isMonthRange
     },
+    isDatePickerDatetime () {
+      const isDatePicker = this.itemOptions.element === 'el-date-picker'
+      const isDatetime = this.itemOptions.type === 'datetime'
+      return isDatetime
+    },
     //  el-date-picker (type: other)
     isDatePickerOthers () {
       const isDatePicker = this.itemOptions.element === 'el-date-picker'
-      return isDatePicker && !this.isDatePickerDateRange && !this.isDatePickerMonthRange
+      return isDatePicker && !this.isDatePickerDateRange && !this.isDatePickerMonthRange && !this.isDatePickerDatetime
     },
     // el-cascader 级联选择器
     isCascader () {

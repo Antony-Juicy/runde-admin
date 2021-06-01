@@ -115,8 +115,8 @@ export default {
 
     // 科目题目
     auditionitem_listJsp:  {url: '/h5/auditionitem/listJsp', method: 'get'}, //列表
-    auditionitem_save:  {url: '/h5/auditionitem/save', method: 'post'}, //删除
-    auditionitem_editJsp:  {url: '/h5/auditionitem/editJsp', method: 'post'}, //删除
+    auditionitem_save:  {url: '/h5/auditionitem/save', method: 'post'}, //新增
+    auditionitem_editJsp:  {url: '/h5/auditionitem/editJsp', method: 'post'}, //编辑
     auditionitem_deleteJsp:  {url: '/h5/auditionitem/deleteJsp', method: 'post'}, //删除
 
     // 推荐班型
@@ -127,30 +127,89 @@ export default {
 
     // 医师活动-站点管理
     practicingexamsite_listJsp:  {url: '/h5/practicingexamsite/listJsp', method: 'get'}, //列表
-    practicingexamsite_save:  {url: '/h5/practicingexamsite/save', method: 'post'}, //列表
-    practicingexamsite_editJsp:  {url: '/h5/practicingexamsite/editJsp', method: 'post'}, //列表
-    practicingexamsite_goAdd:  {url: '/h5/practicingexamsite/goAdd', method: 'get'}, //编辑
-    practicingexamsite_goEdit:  {url: '/h5/practicingexamsite/goEdit', method: 'get'}, //编辑
-    practicingexamsite_deleteJsp:  {url: '/h5/practicingexamsite/deleteJsp', method: 'post'}, //列表
+    practicingexamsite_save:  {url: '/h5/practicingexamsite/save', method: 'post'}, //新增
+    practicingexamsite_editJsp:  {url: '/h5/practicingexamsite/editJsp', method: 'post'}, //编辑
+    practicingexamsite_goAdd:  {url: '/h5/practicingexamsite/goAdd', method: 'get'}, //获取新增的详情
+    practicingexamsite_goEdit:  {url: '/h5/practicingexamsite/goEdit', method: 'get'}, //获取编辑的详情
+    practicingexamsite_deleteJsp:  {url: '/h5/practicingexamsite/deleteJsp', method: 'post'}, //删除
     practicingexamsite_custodyListJsp:  {url: '/h5/practicingExamSiteItem/custodyListJsp', method: 'get'}, //考后对答案列表
-    practicingexamsite_custodySave:  {url: '/h5/practicingExamSiteItem/custodySave', method: 'post'}, //考后对答案列表
-    practicingexamsite_editCustodyJsp:  {url: '/h5/practicingExamSiteItem/editCustodyJsp', method: 'post'}, //考后对答案列表
-    practicingexamsite_importItem:  {url: '/h5/practicingExamSiteItem/importItem', method: 'post'}, //考后对答案列表
+    practicingexamsite_custodySave:  {url: '/h5/practicingExamSiteItem/custodySave', method: 'post'}, //考后对答案新增
+    practicingexamsite_editCustodyJsp:  {url: '/h5/practicingExamSiteItem/editCustodyJsp', method: 'post'}, //考后对答案编辑
+    practicingexamsite_importItem:  {url: '/h5/practicingExamSiteItem/importItem', method: 'post'}, //考后对答案导入题目
 
     // 活动管理
     cmsactivityinfo_listJsp:  {url: '/h5/cmsactivityinfo/listJsp', method: 'get'}, //列表
-    cmsactivityinfo_save:  {url: '/h5/cmsactivityinfo/save', method: 'post'}, //新增
-    cmsactivityinfo_editJsp:  {url: '/h5/cmsactivityinfo/editJsp', method: 'post'}, //编辑
+    cmsactivityinfo_save:  {url: '/h5/cmsactivityinfo/save', method: 'post',paramType: "body"}, //新增
+    cmsactivityinfo_editJsp:  {url: '/h5/cmsactivityinfo/editJsp', method: 'post',paramType: "body"}, //编辑
     cmsactivityinfo_deleteJsp:  {url: '/h5/cmsactivityinfo/deleteJsp', method: 'post'}, //删除
-    cmsactivityinfo_selectInvitation:  {url: '/h5/cmsactivityinfourl/selectInvitation', method: 'post'}, //生成链接
+    cmsactivityinfo_goEdit:  {url: '/h5/cmsactivityinfo/goEdit', method: 'get'}, //去修改页面
+    cmsactivityinfo_selectInvitation:  {url: '/h5/cmsactivityinfourl/selectInvitation', method: 'get'}, //生成链接
 
     // 海报管理
     posterinfo_listJson:  {url: '/h5/posterinfo/listJson', method: 'get'}, //列表
     posterinfo_save:  {url: '/h5/posterinfo/save', method: 'post'}, //新增
     posterinfo_editJsp:  {url: '/h5/posterinfo/editJsp', method: 'post'}, //修改
     posterinfo_deleteJsp:  {url: '/h5/posterinfo/deleteJsp', method: 'post'}, //删除
+    posterinfo_goEdit:  {url: '/h5/posterinfo/goEdit', method: 'get'}, //删除
     posterinfo_checkActivityId:  {url: '/h5/posterinfo/checkActivityId', method: 'post'}, //验证数据库是否存在活动
     posterinfo_checkGoodsId:  {url: '/h5/posterinfo/checkGoodsId', method: 'post'}, //验证数据库是否存在商品
     posterinfo_getMobileGoodsUrlDataList:  {url: '/h5/posterinfo/getMobileGoodsUrlDataList', method: 'get'}, //九块九包邮下拉列表
     posterinfo_getActivityInfoDataList:  {url: '/h5/posterinfo/getActivityInfoDataList', method: 'get'}, //活动下拉列表
+
+    // 9块9包邮
+    mobilegoodsurl_listNewJsp:  {url: '/h5/mobilegoodsurl/listNewJsp', method: 'get'}, //列表
+    mobilegoodsurl_goNewEdit:  {url: '/h5/mobilegoodsurl/goNewEdit', method: 'get'}, //去新增页面
+    mobilegoodsurl_editNewJsp:  {url: '/h5/mobilegoodsurl/editNewJsp', method: 'post'}, //新增、编辑
+    mobilegoodsurl_deleteJsp:  {url: '/h5/mobilegoodsurl/deleteJsp', method: 'post'}, //删除
+    mobilegoodsurl_goAddNew:  {url: '/h5/mobilegoodsurl/goAddNew', method: 'get'}, //去新增页面
+    mobilegoodsurl_subjectList:  {url: '/admin/coursesubject/subjectList', method: 'post'}, //获取科目列表
+    mobilegoodsurl_bookList:  {url: '/crm/bookinfo/purchase/bookList/xlp', method: 'post'}, //获取书籍列表
+    mobilegoodsurl_getProductList:  {url: '/h5/mobilegoodsurl/getProductList', method: 'get'}, //获取项目列表
+    mobilegoodsurl_getWeChatList:  {url: '/h5/mobilegoodsurl/getWeChatList', method: 'get'}, //获取项目列表
+    mobilegoodsurl_getCampusList:  {url: '/h5/mobilegoodsurl/getCampusList', method: 'get'}, //获取项目列表
+    // 活动统计
+    mobilegoodspaylog_getQgsjxqActivityNumRank:  {url: '/h5/cmsmobilegoodspaylog/getQgsjxqActivityNumRank', method: 'get'},//全国
+    mobilegoodspaylog_getQgxxfxActivityNumRank:  {url: '/h5/cmsmobilegoodspaylog/getQgxxfxActivityNumRank', method: 'get'},//线下
+    mobilegoodspaylog_getQgxxfxActivityNumRank:  {url: '/h5/cmsmobilegoodspaylog/getQgxxfxActivityNumRank', method: 'get'},//线上
+    mobilegoodspaylog_getPersonalActivityNumRank:  {url: '/h5/cmsmobilegoodspaylog/getPersonalActivityNumRank', method: 'get'},//个人
+    mobilegoodspaylog_toStatisticsJsp:  {url: '/h5/cmsmobilegoodspaylog/toStatisticsJsp', method: 'get'},//合计
+    // 活动名称详情
+    cmsmobilegoodspaylog_listJson:  {url: '/h5/cmsmobilegoodspaylog/listJson', method: 'get'},//列表
+    cmsmobilegoodspaylog_editJsp:  {url: '/h5/cmsmobilegoodspaylog/editJsp', method: 'post'},//修改地址
+    cmsmobilegoodspaylog_importKuaidi:  {url: '/h5/cmsmobilegoodspaylog/importKuaidi', method: 'post'},//导入快递管家
+    cmsmobilegoodspaylog_checkData:  {url: '/h5/cmsmobilegoodspaylog/checkData', method: 'post'},//判断是否可以添加订单数据
+    cmsmobilegoodspaylog_saveAgain:  {url: '/h5/cmsmobilegoodspaylog/saveAgain', method: 'post'},//添加订单（旧）
+    cmsmobilegoodspaylog_saveAgainTwo:  {url: '/h5/cmsmobilegoodspaylog/saveAgainTwo', method: 'post'},//添加订单（新）
+    cmsmobilegoodspaylog_batchImportToKd:  {url: '/h5/cmsmobilegoodspaylog/batchImportToKd', method: 'post'},//批量同步到金蝶
+    cmsmobilegoodspaylog_getAllColumnNames:  {url: '/h5/exportexcelcolumnname/getAllColumnNames', method: 'post'},//获取导出所有列
+    cmsmobilegoodspaylog_excelJsp:  {url: '/h5/cmsmobilegoodspaylog/excelJsp', method: 'get'},//导出
+    cmsmobilegoodspaylog_batchImportToKuaidi:  {url: '/h5/mobilegoodsurl/batchImportToKuaidi', method: 'post'},//同步到快递100
+
+    // 订单信息
+    cmsmobilegoodspaylog_listJsp:  {url: '/h5/cmsmobilegoodspaylog/listJsp', method: 'get'}, //列表
+    cmsmobilegoodspaylog_getPayTypeList:  {url: '/h5/cmsmobilegoodspaylog/getPayTypeList', method: 'get'}, //支付类型列表
+    cmsmobilegoodspaylog_getExpressStatus:  {url: '/h5/cmsmobilegoodspaylog/getExpressStatus', method: 'get'}, //快递状态列表
+
+    // 物流信息
+    mobilegoodsexpresslog_listJsp:  {url: '/h5/mobilegoodsexpresslog/listJsp', method: 'get'}, //列表
+    mobilegoodsexpresslog_saveImport:  {url: '/h5/mobilegoodsexpresslog/saveImport', method: 'post'}, //导出
+
+    // 评论管理
+    mobilegoodsurl_listJspComments:  {url: '/h5/mobilegoodsurl/listJspComments', method: 'get'}, //列表
+    mobilegoodsurl_saveImport:  {url: '/h5/mobilegoodsurl/saveImport', method: 'post'}, //导入
+    mobilegoodsurl_updateStatus:  {url: '/h5/mobilegoodsurl/updateStatus', method: 'post'}, //
+    mobilegoodsurl_deleteJspCommentLog:  {url: '/h5/mobilegoodsurl/deleteJspCommentLog', method: 'post'}, //
+
+    // 公众号管理
+    wechatmanage_listJsp:  {url: '/h5/wechatmanage/listJsp', method: 'get'}, //列表
+    wechatmanage_save:  {url: '/h5/wechatmanage/save', method: 'post'}, //列表
+    wechatmanage_editJsp:  {url: '/h5/wechatmanage/editJsp', method: 'post'}, //列表
+    // 查看公众号粉丝信息
+    wechatstaffqrcode_listJsp:  {url: '/h5/wechatstaffqrcode/listJsp', method: 'get'}, //列表
+    wechatstaffqrcode_getActivityDataList:  {url: '/h5/wechatstaffqrcode/getActivityDataList', method: 'get'}, //列表
+    wechatstaffqrcode_getBindTypeList:  {url: '/h5/wechatstaffqrcode/getBindTypeList', method: 'get'}, //列表
+    wechatstaffqrcode_getOrderSourceList:  {url: '/h5/wechatstaffqrcode/getOrderSourceList', method: 'get'}, //列表
+    wechatstaffqrcode_getUrlCodeDataList:  {url: '/h5/wechatstaffqrcode/getUrlCodeDataList', method: 'get'}, //列表
+    wechatstaffqrcode_deleteJsp:  {url: '/h5/wechatstaffqrcode/deleteJsp', method: 'post'}, //删除
+    wechatstaffqrcode_sendMessageInfo:  {url: '/h5/wechatstaffqrcode/sendMessageInfo', method: 'post'}, //推送专属信息
 }

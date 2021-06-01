@@ -629,6 +629,10 @@ export default {
     },
     submitExportForm(){
       console.log(this.exportValue,'exportValue')
+      if(!this.exportValue.length){
+        this.$message.warning("请选择导出的列")
+        return
+      }
       let arr = [];
       this.exportValue.forEach((item,index) => {
         let obj = this.data.find(ele => (ele.key == item));

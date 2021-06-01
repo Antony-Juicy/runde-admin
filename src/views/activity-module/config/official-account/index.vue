@@ -1,5 +1,5 @@
 <template>
-  <div class="post-manage">
+  <div class="official-account">
       <search-form
       :formOptions="formOptions"
       :showNum="7"
@@ -15,11 +15,27 @@
         :tableData="tableData"
         :tableKey="tableKey"
         :pageConfig.sync="pageConfig"
-        :tbodyHeight="600"
-        fixedTwoRow
         @pageChange="pageChange"
         :emptyText="emptyText"
       >
+        <template slot="appAccount" slot-scope="scope">
+          公众号账号： {{scope.row.appAccount}}<br>
+          公众号AppID： {{scope.row.appId}}<br>
+          公众号AppSecret： {{scope.row.secretKey}}<br>
+          公众号模板： {{scope.row.templateContent}}<br>
+        </template>
+        <template slot="partner" slot-scope="scope">
+          商户号： {{scope.row.partner}}<br>
+          微信APIKEY： {{scope.row.partnerKey}}<br>
+        </template>
+        <template slot="appImage" slot-scope="scope">
+           <el-image
+            style="width: 100px; height: 100px"
+            :src="scope.row.appImage"
+            fit="cover"
+          >
+           </el-image>
+        </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small"
             >编辑</el-button
@@ -29,6 +45,7 @@
             type="text"
             size="small"
             style="color: #ec5b56"
+            @click="showDetail(scope.row)"
             >查看详情</el-button
           >
         </template>
@@ -39,46 +56,57 @@
     <rd-dialog
         :title="addStatus?'添加':'编辑'"
         :dialogVisible="addVisible"
-        @handleClose="addVisible = false"
+        @handleClose="addVisible = false;resetAddForm('dataForm3')"
         @submitForm="submitAddForm('dataForm3')"
       >
         <RdForm :formOptions="addFormOptions" formLabelWidth="90px" :rules="addRules" ref="dataForm3">
-          <template slot="post">
-            <el-button size="small" type="primary">上传</el-button>
+          <template slot="appImage">
+            <Upload-oss
+              :objConfig="{module: 'activity'}"
+              :src.sync="appImage"
+            />
           </template>
         </RdForm>
       </rd-dialog>
+
+      <!-- 查看详情 -->
+      <full-dialog
+        v-model="detailVisible"
+        :title="'查看公众号粉丝信息'"
+        @change="detailVisible = false"
+      >
+        <viewDetail :wechatId="wechatId" v-if="detailVisible"/>
+      </full-dialog>
   </div>
 </template>
 
 <script>
 import RdForm from "@/components/RdForm";
+import viewDetail from "./viewDetail";
+import UploadOss from "@/components/UploadOss";
 export default {
-  name:"post-manage",
+  name:"official-account",
   data(){
     return {
+      wechatId:"",
+      detailVisible: false,
+      appImage:"",
       formOptions: [
         {
-          prop: "menuName",
+          prop: "appName",
           element: "el-input",
           placeholder: "公众号名称",
         },
         {
-          prop: "menuName",
+          prop: "state",
           element: "el-select",
           placeholder: "公众号状态",
+          options: []
         }
       ],
       searchForm:{},
       emptyText:"暂无数据",
       tableData:[
-         {
-          id: 1,
-          name: "飞翔的荷兰人3",
-          cutdown: 1608897351706,
-          visit: 2,
-          phone: "15692026183",
-        },
       ],
       tableKey: [
         {
@@ -89,23 +117,26 @@ export default {
         },
         {
           name: "公众号名称",
-          value: "staffName",
+          value: "appName",
         },
         {
           name: "公众号账户信息",
-          value: "goodsName",
+          value: "appAccount",
+          operate: true,
+          width: 400
         },
         {
           name: "微信商户信息",
-          value: "activityName",
+          value: "partner",
         },
         {
           name: "状态",
-          value: "posterName",
+          value: "state",
         },
         {
           name: "微信二维码",
-          value: "posterPic",
+          value: "appImage",
+          operate: true
         },
         {
           name: "操作",
@@ -124,31 +155,31 @@ export default {
       addFormOptions: [
           
         {
-          prop: "menuName",
+          prop: "appId",
           element: "el-input",
           placeholder: "请输入",
           label: "公众号ID"
         },
          {
-          prop: "menuName",
+          prop: "appAccount",
           element: "el-input",
           placeholder: "请输入公众号账号，不知道账号请不要填",
           label: "公众号账号"
         },
         {
-          prop: "menuName",
+          prop: "appName",
           element: "el-input",
           placeholder: "请输入",
           label: "微信公众号名称"
         },
         {
-          prop: "menuName",
+          prop: "secretKey",
           element: "el-input",
           placeholder: "请输入APPSECRET",
           label: "微信密钥"
         },
         {
-          prop: "post",
+          prop: "appImage",
           element: "el-input",
           placeholder: "",
           label: "微信二维码",
@@ -156,28 +187,31 @@ export default {
           initValue: 0
         },
         {
-          prop: "roleName",
+          prop: "partner",
           element: "el-input",
           placeholder: "请输入",
           label: "微信商户号"
         },
         {
-          prop: "roleName",
+          prop: "partnerKey",
           element: "el-input",
           placeholder: "请输入",
           label: "微信商户支付APIKEY"
         },
         {
-          prop: "roleName",
+          prop: "templateContent",
           element: "el-input",
           placeholder: "请输入推送消息模板，不知道怎么配置请不要填",
-          label: "推送消息模板"
+          label: "推送消息模板",
+          type:"textarea",
+          rows: 3
         },
         {
-          prop: "roleName",
+          prop: "state",
           element: "el-select",
           placeholder: "请选择",
-          label: "微信公众号状态"
+          label: "微信公众号状态",
+          options: []
         },
       ],
       addRules:{
@@ -185,11 +219,17 @@ export default {
           { required: true, message: "请输入修改事由", trigger: "blur" },
         ]
       },
-      addStatus: true
+      addStatus: true,
+      editId: ""
     }
   },
   components:{
-    RdForm
+    RdForm,
+    UploadOss,
+    viewDetail
+  },
+  mounted(){
+    this.getTableData();
   },
    methods: {
      onSearch(val){
@@ -199,8 +239,26 @@ export default {
       console.log(val,this.searchForm , 'val---')
       this.getTableData();
      },
-     getTableData(){
-
+     getTableData(params = {}){
+       this.$fetch("wechatmanage_listJsp", {
+        ...this.pageConfig,
+        ...this.searchForm,
+        ...params,
+      }).then((res) => {
+        this.tableData = res.data.varList.map((item) => {
+          item.createAt = this.$common._formatDates(item.createAt);
+          item.phone = this.$common.hidePhone(item.phone);
+          
+          return item;
+        });;
+        this.pageConfig.totalCount = res.data.page.totalResult;
+        let statusArr = res.data.weChatStateList.map(item => ({
+          label: item.value,
+          value: item.key
+        }));
+        this.formOptions[1].options = statusArr;
+        this.addFormOptions[8].options = statusArr;
+      })
      },
      pageChange(val) {
       console.log(val,'pagechange')
@@ -209,19 +267,41 @@ export default {
       this.getTableData();
     },
     handleAdd(){
+      this.appImage = "";
       this.addVisible = true;
+      this.addStatus = true;
     },
     submitAddForm(formName){
       this.$refs[formName].validate((valid, formData) => {
         if(valid){
           console.log(formData, "提交");
+          this.$fetch(this.addStatus?"wechatmanage_save":"wechatmanage_editJsp",{
+            ...formData,
+            appImage: this.appImage,
+            id: this.addStatus?"": this.editId
+          }).then(res => {
+            this.$message.success("操作成功")
+            this.getTableData()
+            this.addVisible = false
+          })
         }
           
       });
     },
+    resetAddForm(formName){
+      this.$refs[formName].onReset();
+    },
     handleEdit(data){
       this.addStatus = false;
       this.addVisible = true;
+      this.editId = data.id;
+      this.appImage = data.appImage;
+      this.addFormOptions.forEach(item => {
+           item.initValue = data[item.prop];
+      })
+      setTimeout(() => {
+        this.$refs.dataForm3.addInitValue();
+      }, 0);
     },
     handleDelete(row) {
       let info = '';
@@ -247,13 +327,17 @@ export default {
           });
         })
         .catch(() => {});
+    },
+    showDetail(data){
+      this.detailVisible = true;
+      this.wechatId = data.id;
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.post-manage {
+.official-account {
   /deep/ {
     .el-form-item__label {
       line-height: 24px;

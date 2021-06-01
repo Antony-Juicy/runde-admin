@@ -50,13 +50,9 @@ export default {
     return {
       searchForm: {},
       formOptions: [
-        { prop: 'whiteWord', element: 'el-input', placeholder: '请输入关键词' }
+        { prop: 'whitelistWord', element: 'el-input', placeholder: '请输入关键词' }
       ],
-      tableData: [
-        // {
-        //   whiteWord: "欢迎欢迎欢迎",
-        // }
-      ],
+      tableData: [],
       tableKey: [
         { name: 'id',value: 'whitelistWordId' },
         { name: '白名单词',value: 'whitelistWord' },
@@ -120,9 +116,13 @@ export default {
     },
     pageChange(val) {
       console.log(val,'pagechange')
+      this.pageConfig.pageNum = val.page;
+      this.pageConfig.pageSize = val.limit;
+      this.getTableData();
     },
     handleAdd() {
       this.wordsVisible = true;
+      this.wordsStatus = true;
     },
     handleEdit(row) {
       console.log(666)
@@ -147,7 +147,7 @@ export default {
         type: "warning",
       }).then(async () => {
           const res = await this.$fetch("white_word_delete", {
-            WhitelistWordId: row.whitelistWordId,
+            imWhitelistWordId: row.whitelistWordId,
           }).then((res) => {
             if (res) {
               this.$message({

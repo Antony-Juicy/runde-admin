@@ -43,6 +43,20 @@
           "
         />
       </template>
+      <template slot="liveLogo">
+        <Upload-oss
+          v-if="uploadOssElem3"
+          :objConfig="{ module: 'live', project: 'icon_' }"
+          :src.sync="logoImg"
+          :initGetConfig="initGetConfig"
+          @srcChangeFun="
+            (data) => {
+              logoImg = data;
+              reloadElem('uploadOssElem3');
+            }
+          "
+        />
+      </template>
       <template slot="liveDetail">
         <RdEditor placeholder="编辑直播简介" height="500px" module="live" @change="changeEditor" />
       </template>
@@ -145,7 +159,30 @@ export default {
           operate: true,
           initValue: 0,
         },
-
+        {
+          prop: "liveLogo",
+          element: "el-input",
+          label: "直播间logo(1:1)",
+          initValue: 0,
+          operate: true
+        },
+        {
+          prop: "subscribePrompt",
+          element: "el-radio",
+          placeholder: "请选择",
+          label: "是否关注公众号",
+          options: [
+            {
+              label: "是",
+              value: "Show",
+            },
+            {
+              label: "否",
+              value: "Hidden",
+            },
+          ],
+          initValue: "Show",
+        },
         {
           prop: "liveShowStatus",
           element: "el-radio",
@@ -217,6 +254,9 @@ export default {
         liveCover: [
           { required: true, message: "请上传封面图", trigger: "blur" },
         ],
+        subscribePrompt: [
+          { required: true, message: "请选择是否关注公众号", trigger: "blur" },
+        ],
         liveShowStatus: [
           { required: true, message: "请选择显示状态", trigger: "blur" },
         ],
@@ -230,10 +270,12 @@ export default {
           { required: true, message: "请输入直播初始人数", trigger: "blur" },
         ],
       },
-      uploadOssElem: true,
-      uploadOssElem2: true,
+      uploadOssElem: true, // 直播间背景图
+      uploadOssElem2: true, // 直播封面图
+      uploadOssElem3: true, // 直播间logo
       bgImg: "",
       coverImg: "",
+      logoImg: "",
       bgType: "1",
       liveMode: true,
       initGetConfig: true,
@@ -299,6 +341,7 @@ export default {
           } else {
             data.liveCover = this.coverImg;
           }
+          data.liveLogo = this.logoImg;
           data.liveStartTime = data.liveTime[0];
           data.liveEndTime = data.liveTime[1];
           data.liveDetail = this.liveDetail;
