@@ -11,20 +11,20 @@
           ref="dialogForm"
           :rules="dialogForm_rules"
           :model="dialogForm"
-          label-width="80px"
+          label-width="82px"
         >
-          <el-form-item label="试卷名称" prop="paperName">
+          <el-form-item label="模拟卷名称" prop="paperName">
             <el-input
               v-model="dialogForm.paperName"
               size="small"
               placeholder="模拟卷名称"
             ></el-input>
           </el-form-item>
-          <el-form-item label="科目列表" prop="subjectId">
+          <el-form-item label="项目列表" prop="subjectId">
             <el-select
               size="small"
               v-model="dialogForm.subjectId"
-              placeholder="科目列表"
+              placeholder="项目列表"
               @change="subjectChange"
             >
               <el-option
@@ -199,7 +199,7 @@ export default {
       dialogForm: {
         // 试卷名称
         paperName: "",
-        // 科目id
+        // 项目id
         subjectId: "",
         // 分享解锁
         isShare: "",
@@ -207,14 +207,14 @@ export default {
         stat: "",
         // 排序值
         sort: "",
-        // 科目名称
-        subjectName: "1",
+        // 项目名称
+        subjectName: "",
       },
       // 表单验证规则
       dialogForm_rules: {
         // 试卷名称
         paperName: "",
-        // 科目id
+        // 项目id
         subjectId: "",
         // 分享解锁
         isShare: "",
@@ -222,7 +222,7 @@ export default {
         stat: "",
         // 排序值
         sort: "",
-        // 科目名称
+        // 项目名称
         subjectName: "1",
       },
       // 模拟卷状态选项
@@ -247,7 +247,7 @@ export default {
           label: "分享解锁",
         },
       ],
-      // 科目列表
+      // 项目列表
       subjectList: [],
       // 表单数据
       tableData: [],
@@ -297,14 +297,14 @@ export default {
     };
   },
   methods: {
-    // 选择科目时触发
+    // 选择项目时触发
     subjectChange(subjectId) {
       let result = this.subjectList.find((res) => {
         return res.id == subjectId;
       });
       this.dialogForm.subjectName = result.subjectName;
     },
-    //  查询科目列表
+    //  查询项目列表
     querySubjectList() {
       this.$fetch("subject_paper_list", {
         pageNum: 1,
@@ -321,7 +321,6 @@ export default {
       });
     },
     pageChange(val) {
-      console.log(val);
       this.queryPaperList();
     },
     // 打开弹窗
@@ -334,16 +333,19 @@ export default {
            */
           this.handleStatus = status;
           this.dialogVisible = true;
-          this.$refs["dialogForm"] && this.$refs["dialogForm"].resetFields();
-
+          this.$nextTick((_) => {
+            this.resetForm("dialogForm");
+          });
           break;
         case 2:
           /**
            * 编辑
            */
           this.handleStatus = status;
-          this.dialogForm = deepClone(row);
           this.dialogVisible = true;
+          this.$nextTick((_) => {
+            this.dialogForm = deepClone(row);
+          });
           break;
         case 3:
           /**
@@ -373,14 +375,12 @@ export default {
       let status = "add";
       this.handleStatus == 2 && (status = "update");
       this.$fetch(`analog_paper_${status}`, this.dialogForm).then((res) => {
-        this.resetForm("dialogForm");
         this.dialogVisible = false;
         this.queryPaperList();
       });
     },
     // 重置表单
     resetForm(formName) {
-      console.log(this.$refs[formName]);
       this.$refs[formName].resetFields();
     },
   },

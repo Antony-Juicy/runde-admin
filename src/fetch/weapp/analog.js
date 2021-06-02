@@ -26,13 +26,28 @@ export default {
 
 
 
-  /*********** 科目开始 ***********/
-  // 科目分页查询
+  /*********** 项目开始 ***********/
+  // 项目分页查询
   subject_paper_list: {
     url: '/mini-programs/console/analog_subject/page_list',
     method: 'post'
   },
-  /*********** 科目结束 ***********/
+  // 删除项目
+  subject_paper_delete: {
+    url: '/mini-programs/console/analog_subject/delete',
+    method: 'post'
+  },
+  // 添加项目
+  subject_paper_add: {
+    url: '/mini-programs/console/analog_subject/add',
+    method: 'post'
+  },
+  // 修改项目
+  subject_paper_update: {
+    url: '/mini-programs/console/analog_subject/update',
+    method: 'post'
+  },
+  /*********** 项目结束 ***********/
 
 
 }
