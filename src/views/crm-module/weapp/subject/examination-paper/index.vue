@@ -7,18 +7,39 @@
       :visible.sync="dialogVisible"
     >
       <div class="test-dialog-form">
-        <el-form ref="dialogForm" :model="dialogForm" label-width="80px">
-          <el-form-item label="分类名称">
+        <el-form
+          ref="dialogForm"
+          :rules="dialogForm_rules"
+          :model="dialogForm"
+          label-width="80px"
+        >
+          <el-form-item label="试卷名称" prop="paperName">
             <el-input
-              v-model="dialogForm.type"
+              v-model="dialogForm.paperName"
               size="small"
               placeholder="模拟卷名称"
             ></el-input>
           </el-form-item>
-          <el-form-item label="状态">
+          <el-form-item label="科目列表" prop="subjectId">
             <el-select
               size="small"
-              v-model="dialogForm.status"
+              v-model="dialogForm.subjectId"
+              placeholder="科目列表"
+              @change="subjectChange"
+            >
+              <el-option
+                v-for="item in subjectList"
+                :key="item.id"
+                :label="item.subjectName"
+                :value="item.id"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="状态" prop="stat">
+            <el-select
+              size="small"
+              v-model="dialogForm.stat"
               placeholder="模拟卷状态"
             >
               <el-option
@@ -30,7 +51,22 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="排序值">
+          <el-form-item label="分享解锁" prop="isShare">
+            <el-select
+              size="small"
+              v-model="dialogForm.isShare"
+              placeholder="是否需要分享解锁"
+            >
+              <el-option
+                v-for="item in shareStatus"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="排序值" prop="sort">
             <el-input
               v-model="dialogForm.sort"
               size="small"
@@ -39,7 +75,7 @@
           </el-form-item>
         </el-form>
       </div>
-      <div class="project-dialog-btn">
+      <div class="test-dialog-btn">
         <el-button @click="handleSubmit" type="primary" size="medium"
           >保存</el-button
         >
@@ -62,10 +98,10 @@
         >创建模拟卷</el-button
       >
       <div class="test-handle__form">
-        <el-form ref="testForm" :model="testForm" width="500px">
+        <el-form ref="sreachForm" :model="params" width="500px">
           <el-form-item>
             <el-input
-              v-model="testForm.testName"
+              v-model="params.paperName"
               size="small"
               placeholder="模拟卷名称"
             ></el-input>
@@ -73,7 +109,8 @@
           <el-form-item>
             <el-select
               size="small"
-              v-model="testForm.testStatus"
+              clearable
+              v-model="params.stat"
               placeholder="模拟卷状态"
             >
               <el-option
@@ -86,17 +123,21 @@
             </el-select>
           </el-form-item>
         </el-form>
-        <el-button @click="handleSreach" type="primary" size="small"
+        <el-button @click="queryPaperList" type="primary" size="small"
           >搜索</el-button
         >
       </div>
     </div>
     <div class="test-table">
       <rd-table
-        :pageConfig="pageConfig"
+        :pageConfig="params"
         :tableData="tableData"
         :tableKey="tableKey"
+        @pageChange="pageChange"
       >
+        <template slot="stat" slot-scope="scope">
+          {{ scope.row.stat == 0 ? "下架" : "上架" }}
+        </template>
         <template slot="edit" slot-scope="scope">
           <el-button
             @click="handleDialog(2, scope.row)"
@@ -105,13 +146,18 @@
             >查阅/编辑</el-button
           >
           <el-divider direction="vertical"></el-divider>
-          <el-button
-            @click="handleDialog(3, scope.row)"
-            type="text"
-            size="small"
-            style="color: #ec5b56"
-            >删除</el-button
+          <el-popconfirm
+            @confirm="handleDialog(3, scope.row)"
+            title="是否确定删除该试卷？"
           >
+            <el-button
+              slot="reference"
+              type="text"
+              size="small"
+              style="color: #ec5b56"
+              >删除</el-button
+            >
+          </el-popconfirm>
           <br />
           <el-button
             @click="handleDialog(4, scope.row)"
@@ -149,36 +195,60 @@ export default {
       handleStatus: 1,
       // 弹窗表单
       dialogForm: {
-        // 分类名称
-        type: "",
+        // 试卷名称
+        paperName: "",
+        // 科目id
+        subjectId: "",
+        // 分享解锁
+        isShare: "",
         // 状态
-        status: "",
+        stat: "",
         // 排序值
         sort: "",
+        // 科目名称
+        subjectName: "1",
       },
-      // 搜索表单
-      testForm: {
-        // 模拟卷名称
-        testName: "",
-        // 模拟卷状态
-        testStatus: "",
+      // 表单验证规则
+      dialogForm_rules: {
+        // 试卷名称
+        paperName: "",
+        // 科目id
+        subjectId: "",
+        // 分享解锁
+        isShare: "",
+        // 状态
+        stat: "",
+        // 排序值
+        sort: "",
+        // 科目名称
+        subjectName: "1",
       },
       // 模拟卷状态选项
       testStatus: [
         {
-          value: "选项1",
-          label: "状态1",
+          value: 0,
+          label: "上架",
         },
-      ],
-      tableData: [
         {
-          id: 1,
-          type: "分类分类分类分类",
-          sort: 1,
-          status: 1608897351706,
-          time: 2,
+          value: 1,
+          label: "下架",
         },
       ],
+      // 模拟卷分享选项
+      shareStatus: [
+        {
+          value: 0,
+          label: "不用解锁",
+        },
+        {
+          value: 1,
+          label: "分享解锁",
+        },
+      ],
+      // 科目列表
+      subjectList: [],
+      // 表单数据
+      tableData: [],
       tableKey: [
         {
           name: "ID主键",
@@ -187,12 +257,13 @@ export default {
         },
         {
           name: "模拟卷名称",
-          value: "type",
+          value: "paperName",
           width: 240,
         },
         {
           name: "显示状态",
-          value: "status",
+          value: "stat",
+          operate: true,
           width: 240,
         },
         {
@@ -202,7 +273,7 @@ export default {
         },
         {
           name: "创建时间",
-          value: "time",
+          value: "createAt",
         },
         {
           name: "操作",
@@ -211,7 +282,12 @@ export default {
           width: 160,
         },
       ],
-      pageConfig: {
+      params: {
+        id: "",
+        paperName: "", // 试卷名称
+        stat: "", // 试卷状态
+        subjectId: "",
+        subjectName: "",
         totalCount: 1,
         pageNum: 1,
         pageSize: 10,
@@ -219,6 +295,33 @@ export default {
     };
   },
   methods: {
+    // 选择科目时触发
+    subjectChange(subjectId) {
+      let result = this.subjectList.find((res) => {
+        return res.id == subjectId;
+      });
+      this.dialogForm.subjectName = result.subjectName;
+    },
+    //  查询科目列表
+    querySubjectList() {
+      this.$fetch("subject_paper_list", {
+        pageNum: 1,
+        pageSize: 100,
+      }).then((res) => {
+        this.subjectList = res.data.records;
+      });
+    },
+    // 查询试卷列表
+    queryPaperList() {
+      this.$fetch("analog_paper_list", this.params).then((res) => {
+        this.params.totalCount = res.data.totalCount;
+        this.tableData = res.data.records;
+      });
+    },
+    pageChange(val) {
+      console.log(val);
+      this.queryPaperList()
+    },
     // 打开弹窗
     handleDialog(status, row) {
       // handleDialog 1: 创建； 2： 查看编辑； 3： 删除； 4： 站点列表； 5： 题目导入
@@ -234,41 +337,52 @@ export default {
           /**
            * 编辑
            */
-          console.log("编辑", row);
           this.handleStatus = status;
+          this.dialogForm = row;
           this.dialogVisible = true;
           break;
         case 3:
           /**
            * 删除
            */
-          console.log("删除", row);
+          this.$fetch("analog_paper_delete", { analogPaperId: row.id }).then(
+            (res) => {
+              this.queryPaperList();
+            }
+          );
           break;
         case 4:
           /**
            * 站点列表；
            */
           this.drawerVisible = true;
-          console.log("站点列表");
           break;
         case 5:
           /**
            * 题目导入
            */
-          console.log("题目导入", row);
           break;
       }
     },
-    // 点击搜索按钮
-    handleSreach() {
-      console.log("搜索");
-    },
     // 弹窗保存按钮
     handleSubmit() {
-      console.log("保存");
+      let status = 'add'
+      this.handleStatus == 2 && (status = 'update')
+      this.$fetch(`analog_paper_${status}`, this.dialogForm).then((res) => {
+        this.resetForm("dialogForm");
+        this.dialogVisible = false;
+        this.queryPaperList();
+      });
+    },
+    // 重置表单
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
     },
   },
-  mounted() {},
+  mounted() {
+    this.queryPaperList();
+    this.querySubjectList();
+  },
 };
 </script>
 
@@ -277,16 +391,16 @@ export default {
   width: 100%;
 }
 .test-dialog-form {
-  .el-form-item:nth-child(2),
-  .el-form-item:nth-child(3) {
+  .el-form-item:not(:first-child) {
     width: 260px;
   }
 }
-.test-dialog-form {
-  .el-form-item:nth-child(2) {
-    width: 260px;
-  }
+.test-dialog-btn {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
+
 .test-handle {
   &__form {
     background: #fff;

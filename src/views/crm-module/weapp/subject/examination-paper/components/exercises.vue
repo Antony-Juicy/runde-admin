@@ -12,7 +12,7 @@
         <el-form ref="dialogForm" :model="dialogForm" label-width="80px">
           <el-form-item class="input-normal" label="试卷名称">
             <el-input
-              disabled
+              :disabled="handleStatus != 1"
               v-model="testData.testName"
               size="small"
               placeholder="试卷名称"
@@ -20,7 +20,7 @@
           </el-form-item>
           <el-form-item class="input-normal" label="站点名称">
             <el-input
-              disabled
+              :disabled="handleStatus != 1"
               v-model="testData.siteName"
               size="small"
               placeholder="站点名称"
@@ -28,7 +28,7 @@
           </el-form-item>
           <el-form-item class="input-normal" label="题目类型">
             <el-input
-              disabled
+              :disabled="handleStatus != 1"
               v-model="testData.type"
               size="small"
               placeholder="题目类型"
@@ -47,7 +47,11 @@
               type="textarea"
               :rows="3"
             ></el-input>
+            <div class="upload-btn">
+              <upload-oss :src.sync="dialogForm.issue.imageIssuse" />
+            </div>
           </el-form-item>
+
           <!-- 选项 -->
           <template v-if="dialogForm.issuesType == '单选题'">
             <el-form-item
@@ -56,18 +60,26 @@
               v-for="item in dialogForm.issue.option"
               :key="item.name"
             >
-            <i class="option">{{ item.name }}</i>
+              <i class="input-option">{{ item.name }}</i>
 
               <el-input v-model="item.value"></el-input>
+
+              <div class="upload-btn">
+                <upload-oss :src.sync="item.image" />
+              </div>
             </el-form-item>
           </template>
           <!-- 选项 -->
+
           <el-form-item class="input-normal" label="答案解析">
             <el-input
               v-model="dialogForm.issue.textAnalysis"
               type="textarea"
               :rows="5"
             ></el-input>
+            <div class="upload-btn">
+              <upload-oss :src.sync="dialogForm.issue.imageAnalysis" />
+            </div>
           </el-form-item>
           <el-form-item class="input-small" label="正确答案">
             <el-input
@@ -152,11 +164,15 @@
 </template>
 
 <script>
+import UploadOss from "@/components/UploadOss";
 export default {
   name: "examination-exercises",
-
+  components: {
+    UploadOss,
+  },
   data() {
     return {
+      uploadConfig: "",
       // 抽屉显示
       drawerVisible: false,
       // 弹窗显示
@@ -271,6 +287,14 @@ export default {
       },
     };
   },
+  watch: {
+    dialogForm: {
+      handler(newV) {
+        console.log(newV);
+      },
+      deep: true,
+    },
+  },
   methods: {
     // 打开弹窗
     handleDialog(status, row) {
@@ -313,7 +337,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.option {
+.upload-btn {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translate(120%, -36%);
+  /deep/ .img180 {
+    width: 32px;
+    height: 32px;
+    border: 1px dashed rgb(192, 192, 192)
+  }
+}
+.input-option {
   position: absolute;
   left: -44px;
   height: 32px;
@@ -322,7 +357,7 @@ export default {
   text-align: center;
   line-height: 32px;
   background: #e9f4ff;
-  border: 1px solid #409EFF;
+  border: 1px solid #409eff;
   font-style: normal;
 }
 .exercises-x {
