@@ -136,7 +136,7 @@
         @pageChange="pageChange"
       >
         <template slot="stat" slot-scope="scope">
-          {{ scope.row.stat == 0 ? "下架" : "上架" }}
+          {{ scope.row.stat == 0 ? "上架" : "下架" }}
         </template>
         <template slot="edit" slot-scope="scope">
           <el-button
@@ -180,6 +180,8 @@
 
 <script>
 import site from "./components/site";
+import { deepClone } from "@/utils/index.js";
+
 export default {
   name: "examination-paper",
   components: {
@@ -320,7 +322,7 @@ export default {
     },
     pageChange(val) {
       console.log(val);
-      this.queryPaperList()
+      this.queryPaperList();
     },
     // 打开弹窗
     handleDialog(status, row) {
@@ -332,13 +334,15 @@ export default {
            */
           this.handleStatus = status;
           this.dialogVisible = true;
+          this.$refs["dialogForm"] && this.$refs["dialogForm"].resetFields();
+
           break;
         case 2:
           /**
            * 编辑
            */
           this.handleStatus = status;
-          this.dialogForm = row;
+          this.dialogForm = deepClone(row);
           this.dialogVisible = true;
           break;
         case 3:
@@ -366,8 +370,8 @@ export default {
     },
     // 弹窗保存按钮
     handleSubmit() {
-      let status = 'add'
-      this.handleStatus == 2 && (status = 'update')
+      let status = "add";
+      this.handleStatus == 2 && (status = "update");
       this.$fetch(`analog_paper_${status}`, this.dialogForm).then((res) => {
         this.resetForm("dialogForm");
         this.dialogVisible = false;
@@ -376,6 +380,7 @@ export default {
     },
     // 重置表单
     resetForm(formName) {
+      console.log(this.$refs[formName]);
       this.$refs[formName].resetFields();
     },
   },
