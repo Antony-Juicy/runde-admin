@@ -50,13 +50,13 @@
           </el-button>
           <el-divider direction="vertical"></el-divider>
           <el-button @click="handleSet(scope.row, 1)" type="text" size="small"
-            >设置网课编码</el-button
+            >设置课程编码</el-button
           >
 
           <el-divider direction="vertical"></el-divider>
-          <el-button @click="handleSet(scope.row, 2)" type="text" size="small"
+          <!-- <el-button @click="handleSet(scope.row, 2)" type="text" size="small"
             >设置直播编码</el-button
-          >
+          > -->
           <el-divider direction="vertical"></el-divider>
           <el-button @click="handleSet(scope.row, 3)" type="text" size="small"
             >设置音频编码</el-button
@@ -427,7 +427,7 @@
     <!-- 添加设置网课编码弹窗 -->
     <fullDialog
       v-model="setVisible1"
-      title="设置网课编码"
+      title="设置课程编码"
       @change="setVisible1 = false"
     >
       <netClass

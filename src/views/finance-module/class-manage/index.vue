@@ -205,6 +205,10 @@ export default {
           // width: 80,
         },
         {
+          name:"课程编码",
+          value:"liveCode"
+        },
+        {
           name: "单科学费/元",
           value: "contentPrice",
           // width: 80,
@@ -579,6 +583,9 @@ export default {
       }).then((res) => {
         this.tableData = res.data.list.map(item => {
           item.playbackCn = item.playback?'有':'无';
+          if(!item.liveCode){
+            item.liveCode ="无"
+          }
           item.createAt = this.$common._formatDates(item.createAt);
           item.courseStartTime = this.$common._formatDates(item.courseStartTime);
           item.courseEndTime = this.$common._formatDates(item.courseEndTime);

@@ -708,6 +708,7 @@
                 <el-select
                   v-model="stuForm3.enrollId"
                   style="width: 200px"
+                  filterable
                   placeholder="请选择招生老师"
                 >
                   <el-option
@@ -732,6 +733,7 @@
                 <el-select
                   v-model="stuForm3.classTeacherId"
                   style="width: 200px"
+                  filterable
                   placeholder="请选择班主任"
                 >
                   <el-option
@@ -774,6 +776,7 @@
                 <el-select
                   v-model="stuForm3.staffId"
                   style="width: 200px"
+                  filterable
                   placeholder="请选择市场老师"
                 >
                   <el-option
@@ -798,6 +801,7 @@
                 <el-select
                   v-model="stuForm3.eduUserId"
                   style="width: 200px"
+                  filterable
                   placeholder="请选择教务老师"
                 >
                   <el-option
@@ -890,6 +894,7 @@ export default {
           element: "el-select",
           placeholder: "班型",
           options: [],
+          filterable:true,
           disabled: false,
         },
         {
