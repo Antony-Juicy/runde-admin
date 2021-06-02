@@ -122,6 +122,22 @@
               </el-option>
             </el-select>
           </el-form-item>
+          <el-form-item>
+            <el-select
+              size="small"
+              clearable
+              v-model="params.subjectName"
+              placeholder="项目名称"
+            >
+              <el-option
+                v-for="item in subjectList"
+                :key="item.id"
+                :label="item.subjectName"
+                :value="item.id"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
         </el-form>
         <el-button @click="queryPaperList" type="primary" size="small"
           >搜索</el-button
@@ -263,6 +279,11 @@ export default {
           width: 240,
         },
         {
+          name: "项目名称",
+          value: "subjectName",
+          width: 220,
+        },
+        {
           name: "显示状态",
           value: "stat",
           operate: true,
@@ -287,6 +308,7 @@ export default {
       params: {
         id: "",
         paperName: "", // 试卷名称
+        subjectName: "", // 项目名称
         stat: "", // 试卷状态
         subjectId: "",
         subjectName: "",

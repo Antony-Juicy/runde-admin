@@ -165,7 +165,7 @@ export default {
         {
           name: "分类名称",
           value: "subjectName",
-          width: 240,
+          width: 360,
         },
         {
           name: "显示状态",
