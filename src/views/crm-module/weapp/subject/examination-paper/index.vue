@@ -85,11 +85,15 @@
 
     <!-- 站点抽屉开始 -->
     <full-dialog
-      title="站点列表"
+      :title="`${siteData.paperName} - 站点列表`"
       v-model="drawerVisible"
-      @change="drawerVisible = false"
+      @change="fullDialogChange"
     >
-      <site />
+      <site
+        v-if="siteData.paperName && siteData.id"
+        :paperName="siteData.paperName"
+        :paperId="siteData.id"
+      />
     </full-dialog>
     <!-- 站点抽屉结束 -->
 
@@ -126,7 +130,7 @@
             <el-select
               size="small"
               clearable
-              v-model="params.subjectName"
+              v-model="params.subjectId"
               placeholder="项目名称"
             >
               <el-option
@@ -205,6 +209,11 @@ export default {
   },
   data() {
     return {
+      // 传入站点页面的数据
+      siteData: {
+        subjectName: null,
+        subjectId: null,
+      },
       // 抽屉显示
       drawerVisible: false,
       // 弹窗显示
@@ -308,9 +317,8 @@ export default {
       params: {
         id: "",
         paperName: "", // 试卷名称
-        subjectName: "", // 项目名称
+        subjectId: "", // 项目名称
         stat: "", // 试卷状态
-        subjectId: "",
         subjectName: "",
         totalCount: 1,
         pageNum: 1,
@@ -319,6 +327,10 @@ export default {
     };
   },
   methods: {
+    fullDialogChange() {
+      this.drawerVisible = false
+      this.siteData = {}
+    },
     // 选择项目时触发
     subjectChange(subjectId) {
       let result = this.subjectList.find((res) => {
@@ -328,11 +340,8 @@ export default {
     },
     //  查询项目列表
     querySubjectList() {
-      this.$fetch("subject_paper_list", {
-        pageNum: 1,
-        pageSize: 100,
-      }).then((res) => {
-        this.subjectList = res.data.records;
+      this.$fetch("subject_paper_list_").then((res) => {
+        this.subjectList = res.data;
       });
     },
     // 查询试卷列表
@@ -383,6 +392,8 @@ export default {
           /**
            * 站点列表；
            */
+          this.siteData.paperName = row.paperName;
+          this.siteData.id = row.id;
           this.drawerVisible = true;
           break;
         case 5:

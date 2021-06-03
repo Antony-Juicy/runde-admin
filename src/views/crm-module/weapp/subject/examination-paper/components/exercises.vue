@@ -1,49 +1,65 @@
 <template>
-  <div class="exercises-x">
+  <div class="lssue-x">
     <!-- 弹窗开始 -->
     <el-dialog
       top="10vh"
       width="35%"
-      :title="handleStatus == 1 ? '创建题目' : '编辑查阅'"
+      :title="handleStatus == 1 ? '添加题目' : '编辑查阅'"
       :visible.sync="dialogVisible"
       append-to-body
     >
-      <div class="exercises-dialog-form">
-        <el-form ref="dialogForm" :model="dialogForm" label-width="80px">
-          <el-form-item class="input-normal" label="试卷名称">
+      <div class="lssue-dialog-form">
+        <el-form
+          ref="dialogForm"
+          :rules="dialogForm_rules"
+          :model="dialogForm"
+          label-width="80px"
+        >
+          <el-form-item class="input-normal" label="试卷名称" prop="paperName">
             <el-input
-              :disabled="handleStatus != 1"
-              v-model="testData.testName"
+              disabled
+              v-model="lssueData.paperName"
               size="small"
               placeholder="试卷名称"
             ></el-input>
           </el-form-item>
-          <el-form-item class="input-normal" label="站点名称">
+          <el-form-item class="input-normal" label="题目名称" prop="issuse">
             <el-input
               :disabled="handleStatus != 1"
-              v-model="testData.siteName"
+              v-model="dialogForm.issue.issuse"
               size="small"
-              placeholder="站点名称"
+              placeholder="题目名称"
             ></el-input>
           </el-form-item>
-          <el-form-item class="input-normal" label="题目类型">
-            <el-input
-              :disabled="handleStatus != 1"
-              v-model="testData.type"
+          <el-form-item class="input-normal" label="题目类型" prop="issuesType">
+            <el-select
               size="small"
+              v-model="dialogForm.issuesType"
               placeholder="题目类型"
-            ></el-input>
+            >
+              <el-option
+                v-for="item in lssueType"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
           </el-form-item>
-          <el-form-item class="input-normal" label="音频ID">
+          <el-form-item class="input-normal" label="音频ID" prop="videoUrl">
             <el-input
               v-model="dialogForm.issue.videoUrl"
               size="small"
               placeholder="音频ID"
             ></el-input>
           </el-form-item>
-          <el-form-item class="input-normal" label="题目内容">
+          <el-form-item
+            class="input-normal"
+            label="题目内容"
+            prop="issuseContent"
+          >
             <el-input
-              v-model="dialogForm.issue.issuse"
+              v-model="dialogForm.issue.issuseContent"
               type="textarea"
               :rows="3"
             ></el-input>
@@ -57,60 +73,85 @@
             <el-form-item
               class="input-normal"
               size="small"
-              v-for="item in dialogForm.issue.option"
+              v-for="(item, index) in dialogForm.issue.option"
               :key="item.name"
+              prop="option"
             >
               <i class="input-option">{{ item.name }}</i>
 
               <el-input v-model="item.value"></el-input>
-
+              <i
+                @click="deleteOption(index)"
+                class="deleteOption el-icon-remove-outline"
+              ></i>
               <div class="upload-btn">
                 <upload-oss :src.sync="item.image" />
               </div>
             </el-form-item>
+            <el-form-item class="input-normal" size="mini">
+              <el-button @click="addOption" type="primary" class="add-btn"
+                >添加选项</el-button
+              >
+            </el-form-item>
           </template>
           <!-- 选项 -->
 
-          <el-form-item class="input-normal" label="答案解析">
+          <el-form-item
+            class="input-normal"
+            label="答案解析"
+            prop="textAnalysis"
+          >
             <el-input
               v-model="dialogForm.issue.textAnalysis"
               type="textarea"
-              :rows="5"
+              :rows="4"
             ></el-input>
             <div class="upload-btn">
               <upload-oss :src.sync="dialogForm.issue.imageAnalysis" />
             </div>
           </el-form-item>
-          <el-form-item class="input-small" label="正确答案">
-            <el-input
-              v-model="dialogForm.issue.answer"
+          <el-form-item class="input-small" label="正确答案" prop="answer">
+            <el-select
               size="small"
+              v-model="dialogForm.issue.answer"
               placeholder="正确答案"
+            >
+              <el-option
+                v-for="item in dialogForm.issue.option"
+                :key="item.name"
+                :label="item.name"
+                :value="item.name"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item class="input-small" label="序号" prop="sort">
+            <el-input
+              v-model="dialogForm.sort"
+              size="small"
+              placeholder="序号"
             ></el-input>
           </el-form-item>
         </el-form>
-        <div class="exercises-dialog-btn">
+        <div class="lssue-dialog-btn">
           <el-button @click="handleSubmit" type="primary" size="medium"
             >保存</el-button
           >
         </div>
       </div>
     </el-dialog>
+
     <!-- 弹窗结束 -->
 
-    <div class="exercises-handle">
-      <el-button
-        class="exercises-handle-create"
-        @click="handleDialog(1)"
-        type="primary"
-        size="small"
+    <div class="lssue-handle">
+      <el-button @click="handleDialog(1)" type="primary" size="small"
         >创建题目</el-button
       >
-      <div class="exercises-handle__form">
-        <el-form ref="exercisesForm" :model="exercisesForm" width="500px">
+      <div class="lssue-handle__form">
+        <el-form ref="sreachForm" :model="params" width="500px">
           <el-form-item>
             <el-input
-              v-model="exercisesForm.exercisesName"
+              v-model="params.lssueName"
               size="small"
               placeholder="题目名称"
             ></el-input>
@@ -118,11 +159,12 @@
           <el-form-item>
             <el-select
               size="small"
-              v-model="exercisesForm.exercisesStatus"
+              clearable
+              v-model="params.stat"
               placeholder="题目状态"
             >
               <el-option
-                v-for="item in exercisesStatus"
+                v-for="item in lssueStatus"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -131,17 +173,16 @@
             </el-select>
           </el-form-item>
         </el-form>
-        <el-button @click="handleSreach" type="primary" size="small"
+        <el-button @click="queryLssueList" type="primary" size="small"
           >搜索</el-button
         >
       </div>
     </div>
-    <div class="exercises-table">
-      <rd-table
-        :pageConfig="pageConfig"
-        :tableData="tableData"
-        :tableKey="tableKey"
-      >
+    <div class="lssue-table">
+      <rd-table :tableData="tableData" :tableKey="tableKey">
+        <template slot="stat" slot-scope="scope">
+          {{ scope.row.stat == 0 ? "上架" : "下架" }}
+        </template>
         <template slot="edit" slot-scope="scope">
           <el-button
             @click="handleDialog(2, scope.row)"
@@ -150,13 +191,18 @@
             >查阅/编辑</el-button
           >
           <el-divider direction="vertical"></el-divider>
-          <el-button
-            @click="handleDialog(3, scope.row)"
-            type="text"
-            size="small"
-            style="color: #ec5b56"
-            >删除</el-button
+          <el-popconfirm
+            @confirm="handleDialog(3, scope.row)"
+            title="是否确定删除该题目？"
           >
+            <el-button
+              slot="reference"
+              type="text"
+              size="small"
+              style="color: #ec5b56"
+              >删除</el-button
+            >
+          </el-popconfirm>
         </template>
       </rd-table>
     </div>
@@ -164,114 +210,112 @@
 </template>
 
 <script>
+import { deepClone } from "@/utils/index.js";
 import UploadOss from "@/components/UploadOss";
+
 export default {
-  name: "examination-exercises",
+  name: "examination-lssue",
   components: {
     UploadOss,
   },
+  props: {
+    lssueData: {
+      type: Object,
+      default() {
+        return {};
+      },
+      required: true,
+    },
+  },
   data() {
     return {
-      uploadConfig: "",
       // 抽屉显示
       drawerVisible: false,
       // 弹窗显示
       dialogVisible: false,
       // 弹窗操作的状态(1:创建 2:编辑)
       handleStatus: 1,
-      // 试卷信息
-      testData: {
-        // 试卷名称
-        testName: "吸水试卷",
-        siteName: "吸水站点",
-        type: "单选题",
-      },
       // 弹窗表单
       dialogForm: {
-        issuseId: 1,
+        issuseId: "",
         issue: {
-          imageIssuse: "",
           videoUrl: "",
-          answer: "B",
+          answer: "",
           imageAnalysis: "",
-          issuse: "吸水性较大且可提高油脂性软膏中药物渗透性的基质是",
+          issuse: "",
+          issuseContent: "",
+          imageIssuse: "",
           videoId: "",
-          textAnalysis:
-            "羊毛脂又称无水羊毛脂，为淡黄色黏稠半固体，熔点36℃～42℃，因含胆甾醇、异胆甾醇与羟基胆甾醇及其酯而有较大的吸水性，可吸水150%、甘油140%、70%的乙醇40%。由于羊毛脂的组成与皮脂分泌物相近，故可提高软膏中药物的渗透性。常与凡士林合用，调节凡士林的渗透性和吸水性。",
-          option: [
-            {
-              image: "",
-              name: "A",
-              value: "氢化植物油",
-            },
-            {
-              image: "",
-              name: "B",
-              value: "羊毛脂",
-            },
-            {
-              image: "",
-              name: "C",
-              value: "凡士林",
-            },
-            {
-              image: "",
-              name: "D",
-              value: "液状石蜡",
-            },
-            {
-              image: "",
-              name: "E",
-              value: "二甲硅油",
-            },
-          ],
+          textAnalysis: "",
+          option: [],
         },
         issuesType: "单选题",
+        sort: "",
       },
-      // 搜索表单
-      exercisesForm: {
-        // 题目名称
-        exercisesName: "",
-        // 题目状态
-        exercisesStatus: "",
+      // 表单验证规则
+      dialogForm_rules: {
+        issuseId: "",
+        issue: {
+          videoUrl: "",
+          answer: "",
+          imageAnalysis: "",
+          issuse: "",
+          issuseContent: "",
+          imageIssuse: "",
+          videoId: "",
+          textAnalysis: "",
+          option: [],
+        },
+        issuesType: "单选题",
+        sort: "",
       },
       // 题目状态选项
-      exercisesStatus: [
+      lssueStatus: [
         {
-          value: "选项1",
-          label: "状态1",
+          value: 0,
+          label: "上架",
+        },
+        {
+          value: 1,
+          label: "下架",
         },
       ],
-      tableData: [
+      // 题目类型选项
+      lssueType: [
         {
-          id: 1,
-          type: "分类分类分类分类",
-          sort: 1,
-          status: 1608897351706,
-          time: 2,
+          value: "单选题",
+          label: "单选题",
+        },
+        {
+          value: "问答题",
+          label: "问答题",
         },
       ],
+      // 表单数据
+      tableData: [],
       tableKey: [
         {
           name: "ID主键",
-          value: "id",
+          value: "issuseId",
           width: 80,
         },
         {
-          name: "模拟卷名称",
-          value: "name",
+          name: "题目名称",
+          value: "issuse",
         },
         {
           name: "站点名称",
-          value: "site",
+          value: "siteName",
         },
         {
           name: "题目类型",
-          value: "type",
+          value: "issuesType",
+          width: 240,
         },
         {
-          name: "序号",
+          name: "排序值",
           value: "sort",
+          width: 140,
         },
         {
           name: "操作",
@@ -280,59 +324,138 @@ export default {
           width: 160,
         },
       ],
-      pageConfig: {
-        totalCount: 1,
-        pageNum: 1,
-        pageSize: 10,
+      params: {
+        analogSiteId: "", // 所属站点ID
+        stat: "", // 题目状态
+        // totalCount: 1,
+        // pageNum: 1,
+        // pageSize: 10,
       },
     };
   },
-  watch: {
-    dialogForm: {
-      handler(newV) {
-        console.log(newV);
-      },
-      deep: true,
-    },
-  },
   methods: {
+    // 删除选项按钮
+    deleteOption(index) {
+      this.dialogForm.issue.option.splice(index, 1);
+      this.dialogForm.issue.option = this.dialogForm.issue.option.reduce(
+        (cur, next, index) => {
+          next.name = String.fromCharCode(index + 65);
+          cur.push(next);
+          return cur;
+        },
+        []
+      );
+    },
+    // 添加选项按钮
+    addOption() {
+      let defaultAscii = 65,
+        optionCount = this.dialogForm.issue.option.length;
+      this.dialogForm.issue.option.push({
+        image: "",
+        name: String.fromCharCode(optionCount + defaultAscii),
+        value: "",
+      });
+    },
+    // 查询题目列表
+    queryLssueList() {
+      this.$fetch("lssue_paper_list", this.params).then((res) => {
+        console.log(res);
+        if (res.code == 200) {
+          console.log(JSON.parse(res.msg));
+          this.tableData = JSON.parse(res.msg);
+        }
+      });
+    },
+    pageChange(val) {
+      this.queryLssueList();
+    },
     // 打开弹窗
     handleDialog(status, row) {
-      // handleDialog 1: 创建； 2： 查看编辑； 3： 删除
+      // handleDialog 1: 创建； 2： 查看编辑； 3： 删除； 4： 查看题目； 5： 题目导入
       switch (status) {
         case 1:
           /**
            * 新增
            */
+          console.log("新增");
           this.handleStatus = status;
           this.dialogVisible = true;
+          this.$nextTick((_) => {
+            console.log("重置表单");
+            this.resetForm()
+          });
           break;
         case 2:
           /**
            * 编辑
            */
-          console.log("编辑", row);
+          console.log(row);
           this.handleStatus = status;
           this.dialogVisible = true;
+          this.$nextTick((_) => {
+            this.dialogForm = deepClone(row);
+          });
           break;
         case 3:
           /**
            * 删除
            */
-          console.log("删除", row);
+          this.$fetch("lssue_paper_delete", {
+            issuseId: row.issuseId,
+            id: this.params.analogSiteId,
+          }).then((res) => {
+            console.log(res);
+            this.queryLssueList();
+          });
+          break;
+        case 4:
+          /**
+           * 查看题目
+           */
+          this.drawerVisible = true;
+          console.log(row);
+          this.lssueId = row.id;
+          break;
+        case 5:
+          /**
+           * 题目导入
+           */
           break;
       }
     },
-    // 点击搜索按钮
-    handleSreach() {
-      console.log("搜索");
-    },
     // 弹窗保存按钮
     handleSubmit() {
-      console.log("保存");
+      let status;
+      this.dialogForm.siteName = this.lssueData.descriPtion;
+      this.dialogForm.issuse = this.dialogForm.issue.issuse;
+      if (this.handleStatus == 2) {
+        status = "update";
+      } else if (this.handleStatus == 1) {
+        status = "add";
+        delete this.dialogForm.issuseId;
+      }
+      console.log(this.dialogForm);
+      let params = {
+        id: this.lssueData.id,
+        content: JSON.stringify(this.dialogForm),
+      };
+      console.log(params);
+      this.$fetch(`lssue_paper_${status}`, params).then((res) => {
+        this.dialogVisible = false;
+        this.queryLssueList();
+      });
+    },
+    // 重置表单
+    resetForm() {
+      this.dialogForm = deepClone(this.dialogForm_rules);
     },
   },
-  mounted() {},
+  mounted() {
+    this.params.analogSiteId = this.lssueData.id;
+    console.log(this.lssueData);
+    console.log(this.params);
+    this.queryLssueList();
+  },
 };
 </script>
 
@@ -345,7 +468,7 @@ export default {
   /deep/ .img180 {
     width: 32px;
     height: 32px;
-    border: 1px dashed rgb(192, 192, 192)
+    border: 1px dashed rgb(192, 192, 192);
   }
 }
 .input-option {
@@ -360,12 +483,12 @@ export default {
   border: 1px solid #409eff;
   font-style: normal;
 }
-.exercises-x {
+.lssue-x {
   width: 100%;
 }
-.exercises-dialog-form {
+.lssue-dialog-form {
   .el-form-item {
-    margin-bottom: 16px;
+    margin-bottom: 8px;
   }
   .input-normal {
     width: 85%;
@@ -373,13 +496,28 @@ export default {
   .input-small {
     width: 200px;
   }
+  .add-btn {
+    width: 100%;
+  }
+  .deleteOption {
+    cursor: pointer;
+    font-style: normal;
+    position: absolute;
+    color: #f56c6c;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 5px;
+  }
 }
-.exercises-dialog-btn {
+.lssue-dialog-btn {
   width: 100%;
   display: flex;
   justify-content: center;
 }
-.exercises-handle {
+.lssue-handle {
+  & > .el-button {
+    margin-left: 15px;
+  }
   &-create {
     margin-left: 15px;
   }
@@ -399,7 +537,7 @@ export default {
     }
   }
 }
-.exercises-table {
+.lssue-table {
   background: #fff;
   padding: 15px;
 }

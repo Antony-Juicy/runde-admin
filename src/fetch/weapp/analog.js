@@ -32,6 +32,11 @@ export default {
     url: '/mini-programs/console/analog_subject/page_list',
     method: 'post'
   },
+  // 项目不分页查询
+  subject_paper_list_: {
+    url: '/mini-programs/console/analog_subject/list',
+    method: 'post'
+  },
   // 删除项目
   subject_paper_delete: {
     url: '/mini-programs/console/analog_subject/delete',
@@ -48,6 +53,51 @@ export default {
     method: 'post'
   },
   /*********** 项目结束 ***********/
+
+
+  /*********** 站点开始 ***********/
+
+  // 站点分页查询
+  site_paper_list: {
+    url: '/mini-programs/console/analog_site/page_list',
+    method: 'post'
+  },
+  // 删除站点
+  site_paper_delete: {
+    url: '/mini-programs/console/analog_site/delete',
+    method: 'post'
+  },
+  // 添加站点
+  site_paper_add: {
+    url: '/mini-programs/console/analog_site/add',
+    method: 'post'
+  },
+  // 编辑站点
+  site_paper_update: {
+    url: '/mini-programs/console/analog_site/update',
+    method: 'post'
+  },
+
+  /*********** 站点结束 ***********/
+
+  /*********** 题目开始 ***********/
+  // 查看所有题目
+  lssue_paper_list: {
+    url: '/mini-programs/console/analog_site/get_Issue',
+    method: 'post'
+  },
+  // 删除题目
+  lssue_paper_delete: {
+    url: '/mini-programs/console/analog_site/del_Issue',
+    method: 'post'
+  },
+  // 添加题目
+  lssue_paper_add: {
+    url: '/mini-programs/console/analog_site/add_Issue',
+    method: 'post'
+  },
+
+  /*********** 题目结束 ***********/
 
 
 }

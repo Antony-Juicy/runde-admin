@@ -8,47 +8,52 @@
       append-to-body
     >
       <div class="site-dialog-form">
-        <el-form ref="dialogForm" :model="dialogForm" label-width="80px">
+        <el-form
+          ref="dialogForm"
+          :rules="dialogForm_rules"
+          :model="dialogForm"
+          label-width="80px"
+        >
           <el-form-item class="input" label="试卷名称">
             <el-input
               disabled
-              v-model="dialogForm.testName"
+              v-model="dialogForm.paperName"
               size="small"
               placeholder="试卷名称"
             ></el-input>
           </el-form-item>
-          <el-form-item class="input" label="站点名称">
+          <el-form-item class="input" label="站点名称" prop="siteName">
             <el-input
               v-model="dialogForm.siteName"
               size="small"
               placeholder="站点名称"
             ></el-input>
           </el-form-item>
-          <el-form-item class="select" label="答题时长">
+          <el-form-item class="select" label="答题时长" prop="answerTime">
             <el-input
-              v-model="dialogForm.time"
+              v-model="dialogForm.answerTime"
               size="small"
               placeholder="答题时长"
             ></el-input>
           </el-form-item>
-          <el-form-item label="文案描述">
+          <el-form-item label="文案描述" prop="descriPtion">
             <el-input
-              v-model="dialogForm.describe"
+              v-model="dialogForm.descriPtion"
               type="textarea"
               :rows="5"
             ></el-input>
           </el-form-item>
-          <el-form-item class="select" label="排序值">
+          <el-form-item class="select" label="排序值" prop="sort">
             <el-input
               v-model="dialogForm.sort"
               size="small"
               placeholder="排序值"
             ></el-input>
           </el-form-item>
-          <el-form-item class="select" label="状态">
+          <el-form-item class="select" label="状态" prop="stat">
             <el-select
               size="small"
-              v-model="dialogForm.status"
+              v-model="dialogForm.stat"
               placeholder="站点状态"
             >
               <el-option
@@ -68,32 +73,30 @@
         </div>
       </div>
     </el-dialog>
+
     <!-- 弹窗结束 -->
 
     <!-- 抽屉开始 -->
+
     <el-drawer
-      title="查看题目"
+      :title="`${lssueData.siteName} - 题目列表`"
       :visible.sync="drawerVisible"
       direction="btt"
-      size="90%"
       append-to-body
+      size="90%"
     >
-      <exercises />
+    <exercises v-if="drawerVisible" :lssueData="lssueData" />
     </el-drawer>
     <!-- 抽屉结束 -->
     <div class="site-handle">
-      <el-button
-        class="site-handle-create"
-        @click="handleDialog(1)"
-        type="primary"
-        size="small"
+      <el-button @click="handleDialog(1)" type="primary" size="small"
         >创建站点</el-button
       >
       <div class="site-handle__form">
-        <el-form ref="siteForm" :model="siteForm" width="500px">
+        <el-form ref="sreachForm" :model="params" width="500px">
           <el-form-item>
             <el-input
-              v-model="siteForm.siteName"
+              v-model="params.siteName"
               size="small"
               placeholder="站点名称"
             ></el-input>
@@ -101,7 +104,8 @@
           <el-form-item>
             <el-select
               size="small"
-              v-model="siteForm.siteStatus"
+              clearable
+              v-model="params.stat"
               placeholder="站点状态"
             >
               <el-option
@@ -114,17 +118,21 @@
             </el-select>
           </el-form-item>
         </el-form>
-        <el-button @click="handleSreach" type="primary" size="small"
+        <el-button @click="querySiteList" type="primary" size="small"
           >搜索</el-button
         >
       </div>
     </div>
     <div class="site-table">
       <rd-table
-        :pageConfig="pageConfig"
+        :pageConfig="params"
         :tableData="tableData"
         :tableKey="tableKey"
+        @pageChange="pageChange"
       >
+        <template slot="stat" slot-scope="scope">
+          {{ scope.row.stat == 0 ? "上架" : "下架" }}
+        </template>
         <template slot="edit" slot-scope="scope">
           <el-button
             @click="handleDialog(2, scope.row)"
@@ -133,13 +141,18 @@
             >查阅/编辑</el-button
           >
           <el-divider direction="vertical"></el-divider>
-          <el-button
-            @click="handleDialog(3, scope.row)"
-            type="text"
-            size="small"
-            style="color: #ec5b56"
-            >删除</el-button
+          <el-popconfirm
+            @confirm="handleDialog(3, scope.row)"
+            title="是否确定删除该站点？"
           >
+            <el-button
+              slot="reference"
+              type="text"
+              size="small"
+              style="color: #ec5b56"
+              >删除</el-button
+            >
+          </el-popconfirm>
           <br />
           <el-button
             @click="handleDialog(4, scope.row)"
@@ -161,14 +174,29 @@
 </template>
 
 <script>
+import { deepClone } from "@/utils/index.js";
 import exercises from "./exercises";
 export default {
   name: "examination-site",
   components: {
     exercises,
   },
+  props: {
+    paperName: {
+      type: String,
+      default: "",
+      required: true,
+    },
+    paperId: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+  },
   data() {
     return {
+      // 题目ID
+      lssueData: '',
       // 抽屉显示
       drawerVisible: false,
       // 弹窗显示
@@ -178,41 +206,50 @@ export default {
       // 弹窗表单
       dialogForm: {
         // 试卷名称
-        testName: "",
+        paperName: "",
         // 站点名称
         siteName: "",
-        // 答题时长
-        time: "",
-        // 文案描述
-        describe: "",
+        // 试卷id
+        paperId: "",
+        // 状态
+        stat: "",
+        // 答题时间
+        answerTime: "",
         // 排序值
         sort: "",
-        // 状态
-        status: "",
+        // 描述文案
+        descriPtion: "",
       },
-      // 搜索表单
-      siteForm: {
+      // 表单验证规则
+      dialogForm_rules: {
+        // 试卷名称
+        paperName: "",
         // 站点名称
         siteName: "",
-        // 站点状态
-        siteStatus: "",
+        // 试卷id
+        paperId: "",
+        // 状态
+        stat: "",
+        // 答题时间
+        answerTime: "",
+        // 排序值
+        sort: "",
+        // 描述文案
+        descriPtion: "",
       },
       // 站点状态选项
       siteStatus: [
         {
-          value: "选项1",
-          label: "状态1",
+          value: 0,
+          label: "上架",
         },
-      ],
-      tableData: [
         {
-          id: 1,
-          type: "分类分类分类分类",
-          sort: 1,
-          status: 1608897351706,
-          time: 2,
+          value: 1,
+          label: "下架",
         },
       ],
+      // 表单数据
+      tableData: [],
       tableKey: [
         {
           name: "ID主键",
@@ -221,32 +258,33 @@ export default {
         },
         {
           name: "站点名称",
-          value: "site",
-          width: 140,
+          value: "siteName",
+          width: 180,
         },
         {
           name: "模拟卷名称",
-          value: "name",
+          value: "paperName",
         },
         {
           name: "显示状态",
-          value: "status",
-          width: 100,
+          value: "stat",
+          operate: true,
+          width: 140,
         },
         {
           name: "总题数",
-          value: "count",
-          width: 120,
+          value: "countSubject",
+          width: 240,
         },
         {
           name: "答题时长（分钟）",
-          value: "status",
-          width: 140,
+          value: "answerTime",
+          width: 240,
         },
         {
           name: "排序值",
           value: "sort",
-          width: 100,
+          width: 140,
         },
         {
           name: "操作",
@@ -255,7 +293,10 @@ export default {
           width: 160,
         },
       ],
-      pageConfig: {
+      params: {
+        id: "",
+        siteName: "", // 站点名称
+        stat: "", // 站点状态
         totalCount: 1,
         pageNum: 1,
         pageSize: 10,
@@ -263,6 +304,17 @@ export default {
     };
   },
   methods: {
+    // 查询站点列表
+    querySiteList() {
+      this.$fetch("site_paper_list", this.params).then((res) => {
+        console.log(res);
+        this.params.totalCount = res.data.totalCount;
+        this.tableData = res.data.records;
+      });
+    },
+    pageChange(val) {
+      this.querySiteList();
+    },
     // 打开弹窗
     handleDialog(status, row) {
       // handleDialog 1: 创建； 2： 查看编辑； 3： 删除； 4： 查看题目； 5： 题目导入
@@ -273,46 +325,65 @@ export default {
            */
           this.handleStatus = status;
           this.dialogVisible = true;
+          this.$nextTick((_) => {
+            this.resetForm("dialogForm");
+          });
           break;
         case 2:
           /**
            * 编辑
            */
-          console.log("编辑", row);
           this.handleStatus = status;
           this.dialogVisible = true;
+          this.$nextTick((_) => {
+            this.dialogForm = deepClone(row);
+          });
           break;
         case 3:
           /**
            * 删除
            */
-          console.log("删除", row);
+          this.$fetch("site_paper_delete", { sitePaperId: row.id }).then(
+            (res) => {
+              this.querySiteList();
+            }
+          );
           break;
         case 4:
           /**
-           * 查看题目；
+           * 查看题目
            */
+          this.lssueData = row
           this.drawerVisible = true;
-          console.log("查看题目；");
           break;
         case 5:
           /**
            * 题目导入
            */
-          console.log("题目导入", row);
           break;
       }
     },
-    // 点击搜索按钮
-    handleSreach() {
-      console.log("搜索");
-    },
     // 弹窗保存按钮
     handleSubmit() {
-      console.log("保存");
+      let status = "add";
+      this.handleStatus == 2 && (status = "update");
+      this.$fetch(`site_paper_${status}`, this.dialogForm).then((res) => {
+        this.dialogVisible = false;
+        this.querySiteList();
+      });
+    },
+    // 重置表单
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
     },
   },
-  mounted() {},
+  mounted() {
+    this.params.paperName = this.paperName;
+    this.params.paperId = this.paperId;
+    this.dialogForm.paperName = this.paperName;
+    this.dialogForm.paperId = this.paperId;
+    this.querySiteList();
+  },
 };
 </script>
 
