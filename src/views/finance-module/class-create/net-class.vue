@@ -270,7 +270,7 @@ export default {
     handleSubmit(formName) {
       this.$refs[formName].validate((valid, formData) => {
         if (valid) {
-          console.log(formData, "保存");
+          console.log(formData, "保存", this.classTypeArr, this.contentListArr);
           const { courseId, contentId } = formData;
           let courseName = this.classTypeArr.find(
             (item) => item.value == courseId
@@ -289,6 +289,7 @@ export default {
               classTypeId: this.classTypeId,
               courseName,
               contentName,
+              courseCode:formData.courseCode=='无'?'':formData.courseCode,
             }
           ).then((res) => {
             this.$message.success("操作成功");
@@ -324,8 +325,8 @@ export default {
           item.createAt = this.$common._formatDates(item.createAt);
           item.startTime = this.$common._formatDates(item.startTime);
           item.endTime = this.$common._formatDates(item.endTime);
-          if(!item.courseCode){
-            item.courseCode ="无"
+          if (!item.courseCode) {
+            item.courseCode = "无";
           }
           return item;
         });
@@ -353,7 +354,7 @@ export default {
         this.contentListArr = this.addFormOptions[1].options = contentList.map(
           (item) => ({
             label: item.contentName,
-            value: item.contentId,
+            value: item.id,
           })
         );
         this.formOptions[0].options = this.classTypeArr;
@@ -397,10 +398,11 @@ export default {
       this.addStatus = true;
       this.addFormOptions.forEach((item) => {
         item.initValue = "";
-        item.readonly = false;
-        item.disabled = false;
         if (item.prop == "classTypeName") {
           item.initValue = this.classTypeName;
+        } else {
+          item.readonly = false;
+          item.disabled = false;
         }
       });
       setTimeout(() => {
@@ -440,10 +442,16 @@ export default {
       //   this.$refs.dataForm3.addInitValue();
       // });
       this.addFormOptions.forEach((item) => {
-        data.codeType = data.codeType_text;
-        data.courseSort = data.courseSort_text;
-        data.courseType = data.courseType_text;
-        item.initValue = data[item.prop];
+        if (
+          item.prop == "codeType" ||
+          item.prop == "courseSort" ||
+          item.prop == "courseType"
+        ) {
+          item.initValue = data[`${item.prop}_text`];
+          console.log('哈哈哈',`${item.prop}_text`,item.initValue)
+        } else {
+          item.initValue = data[item.prop];
+        }
       });
       setTimeout(() => {
         this.$refs.dataForm3.addInitValue();

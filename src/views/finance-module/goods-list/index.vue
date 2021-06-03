@@ -151,7 +151,10 @@
                 <!-- <el-button type="primary" @click="handleCheckInfo"
                   >查询</el-button
                 > -->
-                <el-button type="primary" :disabled="clickdisabled" @click="handleResetInfo"
+                <el-button
+                  type="primary"
+                  :disabled="clickdisabled"
+                  @click="handleResetInfo"
                   >重置</el-button
                 >
               </el-form-item>
@@ -251,6 +254,7 @@
                   v-model="stuForm.saleSource"
                   style="width: 200px"
                   placeholder="请选择来源类型"
+                  @change="saleSourceChange"
                 >
                   <el-option
                     :label="item.label"
@@ -358,7 +362,7 @@
                 label="报考省份"
                 prop="provinceName"
                 :rules="{
-                  required: itemData.productName == '健康管理师' ?true:false,
+                  required: itemData.productName == '健康管理师' ? true : false,
                   message: '不能为空',
                   trigger: 'change',
                 }"
@@ -839,7 +843,12 @@
       </el-card>
 
       <div class="btn-wrapper" style="text-align: right">
-        <el-button type="primary" :disabled="clickdisabled" @click="submitAddForm()">提交</el-button>
+        <el-button
+          type="primary"
+          :disabled="clickdisabled"
+          @click="submitAddForm()"
+          >提交</el-button
+        >
       </div>
     </full-dialog>
   </div>
@@ -855,8 +864,8 @@ export default {
   name: "goods-list",
   data() {
     return {
-      disabled:false,
-      clickdisabled:false,
+      disabled: false,
+      clickdisabled: false,
       validator: Common._validatorPhone,
       validator2: Common._isCardNo,
       testData: "",
@@ -894,7 +903,7 @@ export default {
           element: "el-select",
           placeholder: "班型",
           options: [],
-          filterable:true,
+          filterable: true,
           disabled: false,
         },
         {
@@ -1021,7 +1030,7 @@ export default {
         console.log("obj.a changed", newName, oldName);
         if (oldName != undefined) {
           this.$nextTick(() => {
-            this.getCounpList();
+            // this.getCounpList(); 
           });
         }
       },
@@ -1112,8 +1121,16 @@ export default {
         }
       });
     },
+    saleSourceChange(val) {
+      //来源类型更变
+      if (val && this.stuForm2.courses.length >0) { 
+        this.getCounpList();
+        this.stuForm2.couponId = ""; //置空优惠券
+        this.clearCoupon(); //清空优惠金额
+      }
+    },
     changeSelect() {
-      //选择学员类型
+      //选择学员类型 
       this.stuForm2.couponId = ""; //置空优惠券
       // this.stuForm2.realPrice = ""; //应收
       // this.stuForm2.faceValue = ""; //优惠金额
@@ -1218,6 +1235,13 @@ export default {
       this.stuForm2.campusName = this.itemData.campusName;
       this.stuForm2.classType = this.itemData.className;
       this.stuForm.classBatch = this.itemData.classBatch;
+      this.cityList = []; //重置市
+      this.countyList = []; //重置区
+      this.stuForm2.couponId = ""; //置空优惠券
+      this.stuForm2.realPrice = 0; //清空应收金额
+      this.stuForm2.faceValue = 0; //清空优惠金额 
+      this.couponList = [];
+       
     },
     open(studentCampusModel) {
       this.$alert(
@@ -1258,10 +1282,14 @@ export default {
           this.stuForm["provincinitValue"] = studentCampusModel["provinc"];
           this.stuForm["cityinitValue"] = studentCampusModel["city"];
           this.stuForm["countyinitValue"] = studentCampusModel["county"];
+          this.choseProvince(this.stuForm.provincId);
+          this.choseCity(this.stuForm.cityId);
+          this.choseCounty(this.stuForm.countyId);
           console.log("countycountycounty1111", this.stuForm);
           this.stuForm.studentType = "Old";
 
-          this.$nextTick(() => {//清除校验
+          this.$nextTick(() => {
+            //清除校验
             for (let key in this.stuForm) {
               if (this.stuForm[key] !== "") {
                 this.$refs.stuForm.clearValidate(`${key}`);
@@ -1284,7 +1312,7 @@ export default {
           this.$refs.stuForm4.resetFields();
         });
     },
-    handleFocus(){
+    handleFocus() {
       this.clickdisabled = true;
     },
     handleCheckInfo() {
@@ -1334,11 +1362,9 @@ export default {
       return eval(arr.join("+"));
     },
     changeCheckbox(val) {
-      console.log("val valval", val);
-
       if (!this.stuForm.studentType) {
         this.$message.warning("请先选择学员类型");
-        // this.$refs.stuForm2.clearValidate("courses"); 
+        // this.$refs.stuForm2.clearValidate("courses");
         this.stuForm2.courses = [];
         return;
       }
@@ -1596,7 +1622,6 @@ export default {
           serviceYear: this.itemData.serviceYear,
           idCardAndPhone: this.stuForm.idCardAndPhone,
         }).then((res) => {
-          console.log("提交---32424", this.$refs.stuForm, this.$refs);
           this.$message.success("操作成功");
           this.addVisible = false;
           this.$refs.stuForm.resetFields();
@@ -1625,7 +1650,6 @@ export default {
       this.addVisible = true;
       this.itemData = data;
       this.stuForm.classBatch = data.classBatch;
-      console.log("data--2223", data);
       this.stuForm2.campusName = data.campusName;
       this.stuForm2.classType = data.className;
       this.stuForm2.campusId = data.campusId;
