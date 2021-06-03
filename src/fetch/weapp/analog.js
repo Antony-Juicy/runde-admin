@@ -96,6 +96,11 @@ export default {
     url: '/mini-programs/console/analog_site/add_Issue',
     method: 'post'
   },
+  // 修改题目
+  lssue_paper_update: {
+    url: '/mini-programs/console/analog_site/update_Issue',
+    method: 'post'
+  },
 
   /*********** 题目结束 ***********/
 
