@@ -20,19 +20,21 @@
         :emptyText="emptyText"
       >
         <template slot="courseStartTime" slot-scope="scope">
-          {{scope.row.courseStartTime}} ~ {{scope.row.courseEndTime}}
+          {{ scope.row.courseStartTime }} ~ {{ scope.row.courseEndTime }}
         </template>
         <template slot="edit" slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small">
             编辑
           </el-button>
-           <el-divider direction="vertical"></el-divider>
+          <el-divider direction="vertical"></el-divider>
           <el-button
             @click="changeTable(scope.row)"
             type="text"
             size="small"
             style="color: #ec5b56"
-            >{{scope.row.status_text == 'Normal'? '暂停': '启用'}}</el-button
+            >{{
+              scope.row.status_text == "Normal" ? "暂停" : "启用"
+            }}</el-button
           >
           <!-- <el-button
             @click="changeTable(scope.row.buttonVisible, scope.$index)"
@@ -127,20 +129,19 @@ export default {
             },
             {
               label: "证书",
-              value: "Certificate"
+              value: "Certificate",
             },
             {
               label: "公开课",
-              value: "OpenClass"
-            }
+              value: "OpenClass",
+            },
           ],
         },
         {
           prop: "accountingRules",
           element: "el-select",
           placeholder: "核算规则",
-          options: [
-          ],
+          options: [],
         },
         {
           prop: "status",
@@ -190,7 +191,7 @@ export default {
           value: "contentYear",
           width: 80,
         },
-          {
+        {
           name: "所属项目",
           value: "productName",
           // width: 80,
@@ -205,8 +206,8 @@ export default {
           // width: 80,
         },
         {
-          name:"课程编码",
-          value:"liveCode"
+          name: "课程编码",
+          value: "liveCode",
         },
         {
           name: "单科学费/元",
@@ -231,7 +232,7 @@ export default {
           name: "授课起止时间",
           value: "courseStartTime",
           operate: true,
-          width: 180
+          width: 180,
         },
         {
           name: "创建时间",
@@ -263,15 +264,15 @@ export default {
           label: "所属项目:",
           options: [],
           events: {},
-          disabled: false
+          disabled: false,
         },
-         {
+        {
           prop: "contentYear",
           element: "el-select",
           placeholder: "请选择年份",
           label: "年份:",
           options: [],
-          disabled: false
+          disabled: false,
         },
         {
           prop: "contentName",
@@ -299,29 +300,38 @@ export default {
             },
             {
               label: "证书",
-              value: "Certificate"
+              value: "Certificate",
             },
             {
               label: "公开课",
-              value: "OpenClass"
-            }
+              value: "OpenClass",
+            },
           ],
+          events: {
+            change: this.changecourseCode,
+          },
+        },
+        {
+          prop: "liveCode",
+          element: "el-input",
+          placeholder: "请输入课程编码",
+          label: "课程编码：",
+          hide: true,
         },
         {
           prop: "contentPrice",
           element: "el-input-number",
           placeholder: "请输入具体金额",
           label: "学费金额：",
-          min:0
+          min: 0,
         },
         {
           prop: "accountingRules",
           element: "el-select",
           placeholder: "核算规则",
           label: "核算规则：",
-          options: [
-          ],
-          disabled: false
+          options: [],
+          disabled: false,
         },
         {
           prop: "time",
@@ -330,7 +340,7 @@ export default {
           endPlaceholder: "结束日期",
           initWidth: true,
           label: "授课起止时间：",
-          disabled: false
+          disabled: false,
           //   clearable: false
         },
         {
@@ -392,19 +402,27 @@ export default {
               label: "暂停",
               value: "Stop",
             },
-          ]
+          ],
         },
       ],
       addRules: {
         contentYear: [{ required: true, message: "请输入", trigger: "change" }],
         productId: [{ required: true, message: "请选择", trigger: "change" }],
         contentName: [{ required: true, message: "请输入", trigger: "blur" }],
+        liveCode: [
+          { required: true, message: "请输入", trigger: "blur" },
+          { validator: this.checkData, trigger: "blur" },
+        ],
         contentType: [{ required: true, message: "请选择", trigger: "change" }],
         contentPrice: [{ required: true, message: "请输入", trigger: "blur" }],
-        accountingRules: [{ required: true, message: "请选择", trigger: "change" }],
+        accountingRules: [
+          { required: true, message: "请选择", trigger: "change" },
+        ],
         time: [{ required: true, message: "请选择", trigger: "change" }],
         playback: [{ required: true, message: "请选择", trigger: "change" }],
-        stageGroupId: [{ required: true, message: "请选择", trigger: "change" }],  
+        stageGroupId: [
+          { required: true, message: "请选择", trigger: "change" },
+        ],
         status: [{ required: true, message: "请选择", trigger: "change" }],
       },
       btnLoading: false,
@@ -421,78 +439,101 @@ export default {
       subjectArr: [],
       rulesArr: [],
       stageArr: [],
-      productArr:[],
-      editId: ""
+      productArr: [],
+      editId: "",
     };
   },
-  mounted(){
-    this.getTableData()
-    this.getProductList()
-    this.getRulesList()
+  mounted() {
+    this.getTableData();
+    this.getProductList();
+    this.getRulesList();
     // this.getClassTypeList()
   },
   methods: {
-    handleCheckedChange(soltName, val) {
-      console.log('hahh',val)
-      this.$refs.dataForm3.setValue({
-        [soltName]: val,
-      });
-      setTimeout(() => {
-        this.$refs["dataForm3"].validateField([soltName], (errorMessage) => {
-          console.log(errorMessage, "errorMessage");
-        });
-      }, 0);
-    },
+    checkData(rule, value, callback) {
+      if (value) {
+        if (/[\u4E00-\u9FA5]/g.test(value)) {
+          callback(new Error("不能为中文!"));
+        } else {
+          callback();
+        }
+      }
+      callback();
+    },
+    changecourseCode(val) {
+      if (val == "Live") {
+        this.addFormOptions[4].hide = false;
+      } else {
+        this.addFormOptions[4].hide = true;
+      }
+    },
+    handleCheckedChange(soltName, val) {
+      console.log("hahh", val);
+      this.$refs.dataForm3.setValue({
+        [soltName]: val,
+      });
+      setTimeout(() => {
+        this.$refs["dataForm3"].validateField([soltName], (errorMessage) => {
+          console.log(errorMessage, "errorMessage");
+        });
+      }, 0);
+    },
 
-    getProductList(){
-       this.$fetch("courseProductContent_getProductList").then((res) => {
-         this.productArr = res.data.data.map(item => ({
+    getProductList() {
+      this.$fetch("courseProductContent_getProductList").then((res) => {
+        this.productArr = res.data.data.map((item) => ({
           label: item.productName,
-          value: item.id
+          value: item.id,
         }));
         this.addFormOptions[0].options = this.productArr;
         this.formOptions[1].options = this.productArr;
         this.addFormOptions[0].events = {
-          change: this.productChange
-        }
+          change: this.productChange,
+        };
       });
     },
 
-    productChange(val){
-      return new Promise(resolve => {
-        this.$fetch("courseProductContent_stageGroupList",{
-          productId: val
-        }).then(res => {
-          this.stageArr = res.dataJson.list?res.dataJson.list.map(item => ({
-            label: item.id,
-            value: item.stageGroupName
-          })):[];
-          this.addFormOptions[8].options = this.stageArr;
+    productChange(val) {
+      return new Promise((resolve) => {
+        this.$fetch("courseProductContent_stageGroupList", {
+          productId: val,
+        }).then((res) => {
+          this.stageArr = res.dataJson.list
+            ? res.dataJson.list.map((item) => ({
+                label: item.id,
+                value: item.stageGroupName,
+              }))
+            : [];
+          this.addFormOptions[9].options = this.stageArr;
           this.$refs.dataForm3.setValue({
-            stageGroupId: []
-          })
+            stageGroupId: [],
+          });
           resolve();
-        })
-      })
+        });
+      });
     },
 
-    getRulesList(){
-      return new Promise(resolve => {
-        this.$fetch("courseProductContent_goAccountingRulesSelects").then(res => {
-          const { protocolTypeList,recentlyYear } = res.data;
-          this.rulesArr = protocolTypeList?protocolTypeList.map(item => ({
-            label: item.value,
-            value: item.key
-          })):[];
-          this.addFormOptions[5].options = this.rulesArr;
-          this.addFormOptions[1].options = recentlyYear.map(item => ({
-            label: item,
-            value: item
-          }));
-          this.formOptions[3].options = this.rulesArr;
-          resolve();
-        })
-      })
+    getRulesList() {
+      return new Promise((resolve) => {
+        this.$fetch("courseProductContent_goAccountingRulesSelects").then(
+          (res) => {
+            const { protocolTypeList, recentlyYear } = res.data;
+            this.rulesArr = protocolTypeList
+              ? protocolTypeList.map((item) => ({
+                  label: item.value,
+                  value: item.key,
+                }))
+              : [];
+            this.addFormOptions[6].options = this.rulesArr;
+            this.addFormOptions[1].options = recentlyYear.map((item) => ({
+              label: item,
+              value: item,
+            }));
+            this.formOptions[3].options = this.rulesArr;
+            resolve();
+          }
+        );
+      });
     },
 
     // getClassTypeList(){
@@ -530,16 +571,20 @@ export default {
       this.$refs[formName].validate((valid, formData) => {
         if (valid) {
           console.log(formData, "提交 11");
-          const { time, stageGroupId,productId,accountingRules } = formData;
-          let stageGroupName = [],productName,accountingRules_text;
-          stageGroupId.forEach(item => {  
-            let obj = this.stageArr.find(ele => (item == ele.label));
-            if(obj){
+          const { time, stageGroupId, productId, accountingRules } = formData;
+          let stageGroupName = [],
+            productName,
+            accountingRules_text;
+          stageGroupId.forEach((item) => {
+            let obj = this.stageArr.find((ele) => item == ele.label);
+            if (obj) {
               stageGroupName.push(obj.value);
             }
           });
-          productName = this.productArr.find(ele => (productId == ele.value)).label;
-          accountingRules_text = accountingRules == 'LineAverage'?'直线分摊':'授课结束当月确认';
+          productName = this.productArr.find((ele) => productId == ele.value)
+            .label;
+          accountingRules_text =
+            accountingRules == "LineAverage" ? "直线分摊" : "授课结束当月确认";
           this.$fetch(
             this.addStatus
               ? "courseProductContent_save"
@@ -552,8 +597,8 @@ export default {
               stageGroupId: stageGroupId.join(","),
               stageGroupName: stageGroupName.join(","),
               productName,
-              id: this.addStatus?"":this.editId,
-              accountingRules_text
+              id: this.addStatus ? "" : this.editId,
+              accountingRules_text,
             }
           ).then((res) => {
             this.$message.success("操作成功");
@@ -576,18 +621,20 @@ export default {
     },
     getTableData(params = {}) {
       // posterinfo_listJson
-      this.$fetch("courseProductContent_listJsp", { 
+      this.$fetch("courseProductContent_listJsp", {
         ...this.pageConfig,
         ...this.searchForm,
         ...params,
       }).then((res) => {
-        this.tableData = res.data.list.map(item => {
-          item.playbackCn = item.playback?'有':'无';
-          if(!item.liveCode){
-            item.liveCode ="无"
+        this.tableData = res.data.list.map((item) => {
+          item.playbackCn = item.playback ? "有" : "无";
+          if (!item.liveCode) {
+            item.liveCode = "无";
           }
           item.createAt = this.$common._formatDates(item.createAt);
-          item.courseStartTime = this.$common._formatDates(item.courseStartTime);
+          item.courseStartTime = this.$common._formatDates(
+            item.courseStartTime
+          );
           item.courseEndTime = this.$common._formatDates(item.courseEndTime);
           return item;
         });
@@ -603,38 +650,48 @@ export default {
     async handleEdit(data) {
       this.addStatus = false;
       this.addVisible = true;
-        // 先获取学习阶段下拉
+      console.log(data, "falsefalsefalsefalsefalse");
+      if (data.contentType_text == "Live") {
+        //直播编码
+        this.addFormOptions[4].hide = false;
+      } else {
+        this.addFormOptions[4].hide = true;
+      }
+      // 先获取学习阶段下拉
       await this.productChange(data.productId);
       setTimeout(() => {
         this.$refs.dataForm3.setValue({
           ...data,
           contentType: data.contentType_text,
-          time: [new Date(data.courseStartTime) , new Date(data.courseEndTime)],
+          time: [new Date(data.courseStartTime), new Date(data.courseEndTime)],
           status: data.status_text,
-          stageGroupId: String(data.stageGroupId).split(",").map(item => (Number(item))),
+          stageGroupId: String(data.stageGroupId)
+            .split(",")
+            .map((item) => Number(item)),
           accountingRules: data.accountingRules_text,
           accountingRules_text: data.accountingRules,
-        })
+          liveCode: data.liveCode == "无" ? "" : data.liveCode,
+        });
       }, 0);
       //某些不可编辑
       this.changeDisableStats(true);
       this.editId = data.id;
       //TODO 编辑
     },
-    changeDisableStats(bol){
+    changeDisableStats(bol) {
       this.addFormOptions[0].disabled = bol;
       this.addFormOptions[1].disabled = bol;
-      this.addFormOptions[5].disabled = bol;
       this.addFormOptions[6].disabled = bol;
+      this.addFormOptions[7].disabled = bol;
     },
     changeTable(data) {
-      this.$fetch("courseProductContent_udpateStatus",{
-        status: data.status_text == 'Normal'?'Stop':'Normal',
-        id: data.id
-      }).then(res => {
-        this.$message.success("操作成功")
-        this.getTableData()
-      })
+      this.$fetch("courseProductContent_udpateStatus", {
+        status: data.status_text == "Normal" ? "Stop" : "Normal",
+        id: data.id,
+      }).then((res) => {
+        this.$message.success("操作成功");
+        this.getTableData();
+      });
       // this.tableData[index].buttonVisible = !buttonVisible;
     },
     handleDelete(row) {

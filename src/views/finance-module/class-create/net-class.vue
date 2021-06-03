@@ -249,7 +249,10 @@ export default {
         contentId: [{ required: true, message: "请输入", trigger: "change" }],
         courseId: [{ required: true, message: "请选择", trigger: "change" }],
         codeType: [{ required: true, message: "请选择", trigger: "change" }],
-        courseCode: [{ required: true, message: "请输入", trigger: "blur" }],
+        courseCode: [
+          { required: true, message: "请输入", trigger: "blur" },
+          { validator: this.checkData, trigger: "blur" },
+        ],
         courseType: [{ required: true, message: "请选择", trigger: "change" }],
         courseSort: [{ required: true, message: "请选择", trigger: "change" }],
       },
@@ -267,6 +270,16 @@ export default {
   },
   methods: {
     refresh() {},
+    checkData(rule, value, callback) {
+      if (value) {
+        if (/[\u4E00-\u9FA5]/g.test(value)) {
+          callback(new Error("不能为中文!"));
+        } else {
+          callback();
+        }
+      }
+      callback();
+    },
     handleSubmit(formName) {
       this.$refs[formName].validate((valid, formData) => {
         if (valid) {
@@ -289,7 +302,8 @@ export default {
               classTypeId: this.classTypeId,
               courseName,
               contentName,
-              courseCode:formData.courseCode=='无'?'':formData.courseCode,
+              courseCode:
+                formData.courseCode == "无" ? "" : formData.courseCode,
             }
           ).then((res) => {
             this.$message.success("操作成功");
@@ -448,7 +462,7 @@ export default {
           item.prop == "courseType"
         ) {
           item.initValue = data[`${item.prop}_text`];
-          console.log('哈哈哈',`${item.prop}_text`,item.initValue)
+          console.log("哈哈哈", `${item.prop}_text`, item.initValue);
         } else {
           item.initValue = data[item.prop];
         }
