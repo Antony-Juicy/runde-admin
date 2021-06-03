@@ -2,7 +2,7 @@
   <div class="lssue-x">
     <!-- 弹窗开始 -->
     <el-dialog
-      top="10vh"
+      top="8vh"
       width="35%"
       :title="handleStatus == 1 ? '添加题目' : '编辑查阅'"
       :visible.sync="dialogVisible"
