@@ -125,8 +125,8 @@
           <el-row>
             <el-col :span="24">
               <el-form-item
-                label="查询学员信息"
-                prop="idCardAndPhone"
+                label="身份证"
+                prop="cardId"
                 :rules="[
                   {
                     required: true,
@@ -140,15 +140,21 @@
                 ]"
               >
                 <el-input
-                  v-model="stuForm.idCardAndPhone"
+                  v-model="stuForm.cardId"
                   style="width: 280px; margin-right: 10px"
                   :maxlength="18"
+                  @focus="handleFocus"
+                  @blur="handleCheckInfo"
+                  :disabled="disabled"
                   placeholder="请输入学员身份证"
                 ></el-input>
-                <el-button type="primary" @click="handleCheckInfo"
+                <!-- <el-button type="primary" @click="handleCheckInfo"
                   >查询</el-button
-                >
-                <el-button type="primary" @click="handleResetInfo"
+                > -->
+                <el-button
+                  type="primary"
+                  :disabled="clickdisabled"
+                  @click="handleResetInfo"
                   >重置</el-button
                 >
               </el-form-item>
@@ -196,6 +202,7 @@
                   @change="changeSelect"
                   v-model="stuForm.studentType"
                   style="width: 200px"
+                  disabled
                   placeholder="请选择学员类型"
                 >
                   <el-option
@@ -247,6 +254,7 @@
                   v-model="stuForm.saleSource"
                   style="width: 200px"
                   placeholder="请选择来源类型"
+                  @change="saleSourceChange"
                 >
                   <el-option
                     :label="item.label"
@@ -300,7 +308,7 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-col :span="8">
+            <!-- <el-col :span="8">
               <el-form-item
                 label="身份证"
                 prop="cardId"
@@ -323,7 +331,7 @@
                   placeholder="请输入身份证"
                 ></el-input>
               </el-form-item>
-            </el-col>
+            </el-col> -->
             <el-col :span="8">
               <el-form-item
                 label="手机号"
@@ -350,11 +358,11 @@
             </el-col>
             <el-col :span="8">
               <el-form-item
-                v-if="itemData.productName == '健康管理师'"
+                v-show="itemData.productName == '健康管理师'"
                 label="报考省份"
                 prop="provinceName"
                 :rules="{
-                  required: true,
+                  required: itemData.productName == '健康管理师' ? true : false,
                   message: '不能为空',
                   trigger: 'change',
                 }"
@@ -704,6 +712,7 @@
                 <el-select
                   v-model="stuForm3.enrollId"
                   style="width: 200px"
+                  filterable
                   placeholder="请选择招生老师"
                 >
                   <el-option
@@ -728,6 +737,7 @@
                 <el-select
                   v-model="stuForm3.classTeacherId"
                   style="width: 200px"
+                  filterable
                   placeholder="请选择班主任"
                 >
                   <el-option
@@ -770,6 +780,7 @@
                 <el-select
                   v-model="stuForm3.staffId"
                   style="width: 200px"
+                  filterable
                   placeholder="请选择市场老师"
                 >
                   <el-option
@@ -794,6 +805,7 @@
                 <el-select
                   v-model="stuForm3.eduUserId"
                   style="width: 200px"
+                  filterable
                   placeholder="请选择教务老师"
                 >
                   <el-option
@@ -831,7 +843,12 @@
       </el-card>
 
       <div class="btn-wrapper" style="text-align: right">
-        <el-button type="primary" @click="submitAddForm()">提交</el-button>
+        <el-button
+          type="primary"
+          :disabled="clickdisabled"
+          @click="submitAddForm()"
+          >提交</el-button
+        >
       </div>
     </full-dialog>
   </div>
@@ -847,6 +864,8 @@ export default {
   name: "goods-list",
   data() {
     return {
+      disabled: false,
+      clickdisabled: false,
       validator: Common._validatorPhone,
       validator2: Common._isCardNo,
       testData: "",
@@ -884,6 +903,7 @@ export default {
           element: "el-select",
           placeholder: "班型",
           options: [],
+          filterable: true,
           disabled: false,
         },
         {
@@ -941,7 +961,7 @@ export default {
       stuForm: {
         idCardAndPhone: "",
         studentName: "",
-        studentType: "",
+        studentType: "New",
         classBatch: "",
         saleSource: "",
         mediatorName: "",
@@ -1010,7 +1030,7 @@ export default {
         console.log("obj.a changed", newName, oldName);
         if (oldName != undefined) {
           this.$nextTick(() => {
-            this.getCounpList();
+            // this.getCounpList(); 
           });
         }
       },
@@ -1040,10 +1060,12 @@ export default {
   methods: {
     handleClose() {
       this.addVisible = false;
+      this.disabled = false;
       this.$refs.stuForm.resetFields();
       this.$refs.stuForm2.resetFields();
       this.stuForm2.campusName = this.itemData.campusName;
       this.stuForm2.classType = this.itemData.className;
+      this.stuForm.classBatch = this.itemData.classBatch;
       this.$refs.stuForm3.resetFields();
       this.$refs.stuForm4.resetFields();
     },
@@ -1099,8 +1121,16 @@ export default {
         }
       });
     },
+    saleSourceChange(val) {
+      //来源类型更变
+      if (val && this.stuForm2.courses.length >0) { 
+        this.getCounpList();
+        this.stuForm2.couponId = ""; //置空优惠券
+        this.clearCoupon(); //清空优惠金额
+      }
+    },
     changeSelect() {
-      //选择学员类型
+      //选择学员类型 
       this.stuForm2.couponId = ""; //置空优惠券
       // this.stuForm2.realPrice = ""; //应收
       // this.stuForm2.faceValue = ""; //优惠金额
@@ -1199,45 +1229,130 @@ export default {
     },
     handleResetInfo() {
       //重置
+      this.disabled = false;
       this.$refs.stuForm.resetFields();
       this.$refs.stuForm2.resetFields();
       this.stuForm2.campusName = this.itemData.campusName;
       this.stuForm2.classType = this.itemData.className;
+      this.stuForm.classBatch = this.itemData.classBatch;
+      this.cityList = []; //重置市
+      this.countyList = []; //重置区
+      this.stuForm2.couponId = ""; //置空优惠券
+      this.stuForm2.realPrice = 0; //清空应收金额
+      this.stuForm2.faceValue = 0; //清空优惠金额 
+      this.couponList = [];
+       
+    },
+    open(studentCampusModel) {
+      this.$alert(
+        ` 
+        <h3>经系统查询，该学员为老学员，个人信息如下：</h3>
+        <div>
+        <p><span>姓名：</span> <span>${studentCampusModel.studentName}</span></p> 
+          <p> <span>手机号：</span> <span>${studentCampusModel.phone}</span> </p>
+           <p>  <span>身份证号：</span> <span>${studentCampusModel.cardId}</span> </p>
+        </div>
+        <div style="margin-top:40px;font-size:16px;font-weight:500;">
+        是否自动填充学员信息？
+        </div>
+        `,
+        "学员查询结果",
+        {
+          dangerouslyUseHTMLString: true,
+          confirmButtonText: "是",
+          cancelButtonText: "否",
+          showCancelButton: true,
+          customClass: "elmgs_confirm-box",
+          confirmButtonClass: "confirmButtonClass",
+          cancelButtonClass: "cancelButtonClass",
+        }
+      )
+        .then(() => {
+          //老学员
+          this.$message({
+            type: "success",
+            message: "填充学员信息成功",
+          });
+          this.disabled = true;
+          for (var key in studentCampusModel) {
+            if (this.stuForm[key] != undefined) {
+              this.stuForm[key] = studentCampusModel[key];
+            }
+          }
+          this.stuForm["provincinitValue"] = studentCampusModel["provinc"];
+          this.stuForm["cityinitValue"] = studentCampusModel["city"];
+          this.stuForm["countyinitValue"] = studentCampusModel["county"];
+          this.choseProvince(this.stuForm.provincId);
+          this.choseCity(this.stuForm.cityId);
+          this.choseCounty(this.stuForm.countyId);
+          console.log("countycountycounty1111", this.stuForm);
+          this.stuForm.studentType = "Old";
+
+          this.$nextTick(() => {
+            //清除校验
+            for (let key in this.stuForm) {
+              if (this.stuForm[key] !== "") {
+                this.$refs.stuForm.clearValidate(`${key}`);
+              }
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消填充学员信息",
+          });
+          this.stuForm.studentType = "New";
+          this.$refs.stuForm.resetFields();
+          this.$refs.stuForm2.resetFields();
+          this.stuForm2.campusName = this.itemData.campusName;
+          this.stuForm2.classType = this.itemData.className;
+          this.stuForm.classBatch = this.itemData.classBatch;
+          this.$refs.stuForm3.resetFields();
+          this.$refs.stuForm4.resetFields();
+        });
+    },
+    handleFocus() {
+      this.clickdisabled = true;
     },
     handleCheckInfo() {
-      this.$refs.stuForm.validateField("idCardAndPhone", (errMsg) => {
+      this.clickdisabled = false;
+      this.$refs.stuForm.validateField("cardId", (errMsg) => {
         if (errMsg) {
           console.log("校验失败");
         } else {
           //校验通过
           this.$fetch("studentcampus_basisIdCardAndPhoneGetInfo", {
-            idCardAndPhone: this.stuForm.idCardAndPhone,
+            idCardAndPhone: this.stuForm.cardId,
           }).then((res) => {
             //根据身份证或手机查询学员信息
             if (res.data.studentCampusModel) {
               //老学员
-              for (var key in res.data.studentCampusModel) {
-                if (this.stuForm[key] != undefined) {
-                  this.stuForm[key] = res.data.studentCampusModel[key];
-                }
-              }
-              this.stuForm["provincinitValue"] =
-                res.data.studentCampusModel["provinc"];
-              this.stuForm["cityinitValue"] =
-                res.data.studentCampusModel["city"];
-              this.stuForm["countyinitValue"] =
-                res.data.studentCampusModel["county"];
-              console.log("countycountycounty1111", this.stuForm);
-              this.stuForm.studentType = "Old";
+              this.open(res.data.studentCampusModel);
+              // return;
+              // for (var key in res.data.studentCampusModel) {
+              //   if (this.stuForm[key] != undefined) {
+              //     this.stuForm[key] = res.data.studentCampusModel[key];
+              //   }
+              // }
+              // this.stuForm["provincinitValue"] =
+              //   res.data.studentCampusModel["provinc"];
+              // this.stuForm["cityinitValue"] =
+              //   res.data.studentCampusModel["city"];
+              // this.stuForm["countyinitValue"] =
+              //   res.data.studentCampusModel["county"];
+              // console.log("countycountycounty1111", this.stuForm);
+              // this.stuForm.studentType = "Old";
             } else {
               //新学员
               this.stuForm.studentType = "New";
-              this.$refs.stuForm.resetFields();
-              this.$refs.stuForm2.resetFields();
-              this.stuForm2.campusName = this.itemData.campusName;
-              this.stuForm2.classType = this.itemData.className;
-              this.$refs.stuForm3.resetFields();
-              this.$refs.stuForm4.resetFields();
+              // this.$refs.stuForm.resetFields();
+              // this.$refs.stuForm2.resetFields();
+              // this.stuForm2.campusName = this.itemData.campusName;
+              // this.stuForm2.classType = this.itemData.className;
+              // this.stuForm.classBatch = this.itemData.classBatch;
+              // this.$refs.stuForm3.resetFields();
+              // this.$refs.stuForm4.resetFields();
             }
           });
         }
@@ -1247,10 +1362,15 @@ export default {
       return eval(arr.join("+"));
     },
     changeCheckbox(val) {
-      console.log("val valval", val);
-
       if (!this.stuForm.studentType) {
         this.$message.warning("请先选择学员类型");
+        // this.$refs.stuForm2.clearValidate("courses");
+        this.stuForm2.courses = [];
+        return;
+      }
+      if (!this.stuForm.saleSource) {
+        this.$message.warning("请先选择来源类型");
+        // this.$refs.stuForm2.clearValidate("courses");
         this.stuForm2.courses = [];
         return;
       }
@@ -1502,13 +1622,13 @@ export default {
           serviceYear: this.itemData.serviceYear,
           idCardAndPhone: this.stuForm.idCardAndPhone,
         }).then((res) => {
-          console.log("提交---32424", this.$refs.stuForm, this.$refs);
           this.$message.success("操作成功");
           this.addVisible = false;
           this.$refs.stuForm.resetFields();
           this.$refs.stuForm2.resetFields();
           this.stuForm2.campusName = this.itemData.campusName;
           this.stuForm2.classType = this.itemData.className;
+          this.stuForm.classBatch = this.itemData.classBatch;
           this.$refs.stuForm3.resetFields();
           this.$refs.stuForm4.resetFields();
           this.getTableData();
@@ -1530,7 +1650,6 @@ export default {
       this.addVisible = true;
       this.itemData = data;
       this.stuForm.classBatch = data.classBatch;
-      console.log("data--2223", data);
       this.stuForm2.campusName = data.campusName;
       this.stuForm2.classType = data.className;
       this.stuForm2.campusId = data.campusId;
@@ -1604,7 +1723,32 @@ export default {
   },
 };
 </script>
+<style  lang="scss" >
+.elmgs_confirm-box {
+  width: 500px;
+  padding: 10px 0;
+  .el-message-box__btns {
+    width: 40%;
+    margin: 0 auto 10px;
+    .confirmButtonClass {
+      float: right !important;
+    }
+    .confirmButtonClass {
+      float: left !important;
+    }
+  }
+  .el-message-box__title {
+    text-align: center;
+    & > span {
+      display: inline-block;
+    }
+  }
 
+  .el-message-box__headerbtn {
+    font-size: 24px !important;
+  }
+}
+</style>
 <style lang="scss" scoped>
 .goods-list {
   .empty_box {
