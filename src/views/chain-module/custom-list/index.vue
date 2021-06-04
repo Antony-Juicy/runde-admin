@@ -101,6 +101,7 @@ import RdForm from "@/components/RdForm";
 import CreatChain from "./creat-chain";
 import uploadFile from "@/components/Activity/uploadFile";
 import followInfo from './follow-info';
+import axios from 'axios';
 export default {
   name:"custom-list",
   data(){
@@ -184,6 +185,29 @@ export default {
           prop: "followUpUserId",
           element: "el-select",
           placeholder: "跟进老师",
+          options: [],
+          filterable: true
+        },
+        {
+          prop: "province",
+          element: "el-select",
+          placeholder: "请选择省",
+          options: [],
+          events: {},
+          filterable: true
+        },
+        {
+          prop: "city",
+          element: "el-select",
+          placeholder: "请选择市",
+          options: [],
+          events: {},
+          filterable: true
+        },
+        {
+          prop: "county",
+          element: "el-select",
+          placeholder: "请选择区",
           options: [],
           filterable: true
         },
@@ -346,8 +370,16 @@ export default {
   mounted(){
     this.getTableData();
     this.getSelectList();
+
+    // 获取省市区下拉
+    // this.getAddress();
   },
    methods: {
+     getAddress(){
+       axios.get('https://rdimg.rundejy.com/data/common/address/address.json').then(res => {
+
+       })
+     },
      followSelect(query){
        if (query !== '') {
          this.loading = true;
