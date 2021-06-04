@@ -1647,7 +1647,11 @@ export default {
             // this.stuForm.classBatch = this.itemData.classBatch;
             // this.$refs.stuForm3.resetFields();
             // this.$refs.stuForm4.resetFields();
-            this.handleClose();//重置
+            this.handleClose(); //重置
+            this.stuFormForm1Valid = false;
+            this.stuFormForm2Valid = false;
+            this.stuFormForm3Valid = false;
+            this.stuFormForm4Valid = false;
             this.getTableData();
           })
           .catch((err) => {

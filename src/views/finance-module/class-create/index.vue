@@ -1575,6 +1575,7 @@ export default {
       this.step3FormOptions[8].disabled = this.IsDisabled;
       this.step3FormOptions[9].disabled = this.IsDisabled;
       this.step3FormOptions[10].disabled = this.IsDisabled;
+      scrollTo(0, 800); 
     },
     handlePre() {
       this.active--;
