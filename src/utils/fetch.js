@@ -6,6 +6,7 @@ import common from '@/utils/common'
 import { showLoading, hideLoading } from './loading'
 import apiConfig from "@/fetch/api.js"
 import qs from 'qs'
+import router from '@/router'
 // create an axios instance
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
 // axios.defaults.withCredentials = true
@@ -64,7 +65,7 @@ service.interceptors.request.use(
 
 // response interceptor
 service.interceptors.response.use(
-  response => {
+  async response => {
     hideLoading()
     const res = response.data
     // 文件流直接返回
@@ -83,8 +84,6 @@ service.interceptors.response.use(
     }
     // if the custom code is not 1, it is judged as an error.
     if (res.code !== 200 && res.code !== 1 && res.code !== "Success") {
-
-
       // 4: Illegal token;
       if (res.code == 401 || res.code === 4) {
         Message.closeAll()
@@ -95,17 +94,21 @@ service.interceptors.response.use(
         })
         store.dispatch("user/setTableText", "您没有权限访问")
       } else if (res.code == 402) {
-        let msg = '您的登录已过期，请重新登录。'
-        // to re-login
-        MessageBox.confirm(msg, '确认注销', {
-          confirmButtonText: '重新登录',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          store.dispatch('user/resetToken').then(() => {
-            location.reload()
-          })
-        })
+        // 如果是登录过期，直接跳到登陆页，不做提示
+        await store.dispatch('user/logout')
+        router.push(`/login`)
+        
+        // let msg = '您的登录已过期，请重新登录。'
+        // // to re-login
+        // MessageBox.confirm(msg, '确认注销', {
+        //   confirmButtonText: '重新登录',
+        //   cancelButtonText: '取消',
+        //   type: 'warning'
+        // }).then(() => {
+        //   store.dispatch('user/resetToken').then(() => {
+        //     location.reload()
+        //   })
+        // })
       } else if (res.code == 403) {
         let msg = '您的账号在异地登录，请重新登录。'
         // to re-login
@@ -135,7 +138,7 @@ service.interceptors.response.use(
       return res
     }
   },
-  error => {
+  async error => {
     hideLoading();
     if (!error.response) {
       console.log(error, 'error')
@@ -152,17 +155,20 @@ service.interceptors.response.use(
       })
       store.dispatch("user/setTableText", "您没有权限访问")
     } else if (status === 402) {
-      let msg = '您的登录已过期，请重新登录。'
-      // to re-login
-      MessageBox.confirm(msg, '确认注销', {
-        confirmButtonText: '重新登录',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        store.dispatch('user/resetToken').then(() => {
-          location.reload()
-        })
-      })
+      // 如果是登录过期，直接跳到登陆页，不做提示
+      await store.dispatch('user/logout')
+      router.push(`/login`)
+      // let msg = '您的登录已过期，请重新登录。'
+      // // to re-login
+      // MessageBox.confirm(msg, '确认注销', {
+      //   confirmButtonText: '重新登录',
+      //   cancelButtonText: '取消',
+      //   type: 'warning'
+      // }).then(() => {
+      //   store.dispatch('user/resetToken').then(() => {
+      //     location.reload()
+      //   })
+      // })
     } else if (status === 403) {
       let msg = '您的账号在异地登录，请重新登录。'
       // to re-login

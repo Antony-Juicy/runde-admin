@@ -65,7 +65,7 @@
                 </div> -->
                 <div style="margin-top: 23px;"></div>
               </div>
-              <div class="complete-rate">
+              <div class="complete-rate" v-show="false">
                 <div class="rate-item">
                   <div class="rate-title">门店：</div>
                   <div class="rate-num"> {{overdueTask.storeCount}}</div>
@@ -104,7 +104,7 @@
                   <el-progress :text-inside="true" :stroke-width="20" :percentage="weekCompletePercentage.completePercentage"></el-progress>
                 </div>
               </div>
-              <div class="complete-rate">
+              <div class="complete-rate" v-show="false">
                 <div class="rate-item">
                   <div class="rate-title">门店：</div>
                   <div class="rate-num"> {{weekCompletePercentage.storePercentage}}%</div>

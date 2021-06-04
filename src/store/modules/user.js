@@ -58,7 +58,6 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password, VerifyCode, slatkey } = userInfo
     return new Promise((resolve, reject) => {
-      console.log(222222222)
       Fetch('user_login',{ username: username.trim(), password: md5(password), code: VerifyCode, slatkey }).then(response => {
         const { data } = response
         console.log(data,'data-----')
