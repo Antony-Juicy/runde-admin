@@ -1030,7 +1030,7 @@ export default {
         console.log("obj.a changed", newName, oldName);
         if (oldName != undefined) {
           this.$nextTick(() => {
-            // this.getCounpList(); 
+            // this.getCounpList();
           });
         }
       },
@@ -1055,6 +1055,18 @@ export default {
       },
       immediate: true,
       // deep: true
+    },
+    courseInfoList: {
+      handler(newName, oldName) {
+        if (oldName && oldName.length > 0) {
+          console.log("oldNameoldName", oldName);
+          //清除校验
+          this.$nextTick(() => {
+            this.$refs.stuForm2.clearValidate("courses");
+          });
+        }
+      },
+      immediate: true,
     },
   },
   methods: {
@@ -1123,14 +1135,14 @@ export default {
     },
     saleSourceChange(val) {
       //来源类型更变
-      if (val && this.stuForm2.courses.length >0) { 
+      if (val && this.stuForm2.courses.length > 0) {
         this.getCounpList();
         this.stuForm2.couponId = ""; //置空优惠券
         this.clearCoupon(); //清空优惠金额
       }
     },
     changeSelect() {
-      //选择学员类型 
+      //选择学员类型
       this.stuForm2.couponId = ""; //置空优惠券
       // this.stuForm2.realPrice = ""; //应收
       // this.stuForm2.faceValue = ""; //优惠金额
@@ -1239,9 +1251,8 @@ export default {
       this.countyList = []; //重置区
       this.stuForm2.couponId = ""; //置空优惠券
       this.stuForm2.realPrice = 0; //清空应收金额
-      this.stuForm2.faceValue = 0; //清空优惠金额 
+      this.stuForm2.faceValue = 0; //清空优惠金额
       this.couponList = [];
-       
     },
     open(studentCampusModel) {
       this.$alert(
