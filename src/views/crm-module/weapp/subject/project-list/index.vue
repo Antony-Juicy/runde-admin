@@ -2,7 +2,7 @@
   <div class="project-x">
     <!-- 弹窗开始 -->
     <el-dialog
-      width="30%"
+      width="25%"
       :title="handleStatus == 1 ? '创建项目' : '编辑查阅'"
       :visible.sync="dialogVisible"
     >

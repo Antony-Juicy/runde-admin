@@ -2,7 +2,7 @@
   <div class="site-x">
     <!-- 弹窗开始 -->
     <el-dialog
-      width="40%"
+      width="25%"
       :title="handleStatus == 1 ? '创建站点' : '编辑查阅'"
       :visible.sync="dialogVisible"
       append-to-body
