@@ -24,6 +24,8 @@
         :pageConfig.sync="pageConfig"
         fixedTwoRow
         :multiple="true"
+        :tbodyHeight="595"
+        :pageSizes="[10, 20, 30, 50, 100,200]"
         @pageChange="pageChange"
         @select="handelSelect"
         :emptyText="emptyText"
