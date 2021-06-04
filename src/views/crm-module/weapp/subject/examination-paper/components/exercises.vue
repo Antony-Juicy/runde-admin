@@ -13,7 +13,7 @@
           ref="dialogForm"
           :rules="dialogForm_rules"
           :model="dialogForm"
-          label-width="80px"
+          label-width="94px"
         >
           <el-form-item class="input-normal" label="试卷名称" prop="paperName">
             <el-input
@@ -124,7 +124,12 @@
               />
             </div>
           </el-form-item>
-          <el-form-item class="input-small" label="正确答案" prop="answer">
+          <el-form-item
+            v-if="dialogForm.issuesType == '单选题'"
+            class="input-small"
+            label="正确答案"
+            prop="answer"
+          >
             <el-select
               size="small"
               v-model="dialogForm.issue.answer"
@@ -138,6 +143,18 @@
               >
               </el-option>
             </el-select>
+          </el-form-item>
+          <el-form-item
+            v-if="dialogForm.issuesType == '问答题'"
+            class="input-small"
+            label="观看时间(秒)"
+            prop="watchTime"
+          >
+            <el-input
+              v-model="dialogForm.watchTime"
+              size="small"
+              placeholder="观看时间"
+            ></el-input>
           </el-form-item>
           <el-form-item class="input-small" label="序号" prop="sort">
             <el-input
@@ -263,6 +280,7 @@ export default {
           imageIssuse: "",
           videoId: "",
           textAnalysis: "",
+          watchTime: "",
           option: [],
         },
         issuesType: "单选题",
@@ -280,6 +298,7 @@ export default {
           imageIssuse: "",
           videoId: "",
           textAnalysis: "",
+          watchTime: "",
           option: [],
         },
         issuesType: "单选题",
@@ -445,7 +464,7 @@ export default {
     // 弹窗保存按钮
     handleSubmit() {
       let status;
-      this.dialogForm.siteName = this.lssueData.descriPtion;
+      this.dialogForm.siteName = this.lssueData.siteName;
       this.dialogForm.issuse = this.dialogForm.issue.issuse;
       if (this.handleStatus == 2) {
         status = "update";
