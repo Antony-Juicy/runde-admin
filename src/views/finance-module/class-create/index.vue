@@ -524,6 +524,7 @@ import distribeClass from "./distribe-class";
 import firstStep from "./first-step";
 import classDetail from "./class-detail";
 import Details from "./class-detail/details.vue";
+import { scrollTo } from "@/utils/scroll-to";
 export default {
   name: "class-create",
   components: {
@@ -1577,8 +1578,10 @@ export default {
     },
     handlePre() {
       this.active--;
+      scrollTo(0, 800);
     },
     handleNext(formName) {
+      scrollTo(0, 800);
       console.log("active", this.addStatus, this.active, "formName", formName);
       if (this.active == 2) {
         //step3
@@ -1781,7 +1784,7 @@ export default {
                     });
                   }
                 });
-            
+
                 this.$fetch("courseclasstype_save", {
                   ...formData,
                   financeCode1,
