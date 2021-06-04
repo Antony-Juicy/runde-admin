@@ -114,22 +114,6 @@
             <el-select
               size="small"
               clearable
-              v-model="params.stat"
-              placeholder="模拟卷状态"
-            >
-              <el-option
-                v-for="item in testStatus"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-select
-              size="small"
-              clearable
               v-model="params.subjectId"
               placeholder="项目名称"
             >
@@ -138,6 +122,22 @@
                 :key="item.id"
                 :label="item.subjectName"
                 :value="item.id"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-select
+              size="small"
+              clearable
+              v-model="params.stat"
+              placeholder="模拟卷状态"
+            >
+              <el-option
+                v-for="item in testStatus"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
               >
               </el-option>
             </el-select>
@@ -253,6 +253,10 @@ export default {
       // 模拟卷状态选项
       testStatus: [
         {
+          value: "",
+          label: "全部",
+        },
+        {
           value: 0,
           label: "上架",
         },
@@ -328,8 +332,8 @@ export default {
   },
   methods: {
     fullDialogChange() {
-      this.drawerVisible = false
-      this.siteData = {}
+      this.drawerVisible = false;
+      this.siteData = {};
     },
     // 选择项目时触发
     subjectChange(subjectId) {
@@ -352,6 +356,9 @@ export default {
       });
     },
     pageChange(val) {
+      console.log(val)
+      this.params.pageSize = val.limit
+      this.params.pageNum = val.page
       this.queryPaperList();
     },
     // 打开弹窗

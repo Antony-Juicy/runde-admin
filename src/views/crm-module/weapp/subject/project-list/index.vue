@@ -146,6 +146,10 @@ export default {
       // 项目状态选项
       projectStatus: [
         {
+          value: "",
+          label: "全部",
+        },
+        {
           value: 0,
           label: "显示",
         },
@@ -204,14 +208,17 @@ export default {
     },
     //  查询项目列表
     querySubjectList() {
-      console.log(this.params)
+      console.log(this.params);
       this.$fetch("subject_paper_list", this.params).then((res) => {
         this.params.totalCount = res.data.totalCount;
         this.tableData = res.data.records;
       });
     },
     pageChange(val) {
-      this.querySubjectList();
+      console.log(val);
+      this.params.pageSize = val.limit;
+      this.params.pageNum = val.page;
+      this.queryPaperList();
     },
     // 打开弹窗
     handleDialog(status, row) {

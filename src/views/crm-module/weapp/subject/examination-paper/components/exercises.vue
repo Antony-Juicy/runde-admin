@@ -3,7 +3,7 @@
     <!-- 弹窗开始 -->
     <el-dialog
       top="8vh"
-      width="35%"
+      width="28%"
       :title="handleStatus == 1 ? '添加题目' : '编辑查阅'"
       :visible.sync="dialogVisible"
       append-to-body
@@ -47,11 +47,13 @@
             </el-select>
           </el-form-item>
           <el-form-item class="input-normal" label="音频ID" prop="videoUrl">
-            <el-input
-              v-model="dialogForm.issue.videoUrl"
-              size="small"
-              placeholder="音频ID"
-            ></el-input>
+            <div class="media-upload-btn">
+              <upload-oss-media
+                :btnImg="require('../upload_img.jpg')"
+                :src.sync="dialogForm.issue.videoUrl"
+                preview
+              />
+            </div>
           </el-form-item>
           <el-form-item
             class="input-normal"
@@ -64,7 +66,11 @@
               :rows="3"
             ></el-input>
             <div class="upload-btn">
-              <upload-oss :src.sync="dialogForm.issue.imageIssuse" />
+              <upload-oss
+                :btnImg="require('../upload_img.jpg')"
+                :preview="true"
+                :src.sync="dialogForm.issue.imageIssuse"
+              />
             </div>
           </el-form-item>
 
@@ -85,7 +91,11 @@
                 class="deleteOption el-icon-remove-outline"
               ></i>
               <div class="upload-btn">
-                <upload-oss :src.sync="item.image" />
+                <upload-oss
+                  :btnImg="require('../upload_img.jpg')"
+                  :preview="true"
+                  :src.sync="item.image"
+                />
               </div>
             </el-form-item>
             <el-form-item class="input-normal" size="mini">
@@ -107,7 +117,11 @@
               :rows="4"
             ></el-input>
             <div class="upload-btn">
-              <upload-oss :src.sync="dialogForm.issue.imageAnalysis" />
+              <upload-oss
+                :btnImg="require('../upload_img.jpg')"
+                :preview="true"
+                :src.sync="dialogForm.issue.imageAnalysis"
+              />
             </div>
           </el-form-item>
           <el-form-item class="input-small" label="正确答案" prop="answer">
@@ -212,11 +226,13 @@
 <script>
 import { deepClone } from "@/utils/index.js";
 import UploadOss from "@/components/UploadOss";
+import UploadOssMedia from "@/components/UploadOssMedia";
 
 export default {
   name: "examination-lssue",
   components: {
     UploadOss,
+    UploadOssMedia,
   },
   props: {
     lssueData: {
@@ -271,6 +287,10 @@ export default {
       },
       // 题目状态选项
       lssueStatus: [
+        {
+          value: "",
+          label: "全部",
+        },
         {
           value: 0,
           label: "上架",
@@ -348,7 +368,7 @@ export default {
     },
     // 添加选项按钮
     addOption() {
-      let defaultAscii = 65,
+      const defaultAscii = 65,
         optionCount = this.dialogForm.issue.option.length;
       this.dialogForm.issue.option.push({
         image: "",
@@ -377,12 +397,11 @@ export default {
           /**
            * 新增
            */
-          console.log("新增");
           this.handleStatus = status;
           this.dialogVisible = true;
           this.$nextTick((_) => {
             console.log("重置表单");
-            this.resetForm()
+            this.resetForm();
           });
           break;
         case 2:
@@ -468,7 +487,14 @@ export default {
   /deep/ .img180 {
     width: 32px;
     height: 32px;
-    border: 1px dashed rgb(192, 192, 192);
+  }
+}
+.media-upload-btn {
+  width: 32px;
+  height: 32px;
+  /deep/ .img180 {
+    width: 32px;
+    height: 32px;
   }
 }
 .input-option {

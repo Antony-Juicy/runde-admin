@@ -35,12 +35,22 @@
               size="small"
               placeholder="答题时长"
             ></el-input>
+            <span class="minute">
+              分钟
+            </span>
           </el-form-item>
           <el-form-item label="文案描述" prop="descriPtion">
             <el-input
               v-model="dialogForm.descriPtion"
               type="textarea"
               :rows="5"
+            ></el-input>
+          </el-form-item>
+          <el-form-item class="select" label="总题数" prop="countSubject">
+            <el-input
+              v-model="dialogForm.countSubject"
+              size="small"
+              placeholder="总题数"
             ></el-input>
           </el-form-item>
           <el-form-item class="select" label="排序值" prop="sort">
@@ -85,7 +95,7 @@
       append-to-body
       size="90%"
     >
-    <exercises v-if="drawerVisible" :lssueData="lssueData" />
+      <exercises v-if="drawerVisible" :lssueData="lssueData" />
     </el-drawer>
     <!-- 抽屉结束 -->
     <div class="site-handle">
@@ -196,7 +206,7 @@ export default {
   data() {
     return {
       // 题目ID
-      lssueData: '',
+      lssueData: "",
       // 抽屉显示
       drawerVisible: false,
       // 弹窗显示
@@ -213,6 +223,8 @@ export default {
         paperId: "",
         // 状态
         stat: "",
+        // 总题数
+        countSubject: "",
         // 答题时间
         answerTime: "",
         // 排序值
@@ -230,6 +242,8 @@ export default {
         paperId: "",
         // 状态
         stat: "",
+        // 总题数
+        countSubject: "",
         // 答题时间
         answerTime: "",
         // 排序值
@@ -239,6 +253,10 @@ export default {
       },
       // 站点状态选项
       siteStatus: [
+        {
+          value: "",
+          label: "全部",
+        },
         {
           value: 0,
           label: "上架",
@@ -313,7 +331,10 @@ export default {
       });
     },
     pageChange(val) {
-      this.querySiteList();
+      console.log(val);
+      this.params.pageSize = val.limit;
+      this.params.pageNum = val.page;
+      this.queryPaperList();
     },
     // 打开弹窗
     handleDialog(status, row) {
@@ -353,7 +374,7 @@ export default {
           /**
            * 查看题目
            */
-          this.lssueData = row
+          this.lssueData = row;
           this.drawerVisible = true;
           break;
         case 5:
@@ -391,9 +412,14 @@ export default {
 .site-x {
   width: 100%;
 }
+.minute {
+  position: absolute;
+  right: -8px;
+  transform: translateX(100%);
+}
 .site-dialog-form {
   .input {
-    width: 480px;
+    width: 100%;
   }
   .select {
     width: 280px;
