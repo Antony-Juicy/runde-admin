@@ -178,7 +178,7 @@
       <el-button @click="handleDialog(1)" type="primary" size="small"
         >创建题目</el-button
       >
-      <div class="lssue-handle__form">
+      <!-- <div class="lssue-handle__form">
         <el-form ref="sreachForm" :model="params" width="500px">
           <el-form-item>
             <el-input
@@ -207,7 +207,7 @@
         <el-button @click="queryLssueList" type="primary" size="small"
           >搜索</el-button
         >
-      </div>
+      </div> -->
     </div>
     <div class="lssue-table">
       <rd-table :tableData="tableData" :tableKey="tableKey">

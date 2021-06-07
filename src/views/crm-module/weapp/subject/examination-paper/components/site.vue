@@ -171,25 +171,47 @@
             >查看题目</el-button
           >
           <el-divider direction="vertical"></el-divider>
-          <el-button
-            @click="handleDialog(5, scope.row)"
-            type="text"
-            size="small"
-            >题目导入</el-button
-          >
+          <el-popover placement="top" title="导入方式" trigger="hover">
+            <el-button
+              size="mini"
+              @click="handleDialog(5, scope.row, 'add')"
+              type="primary"
+              >新增</el-button
+            >
+            <el-button
+              size="mini"
+              @click="handleDialog(5, scope.row, 'cover')"
+              type="primary"
+              >覆盖</el-button
+            >
+            <el-button type="text" size="small" slot="reference"
+              >题目导入</el-button
+            >
+          </el-popover>
         </template>
       </rd-table>
     </div>
+    <!-- 上传题目 -->
+    <upload-file-dialog
+      :importVisible.sync="uploadVisible"
+      url="import_issue_excel"
+      :uploadParam="uploadParam"
+      @refresh="querySiteList"
+      append-to-body
+    />
   </div>
 </template>
 
 <script>
 import { deepClone } from "@/utils/index.js";
 import exercises from "./exercises";
+import uploadFileDialog from "@/components/Activity/uploadFileDialog";
+
 export default {
   name: "examination-site",
   components: {
     exercises,
+    uploadFileDialog
   },
   props: {
     paperName: {
@@ -205,6 +227,8 @@ export default {
   },
   data() {
     return {
+      uploadVisible: false,
+      uploadParam: {},
       // 题目ID
       lssueData: "",
       // 抽屉显示
@@ -337,7 +361,7 @@ export default {
       this.queryPaperList();
     },
     // 打开弹窗
-    handleDialog(status, row) {
+    handleDialog(status, row, uploadType) {
       // handleDialog 1: 创建； 2： 查看编辑； 3： 删除； 4： 查看题目； 5： 题目导入
       switch (status) {
         case 1:
@@ -364,7 +388,8 @@ export default {
           /**
            * 删除
            */
-          this.$fetch("site_paper_delete", { sitePaperId: row.id }).then(
+          console.log(row)
+          this.$fetch("site_paper_delete", { analogSiteId: row.id }).then(
             (res) => {
               this.querySiteList();
             }
@@ -377,10 +402,17 @@ export default {
           this.lssueData = row;
           this.drawerVisible = true;
           break;
-        case 5:
+         case 5:
           /**
            * 题目导入
            */
+          console.log("题目导入", row);
+          this.uploadParam = {
+            chooseType: uploadType,
+            paperId: row.id,
+            siteName: row.siteName
+          };
+          this.uploadVisible = true;
           break;
       }
     },

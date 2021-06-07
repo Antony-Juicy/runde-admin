@@ -71,8 +71,11 @@ export default {
       console.log(this.importFile)
       let obj = new FormData();
       if (this.uploadParam) {
-        obj = this.uploadParam;
-        obj[this.fileParamName] = this.importFile
+        obj.append(this.fileParamName, this.importFile);
+       for(let key in this.uploadParam) {
+         console.log(key)
+         obj.append(key, this.uploadParam[key])
+       }
       } else {
         obj.append(this.fileParamName, this.importFile);
         obj.append("id", this.importId);
