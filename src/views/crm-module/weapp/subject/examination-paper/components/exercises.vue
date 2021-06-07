@@ -4,6 +4,7 @@
     <el-dialog
       top="8vh"
       width="28%"
+      :close-on-click-modal="false"
       :title="handleStatus == 1 ? '添加题目' : '编辑查阅'"
       :visible.sync="dialogVisible"
       append-to-body
