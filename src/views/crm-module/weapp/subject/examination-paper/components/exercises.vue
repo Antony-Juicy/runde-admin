@@ -211,6 +211,12 @@
     </div>
     <div class="lssue-table">
       <rd-table :tableData="tableData" :tableKey="tableKey">
+         <template slot="siteName">
+           {{ lssueData.siteName }}
+         </template>
+         <template slot="issuse" slot-scope="scope">
+           {{ scope.row.issue.issuse }}
+         </template>
         <template slot="stat" slot-scope="scope">
           {{ scope.row.stat == 0 ? "上架" : "下架" }}
         </template>
@@ -341,10 +347,12 @@ export default {
         {
           name: "题目名称",
           value: "issuse",
+          operate: true,
         },
         {
           name: "站点名称",
           value: "siteName",
+          operate: true,
         },
         {
           name: "题目类型",
@@ -464,8 +472,6 @@ export default {
     // 弹窗保存按钮
     handleSubmit() {
       let status;
-      this.dialogForm.siteName = this.lssueData.siteName;
-      this.dialogForm.issuse = this.dialogForm.issue.issuse;
       if (this.handleStatus == 2) {
         status = "update";
       } else if (this.handleStatus == 1) {
