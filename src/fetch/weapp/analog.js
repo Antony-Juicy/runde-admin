@@ -1,4 +1,11 @@
 export default {
+
+  // 题目导入接口
+  import_issue_excel: {
+    url: '/mini-programs/console/analog_site/import_issue_excel',
+    method: 'post'
+  },
+
   /*********** 试卷开始 ***********/
 
   // 试卷分页查询
@@ -81,7 +88,7 @@ export default {
   /*********** 站点结束 ***********/
 
 
-  
+
   /*********** 题目开始 ***********/
   // 查看所有题目
   lssue_paper_list: {
