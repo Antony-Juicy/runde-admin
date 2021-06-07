@@ -5,6 +5,7 @@
       width="25%"
       :title="handleStatus == 1 ? '创建模拟卷' : '编辑查阅'"
       :visible.sync="dialogVisible"
+      :close-on-click-modal="false"
     >
       <div class="test-dialog-form">
         <el-form
@@ -168,7 +169,7 @@
         @pageChange="pageChange"
       >
         <template slot="isShare" slot-scope="scope">
-          {{ scope.row.isShare == 0 ? "不需要分享" : "分享解锁" }}
+          {{ scope.row.isShare == 0 ? "分享解锁" : "不用解锁" }}
         </template>
         <template slot="stat" slot-scope="scope">
           {{ scope.row.stat == 0 ? "上架" : "下架" }}

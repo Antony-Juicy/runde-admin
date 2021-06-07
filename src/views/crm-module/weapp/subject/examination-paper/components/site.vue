@@ -6,6 +6,7 @@
       :title="handleStatus == 1 ? '创建站点' : '编辑查阅'"
       :visible.sync="dialogVisible"
       append-to-body
+      :close-on-click-modal="false"
     >
       <div class="site-dialog-form">
         <el-form

@@ -5,6 +5,7 @@
       width="25%"
       :title="handleStatus == 1 ? '创建项目' : '编辑查阅'"
       :visible.sync="dialogVisible"
+      :close-on-click-modal="false"
     >
       <div class="project-dialog-form">
         <el-form
