@@ -420,12 +420,13 @@ export default {
           /**
            * 题目导入
            */
+          console.log(row);
           this.uploadParam = {
             chooseType: uploadType,
             paperId: row.paperId,
             siteName: row.siteName,
           };
-           this.uploadType = false;
+          this.uploadType = false;
           this.uploadVisible = true;
           break;
       }
