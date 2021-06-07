@@ -422,7 +422,7 @@ export default {
            */
           this.uploadParam = {
             chooseType: uploadType,
-            paperId: row.id,
+            paperId: row.paperId,
             siteName: row.siteName,
           };
            this.uploadType = false;
