@@ -101,6 +101,12 @@
       <el-button @click="handleDialog(1)" type="primary" size="small"
         >创建模拟卷</el-button
       >
+      <el-button @click="handleDownTemp('/temp/doctor_mock_import_add.xls')" type="primary" size="small"
+        >下载新增题目模板</el-button
+      >
+      <el-button @click="handleDownTemp('/temp/doctor_mock_import_cover.xls')" type="primary" size="small"
+        >下载覆盖题目模板</el-button
+      >
       <div class="test-handle__form">
         <el-form ref="sreachForm" :model="params" width="500px">
           <el-form-item>
@@ -186,29 +192,52 @@
             >站点列表</el-button
           >
           <el-divider direction="vertical"></el-divider>
-          <el-button
-            @click="handleDialog(5, scope.row)"
-            type="text"
-            size="small"
-            >题目导入</el-button
-          >
+          <el-popover placement="top" title="导入方式" trigger="hover">
+            <el-button
+              size="mini"
+              @click="handleDialog(5, scope.row, 'add')"
+              type="primary"
+              >新增</el-button
+            >
+            <el-button
+              size="mini"
+              @click="handleDialog(5, scope.row, 'cover')"
+              type="primary"
+              >覆盖</el-button
+            >
+            <el-button type="text" size="small" slot="reference"
+              >题目导入</el-button
+            >
+          </el-popover>
         </template>
       </rd-table>
     </div>
+    <!-- 上传题目 -->
+    <upload-file-dialog
+      :importVisible.sync="uploadVisible"
+      url="import_issue_excel"
+      :uploadParam="uploadParam"
+      @refresh="queryPaperList"
+    />
   </div>
 </template>
 
 <script>
 import site from "./components/site";
 import { deepClone } from "@/utils/index.js";
+import uploadFileDialog from "@/components/Activity/uploadFileDialog";
 
 export default {
   name: "examination-paper",
   components: {
     site,
+    uploadFileDialog,
   },
   data() {
     return {
+      // 文件上传
+      uploadVisible: false,
+      uploadParam: {},
       // 传入站点页面的数据
       siteData: {
         subjectName: null,
@@ -331,6 +360,10 @@ export default {
     };
   },
   methods: {
+    // 下载模板
+    handleDownTemp(file) {
+      window.location.href = file;
+    },
     fullDialogChange() {
       this.drawerVisible = false;
       this.siteData = {};
@@ -356,13 +389,12 @@ export default {
       });
     },
     pageChange(val) {
-      console.log(val)
-      this.params.pageSize = val.limit
-      this.params.pageNum = val.page
+      this.params.pageSize = val.limit;
+      this.params.pageNum = val.page;
       this.queryPaperList();
     },
     // 打开弹窗
-    handleDialog(status, row) {
+    handleDialog(status, row, uploadType) {
       // handleDialog 1: 创建； 2： 查看编辑； 3： 删除； 4： 站点列表； 5： 题目导入
       switch (status) {
         case 1:
@@ -407,6 +439,11 @@ export default {
           /**
            * 题目导入
            */
+          this.uploadParam = {
+            chooseType: uploadType,
+            paperId: row.id,
+          };
+          this.uploadVisible = true;
           break;
       }
     },
@@ -425,6 +462,8 @@ export default {
     },
   },
   mounted() {
+    let obj = new FormData();
+    obj.append("id", "110");
     this.queryPaperList();
     this.querySubjectList();
   },

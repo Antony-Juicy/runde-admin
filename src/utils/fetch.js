@@ -215,7 +215,6 @@ const $fetch = async (apiName, params, config) => {
   let newConfig = JSON.parse(JSON.stringify(apiConfig[apiName]));
   const { headers = [], paramType, method } = newConfig;
   newConfig.headers = {};
-
   if (headers.length > 0) {
     headers.forEach(({ key, value }) => {
       newConfig.headers[key] = value;
@@ -266,7 +265,6 @@ const $fetch = async (apiName, params, config) => {
   }
 
   totalNewConfig = newConfig;
-
   return service(newConfig);
 }
 

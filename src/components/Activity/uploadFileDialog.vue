@@ -31,23 +31,23 @@ export default {
   data() {
     return {
       importFile: "",
-      fileList: []
+      fileList: [],
     };
   },
   props: {
     importVisible: {
-      type: Boolean
+      type: Boolean,
     },
     importId: {
-      type: Number | String
+      type: Number | String,
     },
     title: {
       type: String,
-      default: "上传题目"
+      default: "上传题目",
     },
     url: {
       type: String,
-      default: "lookpicture_import"
+      default: "lookpicture_import",
     },
     appendToBody: {
       type: Boolean,
@@ -55,8 +55,12 @@ export default {
     },
     fileParamName: {
       type: String,
-      default:"excel"
-    }
+      default: "excel",
+    },
+    uploadParam: {
+      type: Object,
+      default: null,
+    },
   },
   methods: {
     submitImportForm() {
@@ -64,18 +68,26 @@ export default {
         this.$message.warning("请上传文件");
         return;
       }
+      console.log(this.importFile)
       let obj = new FormData();
-      obj.append(this.fileParamName, this.importFile);
-      obj.append("id", this.importId);
+      if (this.uploadParam) {
+        obj.append(this.fileParamName, this.importFile);
+       for(let key in this.uploadParam) {
+         obj.append(key, this.uploadParam[key])
+       }
+      } else {
+        obj.append(this.fileParamName, this.importFile);
+        obj.append("id", this.importId);
+      }
       this.$fetch(this.url, obj).then((res) => {
         if (res.code == 200) {
           this.$message.success("操作成功");
-          this.$emit("refresh")
-          this.$emit("update:importVisible", false)
+          this.$emit("refresh");
+          this.$emit("update:importVisible", false);
         }
       });
     },
-     // 上传文件
+    // 上传文件
     handleExceed(files, fileList) {
       this.$message.warning(
         `当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${
@@ -89,18 +101,18 @@ export default {
     handleChange(file, fileList) {
       this.importFile = file.raw;
     },
-     // 导入上传之前的文件格式校验
+    // 导入上传之前的文件格式校验
     beforeAvatarUpload(file) {
-      console.log(file)
-      let testmsg=file.name.substring(file.name.lastIndexOf('.')+1)
-      const extension = testmsg === 'xls'
-      const extension2 = testmsg === 'xlsx'
+      console.log(file);
+      let testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
+      const extension = testmsg === "xls";
+      const extension2 = testmsg === "xlsx";
       // const isLt2M = file.size / 1024 / 1024 < 10
-      if(!extension && !extension2) {
-          this.$message({
-              message: '上传文件只能是 xls、xlsx格式!',
-              type: 'warning'
-          });
+      if (!extension && !extension2) {
+        this.$message({
+          message: "上传文件只能是 xls、xlsx格式!",
+          type: "warning",
+        });
       }
       // if(!isLt2M) {
       //     this.$message({
@@ -109,12 +121,12 @@ export default {
       //     });
       // }
       // return extension || extension2 && isLt2M
-      return extension || extension2
+      return extension || extension2;
     },
-    handleClose(){
+    handleClose() {
       // this.importVisible = false;
-      this.$emit("update:importVisible", false)
-    }
+      this.$emit("update:importVisible", false);
+    },
   },
 };
 </script>

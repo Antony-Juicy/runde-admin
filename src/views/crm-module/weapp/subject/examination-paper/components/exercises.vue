@@ -4,6 +4,7 @@
     <el-dialog
       top="8vh"
       width="28%"
+      :close-on-click-modal="false"
       :title="handleStatus == 1 ? '添加题目' : '编辑查阅'"
       :visible.sync="dialogVisible"
       append-to-body
@@ -178,7 +179,7 @@
       <el-button @click="handleDialog(1)" type="primary" size="small"
         >创建题目</el-button
       >
-      <div class="lssue-handle__form">
+      <!-- <div class="lssue-handle__form">
         <el-form ref="sreachForm" :model="params" width="500px">
           <el-form-item>
             <el-input
@@ -207,10 +208,16 @@
         <el-button @click="queryLssueList" type="primary" size="small"
           >搜索</el-button
         >
-      </div>
+      </div> -->
     </div>
     <div class="lssue-table">
       <rd-table :tableData="tableData" :tableKey="tableKey">
+         <template slot="siteName">
+           {{ lssueData.siteName }}
+         </template>
+         <template slot="issuse" slot-scope="scope">
+           {{ scope.row.issue.issuse }}
+         </template>
         <template slot="stat" slot-scope="scope">
           {{ scope.row.stat == 0 ? "上架" : "下架" }}
         </template>
@@ -341,10 +348,12 @@ export default {
         {
           name: "题目名称",
           value: "issuse",
+          operate: true,
         },
         {
           name: "站点名称",
           value: "siteName",
+          operate: true,
         },
         {
           name: "题目类型",
@@ -398,9 +407,7 @@ export default {
     // 查询题目列表
     queryLssueList() {
       this.$fetch("lssue_paper_list", this.params).then((res) => {
-        console.log(res);
         if (res.code == 200) {
-          console.log(JSON.parse(res.msg));
           this.tableData = JSON.parse(res.msg);
         }
       });
@@ -419,7 +426,6 @@ export default {
           this.handleStatus = status;
           this.dialogVisible = true;
           this.$nextTick((_) => {
-            console.log("重置表单");
             this.resetForm();
           });
           break;
@@ -427,7 +433,6 @@ export default {
           /**
            * 编辑
            */
-          console.log(row);
           this.handleStatus = status;
           this.dialogVisible = true;
           this.$nextTick((_) => {
@@ -442,7 +447,6 @@ export default {
             issuseId: row.issuseId,
             id: this.params.analogSiteId,
           }).then((res) => {
-            console.log(res);
             this.queryLssueList();
           });
           break;
@@ -451,7 +455,6 @@ export default {
            * 查看题目
            */
           this.drawerVisible = true;
-          console.log(row);
           this.lssueId = row.id;
           break;
         case 5:
@@ -464,20 +467,16 @@ export default {
     // 弹窗保存按钮
     handleSubmit() {
       let status;
-      this.dialogForm.siteName = this.lssueData.siteName;
-      this.dialogForm.issuse = this.dialogForm.issue.issuse;
       if (this.handleStatus == 2) {
         status = "update";
       } else if (this.handleStatus == 1) {
         status = "add";
         delete this.dialogForm.issuseId;
       }
-      console.log(this.dialogForm);
       let params = {
         id: this.lssueData.id,
         content: JSON.stringify(this.dialogForm),
       };
-      console.log(params);
       this.$fetch(`lssue_paper_${status}`, params).then((res) => {
         this.dialogVisible = false;
         this.queryLssueList();
@@ -490,8 +489,6 @@ export default {
   },
   mounted() {
     this.params.analogSiteId = this.lssueData.id;
-    console.log(this.lssueData);
-    console.log(this.params);
     this.queryLssueList();
   },
 };
