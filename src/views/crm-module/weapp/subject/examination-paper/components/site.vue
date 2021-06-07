@@ -349,13 +349,11 @@ export default {
     // 查询站点列表
     querySiteList() {
       this.$fetch("site_paper_list", this.params).then((res) => {
-        console.log(res);
         this.params.totalCount = res.data.totalCount;
         this.tableData = res.data.records;
       });
     },
     pageChange(val) {
-      console.log(val);
       this.params.pageSize = val.limit;
       this.params.pageNum = val.page;
       this.queryPaperList();
@@ -388,7 +386,6 @@ export default {
           /**
            * 删除
            */
-          console.log(row)
           this.$fetch("site_paper_delete", { analogSiteId: row.id }).then(
             (res) => {
               this.querySiteList();
@@ -406,7 +403,6 @@ export default {
           /**
            * 题目导入
            */
-          console.log("题目导入", row);
           this.uploadParam = {
             chooseType: uploadType,
             paperId: row.id,

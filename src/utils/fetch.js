@@ -265,7 +265,6 @@ const $fetch = async (apiName, params, config) => {
   }
 
   totalNewConfig = newConfig;
-  console.log(newConfig)
   return service(newConfig);
 }
 

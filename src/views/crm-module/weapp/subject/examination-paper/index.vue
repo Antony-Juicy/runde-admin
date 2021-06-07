@@ -389,7 +389,6 @@ export default {
       });
     },
     pageChange(val) {
-      console.log(val);
       this.params.pageSize = val.limit;
       this.params.pageNum = val.page;
       this.queryPaperList();
@@ -440,7 +439,6 @@ export default {
           /**
            * 题目导入
            */
-          console.log("题目导入", row);
           this.uploadParam = {
             chooseType: uploadType,
             paperId: row.id,
@@ -466,7 +464,6 @@ export default {
   mounted() {
     let obj = new FormData();
     obj.append("id", "110");
-    console.table(obj);
     this.queryPaperList();
     this.querySubjectList();
   },

@@ -73,7 +73,6 @@ export default {
       if (this.uploadParam) {
         obj.append(this.fileParamName, this.importFile);
        for(let key in this.uploadParam) {
-         console.log(key)
          obj.append(key, this.uploadParam[key])
        }
       } else {

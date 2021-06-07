@@ -406,9 +406,7 @@ export default {
     // 查询题目列表
     queryLssueList() {
       this.$fetch("lssue_paper_list", this.params).then((res) => {
-        console.log(res);
         if (res.code == 200) {
-          console.log(JSON.parse(res.msg));
           this.tableData = JSON.parse(res.msg);
         }
       });
@@ -427,7 +425,6 @@ export default {
           this.handleStatus = status;
           this.dialogVisible = true;
           this.$nextTick((_) => {
-            console.log("重置表单");
             this.resetForm();
           });
           break;
@@ -435,7 +432,6 @@ export default {
           /**
            * 编辑
            */
-          console.log(row);
           this.handleStatus = status;
           this.dialogVisible = true;
           this.$nextTick((_) => {
@@ -450,7 +446,6 @@ export default {
             issuseId: row.issuseId,
             id: this.params.analogSiteId,
           }).then((res) => {
-            console.log(res);
             this.queryLssueList();
           });
           break;
@@ -459,7 +454,6 @@ export default {
            * 查看题目
            */
           this.drawerVisible = true;
-          console.log(row);
           this.lssueId = row.id;
           break;
         case 5:
@@ -478,12 +472,10 @@ export default {
         status = "add";
         delete this.dialogForm.issuseId;
       }
-      console.log(this.dialogForm);
       let params = {
         id: this.lssueData.id,
         content: JSON.stringify(this.dialogForm),
       };
-      console.log(params);
       this.$fetch(`lssue_paper_${status}`, params).then((res) => {
         this.dialogVisible = false;
         this.queryLssueList();
@@ -496,8 +488,6 @@ export default {
   },
   mounted() {
     this.params.analogSiteId = this.lssueData.id;
-    console.log(this.lssueData);
-    console.log(this.params);
     this.queryLssueList();
   },
 };
