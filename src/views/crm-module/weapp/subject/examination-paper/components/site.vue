@@ -35,9 +35,7 @@
               size="small"
               placeholder="答题时长"
             ></el-input>
-            <span class="minute">
-              分钟
-            </span>
+            <span class="minute"> 分钟 </span>
           </el-form-item>
           <el-form-item label="文案描述" prop="descriPtion">
             <el-input
@@ -67,7 +65,7 @@
               placeholder="站点状态"
             >
               <el-option
-                v-for="item in siteStatus"
+                v-for="item in siteStatusHandle"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -171,26 +169,32 @@
             >查看题目</el-button
           >
           <el-divider direction="vertical"></el-divider>
-          <el-popover placement="top" title="导入方式" trigger="hover">
-            <el-button
-              size="mini"
-              @click="handleDialog(5, scope.row, 'add')"
-              type="primary"
-              >新增</el-button
-            >
-            <el-button
-              size="mini"
-              @click="handleDialog(5, scope.row, 'cover')"
-              type="primary"
-              >覆盖</el-button
-            >
-            <el-button type="text" size="small" slot="reference"
-              >题目导入</el-button
-            >
-          </el-popover>
+          <el-button
+            @click="(uploadType = true), (uploadData = scope.row)"
+            type="text"
+            size="small"
+            slot="reference"
+            >题目导入</el-button
+          >
         </template>
       </rd-table>
     </div>
+    <el-dialog
+      top="8vh"
+      width="18%"
+      title="导入类型"
+      :visible.sync="uploadType"
+      append-to-body
+    >
+      <div class="upload-type-btn">
+        <el-button @click="handleDialog(5, uploadData, 'add')" type="primary"
+          >新增</el-button
+        >
+        <el-button @click="handleDialog(5, uploadData, 'cover')" type="primary"
+          >覆盖</el-button
+        >
+      </div>
+    </el-dialog>
     <!-- 上传题目 -->
     <upload-file-dialog
       :importVisible.sync="uploadVisible"
@@ -211,7 +215,7 @@ export default {
   name: "examination-site",
   components: {
     exercises,
-    uploadFileDialog
+    uploadFileDialog,
   },
   props: {
     paperName: {
@@ -227,6 +231,8 @@ export default {
   },
   data() {
     return {
+      uploadType: false,
+      uploadData: "",
       uploadVisible: false,
       uploadParam: {},
       // 题目ID
@@ -281,6 +287,16 @@ export default {
           value: "",
           label: "全部",
         },
+        {
+          value: 0,
+          label: "上架",
+        },
+        {
+          value: 1,
+          label: "下架",
+        },
+      ],
+      siteStatusHandle: [
         {
           value: 0,
           label: "上架",
@@ -399,15 +415,16 @@ export default {
           this.lssueData = row;
           this.drawerVisible = true;
           break;
-         case 5:
+        case 5:
           /**
            * 题目导入
            */
           this.uploadParam = {
             chooseType: uploadType,
             paperId: row.id,
-            siteName: row.siteName
+            siteName: row.siteName,
           };
+           this.uploadType = false;
           this.uploadVisible = true;
           break;
       }
@@ -454,6 +471,11 @@ export default {
   }
 }
 .site-dialog-btn {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.upload-type-btn {
   width: 100%;
   display: flex;
   justify-content: center;

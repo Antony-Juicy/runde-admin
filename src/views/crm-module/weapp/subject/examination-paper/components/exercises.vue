@@ -417,7 +417,7 @@ export default {
     },
     // 打开弹窗
     handleDialog(status, row) {
-      // handleDialog 1: 创建； 2： 查看编辑； 3： 删除； 4： 查看题目； 5： 题目导入
+      // handleDialog 1: 创建； 2： 查看编辑； 3： 删除； 4： 查看题目
       switch (status) {
         case 1:
           /**
@@ -456,11 +456,6 @@ export default {
            */
           this.drawerVisible = true;
           this.lssueId = row.id;
-          break;
-        case 5:
-          /**
-           * 题目导入
-           */
           break;
       }
     },
