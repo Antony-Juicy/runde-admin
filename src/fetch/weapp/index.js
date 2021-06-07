@@ -4,6 +4,7 @@ import liveGoods from './live-goods';
 import live from './live';
 import onlineCourse from './online-course'
 import book from './book'
+import analog from './analog'
 
 export default {
   ...liveconfig,
@@ -11,5 +12,6 @@ export default {
   ...liveGoods,
   ...live,
   ...onlineCourse,
-  ...book
+  ...book,
+  ...analog
 }
