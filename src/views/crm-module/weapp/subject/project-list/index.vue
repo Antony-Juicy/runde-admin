@@ -28,7 +28,7 @@
               placeholder="项目状态"
             >
               <el-option
-                v-for="item in projectStatus"
+                v-for="item in projectStatusHandle"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -149,6 +149,16 @@ export default {
           value: "",
           label: "全部",
         },
+        {
+          value: 0,
+          label: "显示",
+        },
+        {
+          value: 1,
+          label: "隐藏",
+        },
+      ],
+      projectStatusHandle: [
         {
           value: 0,
           label: "显示",

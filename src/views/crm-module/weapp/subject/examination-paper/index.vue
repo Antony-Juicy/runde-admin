@@ -161,6 +161,9 @@
         :tableKey="tableKey"
         @pageChange="pageChange"
       >
+      <template slot="isShare" slot-scope="scope">
+          {{ scope.row.isShare == 0 ? "不需要分享" : "分享解锁" }}
+        </template>
         <template slot="stat" slot-scope="scope">
           {{ scope.row.stat == 0 ? "上架" : "下架" }}
         </template>
@@ -330,6 +333,12 @@ export default {
           value: "stat",
           operate: true,
           width: 240,
+        },
+        {
+          name: "分享解锁",
+          value: "isShare",
+          operate: true,
+          width: 140,
         },
         {
           name: "排序值",
