@@ -101,10 +101,16 @@
       <el-button @click="handleDialog(1)" type="primary" size="small"
         >创建模拟卷</el-button
       >
-      <el-button @click="handleDownTemp('/temp/doctor_mock_import_add.xls')" type="primary" size="small"
+      <el-button
+        @click="handleDownTemp('/temp/doctor_mock_import_add.xls')"
+        type="primary"
+        size="small"
         >下载新增题目模板</el-button
       >
-      <el-button @click="handleDownTemp('/temp/doctor_mock_import_cover.xls')" type="primary" size="small"
+      <el-button
+        @click="handleDownTemp('/temp/doctor_mock_import_cover.xls')"
+        type="primary"
+        size="small"
         >下载覆盖题目模板</el-button
       >
       <div class="test-handle__form">
@@ -161,7 +167,7 @@
         :tableKey="tableKey"
         @pageChange="pageChange"
       >
-      <template slot="isShare" slot-scope="scope">
+        <template slot="isShare" slot-scope="scope">
           {{ scope.row.isShare == 0 ? "不需要分享" : "分享解锁" }}
         </template>
         <template slot="stat" slot-scope="scope">
@@ -195,26 +201,37 @@
             >站点列表</el-button
           >
           <el-divider direction="vertical"></el-divider>
-          <el-popover placement="top" title="导入方式" trigger="hover">
-            <el-button
-              size="mini"
-              @click="handleDialog(5, scope.row, 'add')"
-              type="primary"
-              >新增</el-button
-            >
-            <el-button
-              size="mini"
-              @click="handleDialog(5, scope.row, 'cover')"
-              type="primary"
-              >覆盖</el-button
-            >
-            <el-button type="text" size="small" slot="reference"
-              >题目导入</el-button
-            >
-          </el-popover>
+
+          <el-button
+            @click="(uploadType = true), (uploadData = scope.row)"
+            type="text"
+            size="small"
+            slot="reference"
+            >题目导入</el-button
+          >
         </template>
       </rd-table>
     </div>
+    <el-dialog
+      top="8vh"
+      width="18%"
+      title="导入类型"
+      :visible.sync="uploadType"
+      append-to-body
+    >
+      <div class="upload-type-btn">
+        <el-button
+          @click="handleDialog(5, uploadData, 'add')"
+          type="primary"
+          >新增</el-button
+        >
+        <el-button
+          @click="handleDialog(5, uploadData, 'cover')"
+          type="primary"
+          >覆盖</el-button
+        >
+      </div>
+    </el-dialog>
     <!-- 上传题目 -->
     <upload-file-dialog
       :importVisible.sync="uploadVisible"
@@ -238,6 +255,8 @@ export default {
   },
   data() {
     return {
+      uploadData: "",
+      uploadType: false,
       // 文件上传
       uploadVisible: false,
       uploadParam: {},
@@ -452,6 +471,7 @@ export default {
             chooseType: uploadType,
             paperId: row.id,
           };
+          this.uploadType = false;
           this.uploadVisible = true;
           break;
       }
@@ -482,6 +502,11 @@ export default {
 <style lang="scss" scoped>
 .test-x {
   width: 100%;
+}
+.upload-type-btn {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 .test-dialog-form {
   .el-form-item:not(:first-child) {
