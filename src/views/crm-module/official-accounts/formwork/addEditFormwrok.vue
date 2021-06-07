@@ -5,13 +5,19 @@
 				<RdForm :formOptions="addFormOptions" :rules="addRules" :formLabelWidth="'150px'" ref="dataForm">
 					<template slot="content">
 						<div class="content">
-							<div class="tips">微信接口限制，模板消息内容请在200字以内</div>
-							<div class="content-item" v-for="(item,index) in formwork_content" :key="index">
-								<div class="label">{{item.label}}</div>
-								<el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="item.value" resize="none">
-								</el-input>
-								<el-color-picker class="color-picker" v-model="item.color" size='small' :color-format='"hex"' :predefine="predefineColors"></el-color-picker>
-							</div>
+							<template v-if="formwork_content.length > 0">
+								<div class="tips">微信接口限制，模板消息内容请在200字以内</div>
+								<div class="content-item" v-for="(item,index) in formwork_content" :key="index">
+									<div class="label">{{item.label}}</div>
+									<el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="item.value" resize="none">
+									</el-input>
+									<el-color-picker class="color-picker" v-model="item.color" size='small' :color-format='"hex"' :predefine="predefineColors"></el-color-picker>
+								</div>
+							</template>
+							<template v-else>
+								<div class="tips">当前模板固定显示以下文案信息</div>
+								<div>{{formwork_text}}</div>
+							</template>
 						</div>
 					</template>
 					<template slot="link">
@@ -93,7 +99,7 @@
 				</RdForm>
 			</div>
 			<div class="right">
-				<likePhone mode="notice" :cardData='formwork_content' :accountName="appName"></likePhone>
+				<likePhone mode="notice" :cardData='cardData ' :accountName="appName"></likePhone>
 			</div>
 		</div>
 		<div class="down">
@@ -174,6 +180,8 @@ export default {
 			},
 			// 模板的内容
 			formwork_content: [],
+			// 模板固定文字
+			formwork_text: "",
 			// 可选颜色
 			predefineColors: [
 				'#F4664A', '#FF7D75', '#000000', '#FF9823', '#F6BD16', '#5AD8A6', '#30BF78', '#6DC8EC', '#2C9EFF', '#1E9493', '#945FB9', '#666666', '#999999'
@@ -409,51 +417,66 @@ export default {
 				count += v.value.length
 			})
 			return count
+		},
+		cardData() {
+			if (this.formwork_content.length == 0) {
+				return this.formwork_text
+			} else {
+				return this.formwork_content
+			}
 		}
 	},
 	watch: {
 	},
 	methods: {
 		analysis_content() {
-			let content = this.formwork.content.replace(/ /g, '')
-			let content_keys = content.match(/\{(.+?)\}}/g)
-			let formwork_content = []
-			for (const i of content_keys) {
-				i.match(/\{{(.+?)\}}/g)
-				let key = RegExp.$1.split('.')[0]
-				if (i.indexOf('first') > 1) {
-					// 是首字段
-					formwork_content.push({
-						label: '首字段：',
-						value: "",
-						color: "#000000",
-						key: key
-					})
-				}
-				else if (i.indexOf('remark') > 1) {
-					// 是尾字段
-					formwork_content.push({
-						label: '尾字段：',
-						value: "",
-						color: "#000000",
-						key: key
-					})
-				}
-				else {
-					// 获取属性名称
-					let end = content.indexOf(i)
-					let start = content.lastIndexOf('}', end) + 1
-					let label = content.slice(start, end)
-					formwork_content.push({
-						label,
-						value: "",
-						color: "#000000",
-						key: key
-					})
-				}
+			if (/\{\{(.+?)\}\}/.test(this.formwork.content)) {
+				// 判断是否有可输入字段
+				let content = this.formwork.content.replace(/ /g, '')
+				let content_keys = content.match(/\{(.+?)\}}/g)
+				let formwork_content = []
+				for (const i of content_keys) {
+					i.match(/\{{(.+?)\}}/g)
+					let key = RegExp.$1.split('.')[0]
+					if (i.indexOf('first') > 1) {
+						// 是首字段
+						formwork_content.push({
+							label: '首字段：',
+							value: "",
+							color: "#000000",
+							key: key
+						})
+					}
+					else if (i.indexOf('remark') > 1) {
+						// 是尾字段
+						formwork_content.push({
+							label: '尾字段：',
+							value: "",
+							color: "#000000",
+							key: key
+						})
+					}
+					else {
+						// 获取属性名称
+						let end = content.indexOf(i)
+						let start = content.lastIndexOf('}', end) + 1
+						let label = content.slice(start, end)
+						formwork_content.push({
+							label,
+							value: "",
+							color: "#000000",
+							key: key
+						})
+					}
 
+				}
+				this.formwork_content = formwork_content
 			}
-			this.formwork_content = formwork_content
+			else {
+				// 如果没有可输入字段，就直接显示content内容
+				this.formwork_text = this.formwork.content
+			}
+
 		},
 		handle_selectUser(data) {
 			// 是多选情况
@@ -518,12 +541,13 @@ export default {
 		},
 		async handle_commit() {
 			// 实际上 form 里面没有需要提交的数据  坑了
-			if (this.noticeFontCount > 200) {
+			if (this.formwork_content.length > 0 && this.noticeFontCount > 200) {
+				// 只有可输入信息的模板控制字数限制
 				this.$message.error("微信接口限制，模板消息内容请在200字以内");
 				return
 			}
 			if (this.linkType == 'h5' && this.link_url == '') {
-				this.$message.error("请输入连接地址");
+				this.$message.error("请输入链接地址");
 				return
 			}
 			if (this.linkType == 'xcx' && this.$common.hasEmpty([this.link_miniprogram.appId, this.link_miniprogram.pagepath])) {
@@ -535,11 +559,18 @@ export default {
 				template_id: this.formwork.template_id,
 				data: {}
 			}
-			this.formwork_content.forEach(v => {
-				msgTemplate.data[v.key] = {}
-				msgTemplate.data[v.key].value = v.value
-				msgTemplate.data[v.key].color = v.color
-			})
+			if (this.formwork_content.length > 0) {
+				// 模板可以填内容就把输入项填好
+				this.formwork_content.forEach(v => {
+					msgTemplate.data[v.key] = {}
+					msgTemplate.data[v.key].value = v.value
+					msgTemplate.data[v.key].color = v.color
+				})
+			} else {
+				// 如果模板不可填内容就不传这个东西了
+				msgTemplate.data = {}
+			}
+
 			if (this.linkType == 'h5') {
 				msgTemplate.url = this.link_url
 			}
