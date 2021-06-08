@@ -30,13 +30,12 @@
               placeholder="站点名称"
             ></el-input>
           </el-form-item>
-          <el-form-item class="select" label="答题时长" prop="answerTime">
+          <el-form-item class="select minute" label="答题时长" prop="answerTime">
             <el-input
               v-model="dialogForm.answerTime"
               size="small"
               placeholder="答题时长"
             ></el-input>
-            <span class="minute"> 分钟 </span>
           </el-form-item>
           <el-form-item label="文案描述" prop="descriPtion">
             <el-input
@@ -465,9 +464,14 @@ export default {
   width: 100%;
 }
 .minute {
-  position: absolute;
-  right: -8px;
-  transform: translateX(100%);
+  position: relative;
+  &::after {
+    content: '分钟';
+    position: absolute;
+    top: 50%;
+    right: -36px;
+    transform: translateY(-50%);
+  }
 }
 .site-dialog-form {
   .input {
