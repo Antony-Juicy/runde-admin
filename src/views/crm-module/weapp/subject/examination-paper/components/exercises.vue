@@ -211,7 +211,7 @@
       </div> -->
     </div>
     <div class="lssue-table">
-      <rd-table :tableData="tableData" :tableKey="tableKey">
+      <rd-table :tableData="tableData" :tableKey="tableKey" tbodyHeight="700px">
          <template slot="siteName">
            {{ lssueData.siteName }}
          </template>
@@ -409,6 +409,7 @@ export default {
       this.$fetch("lssue_paper_list", this.params).then((res) => {
         if (res.code == 200) {
           this.tableData = JSON.parse(res.msg);
+          console.log(this.tableData)
         }
       });
     },

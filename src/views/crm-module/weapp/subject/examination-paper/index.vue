@@ -44,7 +44,7 @@
               placeholder="模拟卷状态"
             >
               <el-option
-                v-for="item in testStatus"
+                v-for="item in testStatusHandle"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -281,7 +281,7 @@ export default {
         // 分享解锁
         isShare: "",
         // 状态
-        stat: "",
+        stat: 0,
         // 排序值
         sort: "",
         // 项目名称
@@ -296,7 +296,7 @@ export default {
         // 分享解锁
         isShare: "",
         // 状态
-        stat: "",
+        stat: 0,
         // 排序值
         sort: "",
         // 项目名称
@@ -308,6 +308,16 @@ export default {
           value: "",
           label: "全部",
         },
+        {
+          value: 0,
+          label: "上架",
+        },
+        {
+          value: 1,
+          label: "下架",
+        },
+      ],
+       testStatusHandle: [
         {
           value: 0,
           label: "上架",

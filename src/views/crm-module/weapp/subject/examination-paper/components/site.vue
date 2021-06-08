@@ -456,6 +456,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/deep/ .el-drawer.btt {
+  overflow: hidden;
+  overflow-y: auto;
+  height: 700px;
+}
 .site-x {
   width: 100%;
 }
