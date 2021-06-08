@@ -331,11 +331,11 @@ export default {
       shareStatus: [
         {
           value: 0,
-          label: "不用解锁",
+          label: "分享解锁",
         },
         {
           value: 1,
-          label: "分享解锁",
+          label: "不用解锁",
         },
       ],
       // 项目列表

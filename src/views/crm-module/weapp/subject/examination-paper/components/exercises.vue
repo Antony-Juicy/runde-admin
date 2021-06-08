@@ -157,11 +157,11 @@
               placeholder="观看时间"
             ></el-input>
           </el-form-item>
-          <el-form-item class="input-small" label="序号" prop="sort">
+          <el-form-item class="input-small" label="排序值" prop="sort">
             <el-input
               v-model="dialogForm.sort"
               size="small"
-              placeholder="序号"
+              placeholder="排序值"
             ></el-input>
           </el-form-item>
         </el-form>
