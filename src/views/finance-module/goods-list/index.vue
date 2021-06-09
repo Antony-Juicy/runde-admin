@@ -1030,7 +1030,7 @@ export default {
         console.log("obj.a changed", newName, oldName);
         if (oldName != undefined) {
           this.$nextTick(() => {
-            // this.getCounpList(); 
+            // this.getCounpList();
           });
         }
       },
@@ -1056,16 +1056,31 @@ export default {
       immediate: true,
       // deep: true
     },
+    courseInfoList: {
+      handler(newName, oldName) {
+        if (oldName && oldName.length > 0) {
+          console.log("oldNameoldName", oldName);
+          //清除校验
+          this.$nextTick(() => {
+            this.$refs.stuForm2.clearValidate("courses");
+          });
+        }
+      },
+      immediate: true,
+    },
   },
   methods: {
     handleClose() {
       this.addVisible = false;
-      this.disabled = false;
-      this.$refs.stuForm.resetFields();
-      this.$refs.stuForm2.resetFields();
-      this.stuForm2.campusName = this.itemData.campusName;
-      this.stuForm2.classType = this.itemData.className;
-      this.stuForm.classBatch = this.itemData.classBatch;
+      // this.disabled = false;
+      // this.$refs.stuForm.resetFields();
+      // this.$refs.stuForm2.resetFields();
+      // this.stuForm2.campusName = this.itemData.campusName;
+      // this.stuForm2.classType = this.itemData.className;
+      // this.stuForm.classBatch = this.itemData.classBatch;
+      // this.cityList = []; //重置市
+      // this.countyList = []; //重置区
+      this.handleResetInfo();
       this.$refs.stuForm3.resetFields();
       this.$refs.stuForm4.resetFields();
     },
@@ -1123,14 +1138,14 @@ export default {
     },
     saleSourceChange(val) {
       //来源类型更变
-      if (val && this.stuForm2.courses.length >0) { 
+      if (val && this.stuForm2.courses.length > 0) {
         this.getCounpList();
         this.stuForm2.couponId = ""; //置空优惠券
         this.clearCoupon(); //清空优惠金额
       }
     },
     changeSelect() {
-      //选择学员类型 
+      //选择学员类型
       this.stuForm2.couponId = ""; //置空优惠券
       // this.stuForm2.realPrice = ""; //应收
       // this.stuForm2.faceValue = ""; //优惠金额
@@ -1239,9 +1254,8 @@ export default {
       this.countyList = []; //重置区
       this.stuForm2.couponId = ""; //置空优惠券
       this.stuForm2.realPrice = 0; //清空应收金额
-      this.stuForm2.faceValue = 0; //清空优惠金额 
+      this.stuForm2.faceValue = 0; //清空优惠金额
       this.couponList = [];
-       
     },
     open(studentCampusModel) {
       this.$alert(
@@ -1579,11 +1593,14 @@ export default {
             classTeacherName = el.label;
           }
         });
-        this.couponList.filter((el) => {
-          if (this.stuForm2.couponId == el.value) {
-            couponName = el.label;
-          }
-        });
+        if (this.couponList && this.couponList.length > 0) {
+          this.couponList.filter((el) => {
+            if (this.stuForm2.couponId == el.id) {
+              couponName = el.couponName;
+            }
+          });
+        }
+
         this.eduStaffList.filter((el) => {
           if (this.stuForm3.eduUserId == el.value) {
             eduUserName = el.label;
@@ -1597,11 +1614,6 @@ export default {
         this.marketStaffList.filter((el) => {
           if (this.stuForm.staffId == el.value) {
             staffName = el.label;
-          }
-        });
-        this.couponList.filter((el) => {
-          if (this.stuForm2.couponId == el.id) {
-            couponName = el.couponName;
           }
         });
         console.log("this.stuForm-------------------", this.stuForm);
@@ -1621,18 +1633,30 @@ export default {
           courses: JSON.stringify(this.stuForm2.courses),
           serviceYear: this.itemData.serviceYear,
           idCardAndPhone: this.stuForm.idCardAndPhone,
-        }).then((res) => {
-          this.$message.success("操作成功");
-          this.addVisible = false;
-          this.$refs.stuForm.resetFields();
-          this.$refs.stuForm2.resetFields();
-          this.stuForm2.campusName = this.itemData.campusName;
-          this.stuForm2.classType = this.itemData.className;
-          this.stuForm.classBatch = this.itemData.classBatch;
-          this.$refs.stuForm3.resetFields();
-          this.$refs.stuForm4.resetFields();
-          this.getTableData();
-        });
+        })
+          .then((res) => {
+            this.$message.success("操作成功");
+            // this.addVisible = false;
+            // this.disabled = false; //置空身份證
+            // this.cityList = []; //重置市
+            // this.countyList = []; //重置区
+            // this.$refs.stuForm.resetFields();
+            // this.$refs.stuForm2.resetFields();
+            // this.stuForm2.campusName = this.itemData.campusName;
+            // this.stuForm2.classType = this.itemData.className;
+            // this.stuForm.classBatch = this.itemData.classBatch;
+            // this.$refs.stuForm3.resetFields();
+            // this.$refs.stuForm4.resetFields();
+            this.handleClose(); //重置
+            this.stuFormForm1Valid = false;
+            this.stuFormForm2Valid = false;
+            this.stuFormForm3Valid = false;
+            this.stuFormForm4Valid = false;
+            this.getTableData();
+          })
+          .catch((err) => {
+            // this.disabled = false;
+          });
       }
     },
     handleEdit(data) {

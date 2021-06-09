@@ -410,6 +410,7 @@ export default {
     handleAdd() {
       this.distributeVisible = true;
       this.addStatus = true;
+      this.addFormOptions[4].hide = true;
       this.addFormOptions.forEach((item) => {
         item.initValue = "";
         if (item.prop == "classTypeName") {

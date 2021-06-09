@@ -155,7 +155,10 @@ export default {
       });
       this.formData = obj;
     },
-
+    clearValidate(params=""){
+     //清除校验
+       this.$refs.formRef.clearValidate(params);
+    },
     // 给表单的任意一个赋值
     setValue(obj){
       this.formData = {

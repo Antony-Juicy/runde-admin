@@ -310,6 +310,7 @@ export default {
           events: {
             change: this.changecourseCode,
           },
+          disabled: false,
         },
         {
           prop: "liveCode",
@@ -508,11 +509,13 @@ export default {
           this.$refs.dataForm3.setValue({
             stageGroupId: [],
           });
+          this.$nextTick(() => {
+            this.$refs.dataForm3.clearValidate("stageGroupId");
+          });
           resolve();
         });
       });
     },
-
     getRulesList() {
       return new Promise((resolve) => {
         this.$fetch("courseProductContent_goAccountingRulesSelects").then(
@@ -616,6 +619,8 @@ export default {
     handleAdd() {
       this.addStatus = true;
       this.addVisible = true;
+      //课程编码
+      this.addFormOptions[4].hide = true;
       // 可编辑状态
       this.changeDisableStats(false);
     },
@@ -683,6 +688,7 @@ export default {
       this.addFormOptions[1].disabled = bol;
       this.addFormOptions[6].disabled = bol;
       this.addFormOptions[7].disabled = bol;
+      this.addFormOptions[3].disabled = bol;
     },
     changeTable(data) {
       this.$fetch("courseProductContent_udpateStatus", {

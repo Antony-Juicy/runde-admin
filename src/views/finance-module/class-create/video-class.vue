@@ -182,7 +182,7 @@ export default {
       ],
       addRules: {
         classTypeName: [{ required: true, message: "请输入", trigger: "blur" }],
-        courseId: [{ required: true, message: "请选择", trigger: "blur" }],
+        courseId: [{ required: true, message: "请选择", trigger: "change" }],
         frequencyCode: [{ required: true, message: "请输入", trigger: "blur" }]
       },
       classTypeArr: []
