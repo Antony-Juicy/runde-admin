@@ -14,13 +14,13 @@
                   </div>
                 </div>
                 <div class="total-info-bottom">
-                  <div class="already-complete">已完成：{{todayTask.completeCount}}</div>
-                  <div class="wait-complete">待完成：{{todayTask.unfinishedCount}}</div>
-                  <div class="wait-complete">逾期：{{todayTask.overdueCount}}</div>
+                  <div class="already-complete">已完成:{{ todayTask.completeCount}}</div>
+                  <div class="wait-complete">待完成:{{ todayTask.unfinishedCount}}</div>
+                  <div class="wait-complete">逾期:{{ todayTask.overdueCount}}</div>
                 </div>
               </div>
               <div class="complete-rate">
-                完成率：{{todayTask.completePercentage}}%
+                完成率:{{todayTask.completePercentage}}%
               </div>
             </div>
           </el-card>
@@ -37,13 +37,13 @@
                   </div>
                 </div>
                 <div class="total-info-bottom">
-                  <div class="already-complete">已完成：{{weekTask.completeCount}}</div>
-                  <div class="wait-complete">待完成：{{weekTask.unfinishedCount}}</div>
-                  <div class="wait-complete">逾期：{{weekTask.overdueCount}}</div>
+                  <div class="already-complete">已完成:{{weekTask.completeCount}}</div>
+                  <div class="wait-complete">待完成:{{weekTask.unfinishedCount}}</div>
+                  <div class="wait-complete">逾期:{{weekTask.overdueCount}}</div>
                 </div>
               </div>
               <div class="complete-rate">
-                完成率：{{weekTask.completePercentage}}%
+                完成率:{{weekTask.completePercentage}}%
               </div>
             </div>
           </el-card>
@@ -60,26 +60,26 @@
                   </div>
                 </div>
                 <!-- <div class="total-info-bottom">
-                  <div class="already-complete">已完成：4423</div>
-                  <div class="wait-complete">待完成：4423</div>
+                  <div class="already-complete">已完成:4423</div>
+                  <div class="wait-complete">待完成:4423</div>
                 </div> -->
                 <div style="margin-top: 23px;"></div>
               </div>
               <div class="complete-rate" v-show="false">
                 <div class="rate-item">
-                  <div class="rate-title">门店：</div>
+                  <div class="rate-title">门店:</div>
                   <div class="rate-num"> {{overdueTask.storeCount}}</div>
                 </div>
                 <div class="rate-item">
-                  <div class="rate-title">连锁：</div>
+                  <div class="rate-title">连锁:</div>
                   <div class="rate-num"> {{overdueTask.chainCount}}</div>
                 </div>
                 <div class="rate-item">
-                  <div class="rate-title">生产：</div>
+                  <div class="rate-title">生产:</div>
                   <div class="rate-num"> {{overdueTask.produceCount}}</div>
                 </div>
                 <div class="rate-item">
-                  <div class="rate-title">批发：</div>
+                  <div class="rate-title">批发:</div>
                   <div class="rate-num"> {{overdueTask.wholesaleCount}}</div>
                 </div>
               </div>
@@ -99,26 +99,26 @@
                   </div>
                 </div>
                 <div class="line-container">
-                  <!-- <div class="already-complete">已完成：4423</div>
-                  <div class="wait-complete">待完成：4423</div> -->
+                  <!-- <div class="already-complete">已完成:4423</div>
+                  <div class="wait-complete">待完成:4423</div> -->
                   <el-progress :text-inside="true" :stroke-width="20" :percentage="weekCompletePercentage.completePercentage"></el-progress>
                 </div>
               </div>
               <div class="complete-rate" v-show="false">
                 <div class="rate-item">
-                  <div class="rate-title">门店：</div>
+                  <div class="rate-title">门店:</div>
                   <div class="rate-num"> {{weekCompletePercentage.storePercentage}}%</div>
                 </div>
                 <div class="rate-item">
-                  <div class="rate-title">连锁：</div>
+                  <div class="rate-title">连锁:</div>
                   <div class="rate-num"> {{weekCompletePercentage.chainPercentage}}%</div>
                 </div>
                 <div class="rate-item">
-                  <div class="rate-title">生产：</div>
+                  <div class="rate-title">生产:</div>
                   <div class="rate-num"> {{weekCompletePercentage.producePercentage}}%</div>
                 </div>
                 <div class="rate-item">
-                  <div class="rate-title">批发：</div>
+                  <div class="rate-title">批发:</div>
                   <div class="rate-num"> {{weekCompletePercentage.wholesalePercentage}}%</div>
                 </div>
               </div>
@@ -648,8 +648,9 @@ export default {
         margin-top: 18px;
       }
       .total-info {
-        padding: 33px;
+        padding: 22px;
         border-bottom: 1px dashed #999999;
+        height: 147px;
         .total-info-top {
           display: flex;
           align-items: center;
@@ -673,7 +674,7 @@ export default {
         .total-info-bottom {
           display: flex;
           justify-content: space-between;
-          margin: 20px 0 0 0;
+          margin: 26px 0 0 0;
           color: #999999;
           // border-bottom: 1px dashed #999999;
         }

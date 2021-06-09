@@ -530,8 +530,9 @@ export default {
         margin-top: 18px;
       }
       .total-info {
-        padding: 33px;
+        padding: 22px;
         border-bottom: 1px dashed #999999;
+        height: 147px;
         .total-info-top {
           display: flex;
           align-items: center;
@@ -555,7 +556,7 @@ export default {
         .total-info-bottom {
           display: flex;
           justify-content: space-between;
-          margin: 20px 0 0 0;
+          margin: 26px 0 0 0;
           color: #999999;
           // border-bottom: 1px dashed #999999;
         }
