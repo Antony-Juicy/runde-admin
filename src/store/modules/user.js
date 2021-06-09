@@ -2,6 +2,7 @@ import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 import md5 from 'md5-js';
 import Fetch from '@/utils/fetch'
+import store from '../index.js'
 
 const state = {
   token: getToken(),
@@ -76,7 +77,7 @@ const actions = {
 
   // 直播跳转链接的登录方式
   loginLive({ commit }, userInfo) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       const data = userInfo
         console.log(data,'data---')
         commit('SET_TOKEN', data.token) //在全局vuex中存入state
@@ -85,6 +86,12 @@ const actions = {
         commit('SET_USERID', data.userId)  //用户id
         localStorage.setItem('userInfo',JSON.stringify(data));
         localStorage.setItem('loginUserId',data.userId);
+        await store.dispatch('permission/getRoutesInfo');
+          const accessRoutes = await store.dispatch('permission/generateRoutes',{type:0})
+          resetRouter()
+          router.addRoutes(accessRoutes)
+         
+          router.push({ path: "/" });
         resolve();
     })
   },
