@@ -102,6 +102,20 @@ import CreatChain from "./creat-chain";
 import uploadFile from "@/components/Activity/uploadFile";
 import followInfo from './follow-info';
 import axios from 'axios';
+function transform(records,arr){
+    for(let key in records){
+      let obj = {
+        label: key,
+        value: key
+      }
+      if(records[key].items){
+        obj.children = []
+        transform(records[key].items,obj.children)
+      }
+      arr.push(obj)
+    } 
+    return arr; 
+}
 export default {
   name:"custom-list",
   data(){
@@ -190,27 +204,30 @@ export default {
         },
         {
           prop: "province",
-          element: "el-select",
-          placeholder: "请选择省",
+          element: "el-cascader",
+          placeholder: "省/市/区",
           options: [],
           events: {},
-          filterable: true
+          filterable: true,
+          props: {
+            checkStrictly: true
+          }
         },
-        {
-          prop: "city",
-          element: "el-select",
-          placeholder: "请选择市",
-          options: [],
-          events: {},
-          filterable: true
-        },
-        {
-          prop: "county",
-          element: "el-select",
-          placeholder: "请选择区",
-          options: [],
-          filterable: true
-        },
+        // {
+        //   prop: "city",
+        //   element: "el-select",
+        //   placeholder: "请选择市",
+        //   options: [],
+        //   events: {},
+        //   filterable: true
+        // },
+        // {
+        //   prop: "county",
+        //   element: "el-select",
+        //   placeholder: "请选择区",
+        //   options: [],
+        //   filterable: true
+        // },
       ],
       searchForm:{},
       emptyText:"暂无数据",
@@ -372,12 +389,12 @@ export default {
     this.getSelectList();
 
     // 获取省市区下拉
-    // this.getAddress();
+    this.getAddress();
   },
    methods: {
      getAddress(){
-       axios.get('https://rdimg.rundejy.com/data/common/address/address.json').then(res => {
-
+       axios.get('/json/address.json').then(res => {
+         this.formOptions[7].options = transform(res.data,[]);
        })
      },
      followSelect(query){
@@ -577,10 +594,18 @@ export default {
        this.getTableData();
      },
      onSearch(val){
+       let addressObj = {};
+       if(val.province&&val.province.length){
+         addressObj = {
+           province: val.province[0],
+           city: val.province[1],
+           county: val.province[2],
+         }
+       }
        this.searchForm = {
-        ...val
+        ...val,
+        ...addressObj
       };
-      console.log(val,this.searchForm , 'val---')
       this.getTableData();
      },
      getTableData(params = {}) {
@@ -600,7 +625,6 @@ export default {
       })
     },
      pageChange(val) {
-      console.log(val,'pagechange')
       this.pageConfig.pageNum = val.page;
       this.pageConfig.showCount = val.limit;
       this.getTableData();
