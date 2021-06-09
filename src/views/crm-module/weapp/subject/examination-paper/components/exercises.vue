@@ -360,11 +360,11 @@ export default {
           value: "issuesType",
           width: 240,
         },
-        {
-          name: "排序值",
-          value: "sort",
-          width: 140,
-        },
+        // {
+        //   name: "排序值",
+        //   value: "sort",
+        //   width: 140,
+        // },
         {
           name: "操作",
           value: "edit",
