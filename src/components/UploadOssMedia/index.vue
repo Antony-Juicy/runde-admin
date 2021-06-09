@@ -1,26 +1,35 @@
 <template>
-  <div>
+  <div class="upload-x">
     <div>
       <img
         ref="uploaderInput"
         v-if="!uploadConfig"
         class="img180"
-        :src="btnImg || `https://rdimg.rundejy.com/cmsuserInfo/20200624163441upload_oss.png`"
+        :src="
+          btnImg ||
+          `https://rdimg.rundejy.com/cmsuserInfo/20200624163441upload_oss.png`
+        "
         alt=""
       />
       <img
-        @mouseover="preview && (previewImg = true)"
-        @mouseleave="preview && (previewImg = false)"
+        @mouseover="preview && (previewMedia = true)"
+        @mouseleave="preview && (previewMedia = false)"
         ref="uploaderInput"
         v-else
         class="img180"
-        :src="uploadConfig"
+        :src="require('@/assets/icon/wancheng.png')"
       />
     </div>
     <transition name="el-fade-in-linear">
-      <div class="img-hover" v-if="previewImg">
-        <img ref="uploaderInput" :src="uploadConfig" />
-      </div>
+      <video
+        autoplay
+        class="media-hover"
+        width="100%"
+        controls
+        v-if="previewMedia"
+      >
+        <source :src="uploadConfig" type="video/mp4" />
+      </video>
     </transition>
   </div>
 </template>
@@ -48,7 +57,7 @@ export default {
   },
   data() {
     return {
-      previewImg: false,
+      previewMedia: false,
       defaultSetting: {
         chooseFile: "",
       },
@@ -84,6 +93,10 @@ export default {
 </script>
 
 <style>
+.upload-x {
+  position: relative;
+  z-index: 999;
+}
 .img180 {
   width: 120px;
   height: 120px;
@@ -91,20 +104,16 @@ export default {
   position: relative;
   z-index: 1;
 }
-.img-hover {
+.media-hover {
   position: absolute;
-  border-radius: 4px;
   width: 240px;
-  right: -10px;
-  transform: translateX(100%);
-  top: 0;
-  right: -10px;
-  background: #fff;
-  box-shadow: 0px 0px 4px 2px rgba(0, 0, 0, 0.12);
-  padding: 6px;
+  right: 0;
+  /* background: #fff; */
+  top: 50%;
+  transform: translate(100%, -50%);
   line-height: 1;
 }
-.img-hover > img {
+.media-hover > img {
   width: 100%;
 }
 </style>

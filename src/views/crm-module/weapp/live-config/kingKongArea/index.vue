@@ -149,6 +149,7 @@ export default {
 						// 	item.iconLink = '/'
 						// }
 						Object.assign(item,this.linkType2Zh(item))
+						
 						return item;
 					});
 					this.pageConfig.totalCount = res.data.totalCount;
@@ -218,22 +219,25 @@ export default {
 				"InnerXcxLive": "/pagesLive/pages/index/index?liveId=",
 				"InnerXcxCourse": "/pages/Course/Play/Play?id=",
 				"InnerXcxBook": "/pages/Book/Book?id=",
+				"InnerXcxDoctorMock": "/pagesExam/pages/Enter/Enter"
 			}
 			if (data.linkType == 'InnerXcx') {
 				for (const key in xcxPage) {
 					if (data.iconLink.indexOf(xcxPage[key]) > -1) {
 						data.linkType = key
-						type.iconLink = data.iconLink.split('=')[1]
+						type.iconLink = ['InnerXcxLive', 'InnerXcxCourse', 'InnerXcxBook'].indexOf(key) > -1 ? data.iconLink.split('=')[1] : '/'
 						break
 					}
 				}
 			}
+			console.log(data.linkType)
 			switch (data.linkType) {
 				case 'None': type.linkType = '无目标'; type.iconLink = '/'; break;
 				case 'H5': type.linkType = '网页'; type.iconLink = data.iconLink; break;
 				case 'InnerXcxLive': type.linkType = '直播'; break;
 				case 'InnerXcxCourse': type.linkType = '科目'; break;
 				case 'InnerXcxBook': type.linkType = '图书'; break;
+				case 'InnerXcxDoctorMock': type.linkType = '医师模考'; break;
 				case 'OutSideXcx': type.linkType = '外部小程序';type.iconLink = '/'; break;
 			}
 			return type

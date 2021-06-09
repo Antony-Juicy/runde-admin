@@ -2,7 +2,7 @@
 	<div class="textmsg">
 		<div class="form-line" style="padding-bottom:0">
 			<div class="label">文字消息：</div>
-			<div class="likeInput" ref='likeInput' contenteditable="true" @input="handle_change" @focus="handle_focus" @blur="handle_blur">请输入</div>
+			<div class="likeInput" ref='likeInput' contenteditable="plaintext-only" @input="handle_change" @focus="handle_focus" @blur="handle_blur"></div>
 		</div>
 
 		<div class="form-line">
@@ -23,7 +23,7 @@
 		<template v-if="msgForm.needUrl">
 			<div class="form-line">
 				<div class="label">跳转链接：</div>
-				<el-input placeholder="请输入内容" v-model="msgForm.url" @input="emitForm"></el-input>
+				<el-input placeholder="请以输入http://或https://开头的链接" v-model="msgForm.url" @input="emitForm"></el-input>
 			</div>
 			<div class="form-line">
 				<div class="label">链接描述：</div>
@@ -41,7 +41,7 @@ export default {
 			msgForm: {
 				content: "",
 				url: "",
-				needUrl:false
+				needUrl: false
 			},
 
 		}
@@ -59,8 +59,7 @@ export default {
 			span.innerText = '用户昵称';
 			span.classList.add('likeBtn');
 			var sel = window.getSelection();
-			var text = document.createElement('span')
-			text.innerText = " "
+			var text = document.createTextNode(' ')
 			// debugger
 			if (sel.rangeCount > 0) {
 				var range = sel.getRangeAt(0);
@@ -81,10 +80,17 @@ export default {
 			}
 
 		},
-		handle_focus() {
+		async handle_focus() {
 			if (this.$refs.likeInput.innerHTML == '请输入') {
 				this.$refs.likeInput.innerHTML = ""
 			}
+			try {
+				let c = await navigator.clipboard.readText()
+				navigator.clipboard.writeText(c)
+			} catch (error) {
+
+			}
+
 		},
 		handle_blur() {
 			if (this.$refs.likeInput.innerHTML == '') {
@@ -104,7 +110,6 @@ export default {
 
 <style lang="scss" scoped>
 .textmsg {
-    
 	.likeInput {
 		width: 100%;
 		padding: 10px;
@@ -112,6 +117,8 @@ export default {
 		border-radius: 4px;
 		transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
 		line-height: 26px;
+		max-height: 150px;
+		overflow: auto;
 		&:focus {
 			border-color: #409eff;
 		}
@@ -121,8 +128,8 @@ export default {
 		align-items: center;
 		margin-top: 10px;
 	}
-    /deep/{
-        .likeBtn {
+	/deep/ {
+		.likeBtn {
 			display: inline-block;
 			color: #409eff;
 			padding: 2px 4px;
@@ -131,6 +138,6 @@ export default {
 			border-radius: 4px;
 			margin-bottom: 5px;
 		}
-    }
+	}
 }
 </style>

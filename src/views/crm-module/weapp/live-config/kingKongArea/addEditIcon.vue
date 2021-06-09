@@ -125,6 +125,10 @@ export default {
 					value: "InnerXcxBook",
 				},
 				{
+					label: "医师模考",
+					value: "InnerXcxDoctorMock",
+				},
+				{
 					label: "外部小程序",
 					value: "OutSideXcx"
 				}
@@ -133,6 +137,7 @@ export default {
 				"InnerXcxLive": "/pagesLive/pages/index/index?liveId=",
 				"InnerXcxCourse": "/pages/Course/Play/Play?id=",
 				"InnerXcxBook": "/pages/Book/Book?id=",
+				"InnerXcxDoctorMock": "/pagesExam/pages/Enter/Enter"
 			},
 			mode: "add",// add 新增 edit 修改
 		}
@@ -153,7 +158,7 @@ export default {
 					label: "跳转链接",
 				})
 			}
-			if (n.indexOf('InnerXcx') > -1 && this.addFormOptions[3].label != '跳转参数') {
+			if (this.needGroupParams(n) && this.addFormOptions[3].label != '跳转参数') {
 				this.addFormOptions.splice(3, 0, {
 					prop: "param",
 					element: "el-input",
@@ -192,7 +197,11 @@ export default {
 					} else {
 						data.linkType = this.linkType;
 						if (this.linkType.indexOf('InnerXcx') > -1) {
-							data.iconLink = this.xcxPage[this.linkType] + data.param
+							if (this.needGroupParams(this.linkType)) {
+								data.iconLink = this.xcxPage[this.linkType] + data.param
+							} else {
+								data.iconLink = this.xcxPage[this.linkType]
+							}
 							data.linkType = "InnerXcx"
 							delete data.param
 						}
@@ -242,7 +251,11 @@ export default {
 					} else {
 						data.linkType = this.linkType;
 						if (this.linkType.indexOf('InnerXcx') > -1) {
-							data.iconLink = this.xcxPage[this.linkType] + data.param
+							if (this.needGroupParams(this.linkType)) {
+								data.iconLink = this.xcxPage[this.linkType] + data.param
+							} else {
+								data.iconLink = this.xcxPage[this.linkType]
+							}
 							data.linkType = "InnerXcx"
 							delete data.param
 						}
@@ -309,10 +322,12 @@ export default {
 								break
 							}
 						}
-						exLabel.prop = "param";
-						exLabel.label = "跳转参数";
-						exLabel.initValue = res.data.iconLink.split('=')[1]
-						this.addFormOptions.splice(3, 0, exLabel)
+						if (this.needGroupParams(this.linkType)) {
+							exLabel.prop = "param";
+							exLabel.label = "跳转参数";
+							exLabel.initValue = res.data.iconLink.split('=')[1]
+							this.addFormOptions.splice(3, 0, exLabel)
+						}
 					}
 					else if (res.data.linkType == 'H5') {
 						this.linkType = 'H5'
@@ -329,6 +344,9 @@ export default {
 				})
 			}
 
+		},
+		needGroupParams(type) {
+			return ['InnerXcxLive', 'InnerXcxCourse', 'InnerXcxBook'].indexOf(type) > -1
 		}
 	},
 

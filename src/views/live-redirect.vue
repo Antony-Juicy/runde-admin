@@ -26,6 +26,9 @@ export default {
     },
     "$route.query.token"(newVal){
       this.authentication()
+    },
+    "$route.query.t"(newVal){
+      this.authentication()
     }
   },
    methods: {
@@ -45,7 +48,10 @@ export default {
               userId
             })
             .then(() => {
-              this.$router.push({ path: "/crm-module/weapp/live" });
+              // this.$router.push({ path: "/crm-module/weapp/live" });
+              // setTimeout(() => {
+                // this.$router.push({ path: "/crm-module/weapp/live" });
+              // }, 5000);
             })
             .catch(() => {
               // this.loading = false;

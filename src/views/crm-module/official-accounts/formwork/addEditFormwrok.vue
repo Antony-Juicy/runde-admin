@@ -5,13 +5,19 @@
 				<RdForm :formOptions="addFormOptions" :rules="addRules" :formLabelWidth="'150px'" ref="dataForm">
 					<template slot="content">
 						<div class="content">
-							<div class="tips">微信接口限制，模板消息内容请在200字以内</div>
-							<div class="content-item" v-for="(item,index) in formwork_content" :key="index">
-								<div class="label">{{item.label}}</div>
-								<el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="item.value" resize="none">
-								</el-input>
-								<el-color-picker class="color-picker" v-model="item.color" size='small' show-alpha :predefine="predefineColors"></el-color-picker>
-							</div>
+							<template v-if="formwork_content.length > 0">
+								<div class="tips">微信接口限制，模板消息内容请在200字以内</div>
+								<div class="content-item" v-for="(item,index) in formwork_content" :key="index">
+									<div class="label">{{item.label}}</div>
+									<el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="item.value" resize="none">
+									</el-input>
+									<el-color-picker class="color-picker" v-model="item.color" size='small' :color-format='"hex"' :predefine="predefineColors"></el-color-picker>
+								</div>
+							</template>
+							<template v-else>
+								<div class="tips">当前模板固定显示以下文案信息</div>
+								<div>{{formwork_text}}</div>
+							</template>
 						</div>
 					</template>
 					<template slot="link">
@@ -19,10 +25,35 @@
 							<el-radio v-model="linkType" label="h5">跳转链接（支持外链）</el-radio>
 							<el-radio v-model="linkType" label="xcx">跳转小程序</el-radio>
 						</div>
-						<div class="content">
-							<div class="content-item center" v-for="(item,index) in linkContent[linkType]" :key="index">
-								<div class="label">{{item.label}}</div>
-								<el-input :rows="2" :placeholder="item.placeholder" v-model="item.value" resize="none"></el-input>
+						<div class="content" v-if="linkType == 'h5'">
+							<div class="content-item center">
+								<div class="label">* 链接地址：</div>
+								<el-input :rows="2" placeholder="请以http://或https://开头的地址" v-model="link_url" resize="none"></el-input>
+							</div>
+						</div>
+						<div class="content" v-else>
+							<div class="content-item center">
+								<div class="label">* 选择小程序：</div>
+								<el-select v-model="miniprogramIndex" @change="handle_changeAPP">
+									<el-option v-for="(item,index) in miniprogramConfig" :key="index" :label="item.appName" :value="index"></el-option>
+								</el-select>
+							</div>
+							<div class="content-item center" v-if="link_miniprogram.appId">
+								<div class="label">* 小程序路径：</div>
+								<el-select v-model="miniprogramPageIndex" @change="handle_changePath">
+									<el-option v-for="(item,index) in miniprogramConfig[miniprogramIndex].pages" :key="index" :label="item.label" :value="index">
+									</el-option>
+								</el-select>
+							</div>
+							<template v-if="link_miniprogram.paramsKey.length > 0">
+								<div class="content-item center" v-for="(item,index) in link_miniprogram.paramsKey" :key="index">
+									<div class="label">{{item.label}}：</div>
+									<el-input v-model="link_miniprogram.params[index]"></el-input>
+								</div>
+							</template>
+							<div class="content-item center">
+								<div class="label">* 备用链接：</div>
+								<el-input :rows="2" placeholder="请以http://或https://开头的地址" v-model="link_miniprogram.remark" resize="none"></el-input>
 							</div>
 						</div>
 					</template>
@@ -37,7 +68,7 @@
 							<el-tag style="margin-right:10px" v-for="(item,index) in fansLabels" :key="index" @close="handle_removeLabel(index)" disable-transitions closable>
 								{{item.name}}
 							</el-tag>
-							<SelectPop style="width:auto;display:inline-block" key="SelectPop1" v-bind="SelectPopOptions_label" @select="handle_selectLabel">
+							<SelectPop style="width:auto;display:inline-block" key="SelectPop1" ref="SelectPop1" v-bind="SelectPopOptions_label" @select="handle_selectLabel">
 								<el-button size="small">添加标签</el-button>
 							</SelectPop>
 						</div>
@@ -45,10 +76,11 @@
 							<el-tag style="margin-right:10px" v-for="(item,index) in fansOpenIds" :key="index" @close="handle_removeUser(index)" disable-transitions closable>
 								{{item.name}}
 							</el-tag>
-							<SelectPop style="width:auto;display:inline-block" key="SelectPop2" v-bind="SelectPopOptions_user" @select="handle_selectUser">
+							<SelectPop style="width:auto;display:inline-block" key="SelectPop0" ref="SelectPop0" v-bind="SelectPopOptions_user" @select="handle_selectUser">
 								<el-button size="small">添加粉丝</el-button>
 								<template slot="labels" slot-scope="scope">
-									<el-tag v-for="(item,index) in scope.row.labels" :key="index">{{item}}</el-tag>
+									<el-tag style="margin-right:10px;margin-bottom:10px" v-for="(item,index) in scope.row.labels" :key="index">{{item}}</el-tag>
+									<div v-if="scope.row.labels.length == 0">无标签</div>
 								</template>
 							</SelectPop>
 						</div>
@@ -59,7 +91,7 @@
 							<el-tag style="margin-right:10px" v-for="(item,index) in fansTags" :key="index" @close="handle_removeLabel2(index)" disable-transitions closable>
 								{{item.name}}
 							</el-tag>
-							<SelectPop style="width:auto;display:inline-block" key="SelectPop3" v-bind="SelectPopOptions_label" @select="handle_selectLabel2">
+							<SelectPop style="width:auto;display:inline-block" key="SelectPop2" ref="SelectPop2" v-bind="SelectPopOptions_tags" @select="handle_selectLabel2">
 								<el-button size="small">添加标签</el-button>
 							</SelectPop>
 						</div>
@@ -67,7 +99,7 @@
 				</RdForm>
 			</div>
 			<div class="right">
-				<likePhone mode="notice" :cardData='formwork_content' :accountName="appName"></likePhone>
+				<likePhone mode="notice" :cardData='cardData ' :accountName="appName"></likePhone>
 			</div>
 		</div>
 		<div class="down">
@@ -82,6 +114,7 @@
 import RdForm from "@/components/RdForm";
 import SelectPop from '@/components/SelectPop'
 import likePhone from '@/components/likePhone'
+import miniprogramConfig from '../miniprogram'
 export default {
 	props: {
 		formwork: {
@@ -147,6 +180,8 @@ export default {
 			},
 			// 模板的内容
 			formwork_content: [],
+			// 模板固定文字
+			formwork_text: "",
 			// 可选颜色
 			predefineColors: [
 				'#F4664A', '#FF7D75', '#000000', '#FF9823', '#F6BD16', '#5AD8A6', '#30BF78', '#6DC8EC', '#2C9EFF', '#1E9493', '#945FB9', '#666666', '#999999'
@@ -154,6 +189,14 @@ export default {
 			// 链接类型
 			linkType: 'h5',
 			// 链接类型里面要填的东西
+			link_url: "",
+			link_miniprogram: {
+				appId: "",
+				pagepath: "",
+				remark: "",
+				paramsKey: [],
+				params: []
+			},
 			linkContent: {
 				h5: [
 					{
@@ -186,9 +229,6 @@ export default {
 			},
 			// 推送粉丝类型
 			fansType: "allFans",
-			// 可选标签
-			tagsOptions: [],
-
 			// 选中的粉丝
 			fansOpenIds: [],
 			// 选择用户组件数据 有点复杂
@@ -226,7 +266,9 @@ export default {
 							operate: true,
 						},
 					],
+					multiple: true,
 					transItem: (item) => {
+
 						try {
 							item.labels = (item.wechatUserTagModel.map(v => {
 								return v.labelName
@@ -235,6 +277,9 @@ export default {
 
 						}
 						return item
+					},
+					selectStatus: (item) => {
+						return this.fansOpenIds.findIndex(v => v.openId == item.openId) > -1
 					}
 				}
 			},
@@ -288,14 +333,81 @@ export default {
 							value: "labelTypeZH",
 						},
 					],
+					multiple: true,
 					transItem: (item) => {
+
 						item.labelTypeZH = item.labelType == '0' ? '系统标签' : '自定义标签'
 						return item
+					},
+					selectStatus: (item) => {
+						return this.fansLabels.findIndex(v => v.id == item.id) > -1
 					}
 				}
 			},
 			// 用户点击后添加标签
-			fansTags: []
+			fansTags: [],
+			// 选择标签数据组件 
+			SelectPopOptions_tags: {
+				searchObj: {
+					api: "get_official_accounts_label_page",
+					formOptions: [
+						{
+							prop: "labelName",
+							element: "el-input",
+							placeholder: "请输入标签名称",
+						},
+						{
+							prop: "labelType",
+							element: "el-select",
+							placeholder: "请选择标签类型",
+							options: [
+								{
+									label: '系统标签',
+									value: '0'
+								},
+								{
+									label: '自定义标签',
+									value: '1'
+								}
+							]
+						},
+					],
+					showNum: 2,
+					needType: false,
+					params: {
+						appId: this.appId,
+					}
+				},
+				tableObj: {
+					tableKey: [
+						{
+							name: "ID主键",
+							value: "id",
+							width: 80
+						},
+						{
+							name: "标签名称",
+							value: "labelName",
+						},
+						{
+							name: "标签类型",
+							value: "labelTypeZH",
+						},
+					],
+					multiple: true,
+					transItem: (item) => {
+
+						item.labelTypeZH = item.labelType == '0' ? '系统标签' : '自定义标签'
+						return item
+					},
+					selectStatus: (item) => {
+						return this.fansTags.findIndex(v => v.id == item.id) > -1
+					}
+				}
+			},
+			miniprogramConfig: miniprogramConfig,
+			miniprogramIndex: '',
+			miniprogramPageIndex: '',
 		}
 	},
 	computed: {
@@ -305,66 +417,140 @@ export default {
 				count += v.value.length
 			})
 			return count
+		},
+		cardData() {
+			if (this.formwork_content.length == 0) {
+				return this.formwork_text
+			} else {
+				return this.formwork_content
+			}
 		}
 	},
 	watch: {
 	},
 	methods: {
 		analysis_content() {
-			let content = this.formwork.content.replace(/ /g, '')
-			let content_keys = content.match(/\{(.+?)\}}/g)
-			let formwork_content = []
-			for (const i of content_keys) {
-				i.match(/\{{(.+?)\}}/g)
-				let key = RegExp.$1.split('.')[0]
-				if (i.indexOf('first') > 1) {
-					// 是首字段
-					formwork_content.push({
-						label: '首字段：',
-						value: "",
-						color: "#000000",
-						key: key
-					})
-				}
-				else if (i.indexOf('remark') > 1) {
-					// 是尾字段
-					formwork_content.push({
-						label: '尾字段：',
-						value: "",
-						color: "#000000",
-						key: key
-					})
-				}
-				else {
-					// 获取属性名称
-					let end = content.indexOf(i)
-					let start = content.lastIndexOf('}', end) + 1
-					let label = content.slice(start, end)
-					formwork_content.push({
-						label,
-						value: "",
-						color: "#000000",
-						key: key
-					})
-				}
+			if (/\{\{(.+?)\}\}/.test(this.formwork.content)) {
+				// 判断是否有可输入字段
+				let content = this.formwork.content.replace(/ /g, '')
+				let content_keys = content.match(/\{(.+?)\}}/g)
+				let formwork_content = []
+				for (const i of content_keys) {
+					i.match(/\{{(.+?)\}}/g)
+					let key = RegExp.$1.split('.')[0]
+					if (i.indexOf('first') > 1) {
+						// 是首字段
+						formwork_content.push({
+							label: '首字段：',
+							value: "",
+							color: "#000000",
+							key: key
+						})
+					}
+					else if (i.indexOf('remark') > 1) {
+						// 是尾字段
+						formwork_content.push({
+							label: '尾字段：',
+							value: "",
+							color: "#000000",
+							key: key
+						})
+					}
+					else {
+						// 获取属性名称
+						let end = content.indexOf(i)
+						let start = content.lastIndexOf('}', end) + 1
+						let label = content.slice(start, end)
+						formwork_content.push({
+							label,
+							value: "",
+							color: "#000000",
+							key: key
+						})
+					}
 
+				}
+				this.formwork_content = formwork_content
 			}
-			this.formwork_content = formwork_content
+			else {
+				// 如果没有可输入字段，就直接显示content内容
+				this.formwork_text = this.formwork.content
+			}
+
+		},
+		handle_selectUser(data) {
+			// 是多选情况
+			if (data.select) {
+				this.fansOpenIds.push({
+					name: data.nickName,
+					openId: data.openId
+				})
+			} else {
+				this.handle_removeUser(this.fansOpenIds.findIndex(v => v.openId == data.openId))
+			}
+		},
+		handle_removeUser(index) {
+			this.fansOpenIds.splice(index, 1)
+			this.$refs.SelectPop0.updateMutiple()
+		},
+		handle_selectLabel(data) {
+			// 是多选情况
+			if (data.select) {
+				this.fansLabels.push({
+					name: data.labelName,
+					id: data.id
+				})
+			} else {
+				this.handle_removeLabel(this.fansLabels.findIndex(v => v.id == data.id))
+			}
+		},
+		handle_removeLabel(index) {
+			this.fansLabels.splice(index, 1)
+			this.$refs.SelectPop1.updateMutiple()
+		},
+		handle_selectLabel2(data) {
+			// 是多选情况
+			if (data.select) {
+				this.fansTags.push({
+					name: data.labelName,
+					id: data.id
+				})
+			} else {
+				this.handle_removeLabel2(this.fansTags.findIndex(v => v.id == data.id))
+			}
+		},
+		handle_removeLabel2(index) {
+			this.fansTags.splice(index, 1)
+			this.$refs.SelectPop2.updateMutiple()
+		},
+		handle_changeAPP() {
+			this.link_miniprogram.pagepath = ''
+			this.link_miniprogram.appId = this.miniprogramConfig[this.miniprogramIndex].appId
+			this.link_miniprogram.paramsKey = []
+			this.link_miniprogram.params = []
+			this.miniprogramPageIndex = ''
+		},
+		handle_changePath(index) {
+			// console.log(data)
+			this.link_miniprogram.pagepath = this.miniprogramConfig[this.miniprogramIndex].pages[index].value
+			this.link_miniprogram.paramsKey = this.miniprogramConfig[this.miniprogramIndex].pages[index].params || []
+			this.link_miniprogram.params = this.link_miniprogram.paramsKey.map(() => '')
 		},
 		handle_close() {
 			this.$emit('close')
 		},
 		async handle_commit() {
 			// 实际上 form 里面没有需要提交的数据  坑了
-			if (this.noticeFontCount > 200) {
-				this.$message.error("模板消息内容请在200字以内");
+			if (this.formwork_content.length > 0 && this.noticeFontCount > 200) {
+				// 只有可输入信息的模板控制字数限制
+				this.$message.error("微信接口限制，模板消息内容请在200字以内");
 				return
 			}
-			if (this.linkType == 'h5' && this.linkContent.h5[0].value == '') {
-				this.$message.error("请输入连接地址");
+			if (this.linkType == 'h5' && this.link_url == '') {
+				this.$message.error("请输入链接地址");
 				return
 			}
-			if (this.linkType == 'xcx' && this.$common.hasEmpty([this.linkContent.xcx[0].value, this.linkContent.xcx[1].value])) {
+			if (this.linkType == 'xcx' && this.$common.hasEmpty([this.link_miniprogram.appId, this.link_miniprogram.pagepath])) {
 				this.$message.error("请输入小程序跳转参数");
 				return
 			}
@@ -373,26 +559,48 @@ export default {
 				template_id: this.formwork.template_id,
 				data: {}
 			}
-			this.formwork_content.forEach(v => {
-				msgTemplate.data[v.key] = {}
-				msgTemplate.data[v.key].value = v.value
-				msgTemplate.data[v.key].color = v.color
-			})
+			if (this.formwork_content.length > 0) {
+				// 模板可以填内容就把输入项填好
+				this.formwork_content.forEach(v => {
+					msgTemplate.data[v.key] = {}
+					msgTemplate.data[v.key].value = v.value
+					msgTemplate.data[v.key].color = v.color
+				})
+			} else {
+				// 如果模板不可填内容就不传这个东西了
+				msgTemplate.data = {}
+			}
+
 			if (this.linkType == 'h5') {
-				msgTemplate.url = this.linkContent.h5[0].value
+				msgTemplate.url = this.link_url
 			}
 			else {
 				msgTemplate.miniprogram = {
-					appid: this.linkContent.xcx[0].value,
-					pagepath: this.linkContent.xcx[1].value,
-					remark: this.linkContent.xcx[3].value,
+					appid: this.link_miniprogram.appId,
+					pagepath: this.link_miniprogram.pagepath + (() => {
+						if (this.link_miniprogram.paramsKey.length == 0) {
+							return ''
+						}
+						else {
+							let query = "?"
+							this.link_miniprogram.paramsKey.forEach((v, i) => {
+								query += `${v.key}=${this.link_miniprogram.params[i]}`
+								if (i < this.link_miniprogram.paramsKey.length - 1) {
+									query += '&'
+								}
+							})
+							return query
+						}
+					})()
 				}
+				msgTemplate.url = this.link_miniprogram.remark
 			}
 
 			let formData = {
 				appId: this.appId,
 				appSecret: this.appSecret,
-				msgTemplate: JSON.stringify(msgTemplate)
+				msgTemplate: JSON.stringify(msgTemplate),
+				password: undefined, // 全部发送 或者 标签发送时需要填写验证密码
 			}
 			if (this.fansType == 'allFans') {
 				formData.allFans = true
@@ -414,53 +622,34 @@ export default {
 				formData.openIds = this.fansOpenIds.map(v => { return v.openId }).join(',')
 			}
 			if (this.fansTags.length > 0) {
-				formData.fansTags = this.fansTags.map(v => { return v.id }).join(',')
+				formData.fansTag = this.fansTags.map(v => { return v.id }).join(',')
 			}
-			let res = await this.$fetch(
-				"send_official_accounts_formwrok",
-				formData);
-			// if (!res || this.$common.isEmpty(res.data)) {
-			// 	return
-			// }
-			this.$message.success('发送成功')
-			this.$emit('close')
-		},
 
-		handle_selectUser(data) {
-			if (this.fansOpenIds.findIndex(v => v.openId == data.openId) > -1) {
-				return
+			if (formData.allFans) {
+				this.$prompt('请输入当前公众号密码', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,
+					inputErrorMessage: '秘钥为空'
+				}).then(async ({ value }) => {
+					let res = await this.$fetch(
+						"send_official_accounts_formwrok",
+						{
+							...formData,
+							password: value
+						}
+					);
+					this.$message.success("消息已推送成功");
+					this.$emit('close')
+				}).catch(() => { });
+			} else {
+				let res = await this.$fetch(
+					"send_official_accounts_formwrok",
+					formData
+				);
+				this.$message.success('发送成功')
+				this.$emit('close')
 			}
-			this.fansOpenIds.push({
-				name: data.nickName,
-				openId: data.openId
-			})
-		},
-		handle_selectLabel(data) {
-			if (this.fansLabels.findIndex(v => v.id == data.id) > -1) {
-				return
-			}
-			this.fansLabels.push({
-				name: data.labelName,
-				id: data.id
-			})
-		},
-		handle_selectLabel2(data) {
-			if (this.fansTags.findIndex(v => v.id == data.id) > -1) {
-				return
-			}
-			this.fansTags.push({
-				name: data.labelName,
-				id: data.id
-			})
-		},
-		handle_removeLabel(index) {
-			this.fansLabels.splice(index, 1)
-		},
-		handle_removeUser(index) {
-			this.fansOpenIds.splice(index, 1)
-		},
-		handle_removeLabel2(index) {
-			this.fansTags.splice(index, 1)
 		},
 	},
 	mounted() {
