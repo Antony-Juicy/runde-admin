@@ -52,11 +52,11 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="需要分享解锁" prop="isShare">
+          <el-form-item label="分享解锁" prop="isShare">
             <el-select
               size="small"
               v-model="dialogForm.isShare"
-              placeholder="是否需要需要分享解锁"
+              placeholder="分享解锁"
             >
               <el-option
                 v-for="item in shareStatus"
