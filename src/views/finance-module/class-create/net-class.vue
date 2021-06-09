@@ -226,7 +226,7 @@ export default {
           label: "课程编码",
           readonly: true,
           tag: 1,
-          hide: true,
+          // hide: true,
         },
 
         {
@@ -394,23 +394,23 @@ export default {
         this.formOptions[3].options = this.courseSortListArr;
         this.formOptions[4].options = this.synStatusListArr;
         this.addFormOptions[3].options = this.formOptions[1].options = this.codeTypeListArr;
-        this.addFormOptions[3].events = {
-          change: this.codeChange,
-        };
+        // this.addFormOptions[3].events = {
+        //   change: this.codeChange,
+        // };
       });
     },
-    codeChange(val) {
-      //编码类型
-      if (val == "Live") {
-        this.addFormOptions[4].hide = false;
-      } else {
-        this.addFormOptions[4].hide = true;
-      }
-    },
+    // codeChange(val) {
+    //   //编码类型
+    //   if (val == "Live") {
+    //     this.addFormOptions[4].hide = false;
+    //   } else {
+    //     this.addFormOptions[4].hide = true;
+    //   }
+    // },
     handleAdd() {
       this.distributeVisible = true;
       this.addStatus = true;
-      this.addFormOptions[4].hide = true;
+      // this.addFormOptions[4].hide = true;
       this.addFormOptions.forEach((item) => {
         item.initValue = "";
         if (item.prop == "classTypeName") {
@@ -426,12 +426,12 @@ export default {
       }, 0);
     },
     handleEdit(data) {
-      if (data.codeType_text == "Live") {
-        //编码类型為直播
-        this.addFormOptions[4].hide = false;
-      } else {
-        this.addFormOptions[4].hide = true;
-      }
+      // if (data.codeType_text == "Live") {
+      //   //编码类型為直播
+      //   this.addFormOptions[4].hide = false;
+      // } else {
+      //   this.addFormOptions[4].hide = true;
+      // }
       this.addFormOptions.forEach((item) => {
         if (item.tag == 1) {
           if (item.readonly != undefined) {
@@ -463,7 +463,6 @@ export default {
           item.prop == "courseType"
         ) {
           item.initValue = data[`${item.prop}_text`];
-          console.log("哈哈哈", `${item.prop}_text`, item.initValue);
         } else {
           item.initValue = data[item.prop];
         }
