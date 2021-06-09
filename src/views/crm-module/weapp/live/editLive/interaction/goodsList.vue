@@ -17,6 +17,11 @@
           </div>
           <div class="price">￥ {{item.goodsPrices}}</div>
         </div>
+        <div class="kc_box">
+          <div class="title">库存：{{item.goodsTotalStock}} 个</div>
+          <div class="title">已购：{{item.goodsSalesNum}} 个</div>
+          <div class="title">剩余库存：{{item.goodsLastStock}} 个</div>
+        </div>
       </div>
       <div class="operate">
         <el-button type="danger" round size="mini" @click="handelDelete(item.liveGoodsId)">删除</el-button>
@@ -136,10 +141,18 @@ export default {
     padding-right: 20px;
     .goods-item-left {
       display: flex;
+      flex: 2;
       .pic {
         margin-right: 25px;
       }
       .content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+      }
+      .kc_box {
+        flex: 1;
         display: flex;
         flex-direction: column;
         justify-content: space-around;
