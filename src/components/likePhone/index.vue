@@ -2,79 +2,92 @@
 	<div class="like-phone">
 		<img src="@/assets/shouji.png" class="bg-shouji">
 		<div class="over">
-			<div class="accountName">{{accountName}}</div>
-			<div class="notice" v-if="mode == 'notice'">
-				<div v-for="(item,index) in cardData" :key="index">
-					<template v-if="item.key == 'first'">
-						<div class="title" :style="{color:item.color}">{{item.value || '请输入内容'}}</div>
-						<div class="date line">{{mmdd}}</div>
-					</template>
-					<template v-else-if="item.key == 'remark'">
-						<div class="remark line" :style="{color:item.color}">{{item.value || '请输入内容'}}</div>
-					</template>
-					<template v-else>
-						<div class="line ">
-							<div class="label">{{item.label}}</div>
-							<div class="value" :style="{color:item.color}">{{item.value || '请输入内容'}}</div>
+			<div class="inner">
+				<div class="accountName">{{accountName}}</div>
+				<div class="scroll-wrap">
+					<div class="notice" v-if="mode == 'notice'">
+						<template v-if="noticeCanFill">
+							<div v-for="(item,index) in cardData" :key="index">
+								<template v-if="item.key == 'first'">
+									<div class="title" :style="{color:item.color}">{{item.value || '请输入内容'}}</div>
+									<div class="date line">{{mmdd}}</div>
+								</template>
+								<template v-else-if="item.key == 'remark'">
+									<div class="remark line" :style="{color:item.color}">{{item.value || '请输入内容'}}</div>
+								</template>
+								<template v-else>
+									<div class="line ">
+										<div class="label">{{item.label}}</div>
+										<div class="value" :style="{color:item.color}">{{item.value || '请输入内容'}}</div>
+									</div>
+								</template>
+								<div class="count" :class="{danger:noticeFontCount > 200}">{{noticeFontCount}} / 200</div>
+							</div>
+						</template>
+						<template v-else>
+							<div>{{cardData}}</div>
+						</template>
+					</div>
+					<div class="text" v-if="mode == 'text'">
+						<div class="avatar">
+							<img :src="accountLogo || require('@/assets/logo.png')">
 						</div>
-					</template>
-					<div class="count" :class="{danger:noticeFontCount > 200}">{{noticeFontCount}} / 200</div>
-				</div>
-			</div>
-			<div class="text" v-if="mode == 'text'">
-				<div class="avatar">
-					<img :src="accountLogo || require('@/assets/logo.png')">
-				</div>
-				<div class="msg-card">
-					<div class="just-text" v-html="cardData.content || '请输入文字消息'"></div>
-					<div class="link-text" v-if="cardData.needUrl" @click="handle_goPage">{{cardData.description || '请输入链接名称'}}</div>
-				</div>
-			</div>
-			<div class="mpnews" v-if="mode == 'mpnews'" @click="handle_goPage">
-				<div class="avatar">
-					<img :src="accountLogo || require('@/assets/logo.png')">
-				</div>
-				<div class="msg-card">
-					<div class="title twoline" v-html="cardData.title || '请输入标题'"></div>
-					<div class="down">
-						<div class="description twoline">{{cardData.description || '请输入描述'}}</div>
-						<img class="imgUrl" :src="cardData.picurl || require('@/assets/noPic.png')">
+						<div class="msg-card">
+							<div class="just-text" v-html="cardData.content || '请输入文字消息'"></div>
+							<div class="link-text" v-if="cardData.needUrl" @click="handle_goPage">{{cardData.description || '请输入链接名称'}}</div>
+						</div>
+					</div>
+					<div class="mpnews" v-if="mode == 'mpnews'" @click="handle_goPage">
+						<div class="avatar">
+							<img :src="accountLogo || require('@/assets/logo.png')">
+						</div>
+						<div class="msg-card">
+							<div class="title twoline" v-html="cardData.title || '请输入标题'"></div>
+							<div class="down">
+								<div class="description twoline">{{cardData.description || '请输入描述'}}</div>
+								<img class="imgUrl" :src="cardData.picurl || require('@/assets/noPic.png')">
+							</div>
+						</div>
+					</div>
+					<div class="image" v-if="mode == 'image'">
+						<div class="avatar">
+							<img :src="accountLogo || require('@/assets/logo.png')">
+						</div>
+						<img v-if="cardData.picurl" class="imgUrl" :src="cardData.picurl">
+						<div v-else class="default-img">请上传图片</div>
+					</div>
+					<div class="miniprogrampage" v-if="mode == 'miniprogrampage'">
+						<div class="avatar">
+							<img :src="accountLogo || require('@/assets/logo.png')">
+						</div>
+						<div class="msg-card">
+							<div class="head">
+								<img class="logo" :src="cardData.appLogo">
+								<div class="appName oneline">{{cardData.appName || '请选择小程序'}}</div>
+							</div>
+							<div class="title oneline" v-html="cardData.title || '请输入卡片标题'"></div>
+							<img class="imgUrl" v-if="cardData.picurl" :src="cardData.picurl">
+							<div v-else class="default-img">请上传图片</div>
+							<div class="tail">
+								<img src="@/assets/miniprogram.png">
+								<div>小程序</div>
+							</div>
+						</div>
 					</div>
 				</div>
+
+				<customMenu ref="customMenu" v-if="mode == 'menu'" :menuData="cardData"></customMenu>
 			</div>
-			<div class="image" v-if="mode == 'image'">
-				<div class="avatar">
-					<img :src="accountLogo || require('@/assets/logo.png')">
-				</div>
-				<img v-if="cardData.picurl" class="imgUrl" :src="cardData.picurl">
-				<div v-else class="default-img">请上传图片</div>
-			</div>
-			<div class="miniprogrampage" v-if="mode == 'miniprogrampage'">
-				<div class="avatar">
-					<img :src="accountLogo || require('@/assets/logo.png')">
-				</div>
-				<div class="msg-card">
-					<div class="head">
-						<img class="logo" :src="cardData.appLogo">
-						<div class="appName oneline">{{cardData.appName || '请选择小程序'}}</div>
-					</div>
-					<div class="title oneline" v-html="cardData.title || '请输入卡片标题'"></div>
-					<img class="imgUrl" v-if="cardData.picurl" :src="cardData.picurl">
-					<div v-else class="default-img">请上传图片</div>
-					<div class="tail">
-						<img src="@/assets/miniprogram.png">
-						<div>小程序</div>
-					</div>
-				</div>
-			</div>
+
 		</div>
 	</div>
 </template>
 
 <script>
+import customMenu from './customMenu'
 export default {
 	props: {
-		// mode : notice 模板通知 text 文字 mpnews 图文 image 图片 miniprogrampage 小程序
+		// mode : notice 模板通知 text 文字 mpnews 图文 image 图片 miniprogrampage 小程序 menu 菜单编辑
 		/* 
 			notice 的 cardData结构：
 			cardData=[
@@ -110,6 +123,29 @@ export default {
 				picurl:"封面图"
 			}
 		*/
+		/* 
+			menu 的 cardData
+
+			[
+				{
+					"name": "菜单",
+					"sub_button": [
+						{
+							"type": "view",
+							"name": "搜索",
+							"url": "http://www.soso.com/",
+							"sub_button": []
+						},
+					]
+				}
+			]
+
+
+			menu模式下有两个抛出事件： 
+
+			changeMenu 表示出现了新的排序后菜单数据
+			addMenu 表示添加新的菜单栏
+		*/
 		mode: {
 			type: String,
 			require: true
@@ -118,12 +154,20 @@ export default {
 			type: [Object, String, Array],
 			require: true
 		},
+		// accountName 用于显示预览效果里面的公众号名称
 		accountName: {
 			type: String,
 			require: true
 		},
+		// accountLogo 用于显示预览效果里面公众号发出消息的头像
 		accountLogo: {
 			type: String,
+		}
+	},
+	components: { customMenu },
+	data() {
+		return {
+
 		}
 	},
 	computed: {
@@ -131,7 +175,7 @@ export default {
 			this.$common.getFormatDate(Date.now(), 'mm月dd日')
 		},
 		noticeFontCount() {
-			if (this.mode == 'notice') {
+			if (this.mode == 'notice' && this.noticeCanFill) {
 				let count = 0
 				this.cardData.forEach((v) => {
 					count += v.value.length
@@ -140,6 +184,18 @@ export default {
 			} else {
 				return 0
 			}
+		},
+		noticeCanFill() {
+			if (this.mode == 'notice') {
+				if (typeof this.cardData != 'string') {
+					return true
+				}
+				else {
+					return false
+				}
+			} else {
+				return false
+			}
 		}
 	},
 	methods: {
@@ -147,7 +203,7 @@ export default {
 			if (/^(https|http):\/\//g.test(this.cardData.url)) {
 				window.open(this.cardData.url)
 			}
-		}
+		},
 	}
 }
 </script>
@@ -155,32 +211,57 @@ export default {
 <style lang='scss' scoped>
 .like-phone {
 	width: 100%;
-	height: 100%;
+	// height: 100%;
 	position: relative;
 	user-select: none;
-	.bg-shouji {
-		position: absolute;
-		z-index: 1;
-	}
-	.over {
-		width: 345px;
-		height: 696px;
+
+	.inner {
+		width: 100%;
+		height: 100%;
 		position: relative;
-		z-index: 2;
-		padding: 87px 26px 87px 26px;
 	}
 	.accountName {
 		height: 68px;
 		text-align: center;
 		line-height: 33px;
-		padding-top: 35px;
+		padding-top: 20px;
 		font-size: 16px;
 		color: #000;
 		font-weight: bold;
 	}
+	.scroll-wrap {
+		height: calc(100% - 68px);
+		overflow: auto;
+		padding-bottom: 10px;
+	}
+
+	.scroll-wrap::-webkit-scrollbar {
+		width: 6px;
+		height: 6px;
+	}
+	.scroll-wrap::-webkit-scrollbar-thumb {
+		width: 6px;
+		height: 6px;
+		border-radius: 10px;
+		background-color: #d5d5d5;
+		cursor: pointer;
+	}
+	.bg-shouji {
+		position: absolute;
+		width: 250px;
+		z-index: 1;
+	}
+	.over {
+		width: 250px;
+		height: 520px;
+		position: relative;
+		z-index: 2;
+		padding: 64px 21px 79px 19px;
+	}
+
 	.notice {
 		background: #fff;
-		width: 80%;
+		width: 90%;
 		padding: 20px 10px;
 		margin: 10px;
 		position: relative;
@@ -223,11 +304,12 @@ export default {
 		.just-text {
 			margin-bottom: 10px;
 			color: #000;
-			font-size: 15px;
+			font-size: 12px;
 		}
 		.link-text {
 			color: rgb(0, 0, 238);
 			cursor: pointer;
+			font-size: 12px;
 		}
 	}
 	.mpnews {
@@ -235,7 +317,7 @@ export default {
 		align-items: flex-start;
 		padding: 0 10px;
 		.title {
-			font-size: 16px;
+			font-size: 14px;
 			font-weight: bold;
 			margin-bottom: 5px;
 		}
@@ -243,9 +325,9 @@ export default {
 			display: flex;
 			.description {
 				width: 100%;
-				font-size: 13px;
+				font-size: 12px;
 				color: #ccc;
-				height: 28px;
+				height: 26px;
 			}
 			img {
 				width: 40px;
@@ -269,7 +351,7 @@ export default {
 		.default-img {
 			margin-left: 10px;
 			width: 60%;
-			height: 300px;
+			height: 170px;
 			background: #fff;
 			display: flex;
 			align-items: center;
@@ -280,13 +362,14 @@ export default {
 		display: flex;
 		align-items: flex-start;
 		padding: 0 10px;
+		font-size: 12px;
 		.head {
 			display: flex;
 			align-items: center;
 			margin-bottom: 5px;
 			.logo {
-				width: 20px;
-				height: 20px;
+				width: 10px;
+				height: 10px;
 				margin-right: 5px;
 			}
 			.appName {
@@ -299,14 +382,14 @@ export default {
 			margin-bottom: 5px;
 		}
 		.imgUrl {
-			width: 190px;
-			height: 152px;
+			width: 100%;
+			height: 100px;
 			margin-bottom: 10px;
 			object-fit: cover;
 		}
 		.default-img {
-			width: 190px;
-			height: 152px;
+			// width: 190px;
+			height: 80px;
 			margin-bottom: 10px;
 			display: flex;
 			align-items: center;
@@ -329,9 +412,10 @@ export default {
 			}
 		}
 	}
+
 	.avatar {
-		width: 40px;
-		height: 40px;
+		width: 30px;
+		height: 30px;
 		background: #fff;
 		border-radius: 6px;
 

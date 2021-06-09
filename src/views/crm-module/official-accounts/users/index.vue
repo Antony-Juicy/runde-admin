@@ -30,7 +30,8 @@
 			<rd-table :tableData="list" :tableKey="tableKey" :pageConfig.sync="pageConfig" @pageChange="pageChange">
 				<template slot="label" slot-scope="scope">
           <div class="el-form-list">
-					  <span class="el-form-label" v-for="item in scope.row.wechatUserTagModel">{{item.labelName}}</span>
+					  <span class="el-form-label" v-for="item in scope.row.wechatUserTagModel" v-if="scope.row.wechatUserTagModel && scope.row.wechatUserTagModel.length">{{item.labelName}}</span>
+            <span class="el-form-label-null"v-if="!scope.row.wechatUserTagModel || !scope.row.wechatUserTagModel.length">无标签</span>
           </div>
 				</template>
 				<template slot="edit" slot-scope="scope">
@@ -108,12 +109,12 @@ export default {
 				{
 					name: "用户昵称",
 					value: "nickName",
-					width: 130
+					width: 180
 				},
 				{
 					name: "微信ID",
 					value: "openId",
-					width: 250
+					width: 350
 				},
 				{
 					name: "用户标签",
@@ -128,7 +129,7 @@ export default {
 					name: "操作",
 					value: "edit",
 					operate: true,
-					width: 180
+					width: 250
 				},
 			],
 			pageConfig: {
@@ -189,6 +190,8 @@ export default {
     
 		handle_select_account(index) {
 			this.account = this.officialAccounts[index];
+			this.pageConfig.pageNum = 1;
+			this.getTableData();
 		},
 
     pageChange(e){
@@ -209,7 +212,7 @@ export default {
         searchForm.openId = data.openId;
       }
       this.searchForm = searchForm;
-      this.pageNum = 1;
+      this.pageConfig.pageNum = 1;
       this.getTableData();
     },
 
@@ -259,6 +262,8 @@ export default {
       let postData = {};
       if(label.length){
         postData.userTagAddListRequest = JSON.stringify(label);
+      }else{
+        postData.userTagAddListRequest = JSON.stringify([{labelName:'',labelId:'',openId:this.labelOpenId}]);
       }
       let res = await this.$fetch(
 				"update_label",
@@ -370,6 +375,10 @@ export default {
   margin:0 5px 5px 0;
   display: inline-block;
   font-size: 12px;
+}
+.el-form-label-null{
+  font-size: 12px;
+  color:#333;
 }
 .pages{
   padding:30px 0 70px 0;

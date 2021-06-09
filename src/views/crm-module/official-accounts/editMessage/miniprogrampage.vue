@@ -11,6 +11,7 @@
 				<el-button size="mini" plain @click="handle_insertUserName">用户昵称</el-button>
 			</div>
 		</div>
+		<div class="origin-tips" style="margin-left:90px">要求小程序的appid需要与公众号有关联关系</div>
 		<div class="form-line">
 			<div class="label">选择小程序：</div>
 			<el-select v-model="miniprogramIndex" @change="handle_changeAPP">
@@ -19,10 +20,18 @@
 		</div>
 		<div class="form-line" v-if="msgForm.appId">
 			<div class="label">小程序路径：</div>
-			<el-select v-model="msgForm.pagepath">
-				<el-option v-for="(item,index) in miniprogramConfig[miniprogramIndex].pages" :key="index" :label="item.label" :value="item.value"></el-option>
+			<el-select v-model="miniprogramPageIndex" @change="handle_changePath">
+				<el-option v-for="(item,index) in miniprogramConfig[miniprogramIndex].pages" :key="index" :label="item.label" :value="index">
+				</el-option>
 			</el-select>
 		</div>
+		<template v-if="msgForm.paramsKey.length > 0">
+			<div class="form-line" v-for="(item,index) in msgForm.paramsKey" :key="index">
+				<div class="label">{{item.label}}：</div>
+				<el-input v-model="msgForm.params[index]"></el-input>
+			</div>
+		</template>
+
 		<div class="form-line">
 			<div class="label">封面图：</div>
 			<Upload-oss v-if="uploadOssElem" :objConfig="{ dir: 'web/runde_admin', project: 'icon_' }" :src.sync="msgForm.picurl" :initGetConfig="initGetConfig" />
@@ -31,7 +40,7 @@
 </template>
 
 <script>
-import miniprogramConfig from './miniprogram'
+import miniprogramConfig from '../miniprogram'
 import UploadOss from '@/components/UploadOss'
 export default {
 	components: { UploadOss },
@@ -46,10 +55,12 @@ export default {
 				pagepath: "",
 				appLogo: "",
 				appName: "",
-				appId: ""
+				paramsKey: [],
+				params: []
 			},
 			miniprogramConfig: miniprogramConfig,
-			miniprogramIndex: ''
+			miniprogramIndex: '',
+			miniprogramPageIndex: '',
 		}
 	},
 	methods: {
@@ -60,8 +71,7 @@ export default {
 			span.innerText = '用户昵称';
 			span.classList.add('likeBtn');
 			var sel = window.getSelection();
-			var text = document.createElement('span')
-			text.innerText = " "
+			var text = document.createTextNode(' ')
 			// debugger
 			if (sel.rangeCount > 0) {
 				var range = sel.getRangeAt(0);
@@ -101,10 +111,24 @@ export default {
 			this.msgForm.appId = this.miniprogramConfig[this.miniprogramIndex].appId
 			this.msgForm.appName = this.miniprogramConfig[this.miniprogramIndex].appName
 			this.msgForm.appLogo = this.miniprogramConfig[this.miniprogramIndex].appLogo
+			this.msgForm.paramsKey = []
+			this.msgForm.params = []
+			this.miniprogramPageIndex = ''
 			this.emitForm()
+		},
+		handle_changePath(index) {
+			// console.log(data)
+			this.msgForm.pagepath = this.miniprogramConfig[this.miniprogramIndex].pages[index].value
+			this.msgForm.paramsKey = this.miniprogramConfig[this.miniprogramIndex].pages[index].params || []
+			this.msgForm.params = this.msgForm.paramsKey.map(() => '')
 		},
 		emitForm() {
 			this.$emit('msgData', this.msgForm)
+		}
+	},
+	watch: {
+		'msgForm.picurl': function (n, o) {
+			this.emitForm()
 		}
 	},
 	mounted() {
@@ -121,6 +145,8 @@ export default {
 		border-radius: 4px;
 		transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
 		line-height: 26px;
+		max-height: 150px;
+		overflow: auto;
 		&:focus {
 			border-color: #409eff;
 		}
@@ -129,6 +155,12 @@ export default {
 		display: flex;
 		align-items: center;
 		margin-top: 10px;
+	}
+	.origin-tips {
+		color: #ffaf53;
+		font-size: 12px;
+		padding-left: 10px;
+		margin-bottom: 20px;
 	}
 	/deep/ {
 		.likeBtn {

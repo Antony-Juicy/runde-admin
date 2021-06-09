@@ -10,10 +10,11 @@ export default {
 
 
     // 客服消息发送
-    graphic_message_send_msg: { url: '/wechat/console/wechat_material/send_msg', method: 'post' }
+    graphic_message_send_msg: { url: '/wechat/console/wechat_material/send_msg', method: 'post' },
+
 
 
     // 获取公众号文章内图片
-    // ******** : { url: '/wechat/console/wechat_material/handle_img', method: 'post' }
+    graphic_message_upload_material : { url: '/wechat/console/wechat_material/add_img', method: 'post' }
 
 }
