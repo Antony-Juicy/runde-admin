@@ -24,14 +24,14 @@
               placeholder="试卷名称"
             ></el-input>
           </el-form-item>
-          <el-form-item class="input-normal" label="题目名称" prop="issuse">
+          <!-- <el-form-item class="input-normal" label="题目名称" prop="issuse">
             <el-input
               :disabled="handleStatus != 1"
               v-model="dialogForm.issue.issuse"
               size="small"
               placeholder="题目名称"
             ></el-input>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item class="input-normal" label="题目类型" prop="issuesType">
             <el-select
               size="small"
@@ -58,11 +58,11 @@
           </el-form-item>
           <el-form-item
             class="input-normal"
-            label="题目内容"
-            prop="issuseContent"
+            label="题目名称"
+            prop="issuse"
           >
             <el-input
-              v-model="dialogForm.issue.issuseContent"
+              v-model="dialogForm.issue.issuse"
               type="textarea"
               :rows="3"
             ></el-input>
@@ -283,7 +283,7 @@ export default {
           answer: "",
           imageAnalysis: "",
           issuse: "",
-          issuseContent: "",
+          // issuseContent: "",
           imageIssuse: "",
           videoId: "",
           textAnalysis: "",
@@ -301,7 +301,7 @@ export default {
           answer: "",
           imageAnalysis: "",
           issuse: "",
-          issuseContent: "",
+          // issuseContent: "",
           imageIssuse: "",
           videoId: "",
           textAnalysis: "",
