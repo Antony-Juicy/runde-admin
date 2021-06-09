@@ -44,13 +44,13 @@
               :rows="5"
             ></el-input>
           </el-form-item>
-          <el-form-item class="select" label="总题数" prop="countSubject">
+          <!-- <el-form-item class="select" label="总题数" prop="countSubject">
             <el-input
               v-model="dialogForm.countSubject"
               size="small"
               placeholder="总题数"
             ></el-input>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item class="select" label="排序值" prop="sort">
             <el-input
               v-model="dialogForm.sort"
@@ -92,6 +92,7 @@
       direction="btt"
       append-to-body
       size="90%"
+      @closed="querySiteList"
     >
       <exercises v-if="drawerVisible" :lssueData="lssueData" />
     </el-drawer>
@@ -254,7 +255,7 @@ export default {
         // 状态
         stat: "",
         // 总题数
-        countSubject: "",
+        countSubject: 0,
         // 答题时间
         answerTime: "",
         // 排序值
@@ -273,7 +274,7 @@ export default {
         // 状态
         stat: "",
         // 总题数
-        countSubject: "",
+        countSubject: 0,
         // 答题时间
         answerTime: "",
         // 排序值
