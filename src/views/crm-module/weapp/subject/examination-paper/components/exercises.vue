@@ -24,14 +24,14 @@
               placeholder="试卷名称"
             ></el-input>
           </el-form-item>
-          <el-form-item class="input-normal" label="题目名称" prop="issuse">
+          <!-- <el-form-item class="input-normal" label="题目名称" prop="issuse">
             <el-input
               :disabled="handleStatus != 1"
               v-model="dialogForm.issue.issuse"
               size="small"
               placeholder="题目名称"
             ></el-input>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item class="input-normal" label="题目类型" prop="issuesType">
             <el-select
               size="small"
@@ -58,11 +58,11 @@
           </el-form-item>
           <el-form-item
             class="input-normal"
-            label="题目内容"
-            prop="issuseContent"
+            label="题目名称"
+            prop="issuse"
           >
             <el-input
-              v-model="dialogForm.issue.issuseContent"
+              v-model="dialogForm.issue.issuse"
               type="textarea"
               :rows="3"
             ></el-input>
@@ -157,11 +157,11 @@
               placeholder="观看时间"
             ></el-input>
           </el-form-item>
-          <el-form-item class="input-small" label="序号" prop="sort">
+          <el-form-item class="input-small" label="排序值" prop="sort">
             <el-input
               v-model="dialogForm.sort"
               size="small"
-              placeholder="序号"
+              placeholder="排序值"
             ></el-input>
           </el-form-item>
         </el-form>
@@ -211,7 +211,7 @@
       </div> -->
     </div>
     <div class="lssue-table">
-      <rd-table :tableData="tableData" :tableKey="tableKey">
+      <rd-table :tableData="tableData" :tableKey="tableKey" tbodyHeight="700px">
          <template slot="siteName">
            {{ lssueData.siteName }}
          </template>
@@ -283,7 +283,7 @@ export default {
           answer: "",
           imageAnalysis: "",
           issuse: "",
-          issuseContent: "",
+          // issuseContent: "",
           imageIssuse: "",
           videoId: "",
           textAnalysis: "",
@@ -301,7 +301,7 @@ export default {
           answer: "",
           imageAnalysis: "",
           issuse: "",
-          issuseContent: "",
+          // issuseContent: "",
           imageIssuse: "",
           videoId: "",
           textAnalysis: "",
@@ -360,11 +360,11 @@ export default {
           value: "issuesType",
           width: 240,
         },
-        {
-          name: "排序值",
-          value: "sort",
-          width: 140,
-        },
+        // {
+        //   name: "排序值",
+        //   value: "sort",
+        //   width: 140,
+        // },
         {
           name: "操作",
           value: "edit",
@@ -409,6 +409,7 @@ export default {
       this.$fetch("lssue_paper_list", this.params).then((res) => {
         if (res.code == 200) {
           this.tableData = JSON.parse(res.msg);
+          console.log(this.tableData)
         }
       });
     },

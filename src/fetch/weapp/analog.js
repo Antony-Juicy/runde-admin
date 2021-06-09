@@ -1,12 +1,5 @@
 export default {
 
-  // 新增题目
-  import_issue_excel: {
-    url: '/mini-programs/console/analog_site/import_issue_excel',
-    method: 'post',
-    headers: [{ key: 'Content-Type', value: 'multipart/form-data;boundary=<calculated when request is sent>' }] 
-  },
-  
   /*********** 试卷开始 ***********/
 
   // 试卷分页查询
@@ -114,5 +107,16 @@ export default {
 
   /*********** 题目结束 ***********/
 
+
+
+  // 新增题目
+  import_issue_excel: {
+    url: '/mini-programs/console/analog_site/import_issue_excel',
+    method: 'post',
+    headers: [{
+      key: 'Content-Type',
+      value: 'multipart/form-data;boundary=<calculated when request is sent>'
+    }]
+  },
 
 }

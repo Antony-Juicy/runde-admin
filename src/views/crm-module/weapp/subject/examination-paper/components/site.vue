@@ -30,13 +30,12 @@
               placeholder="站点名称"
             ></el-input>
           </el-form-item>
-          <el-form-item class="select" label="答题时长" prop="answerTime">
+          <el-form-item class="select minute" label="答题时长" prop="answerTime">
             <el-input
               v-model="dialogForm.answerTime"
               size="small"
               placeholder="答题时长"
             ></el-input>
-            <span class="minute"> 分钟 </span>
           </el-form-item>
           <el-form-item label="文案描述" prop="descriPtion">
             <el-input
@@ -45,13 +44,13 @@
               :rows="5"
             ></el-input>
           </el-form-item>
-          <el-form-item class="select" label="总题数" prop="countSubject">
+          <!-- <el-form-item class="select" label="总题数" prop="countSubject">
             <el-input
               v-model="dialogForm.countSubject"
               size="small"
               placeholder="总题数"
             ></el-input>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item class="select" label="排序值" prop="sort">
             <el-input
               v-model="dialogForm.sort"
@@ -93,6 +92,7 @@
       direction="btt"
       append-to-body
       size="90%"
+      @closed="querySiteList"
     >
       <exercises v-if="drawerVisible" :lssueData="lssueData" />
     </el-drawer>
@@ -255,7 +255,7 @@ export default {
         // 状态
         stat: "",
         // 总题数
-        countSubject: "",
+        countSubject: 0,
         // 答题时间
         answerTime: "",
         // 排序值
@@ -274,7 +274,7 @@ export default {
         // 状态
         stat: "",
         // 总题数
-        countSubject: "",
+        countSubject: 0,
         // 答题时间
         answerTime: "",
         // 排序值
@@ -456,13 +456,23 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/deep/ .el-drawer.btt {
+  overflow: hidden;
+  overflow-y: auto;
+  height: 700px;
+}
 .site-x {
   width: 100%;
 }
 .minute {
-  position: absolute;
-  right: -8px;
-  transform: translateX(100%);
+  position: relative;
+  &::after {
+    content: '分钟';
+    position: absolute;
+    top: 50%;
+    right: -36px;
+    transform: translateY(-50%);
+  }
 }
 .site-dialog-form {
   .input {
