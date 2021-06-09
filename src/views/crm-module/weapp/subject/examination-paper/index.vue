@@ -52,11 +52,11 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="分享解锁" prop="isShare">
+          <el-form-item label="需要分享解锁" prop="isShare">
             <el-select
               size="small"
               v-model="dialogForm.isShare"
-              placeholder="是否需要分享解锁"
+              placeholder="是否需要需要分享解锁"
             >
               <el-option
                 v-for="item in shareStatus"
@@ -169,7 +169,7 @@
         @pageChange="pageChange"
       >
         <template slot="isShare" slot-scope="scope">
-          {{ scope.row.isShare == 0 ? "分享解锁" : "不用解锁" }}
+          {{ scope.row.isShare == 1 ? "需要分享解锁" : "不用解锁" }}
         </template>
         <template slot="stat" slot-scope="scope">
           {{ scope.row.stat == 0 ? "上架" : "下架" }}
@@ -278,7 +278,7 @@ export default {
         paperName: "",
         // 项目id
         subjectId: "",
-        // 分享解锁
+        // 需要分享解锁
         isShare: "",
         // 状态
         stat: 0,
@@ -293,7 +293,7 @@ export default {
         paperName: "",
         // 项目id
         subjectId: "",
-        // 分享解锁
+        // 需要分享解锁
         isShare: "",
         // 状态
         stat: 0,
@@ -330,11 +330,11 @@ export default {
       // 模拟卷分享选项
       shareStatus: [
         {
-          value: 0,
-          label: "分享解锁",
+          value: 1,
+          label: "需要分享解锁",
         },
         {
-          value: 1,
+          value: 0,
           label: "不用解锁",
         },
       ],
@@ -365,7 +365,7 @@ export default {
           width: 240,
         },
         {
-          name: "分享解锁",
+          name: "需要分享解锁",
           value: "isShare",
           operate: true,
           width: 140,
