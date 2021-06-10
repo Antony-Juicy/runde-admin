@@ -26,7 +26,6 @@
               size="small"
               v-model="dialogForm.subjectId"
               placeholder="项目列表"
-              @change="subjectChange"
             >
               <el-option
                 v-for="item in subjectList"
@@ -416,13 +415,6 @@ export default {
     fullDialogChange() {
       this.drawerVisible = false;
       this.siteData = {};
-    },
-    // 选择项目时触发
-    subjectChange(subjectId) {
-      let result = this.subjectList.find((res) => {
-        return res.id == subjectId;
-      });
-      this.dialogForm.id = result.id;
     },
     //  查询项目列表
     querySubjectList() {
