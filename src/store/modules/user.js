@@ -60,8 +60,9 @@ const actions = {
     const { username, password, VerifyCode, slatkey } = userInfo
     return new Promise((resolve, reject) => {
       Fetch('user_login',{ username: username.trim(), password: md5(password), code: VerifyCode, slatkey }).then(response => {
+        // 设置标识，表示通过账号登录
+        localStorage.setItem('loginType',1)
         const { data } = response
-        console.log(data)
         commit('SET_TOKEN', data.token) //在全局vuex中存入state
         setToken(data.token)   //把token存储在本地cookie之中
         commit('SET_NAME', data.username)  //用户名
@@ -78,8 +79,9 @@ const actions = {
   // 直播跳转链接的登录方式
   loginLive({ commit }, userInfo) {
     return new Promise(async (resolve, reject) => {
-      const data = userInfo
-        console.log(data,'data---')
+      // 设置标识，表示通过旧系统跳转过来的
+        localStorage.setItem('loginType',0)
+        const data = userInfo
         commit('SET_TOKEN', data.token) //在全局vuex中存入state
         setToken(data.token)   //把token存储在本地cookie之中
         commit('SET_NAME', data.username)  //用户名
@@ -87,11 +89,7 @@ const actions = {
         localStorage.setItem('userInfo',JSON.stringify(data));
         localStorage.setItem('loginUserId',data.userId);
         await store.dispatch('permission/getRoutesInfo');
-          const accessRoutes = await store.dispatch('permission/generateRoutes',{type:0})
-          resetRouter()
-          router.addRoutes(accessRoutes)
-         
-          router.push({ path: "/" });
+        router.push({ path: "/" });
         resolve();
     })
   },

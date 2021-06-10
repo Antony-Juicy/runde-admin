@@ -395,7 +395,7 @@ export default {
 		}
 		.el-table {
 			max-height: calc(100vh - 400px) !important;
-			overflow: scroll;
+			overflow-y: scroll;
 		}
 		.el-table::before {
 			background: none;
