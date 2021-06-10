@@ -364,7 +364,7 @@ export default {
           width: 240,
         },
         {
-          name: "需要分享解锁",
+          name: "分享解锁",
           value: "isShare",
           operate: true,
           width: 140,
