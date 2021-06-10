@@ -169,7 +169,7 @@
         @pageChange="pageChange"
       >
         <template slot="subjectName" slot-scope="scope">
-          {{ querySubjectById(scope.row.subjectName) }}
+          {{ querySubjectById(scope.row.subjectId) }}
         </template>
         <template slot="isShare" slot-scope="scope">
           {{ scope.row.isShare == 1 ? "需要分享解锁" : "不用解锁" }}
