@@ -168,6 +168,9 @@
         :tableKey="tableKey"
         @pageChange="pageChange"
       >
+        <template slot="subjectName" slot-scope="scope">
+          {{ querySubjectById(scope.row.id) }}
+        </template>
         <template slot="isShare" slot-scope="scope">
           {{ scope.row.isShare == 1 ? "需要分享解锁" : "不用解锁" }}
         </template>
@@ -221,14 +224,10 @@
       append-to-body
     >
       <div class="upload-type-btn">
-        <el-button
-          @click="handleDialog(5, uploadData, 'add')"
-          type="primary"
+        <el-button @click="handleDialog(5, uploadData, 'add')" type="primary"
           >新增</el-button
         >
-        <el-button
-          @click="handleDialog(5, uploadData, 'cover')"
-          type="primary"
+        <el-button @click="handleDialog(5, uploadData, 'cover')" type="primary"
           >覆盖</el-button
         >
       </div>
@@ -317,7 +316,7 @@ export default {
           label: "下架",
         },
       ],
-       testStatusHandle: [
+      testStatusHandle: [
         {
           value: 0,
           label: "上架",
@@ -356,6 +355,7 @@ export default {
         {
           name: "项目名称",
           value: "subjectName",
+          operate: true,
           width: 220,
         },
         {
@@ -398,6 +398,16 @@ export default {
       },
     };
   },
+  computed: {
+    querySubjectById() {
+      return function (subjectId) {
+        let result = this.subjectList.find((res) => {
+          return subjectId == res.id;
+        });
+        return result.subjectName
+      };
+    },
+  },
   methods: {
     // 下载模板
     handleDownTemp(file) {
@@ -412,7 +422,7 @@ export default {
       let result = this.subjectList.find((res) => {
         return res.id == subjectId;
       });
-      this.dialogForm.subjectName = result.subjectName;
+      this.dialogForm.id = result.id;
     },
     //  查询项目列表
     querySubjectList() {
