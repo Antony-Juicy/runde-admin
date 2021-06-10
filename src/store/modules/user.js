@@ -87,11 +87,7 @@ const actions = {
         localStorage.setItem('userInfo',JSON.stringify(data));
         localStorage.setItem('loginUserId',data.userId);
         await store.dispatch('permission/getRoutesInfo');
-          const accessRoutes = await store.dispatch('permission/generateRoutes',{type:0})
-          resetRouter()
-          router.addRoutes(accessRoutes)
-         
-          router.push({ path: "/" });
+        router.push({ path: "/" });
         resolve();
     })
   },

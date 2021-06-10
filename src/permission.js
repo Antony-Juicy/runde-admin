@@ -41,7 +41,7 @@ router.beforeEach(async(to, from, next) => {
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
           // 获取用户信息 设置用户权限
           await store.dispatch('user/getInfo')
-          console.log(to,'to---')
+          
           if(to.path != '/live-redirect'){
              //如果不是直播中转页，就调取接口 获取路由信息
             await store.dispatch('permission/getRoutesInfo')
@@ -50,7 +50,11 @@ router.beforeEach(async(to, from, next) => {
           if(localStorage.getItem('clickMenu')) {
             type = localStorage.getItem('tabIndex') || 0;
             pathObj = { ...to, replace: true }
-          }else {
+          }else if(to.path == '/live-redirect'){
+            type = 0;
+            const { path,query } = to;
+            pathObj = { path,query }
+          }else{
             type = 0;
             pathObj = { path: '/' }
           }

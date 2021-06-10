@@ -26,9 +26,6 @@ export default {
     },
     "$route.query.token"(newVal){
       this.authentication()
-    },
-    "$route.query.t"(newVal){
-      this.authentication()
     }
   },
    methods: {
