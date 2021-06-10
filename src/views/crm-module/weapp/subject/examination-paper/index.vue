@@ -26,7 +26,6 @@
               size="small"
               v-model="dialogForm.subjectId"
               placeholder="项目列表"
-              @change="subjectChange"
             >
               <el-option
                 v-for="item in subjectList"
@@ -169,7 +168,7 @@
         @pageChange="pageChange"
       >
         <template slot="subjectName" slot-scope="scope">
-          {{ querySubjectById(scope.row.subjectName) }}
+          {{ querySubjectById(scope.row.subjectId) }}
         </template>
         <template slot="isShare" slot-scope="scope">
           {{ scope.row.isShare == 1 ? "需要分享解锁" : "不用解锁" }}
@@ -365,7 +364,7 @@ export default {
           width: 240,
         },
         {
-          name: "需要分享解锁",
+          name: "分享解锁",
           value: "isShare",
           operate: true,
           width: 140,
@@ -422,7 +421,7 @@ export default {
       let result = this.subjectList.find((res) => {
         return res.id == subjectId;
       });
-      this.dialogForm.id = result.id;
+      this.dialogForm.subjectName = result.subjectName;
     },
     //  查询项目列表
     querySubjectList() {
