@@ -65,10 +65,17 @@ router.beforeEach(async(to, from, next) => {
 
           NProgress.done()
         } catch (error) {
+          console.log(11111111)
           // remove token and go to login page to re-login
+          let loginType = localStorage.getItem('loginType')
+          let url = `/login?redirect=${to.path}`
           await store.dispatch('user/resetToken')
           Message.error(error || 'Has Error')
-          next(`/login?redirect=${to.path}`)
+          // 如果是从旧系统跳转过来的 过期跳回旧大教务
+          if(loginType == 0){
+            url = 'http://jiaowu.rundejy.com/'
+          }
+          next(url)
           NProgress.done()
         }
         

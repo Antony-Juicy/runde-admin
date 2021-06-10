@@ -93,32 +93,25 @@ service.interceptors.response.use(
           duration: 3 * 1000
         })
         store.dispatch("user/setTableText", "您没有权限访问")
-      } else if (res.code == 402) {
-        // 如果是登录过期，直接跳到登陆页，不做提示
-        await store.dispatch('user/logout')
-        router.push(`/login`)
-        
-        // let msg = '您的登录已过期，请重新登录。'
-        // // to re-login
-        // MessageBox.confirm(msg, '确认注销', {
-        //   confirmButtonText: '重新登录',
-        //   cancelButtonText: '取消',
-        //   type: 'warning'
-        // }).then(() => {
-        //   store.dispatch('user/resetToken').then(() => {
-        //     location.reload()
-        //   })
-        // })
-      } else if (res.code == 403) {
-        let msg = '您的账号在异地登录，请重新登录。'
+      } else if (res.code == 402 || status === 403) {
+        // 不做这个登录过期，直接跳到登陆页，不做提示
+        // await store.dispatch('user/logout')
+        // router.push(`/login`)
+        let msg = '您的登录已过期，请重新登录。'
         // to re-login
         MessageBox.confirm(msg, '确认注销', {
           confirmButtonText: '重新登录',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
+          let loginType = localStorage.getItem('loginType')
+          
           store.dispatch('user/resetToken').then(() => {
-            location.reload()
+            if(loginType == 0){
+              window.location.href = 'http://jiaowu.rundejy.com/'
+            }else {
+              location.reload()
+            }
           })
         })
       } else {
@@ -154,32 +147,25 @@ service.interceptors.response.use(
         duration: 3 * 1000
       })
       store.dispatch("user/setTableText", "您没有权限访问")
-    } else if (status === 402) {
-      // 如果是登录过期，直接跳到登陆页，不做提示
-      await store.dispatch('user/logout')
-      router.push(`/login`)
-      // let msg = '您的登录已过期，请重新登录。'
-      // // to re-login
-      // MessageBox.confirm(msg, '确认注销', {
-      //   confirmButtonText: '重新登录',
-      //   cancelButtonText: '取消',
-      //   type: 'warning'
-      // }).then(() => {
-      //   store.dispatch('user/resetToken').then(() => {
-      //     location.reload()
-      //   })
-      // })
-    } else if (status === 403) {
-      let msg = '您的账号在异地登录，请重新登录。'
+    } else if (status === 402 || status === 403) {
+      // 不做这个登录过期，直接跳到登陆页，不做提示
+      // await store.dispatch('user/logout')
+      // router.push(`/login`)
+      let msg = '您的登录已过期，请重新登录。'
       // to re-login
       MessageBox.confirm(msg, '确认注销', {
         confirmButtonText: '重新登录',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        store.dispatch('user/resetToken').then(() => {
-          location.reload()
-        })
+        let loginType = localStorage.getItem('loginType')
+          store.dispatch('user/resetToken').then(() => {
+            if(loginType == 0){
+              window.location.href = 'http://jiaowu.rundejy.com/'
+            }else {
+              location.reload()
+            }
+          })
       })
     } else {
       Message.closeAll()
