@@ -53,7 +53,6 @@
             >设置课程编码</el-button
           >
 
-          <el-divider direction="vertical"></el-divider>
           <!-- <el-button @click="handleSet(scope.row, 2)" type="text" size="small"
             >设置直播编码</el-button
           > -->
@@ -195,6 +194,12 @@
                             v-model="basicInfo.courses[index].checked"
                             :disabled="IsDisabled"
                             :label="item.label"
+                            @change="
+                              changeCoursesCheckbox(
+                                basicInfo.courses[index].checked,
+                                index
+                              )
+                            "
                           ></el-checkbox>
                           <el-input
                             v-model="basicInfo.courses[index].coursePrice"
@@ -1018,7 +1023,7 @@ export default {
     totalPrice() {
       let totalPrice = 0;
       this.basicInfo.courses.map((item) => {
-        if (item.checked) {
+        if (item.checked!=false) {
           totalPrice += item.coursePrice - 0;
         }
       });
@@ -1034,6 +1039,9 @@ export default {
     // geteGroupListFunc(data) {//获取班型分組
     //   this.courseGroupArr = data;
     // },
+    changeCoursesCheckbox(value, index) {
+      this.basicInfo.courses[index].checked = value;
+    },
     any(arr, fn = Boolean) {
       return arr.some(fn);
     },
@@ -1140,6 +1148,7 @@ export default {
       //获取课程
       this.basicInfo.tableData = []; //选择科目后置空班型内容列表
       this.courseList = data;
+      console.log("啊啊啊啊啊啊啊啊啊", this.basicInfo.courses);
       this.basicInfo.courses = data.map((item) => ({
         courseName: item.label,
         checked: false,
@@ -1150,12 +1159,11 @@ export default {
     },
     getSelectList() {
       this.$fetch("courseclasstype_goSearch").then((res) => {
-        this.projectArr = this.formOptions[1].options = res.data.productList.map(
-          (item) => ({
+        this.projectArr = this.formOptions[1].options =
+          res.data.productList.map((item) => ({
             label: item.productName,
             value: item.id,
-          })
-        );
+          }));
         console.log("projectArr-==", this.projectArr);
         this.formOptions[1].events = {
           change: this.productChange,
@@ -1169,19 +1177,17 @@ export default {
           })
         );
         //协议类型
-        this.protocolTypeArr = this.formOptions[6].options = res.data.protocolTypeList.map(
-          (item) => ({
+        this.protocolTypeArr = this.formOptions[6].options =
+          res.data.protocolTypeList.map((item) => ({
             label: item.value,
             value: item.key,
-          })
-        );
+          }));
         //班型类型
-        this.classTypeArr = this.formOptions[4].options = res.data.classTypeList.map(
-          (item) => ({
+        this.classTypeArr = this.formOptions[4].options =
+          res.data.classTypeList.map((item) => ({
             label: item.value,
             value: item.key,
-          })
-        );
+          }));
         //请选择退费规则
         this.formOptions[8].options = res.data.refundRulesionList.map(
           (item) => ({
@@ -1190,19 +1196,17 @@ export default {
           })
         );
         //班型分组
-        this.classtypeGroupArr = this.formOptions[10].options = res.data.classTypeGroupList.map(
-          (item) => ({
+        this.classtypeGroupArr = this.formOptions[10].options =
+          res.data.classTypeGroupList.map((item) => ({
             label: item.classtypeGroupName,
             value: item.id,
-          })
-        );
+          }));
         // 退费类型
-        this.refundTypeArr = this.formOptions[7].options = res.data.refundTypeList.map(
-          (item) => ({
+        this.refundTypeArr = this.formOptions[7].options =
+          res.data.refundTypeList.map((item) => ({
             label: item.value,
             value: item.key,
-          })
-        );
+          }));
       });
 
       this.$fetch("courseclasstype_goAddWindows").then((res) => {
@@ -1232,12 +1236,11 @@ export default {
           })
         );
         //考药狮模拟测试权限
-        this.step3FormOptions[2].options = res.data.simulationTestPermissionList.map(
-          (item) => ({
+        this.step3FormOptions[2].options =
+          res.data.simulationTestPermissionList.map((item) => ({
             label: item.value,
             value: item.key,
-          })
-        );
+          }));
         //考药狮自习室权限
         this.step3FormOptions[3].options = res.data.studyPowerList.map(
           (item) => ({
@@ -1460,9 +1463,8 @@ export default {
             value: item.serialVersionUID,
           })
         );
-        this.basicInfo.classTypeStage = res.data.data.model.stageGroupName.split(
-          ","
-        );
+        this.basicInfo.classTypeStage =
+          res.data.data.model.stageGroupName.split(",");
         this.courseList = res.data.courseInfo.map((item) => ({
           label: item.courseName,
           value: item.courseId,
@@ -1497,6 +1499,7 @@ export default {
                 });
               }
               this.basicInfo["courses"] = arr;
+              console.log("怕怕怕怕怕", arr);
             } else if (key == "courseContentId") {
               //班型内容
               let accountingRulesArr = [];
@@ -1575,7 +1578,7 @@ export default {
       this.step3FormOptions[8].disabled = this.IsDisabled;
       this.step3FormOptions[9].disabled = this.IsDisabled;
       this.step3FormOptions[10].disabled = this.IsDisabled;
-      scrollTo(0, 800); 
+      scrollTo(0, 800);
     },
     handlePre() {
       this.active--;
@@ -1631,10 +1634,8 @@ export default {
                   }
                 });
                 console.log("courses2", courses2);
-                let {
-                  productName,
-                  subjectName,
-                } = this.$refs.dataForm1.basicInfo;
+                let { productName, subjectName } =
+                  this.$refs.dataForm1.basicInfo;
                 this.projectArr.map((item) => {
                   if (item.value == productName) {
                     productName = item.label;
@@ -1738,10 +1739,8 @@ export default {
                   }
                 });
                 console.log("courses2", courses2);
-                let {
-                  productName,
-                  subjectName,
-                } = this.$refs.dataForm1.basicInfo;
+                let { productName, subjectName } =
+                  this.$refs.dataForm1.basicInfo;
                 this.projectArr.map((item) => {
                   if (item.value == productName) {
                     productName = item.label;
@@ -1821,18 +1820,23 @@ export default {
         } else {
           dataForm = this.$refs[formName];
         }
-        console.log("waht???", formName);
+        console.log("waht???", formName, this.basicInfo.courses);
         dataForm.validate((valid, formData) => {
           if (valid) {
             if (this.active == 1 && this.basicInfo.tableData.length == 0) {
               this.$message.warning("请添加班型内容");
               return;
             }
+            var checkedFalseArr = [];
+            for (let k = 0; k < this.basicInfo.courses.length; k++) {
+              if (this.basicInfo.courses[k].checked == false) {
+                checkedFalseArr.push(this.basicInfo.courses[k].checked);
+              }
+            }
             if (
               this.active == 1 &&
               this.basicInfo.courses.length > 0 &&
-              this.any(this.basicInfo.courses, (x) => x.checked == true) ==
-                false
+              checkedFalseArr.length == this.basicInfo.courses.length
             ) {
               this.$message.warning("至少勾选一个课程");
               return;

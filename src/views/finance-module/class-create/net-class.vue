@@ -228,7 +228,13 @@ export default {
           tag: 1,
           // hide: true,
         },
-
+        {
+          prop: "codeLevel",
+          element: "el-input-number",
+          placeholder: "请输入编码级别",
+          label: "编码级别",
+          min: 0,
+        },
         {
           prop: "courseType",
           element: "el-radio",
@@ -255,6 +261,7 @@ export default {
         ],
         courseType: [{ required: true, message: "请选择", trigger: "change" }],
         courseSort: [{ required: true, message: "请选择", trigger: "change" }],
+        codeLevel: [{ required: true, message: "请输入", trigger: "blur" }],
       },
       classTypeArr: [],
       courseListArr: [],
@@ -376,7 +383,8 @@ export default {
           label: item.value,
           value: item.key,
         }));
-        this.addFormOptions[5].options = this.formOptions[2].options = this.courseListArr;
+        this.addFormOptions[6].options = this.formOptions[2].options =
+          this.courseListArr;
 
         this.synStatusListArr = synStatusList.map((item) => ({
           label: item.value,
@@ -390,10 +398,11 @@ export default {
           label: item.value,
           value: item.key,
         }));
-        this.addFormOptions[6].options = this.courseSortListArr;
+        this.addFormOptions[7].options = this.courseSortListArr;
         this.formOptions[3].options = this.courseSortListArr;
         this.formOptions[4].options = this.synStatusListArr;
-        this.addFormOptions[3].options = this.formOptions[1].options = this.codeTypeListArr;
+        this.addFormOptions[3].options = this.formOptions[1].options =
+          this.codeTypeListArr;
         // this.addFormOptions[3].events = {
         //   change: this.codeChange,
         // };
@@ -432,6 +441,7 @@ export default {
       // } else {
       //   this.addFormOptions[4].hide = true;
       // }
+      console.log("数据------------",data)
       this.addFormOptions.forEach((item) => {
         if (item.tag == 1) {
           if (item.readonly != undefined) {
